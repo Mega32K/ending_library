@@ -1,0 +1,5 @@
+{
+  "commands.endinglib.fill_entity.success": "Successfully filled %s entities",
+  "commands.endinglib.fill_entity.failed": "No entities were filled",
+  "commands.endinglib.fill_entity.toobig": "Too many entities in the specified area (maximum %s, specified %s)"
+}

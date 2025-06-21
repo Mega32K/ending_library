@@ -1,0 +1,30 @@
+package com.mega.endinglib;
+
+import com.mega.endinglib.common.init.ModSounds;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.config.CommonConfig;
+import com.mega.endinglib.proxy.ClientProxy;
+import com.mega.endinglib.proxy.ModProxy;
+import com.mega.endinglib.proxy.ServerProxy;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+// The value here should match an entry in the META-INF/mods.toml file
+@Mod(EndingLibrary.MODID)
+public class EndingLibrary {
+    public static final String MODID = "ending_library";
+    public static final ModProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+
+    public EndingLibrary() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC, "ending_library/ending_library-common.toml");
+        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModSounds.SOUNDS.register(bus);
+        PacketHandler.registerPackets();
+        MinecraftForge.EVENT_BUS.register(this);
+    }
+}

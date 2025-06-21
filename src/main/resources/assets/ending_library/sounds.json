@@ -1,0 +1,7 @@
+{
+  "time_stop": {
+    "sounds" : [
+      "ending_library:time_stop"
+    ]
+  }
+}

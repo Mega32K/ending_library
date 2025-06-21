@@ -1,0 +1,44 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.mega.endinglib.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "ending_library.refmap.json",
+  "mixins": [
+    "ServerboundChatCommandPacketMixin",
+    "ServerboundChatPacketMixin",
+    "SignedMessageBodyMixin",
+    "StringUtilMixin",
+    "time.EntityMixin",
+    "time.LivingEntityMixin",
+    "time.time.LevelMixin",
+    "time.time.ServerLevelMixin",
+    "time.time.ServerMixin"
+  ],
+  "client": [
+    "EditBoxMixin",
+    "ItemRendererMixin",
+    "bettercombat.MinecraftClientInject",
+    "time.GameRendererMixin",
+    "time.GuiMixin",
+    "time.LevelRendererMixin",
+    "time.MinecraftMixin",
+    "time.time.Blaze3DMixin",
+    "time.time.CameraMixin",
+    "time.time.ClientLevelMixin",
+    "time.time.EndermanRendererMixin",
+    "time.time.ItemInHandRendererMixin",
+    "time.time.LevelRendererMixin",
+    "time.time.MusicManagerMixin",
+    "time.time.ParticleManagerMixin",
+    "time.time.PostChainMixin",
+    "time.time.SoundEngineMixin",
+    "time.time.SoundManagerMixin",
+    "time.time.TextureManagerMixin",
+    "time.time.TutorialMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "plugin": "com.mega.endinglib.util.EndingLibraryMixinPlugin"
+}
