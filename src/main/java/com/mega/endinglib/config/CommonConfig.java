@@ -1,0 +1,31 @@
+package com.mega.endinglib.config;
+
+import com.mega.endinglib.EndingLibrary;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
+
+@Mod.EventBusSubscriber(modid = EndingLibrary.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class CommonConfig {
+    public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    public static final ForgeConfigSpec SPEC;
+    private static final ForgeConfigSpec.ConfigValue<Integer> MAX_EDIT_LENGTH;
+    public static int max_edit_length;
+
+    static {
+        BUILDER.push("Misc");
+        MAX_EDIT_LENGTH = BUILDER.comment("Set Edit box max length(for example in Chat Screen).").define("maxEditLength", 512);
+        BUILDER.pop();
+        SPEC = BUILDER.build();
+    }
+
+    @SubscribeEvent
+    static void onLoad(ModConfigEvent event) {
+        update();
+    }
+
+    public static void update() {
+        max_edit_length = Math.min(MAX_EDIT_LENGTH.get(), 32767);
+    }
+}

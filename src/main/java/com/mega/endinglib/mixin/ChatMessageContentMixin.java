@@ -1,0 +1,19 @@
+package com.mega.endinglib.mixin;
+
+import com.mega.endinglib.config.CommonConfig;
+import net.minecraft.network.chat.ChatMessageContent;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+@Mixin(ChatMessageContent.class)
+public class ChatMessageContentMixin {
+    @ModifyArg(method = "write", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeUtf(Ljava/lang/String;I)Lnet/minecraft/network/FriendlyByteBuf;"), index = 1)
+    private static int modify256_1(int arg) {
+        return CommonConfig.max_edit_length;
+    }
+    @ModifyArg(method = "read", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;readUtf(I)Ljava/lang/String;"), index = 0)
+    private static int modify256_2(int arg) {
+        return CommonConfig.max_edit_length;
+    }
+}
