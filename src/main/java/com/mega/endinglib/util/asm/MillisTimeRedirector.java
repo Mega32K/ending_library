@@ -1,6 +1,7 @@
 package com.mega.endinglib.util.asm;
 
 import com.mega.endinglib.coremod.forge.IClassProcessor;
+import com.mega.endinglib.util.MCMapping;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +21,7 @@ public class MillisTimeRedirector implements IClassProcessor {
     static final String EVENT_UTIL_CLASS = "com/mega/endinglib/util/asm/EventUtil";
 
     static boolean isUnsupportModifyingClass(String name) {
-        return name.startsWith("com/mega/endinglib/util/asm");
+        return name.startsWith("com/mega/endinglib/util/");
     }
 
     @Override
@@ -33,7 +34,7 @@ public class MillisTimeRedirector implements IClassProcessor {
                         method.instructions.forEach(abstractInsnNode -> {
                             if (abstractInsnNode instanceof MethodInsnNode mNode) {
                                 if (mNode.owner.equals(UTIL_CLASS)) {
-                                    if (mNode.name.equals("getMillis") && mNode.desc.equals("()J")) {
+                                    if (MCMapping.equalsMethodNode(mNode, MCMapping.Util$METHOD$getMillis)) {
                                         method.instructions.set(mNode, new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getMillis", "()J", false));
                                         shouldWrite.set(true);
                                     }
