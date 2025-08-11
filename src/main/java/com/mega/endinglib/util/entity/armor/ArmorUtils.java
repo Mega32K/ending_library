@@ -1,5 +1,8 @@
 package com.mega.endinglib.util.entity.armor;
 
+import com.mega.endinglib.api.item.armor.ArmorOption;
+import com.mega.endinglib.api.item.armor.ModifiableArmorItem;
+import com.mega.endinglib.api.item.armor.OptionArmorMaterial;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -11,8 +14,63 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 @SuppressWarnings("unused")
 public class ArmorUtils {
+    public static ArmorItem.Type typeFromEquipmentSlot(EquipmentSlot slot) {
+        switch (slot) {
+            case HEAD -> {
+                return ArmorItem.Type.HELMET;
+            }
+            case CHEST -> {
+                return ArmorItem.Type.CHESTPLATE;
+            }
+            case LEGS -> {
+                return ArmorItem.Type.LEGGINGS;
+            }
+            case FEET -> {
+                return ArmorItem.Type.BOOTS;
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
+    public static EquipmentSlot equipmentSlotFromType(ArmorItem.Type type) {
+        switch (type) {
+            case HELMET -> {
+                return EquipmentSlot.HEAD;
+            }
+            case CHESTPLATE -> {
+                return EquipmentSlot.CHEST;
+            }
+            case LEGGINGS -> {
+                return EquipmentSlot.LEGS;
+            }
+            case BOOTS -> {
+                return EquipmentSlot.FEET;
+            }
+        }
+        return EquipmentSlot.HEAD;
+    }
+
+    public static ArmorOption getArmorOption(ArmorMaterial material) {
+        if (material instanceof OptionArmorMaterial oam)
+            return oam.getOption();
+        return null;
+    }
+
+    public static ModifiableArmorItem getModifiableArmor(ArmorMaterial material, ArmorItem.Type type) {
+        return getModifiableArmors(material).get(type);
+    }
+
+    public static Map<ArmorItem.Type, ModifiableArmorItem> getModifiableArmors(ArmorMaterial material) {
+        if (material == null) return null;
+        return ModifiableArmorItem.ARMOR_MAP.getOrDefault(material, null);
+    }
+
     public static boolean isFire(DamageSource source) {
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
             return false;

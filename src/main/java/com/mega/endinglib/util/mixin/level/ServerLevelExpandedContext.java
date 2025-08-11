@@ -1,5 +1,6 @@
 package com.mega.endinglib.util.mixin.level;
 
+import com.mega.endinglib.mixin.accessor.AccessorServerLevel;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.Util;
@@ -29,6 +30,7 @@ public class ServerLevelExpandedContext extends LevelExpandedContext {
     public void tickHead(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         if (TimeStopUtils.isTimeStop) {
             ServerLevel serverLevel = (ServerLevel) level;
+            AccessorServerLevel accessor = (AccessorServerLevel) serverLevel;
             boolean can = serverEC().timeStopDimensions.contains(serverLevel.dimension());
             if (can) {
                 ProfilerFiller profilerfiller = serverLevel.getProfiler();
@@ -50,15 +52,15 @@ public class ServerLevelExpandedContext extends LevelExpandedContext {
                     }
                 }
                 profilerfiller.push("entities");
-                serverLevel.entityTickList.forEach((p_184065_) -> {
+                accessor.getEntityTickList().forEach((p_184065_) -> {
                     if (!p_184065_.isRemoved()) {
-                        if (serverLevel.shouldDiscardEntity(p_184065_)) {
+                        if (accessor.shouldDiscardEntity$el(p_184065_)) {
                             p_184065_.discard();
                         } else {
                             profilerfiller.push("checkDespawn");
                             p_184065_.checkDespawn();
                             profilerfiller.pop();
-                            if (serverLevel.chunkSource.chunkMap.getDistanceManager().inEntityTickingRange(p_184065_.chunkPosition().toLong())) {
+                            if (accessor.getChunkSource().chunkMap.getDistanceManager().inEntityTickingRange(p_184065_.chunkPosition().toLong())) {
                                 Entity entity = p_184065_.getVehicle();
                                 if (entity != null) {
                                     if (!entity.isRemoved() && entity.hasPassenger(p_184065_)) {
@@ -82,7 +84,7 @@ public class ServerLevelExpandedContext extends LevelExpandedContext {
                 serverLevel.getChunkSource().tick(booleanSupplier, true);
                 profilerfiller.pop();
                 profilerfiller.push("entityManagement");
-                serverLevel.entityManager.tick();
+                accessor.getEntityManager().tick();
                 profilerfiller.pop();
                 ci.cancel();
             }

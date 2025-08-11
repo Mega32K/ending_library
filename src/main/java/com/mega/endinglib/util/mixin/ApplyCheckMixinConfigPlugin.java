@@ -9,11 +9,13 @@ import org.spongepowered.asm.service.MixinService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class ApplyCheckMixinConfigPlugin implements IMixinConfigPlugin {
     static {
-        EarlyConfig.modIds.forEach(System.out::println);
+        System.out.println(EarlyConfig.class);
     }
+
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         ClassNode node;
@@ -23,6 +25,7 @@ public abstract class ApplyCheckMixinConfigPlugin implements IMixinConfigPlugin 
             return false;
         }
         List<AnnotationNode> annotationNodes = new ArrayList<>(node.invisibleAnnotations);
+        AtomicBoolean atomicBoolean = new AtomicBoolean(true);
         for (AnnotationNode annotationNode : annotationNodes) {
             if (annotationNode.desc.equals("Lcom/mega/endinglib/util/annotation/DeprecatedMixin;"))
                 return false;
@@ -32,12 +35,12 @@ public abstract class ApplyCheckMixinConfigPlugin implements IMixinConfigPlugin 
                 return false;
             if (annotationNode.desc.equals("Lcom/mega/endinglib/util/annotation/ModDependsMixin;"))
                 //0-> value 1-> modid
-                return EarlyConfig.modIds.contains((String) annotationNode.values.get(1));
+                atomicBoolean.set(EarlyConfig.modIds.contains((String) annotationNode.values.get(1)));
             if (annotationNode.desc.equals("Lcom/mega/endinglib/util/annotation/NoModDependsMixin;")) {
                 //0-> value 1-> modid
-                return !EarlyConfig.modIds.contains((String) annotationNode.values.get(1));
+                atomicBoolean.set(!EarlyConfig.modIds.contains((String) annotationNode.values.get(1)));
             }
         }
-        return true;
+        return atomicBoolean.get();
     }
 }

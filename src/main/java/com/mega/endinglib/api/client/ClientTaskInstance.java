@@ -3,6 +3,7 @@ package com.mega.endinglib.api.client;
 import com.mega.endinglib.client.task.ClientTaskManager;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
 public abstract class ClientTaskInstance {
     public int tickCount;

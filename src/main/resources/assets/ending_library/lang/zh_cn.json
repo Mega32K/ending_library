@@ -1,5 +1,11 @@
 {
   "commands.endinglib.fill_entity.success": "Successfully filled %s entities",
   "commands.endinglib.fill_entity.failed": "No entities were filled",
-  "commands.endinglib.fill_entity.toobig": "Too many entities in the specified area (maximum %s, specified %s)"
+  "commands.endinglib.fill_entity.toobig": "Too many entities in the specified area (maximum %s, specified %s)",
+
+  "tooltip.endinglib.specialEffect": "§7特殊效果:",
+  "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",
+  "tooltip.endinglib.holdShiftEffect": "§5按住 §6Shift§5 查看效果。",
+  "tooltip.endinglib.setEffect": "§7套装效果:",
+  "tooltip.endinglib.itemLimitDamage": "§7单次耐久损耗限制 %d"
 }

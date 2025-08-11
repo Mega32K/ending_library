@@ -1,6 +1,8 @@
 package com.mega.endinglib.mixin.time;
 
 import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.mixin.accessor.AccessorClientLevel;
+import com.mega.endinglib.mixin.accessor.AccessorMcTimer;
 import com.mega.endinglib.util.mixin.bettercombat.BetterCombatTicker;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
@@ -126,10 +128,11 @@ public abstract class MinecraftMixin {
             RendererUtils.isTimeStop_andSameDimension = false;
             TimeStopUtils.isTimeStop = false;
         }
+        AccessorMcTimer accessorMcTimer = (AccessorMcTimer) this.timer;
         uom$isTimeStop = TimeStopUtils.isTimeStop && RendererUtils.isTimeStop_andSameDimension;
         if (TimeStopUtils.isTimeStop && gameMode != null && player != null) {
             if (uom$isTimeStop && !pause) {
-                timer.msPerTick = 1.0e32F;
+                accessorMcTimer.setMsPerTick(1.0e32F);
                 realPartialTick = timer.partialTick;
                 for (int i = 0; i < l; i++) {
                     this.profiler.push("BetterCombatHead");
@@ -194,7 +197,7 @@ public abstract class MinecraftMixin {
                             }
                         }
                         if (level != null) {
-                            level.tickingEntities.forEach((entity) -> {
+                            ((AccessorClientLevel) level).getTickingEntities().forEach((entity) -> {
                                 if (!entity.isRemoved() && !entity.isPassenger()) {
                                     if (TimeStopUtils.canMove(entity)) {
                                         level.guardEntityTick(level::tickNonPassenger, entity);
@@ -232,7 +235,7 @@ public abstract class MinecraftMixin {
                 }
             }
         } else {
-            if (timer.msPerTick == 1.0e32F) timer.msPerTick = 50.0F;
+            if (Math.abs(accessorMcTimer.getMsPerTick() - 1.0e32F) < 0.001F) accessorMcTimer.setMsPerTick(50.0F);
         }
     }
 

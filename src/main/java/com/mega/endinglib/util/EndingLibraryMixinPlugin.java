@@ -2,6 +2,7 @@ package com.mega.endinglib.util;
 
 import com.mega.endinglib.coremod.forge.LaunchPluginServiceBuilder;
 import com.mega.endinglib.util.asm.MillisTimeRedirector;
+import com.mega.endinglib.util.asm.NormalCoremodProcessor;
 import com.mega.endinglib.util.mixin.ApplyCheckMixinConfigPlugin;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -11,8 +12,7 @@ import java.util.Set;
 
 public class EndingLibraryMixinPlugin extends ApplyCheckMixinConfigPlugin {
     static {
-
-        LaunchPluginServiceBuilder.builder().name("EndingLibraryCore-Main").processor(MillisTimeRedirector.INSTANCE).build();
+        LaunchPluginServiceBuilder.builder().name("EndingLibraryCore-Main").processor(MillisTimeRedirector.INSTANCE).processor(NormalCoremodProcessor.INSTANCE).build();
     }
 
     @Override

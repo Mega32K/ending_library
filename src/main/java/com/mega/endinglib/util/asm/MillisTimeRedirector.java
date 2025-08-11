@@ -35,7 +35,7 @@ public class MillisTimeRedirector implements IClassProcessor {
                             if (abstractInsnNode instanceof MethodInsnNode mNode) {
                                 if (mNode.owner.equals(UTIL_CLASS)) {
                                     if (MCMapping.equalsMethodNode(mNode, MCMapping.Util$METHOD$getMillis)) {
-                                        method.instructions.set(mNode, new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getMillis", "()J", false));
+                                        method.instructions.insert(mNode, new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getMillis", "(J)J", false));
                                         shouldWrite.set(true);
                                     }
                                 }

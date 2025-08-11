@@ -1,12 +1,12 @@
 package com.mega.endinglib.proxy;
 
+import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.Executors;
@@ -32,7 +32,7 @@ public class ClientProxy implements ModProxy {
             TimeContext.Client.count++;
         }, 0L, 1L, TimeUnit.MILLISECONDS);
         LOCK.unlock();
-        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus modBus = EndingLibrary.getModEventBus();
         modBus.addListener(this::clientSetup);
     }
 

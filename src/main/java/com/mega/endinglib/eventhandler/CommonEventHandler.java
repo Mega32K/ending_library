@@ -66,8 +66,8 @@ public class CommonEventHandler {
             if (event.getEntity() instanceof Player player) {
                 if (TimeStopUtils.isTimeStop) {
                     ResourceKey<Level> travellingTo = event.getDimension();
-                    if (!player.level.isClientSide) {
-                        if (travellingTo != null && !travellingTo.location().equals(player.level.dimension().location())) {
+                    if (!player.level().isClientSide) {
+                        if (travellingTo != null && !travellingTo.location().equals(player.level().dimension().location())) {
                             TimeStopEntityData.setTimeStopCount(player, 0);
                             TimeStopUtils.use(false, player);
                         }
@@ -80,7 +80,7 @@ public class CommonEventHandler {
         public static void disableTimeStop2(LivingDeathEvent event) {
             if (event.getEntity() instanceof Player player && event.getPhase() == EventPriority.LOWEST) {
                 if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(player.level())) {
-                    Level level = player.level;
+                    Level level = player.level();
                     if (!level.isClientSide) {
                         TimeStopUtils.use(false, player);
                     }
@@ -111,7 +111,7 @@ public class CommonEventHandler {
 
         @SubscribeEvent(priority = EventPriority.LOWEST)
         public static void attack(AttackEntityEvent event) {
-            Level level = event.getEntity().level;
+            Level level = event.getEntity().level();
             if (TimeStopUtils.isTimeStop && !TimeStopUtils.canMove(event.getEntity()) && TimeStopUtils.andSameDimension(level)) {
                 event.setCanceled(true);
             }
@@ -119,7 +119,7 @@ public class CommonEventHandler {
 
         @SubscribeEvent
         public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
-            if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level)) {
+            if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level())) {
                 try {
                     TimeStopEntityData.setTimeStopCount(event.getEntity(), 0);
                     PacketHandler.sendToPlayer((ServerPlayer) event.getEntity(), new TimeStopSkillPacket(false, event.getEntity().getUUID()));
@@ -131,7 +131,7 @@ public class CommonEventHandler {
 
         @SubscribeEvent
         public static void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
-            if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level)) {
+            if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level())) {
                 try {
                     PacketHandler.sendToPlayer((ServerPlayer) event.getEntity(), new TimeStopSkillPacket(true, UUID.randomUUID()));
                 } catch (Throwable throwable) {

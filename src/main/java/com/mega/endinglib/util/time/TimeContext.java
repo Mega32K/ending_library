@@ -8,7 +8,6 @@ import net.minecraft.util.TimeSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.joml.Vector2i;
 
 import java.awt.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -51,6 +50,7 @@ public class TimeContext {
         public static float alwaysPartial() {
             return (TimeStopUtils.isTimeStop || Minecraft.getInstance().isPaused()) ? Client.timer.partialTick : Minecraft.getInstance().getPartialTick();
         }
+
         public static float getPartialTickCount(Entity owner, boolean always) {
             return owner.tickCount + (always ? alwaysPartial() : Minecraft.getInstance().getPartialTick());
         }

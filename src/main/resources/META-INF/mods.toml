@@ -61,3 +61,10 @@ description='''${mod_description}'''
    versionRange="${minecraft_version_range}"
    ordering="NONE"
    side="BOTH"
+[[dependencies.ending_library]]
+   modId="modernui"
+   mandatory=false
+   # This version range declares a minimum of the current minecraft version up to but not including the next major version
+   versionRange="[3.11.1.6,)"
+   ordering="NONE"
+   side="BOTH"

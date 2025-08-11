@@ -1,0 +1,20 @@
+package com.mega.endinglib.mixin.accessor;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
+
+@Mixin(Entity.class)
+public interface AccessorEntity {
+    @Accessor("position")
+    void setPositionField(Vec3 position);
+    @Accessor("blockPosition")
+    void setBlockPositionField(BlockPos blockPosition);
+    @Accessor("isAddedToWorld")
+    void setAddedToWorldField(boolean z);
+    @Invoker
+    void callMarkHurt();
+}

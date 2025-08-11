@@ -169,7 +169,10 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
+    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.4.1")) {
+        jarJar.ranged(it, "[0.4.1,)")
+    }
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation fg.deobf("curse.maven:Oculus-581495:5299671")
     implementation fg.deobf("curse.maven:Xenon-564239:5752040")
@@ -178,6 +181,8 @@ dependencies {
     implementation fg.deobf("curse.maven:ClothConfig-348521:5729105")
     implementation fg.deobf("curse.maven:BetterCombat-639842:5625757")
     implementation fg.deobf("curse.maven:playerAnimator-658587:4587214")
+    implementation fg.deobf("curse.maven:curios-309927:5367944")
+    //implementation fg.deobf("curse.maven:ModernUI-352491:6199942")
     implementation fileTree("libs")
 
 }

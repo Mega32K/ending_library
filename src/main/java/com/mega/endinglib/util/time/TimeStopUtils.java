@@ -1,9 +1,11 @@
 package com.mega.endinglib.util.time;
 
+import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.data.TimeStopSavedData;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.config.CommonConfig;
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.mixin.level.ServerEC;
@@ -60,12 +62,16 @@ public class TimeStopUtils {
      * @param force  为true时无条件设置当前实体剩余时停时间0
      */
     public static synchronized void use(boolean z, LivingEntity source, boolean force, int time) {
+        if (z && !CommonConfig.enableTS) {
+            EndingLibrary.LOGGER.warn("Time Stop Settings is disabled in the common-config.");
+            return;
+        }
         if (source.level().isClientSide) throw new RuntimeException(("time stop should be called on server side."));
         if (!source.level().isClientSide) {
             boolean lastState = isTimeStop;
 
             if (!z) {
-                for (LivingEntity living : source.level.getEntitiesOfClass(LivingEntity.class, new AABB(new BlockPos(0, 0, 0)).inflate(30000000))) {
+                for (LivingEntity living : source.level().getEntitiesOfClass(LivingEntity.class, new AABB(new BlockPos(0, 0, 0)).inflate(30000000))) {
                     if (living != source) {
                         if (TimeStopEntityData.getTimeStopCount(living) > 0 && living.isAlive()) {
                             if (force)
@@ -77,15 +83,15 @@ public class TimeStopUtils {
             }
             isTimeStop = z;
             if (!isTimeStop) {
-                TimeStopSavedData.readOrCreate(((ServerLevel) source.level).server).removeTsDimension(source.level.dimension());
+                TimeStopSavedData.readOrCreate(((ServerLevel) source.level()).getServer()).removeTsDimension(source.level().dimension());
             }
             PacketHandler.sendToAll(new TimeStopSkillPacket(isTimeStop, source.getUUID()));
             if (isTimeStop)
-                PacketHandler.sendToAll(new TSDimensionSynchedPacket(new ResourceLocation(""), source.level.dimension().location()));
+                PacketHandler.sendToAll(new TSDimensionSynchedPacket(new ResourceLocation(""), source.level().dimension().location()));
             else
-                PacketHandler.sendToAll(new TSDimensionSynchedPacket(source.level.dimension().location(), new ResourceLocation("")));
+                PacketHandler.sendToAll(new TSDimensionSynchedPacket(source.level().dimension().location(), new ResourceLocation("")));
             if (z) {
-                TimeStopSavedData.readOrCreate(((ServerLevel) source.level).server).addTsDimension(source.level.dimension());
+                TimeStopSavedData.readOrCreate(((ServerLevel) source.level()).getServer()).addTsDimension(source.level().dimension());
                 TimeStopEntityData.setTimeStopCount(source, Math.max(TimeStopEntityData.getTimeStopCount(source), time));
             } else {
                 if (force)
