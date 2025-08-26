@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.network.s2c.timestop;
+package com.mega.endinglib.network.s2c.timestop;
 
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;

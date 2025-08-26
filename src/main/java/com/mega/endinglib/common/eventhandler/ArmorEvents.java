@@ -1,4 +1,4 @@
-package com.mega.endinglib.eventhandler;
+package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.item.armor.ModifiableArmorItem;

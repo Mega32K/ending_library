@@ -1,14 +1,22 @@
-package com.mega.endinglib.common.network;
+package com.mega.endinglib.network;
 
 import com.mega.endinglib.EndingLibrary;
-import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
-import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket;
-import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.network.c2s.C2SItemToggleModePacket;
+import com.mega.endinglib.network.s2c.timestop.TSDimensionSynchedPacket;
+import com.mega.endinglib.network.s2c.timestop.TimeStopClientEffectPacket;
+import com.mega.endinglib.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.mixin.accessor.AccessorChunkMap;
+import com.mega.endinglib.mixin.accessor.AccessorTrackedEntity;
+import com.mega.endinglib.network.c2s.C2SCapabilityDataSyncPacket;
+import com.mega.endinglib.network.s2c.S2CCapabilityDataSyncPacket;
+import com.mega.endinglib.network.s2c.S2CCapabilitySetDataPacket;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -28,6 +36,10 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), TimeStopSkillPacket.class, TimeStopSkillPacket::encode, TimeStopSkillPacket::decode, TimeStopSkillPacket::handle);
         INSTANCE.registerMessage(id(), TimeStopClientEffectPacket.class, TimeStopClientEffectPacket::encode, TimeStopClientEffectPacket::decode, TimeStopClientEffectPacket::handle);
         INSTANCE.registerMessage(id(), TSDimensionSynchedPacket.class, TSDimensionSynchedPacket::encode, TSDimensionSynchedPacket::decode, TSDimensionSynchedPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCapabilityDataSyncPacket.class, S2CCapabilityDataSyncPacket::encode, S2CCapabilityDataSyncPacket::decode, S2CCapabilityDataSyncPacket::handle);
+        INSTANCE.registerMessage(id(), C2SCapabilityDataSyncPacket.class, C2SCapabilityDataSyncPacket::encode, C2SCapabilityDataSyncPacket::decode, C2SCapabilityDataSyncPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCapabilitySetDataPacket.class, S2CCapabilitySetDataPacket::encode, S2CCapabilitySetDataPacket::decode, S2CCapabilitySetDataPacket::handle);
+        INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
     }
 
     public static int id() {
@@ -42,14 +54,21 @@ public class PacketHandler {
         INSTANCE.sendToServer(msg);
     }
 
-    public static <MSG> void sendToPlayer(ServerPlayer player, MSG msg) {
+    public static <MSG> void sendToPlayer(MSG msg, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
-
-    public static <MGS> void sendToEntity(MGS message, LivingEntity entity) {
+    public static <MSG> void sendToEntity(MSG message, LivingEntity entity) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
     }
-
+    public static <MSG> void sendToSeen(MSG message, Entity entity, ServerLevel serverLevel) {
+        AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;
+        ChunkMap.TrackedEntity trackedEntity = chunkMapAccessor.getEntityMap().get(entity.getId());
+        if (trackedEntity != null) {
+            for (ServerPlayerConnection connection : ((AccessorTrackedEntity) trackedEntity).getSeenBy()) {
+                PacketHandler.sendToPlayer(message, connection.getPlayer());
+            }
+        }
+    }
     public static void playSound(ServerPlayer serverPlayer, SoundEvent soundEvent, SoundSource source, float volume, float s) {
         ServerLevel serverLevel = serverPlayer.serverLevel();
         for (ServerPlayer player : serverLevel.players()) {

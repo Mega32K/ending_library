@@ -1,7 +1,7 @@
-package com.mega.endinglib.eventhandler;
+package com.mega.endinglib.common.eventhandler;
 
-import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.network.PacketHandler;
+import com.mega.endinglib.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
@@ -19,8 +19,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.util.UUID;
 
 @Mod.EventBusSubscriber
 public class CommonEventHandler {
@@ -122,7 +120,7 @@ public class CommonEventHandler {
             if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level())) {
                 try {
                     TimeStopEntityData.setTimeStopCount(event.getEntity(), 0);
-                    PacketHandler.sendToPlayer((ServerPlayer) event.getEntity(), new TimeStopSkillPacket(false, event.getEntity().getUUID()));
+                    PacketHandler.sendToPlayer(new TimeStopSkillPacket(false, event.getEntity().getId()), (ServerPlayer) event.getEntity());
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -133,7 +131,7 @@ public class CommonEventHandler {
         public static void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
             if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level())) {
                 try {
-                    PacketHandler.sendToPlayer((ServerPlayer) event.getEntity(), new TimeStopSkillPacket(true, UUID.randomUUID()));
+                    PacketHandler.sendToPlayer(new TimeStopSkillPacket(true, -1), (ServerPlayer) event.getEntity());
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }

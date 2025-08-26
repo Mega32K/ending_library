@@ -10,12 +10,12 @@ import java.util.UUID;
 
 //Client
 public class TimeStopUtilsWrapped {
-    public static void enable(UUID target) {
+    public static void enable(int id) {
         Minecraft mc = Minecraft.getInstance();
         assert mc.level != null;
         mc.getSoundManager().pause();
         TimeStopUtils.isTimeStop = true;
-        if (mc.player != null && target.equals(mc.player.getUUID()))
+        if (mc.player != null && id == mc.player.getId())
             mc.getSoundManager().play(new SimpleSoundInstance(ModSounds.TIME_STOP.get().getLocation(), SoundSource.AMBIENT, 1F, 1F, SoundInstance.createUnseededRandom(), false, 0, SoundInstance.Attenuation.NONE, 0.0D, 0.0D, 0.0D, true));
     }
 

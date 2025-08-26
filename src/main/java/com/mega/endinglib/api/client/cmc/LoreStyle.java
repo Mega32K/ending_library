@@ -1,8 +1,7 @@
 package com.mega.endinglib.api.client.cmc;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
-import com.mega.endinglib.util.java.ExeCallable;
-import net.minecraft.ChatFormatting;
+import com.mega.endinglib.util.java.funtion.ExeCallable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 

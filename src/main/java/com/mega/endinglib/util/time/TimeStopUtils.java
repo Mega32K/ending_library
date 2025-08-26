@@ -2,9 +2,9 @@ package com.mega.endinglib.util.time;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.data.TimeStopSavedData;
-import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
-import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.network.PacketHandler;
+import com.mega.endinglib.network.s2c.timestop.TSDimensionSynchedPacket;
+import com.mega.endinglib.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.config.CommonConfig;
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;
@@ -85,7 +85,7 @@ public class TimeStopUtils {
             if (!isTimeStop) {
                 TimeStopSavedData.readOrCreate(((ServerLevel) source.level()).getServer()).removeTsDimension(source.level().dimension());
             }
-            PacketHandler.sendToAll(new TimeStopSkillPacket(isTimeStop, source.getUUID()));
+            PacketHandler.sendToAll(new TimeStopSkillPacket(isTimeStop, source.getId()));
             if (isTimeStop)
                 PacketHandler.sendToAll(new TSDimensionSynchedPacket(new ResourceLocation(""), source.level().dimension().location()));
             else

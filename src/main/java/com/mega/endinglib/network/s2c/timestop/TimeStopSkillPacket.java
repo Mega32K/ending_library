@@ -1,37 +1,36 @@
-package com.mega.endinglib.common.network.s2c.timestop;
+package com.mega.endinglib.network.s2c.timestop;
 
 import com.mega.endinglib.util.time.TimeStopUtilsWrapped;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class TimeStopSkillPacket {
     private final boolean isTimeStop;
-    private final UUID user;
+    private final int user;
     private final boolean onlyRemoveEntity;
     private final boolean safelyCanCancel;
 
-    public TimeStopSkillPacket(boolean isTimeStop, UUID user, boolean onlyRemoveEntity, boolean safelyCanCancel) {
+    public TimeStopSkillPacket(boolean isTimeStop, int user, boolean onlyRemoveEntity, boolean safelyCanCancel) {
         this.isTimeStop = isTimeStop;
         this.user = user;
         this.onlyRemoveEntity = onlyRemoveEntity;
         this.safelyCanCancel = safelyCanCancel;
     }
 
-    public TimeStopSkillPacket(boolean isTimeStop, UUID user) {
+    public TimeStopSkillPacket(boolean isTimeStop, int user) {
         this(isTimeStop, user, false, true);
     }
 
     public static TimeStopSkillPacket decode(FriendlyByteBuf friendlyByteBuf) {
-        return new TimeStopSkillPacket(friendlyByteBuf.readBoolean(), friendlyByteBuf.readUUID(), friendlyByteBuf.readBoolean(), friendlyByteBuf.readBoolean());
+        return new TimeStopSkillPacket(friendlyByteBuf.readBoolean(), friendlyByteBuf.readInt(), friendlyByteBuf.readBoolean(), friendlyByteBuf.readBoolean());
     }
 
     public static void encode(TimeStopSkillPacket packet, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeBoolean(packet.isTimeStop);
-        friendlyByteBuf.writeUUID(packet.user);
+        friendlyByteBuf.writeInt(packet.user);
         friendlyByteBuf.writeBoolean(packet.onlyRemoveEntity);
         friendlyByteBuf.writeBoolean(packet.safelyCanCancel);
     }

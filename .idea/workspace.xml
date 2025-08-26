@@ -54,6 +54,7 @@
       <list>
         <option value="package-info" />
         <option value="module-info" />
+        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
       </list>
@@ -80,7 +81,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;1.20.1&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/CollapsingWorld/System-e/EndingLibrary/libs&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/CollapsingWorld/System-e/EndingLibrary/src/main/java/com/mega/endinglib/api&quot;,
     &quot;project.structure.last.edited&quot;: &quot;项目&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.45287958&quot;,
@@ -89,11 +90,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\api" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\META-INF" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\mixin" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\api\client\cmc" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
@@ -102,11 +103,11 @@
       <recent name="com.mega.endinglib.api.event" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.mega.endinglib.util" />
-      <recent name="com.mega.endinglib.api.item" />
-      <recent name="com.mega.endinglib.mixin.data_expand" />
-      <recent name="com.mega.endinglib.mixin.accessor" />
-      <recent name="com.mega.endinglib.api.client.text.mui" />
+      <recent name="com.mega.endinglib.network.s2c" />
+      <recent name="com.mega.endinglib.api.time" />
+      <recent name="com.mega.endinglib.network.c2s" />
+      <recent name="com.mega.endinglib.network" />
+      <recent name="com.mega.endinglib.util.java" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [build]">

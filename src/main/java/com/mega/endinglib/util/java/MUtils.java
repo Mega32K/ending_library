@@ -1,5 +1,8 @@
 package com.mega.endinglib.util.java;
 
+import com.mega.endinglib.util.java.funtion.Exe;
+import com.mega.endinglib.util.java.funtion.ExeCollection;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;

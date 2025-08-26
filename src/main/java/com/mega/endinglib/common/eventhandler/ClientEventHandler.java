@@ -1,4 +1,4 @@
-package com.mega.endinglib.eventhandler;
+package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;

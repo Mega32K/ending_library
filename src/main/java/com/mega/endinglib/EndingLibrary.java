@@ -1,9 +1,10 @@
 package com.mega.endinglib;
 
 import com.mega.endinglib.common.init.ModSounds;
-import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.network.PacketHandler;
 import com.mega.endinglib.config.CommonConfig;
 import com.mega.endinglib.proxy.ClientProxy;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.proxy.ModProxy;
 import com.mega.endinglib.proxy.ServerProxy;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,6 +29,7 @@ public class EndingLibrary {
         IEventBus bus = getModEventBus();
         ModSounds.SOUNDS.register(bus);
         PacketHandler.registerPackets();
+        new CommonProxy();
         MinecraftForge.EVENT_BUS.register(this);
     }
 

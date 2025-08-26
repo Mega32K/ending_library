@@ -1,11 +1,10 @@
-package com.mega.endinglib.common.network.s2c.timestop;
+package com.mega.endinglib.network.s2c.timestop;
 
 import com.mega.endinglib.util.time.TimeStopUtilsWrapped;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public class TimeStopClientEffectPacket {
@@ -30,6 +29,6 @@ public class TimeStopClientEffectPacket {
     static void handle0(TimeStopClientEffectPacket packet, Supplier<NetworkEvent.Context> context) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) System.exit(-1);
-        TimeStopUtilsWrapped.enable(mc.player != null ? mc.player.getUUID() : UUID.randomUUID());
+        TimeStopUtilsWrapped.enable(mc.player != null ? mc.player.getId() : -1);
     }
 }
