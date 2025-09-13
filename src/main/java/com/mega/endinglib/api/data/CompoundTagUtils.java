@@ -1,7 +1,8 @@
 package com.mega.endinglib.api.data;
 
-import com.mega.endinglib.util.java.ClassHelper;
 import io.netty.handler.codec.DecoderException;
+import it.unimi.dsi.fastutil.bytes.ByteConsumer;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
@@ -12,7 +13,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.IntConsumer;
 
 public class CompoundTagUtils {
     public static boolean containsListTag(CompoundTag nbt, String key) {
@@ -119,5 +123,47 @@ public class CompoundTagUtils {
         ResourceKey<Level> dimension = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(tag.getString("Dimension")));
         int[] ints = tag.getIntArray("BlockPos");
         return GlobalPos.of(dimension, new BlockPos(ints[0], ints[1], ints[2]));
+    }
+    public static boolean getIntFlag(int flagData, int mask) {
+        return (flagData & mask) != 0;
+    }
+    public static boolean getByteFlag(byte flagData, int mask) {
+        return (flagData & mask) != 0;
+    }
+    public static void setIntFlags(IntConsumer consumer, int flagData, int mask, boolean value) { ;
+        if (value) {
+            flagData |= mask;
+        } else {
+            flagData &= ~mask;
+        }
+        consumer.accept(flagData & 255);
+    }
+    public static void setByteFlags(ByteConsumer consumer, byte flagData, int mask, boolean value) { ;
+        if (value) {
+            flagData |= mask;
+        } else {
+            flagData &= ~mask;
+        }
+        consumer.accept((byte) (flagData & 255));
+    }
+    public static <T> List<T> getList(CompoundTag nbt, String key, Function<CompoundTag, T> reader) {
+        if (!CompoundTagUtils.containsListTag(nbt, key))
+            return List.of();
+        else {
+            ListTag listTag = nbt.getList(key, 10);
+            if (listTag.isEmpty())
+                return List.of();
+            List<T> list = new ObjectArrayList<>();
+            for (int i=0;i<listTag.size();i++) {
+                list.add(reader.apply(listTag.getCompound(i)));
+            }
+            return list;
+        }
+    }
+    public static <T> void putList(CompoundTag nbt, String key, List<T> list, Function<T, CompoundTag> writer) {
+        ListTag listTag = new ListTag();
+        for (T t : list)
+            listTag.add(writer.apply(t));
+        nbt.put(key, listTag);
     }
 }

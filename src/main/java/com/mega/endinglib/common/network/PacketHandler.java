@@ -1,0 +1,113 @@
+package com.mega.endinglib.common.network;
+
+import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
+import com.mega.endinglib.common.network.c2s.C2SItemToggleModePacket;
+import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
+import com.mega.endinglib.common.network.s2c.S2CCapabilityDataSyncPacket;
+import com.mega.endinglib.common.network.s2c.camera.*;
+import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
+import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket;
+import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.mixin.accessor.AccessorChunkMap;
+import com.mega.endinglib.mixin.accessor.AccessorTrackedEntity;
+import com.mega.endinglib.common.network.s2c.S2CCapabilitySetDataPacket;
+import net.minecraft.core.Holder;
+import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerPlayerConnection;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.simple.SimpleChannel;
+
+public class PacketHandler {
+
+    private static final String PROTOCOL_VERSION = "1";
+    public static SimpleChannel INSTANCE;
+    private static int id = 0;
+
+    public static void registerPackets() {
+        INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(EndingLibrary.MODID, "ending_library_packet"), () -> PROTOCOL_VERSION, s -> true, s -> true);
+        INSTANCE.registerMessage(id(), TimeStopSkillPacket.class, TimeStopSkillPacket::encode, TimeStopSkillPacket::decode, TimeStopSkillPacket::handle);
+        INSTANCE.registerMessage(id(), TimeStopClientEffectPacket.class, TimeStopClientEffectPacket::encode, TimeStopClientEffectPacket::decode, TimeStopClientEffectPacket::handle);
+        INSTANCE.registerMessage(id(), TSDimensionSynchedPacket.class, TSDimensionSynchedPacket::encode, TSDimensionSynchedPacket::decode, TSDimensionSynchedPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCapabilityDataSyncPacket.class, S2CCapabilityDataSyncPacket::encode, S2CCapabilityDataSyncPacket::decode, S2CCapabilityDataSyncPacket::handle);
+        INSTANCE.registerMessage(id(), C2SCapabilityDataSyncPacket.class, C2SCapabilityDataSyncPacket::encode, C2SCapabilityDataSyncPacket::decode, C2SCapabilityDataSyncPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCapabilitySetDataPacket.class, S2CCapabilitySetDataPacket::encode, S2CCapabilitySetDataPacket::decode, S2CCapabilitySetDataPacket::handle);
+        INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
+        INSTANCE.registerMessage(id(), S2CCameraModifierSetPacket.class, S2CCameraModifierSetPacket::encode, S2CCameraModifierSetPacket::decode, S2CCameraModifierSetPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCameraModifierRemovePacket.class, S2CCameraModifierRemovePacket::encode, S2CCameraModifierRemovePacket::decode, S2CCameraModifierRemovePacket::handle);
+        INSTANCE.registerMessage(id(), S2CCameraActionPacket.class, S2CCameraActionPacket::encode, S2CCameraActionPacket::decode, S2CCameraActionPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCameraAnimationSetPacket.class, S2CCameraAnimationSetPacket::encode, S2CCameraAnimationSetPacket::decode, S2CCameraAnimationSetPacket::handle);
+        INSTANCE.registerMessage(id(), S2CSetFovPacket.class, S2CSetFovPacket::encode, S2CSetFovPacket::decode, S2CSetFovPacket::handle);
+        INSTANCE.registerMessage(id(), C2SUserInputPacket.class, C2SUserInputPacket::encode, C2SUserInputPacket::decode, C2SUserInputPacket::handle);
+    }
+
+    public static int id() {
+        return id++;
+    }
+
+    public static <MSG> void sendToAll(MSG msg) {
+        INSTANCE.send(PacketDistributor.ALL.noArg(), msg);
+    }
+
+    public static <MSG> void sendToServer(MSG msg) {
+        INSTANCE.sendToServer(msg);
+    }
+
+    public static <MSG> void sendToPlayer(MSG msg, ServerPlayer player) {
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), msg);
+    }
+    public static <MSG> void sendToEntity(MSG message, LivingEntity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
+    }
+    public static <MSG> void sendToSeen(MSG message, Entity entity, ServerLevel serverLevel) {
+        AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;
+        ChunkMap.TrackedEntity trackedEntity = chunkMapAccessor.getEntityMap().get(entity.getId());
+        boolean hasSelf = false;
+        if (trackedEntity != null) {
+            for (ServerPlayerConnection connection : ((AccessorTrackedEntity) trackedEntity).getSeenBy()) {
+                PacketHandler.sendToPlayer(message, connection.getPlayer());
+                if (entity == connection.getPlayer())
+                    hasSelf = true;
+            }
+        }
+        if (!hasSelf && entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(message, player);
+    }
+    public static void playSound(ServerPlayer serverPlayer, SoundEvent soundEvent, SoundSource source, float volume, float s) {
+        ServerLevel serverLevel = serverPlayer.serverLevel();
+        for (ServerPlayer player : serverLevel.players()) {
+            if (player.level().dimension() == serverPlayer.level().dimension()) {
+                player.connection.send(new ClientboundSoundEntityPacket(Holder.direct(soundEvent), source, serverPlayer, volume, s, player.getRandom().nextLong()));
+            }
+        }
+    }
+
+    public static void playSound(ServerPlayer serverPlayer, SoundEvent soundEvent, float volume, float s) {
+        playSound(serverPlayer, soundEvent, SoundSource.PLAYERS, volume, s);
+    }
+
+    public static void playSound(ServerLevel level, Entity source, SoundEvent soundEvent, SoundSource soundSource, float volume, float s) {
+        for (ServerPlayer player : level.players()) {
+            if (player.level().dimension() == source.level().dimension()) {
+                player.connection.send(new ClientboundSoundEntityPacket(Holder.direct(soundEvent), soundSource, source, volume, s, player.getRandom().nextLong()));
+            }
+        }
+    }
+
+    public static void playSound(ServerLevel level, Entity source, SoundEvent soundEvent, float volume, float s) {
+        for (ServerPlayer player : level.players()) {
+            if (player.level().dimension() == source.level().dimension()) {
+                player.connection.send(new ClientboundSoundEntityPacket(Holder.direct(soundEvent), SoundSource.VOICE, source, volume, s, player.getRandom().nextLong()));
+            }
+        }
+    }
+}

@@ -1,17 +1,14 @@
 package com.mega.endinglib.api.capability;
 
-import com.mega.endinglib.common.capability.CapabilityEntityData;
-import com.mega.endinglib.common.capability.ELCapabilityManager;
-import com.mega.endinglib.common.capability.SynchedCapabilityData;
-import com.mega.endinglib.network.PacketHandler;
-import com.mega.endinglib.network.c2s.C2SCapabilityDataSyncPacket;
-import com.mega.endinglib.network.s2c.S2CCapabilityDataSyncPacket;
-import com.mega.endinglib.network.s2c.S2CCapabilitySetDataPacket;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
+import com.mega.endinglib.common.network.s2c.S2CCapabilityDataSyncPacket;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
@@ -31,15 +28,6 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     public final void sync(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity) {
         if (type == CapabilitySyncType.TICK)
             if (!canSyncWhenTick(entity, entity.level())) {
-                if (entity.level() instanceof ServerLevel serverLevel && !serverLevel.isClientSide()) {
-                    if (this.dataManager.isDirty()) {
-                        PacketHandler.sendToSeen(
-                                new S2CCapabilitySetDataPacket(entity.getId(), this.getRegistryName().toString(), this.dataManager.packData()),
-                                entity,
-                                serverLevel
-                        );
-                    }
-                }
                 return;
             }
         this.syncData(toWrite, from, type, entity);
@@ -86,17 +74,19 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     public SynchedCapabilityData getDataManager() {
         return dataManager;
     }
-
     @Override
     public final CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
         this.dataManager.forEachRead(data -> data.write(compoundTag));
+        this.customSerializeNBT(compoundTag);
         return compoundTag;
     }
 
     @Override
     public final void deserializeNBT(CompoundTag nbt) {
+        this.dataManager.dirtyAll();
         this.dataManager.forEachRead(data -> data.read(nbt));
+        this.customDeserializeNBT(nbt);
     }
     public abstract void customSerializeNBT(CompoundTag nbt);
 

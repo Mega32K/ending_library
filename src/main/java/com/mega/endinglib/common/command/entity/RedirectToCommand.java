@@ -17,7 +17,7 @@ import java.util.List;
 
 public class RedirectToCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
-        return Commands.literal("redirect")
+        return Commands.literal("redirectTo")
                 .requires((p_138087_) -> p_138087_.hasPermission(3))
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .then(Commands.argument("entity", EntityArgument.entity())

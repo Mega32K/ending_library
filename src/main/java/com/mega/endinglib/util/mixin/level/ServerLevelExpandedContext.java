@@ -1,5 +1,6 @@
 package com.mega.endinglib.util.mixin.level;
 
+import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.mixin.accessor.AccessorServerLevel;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
@@ -28,8 +29,9 @@ public class ServerLevelExpandedContext extends LevelExpandedContext {
 
     @Override
     public void tickHead(BooleanSupplier booleanSupplier, CallbackInfo ci) {
+        ServerLevel serverLevel = (ServerLevel) level;
+        EndingLibrarySavedData.readOrCreate(serverLevel.getServer());
         if (TimeStopUtils.isTimeStop) {
-            ServerLevel serverLevel = (ServerLevel) level;
             AccessorServerLevel accessor = (AccessorServerLevel) serverLevel;
             boolean can = serverEC().timeStopDimensions.contains(serverLevel.dimension());
             if (can) {

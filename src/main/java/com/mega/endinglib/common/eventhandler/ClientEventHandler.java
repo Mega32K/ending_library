@@ -2,26 +2,31 @@ package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
+import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ClientEventHandler {
-
+    private static boolean clientInputDirty;
+    private static final byte[] clientInput = new byte[] {0, 0};
     @SubscribeEvent
     public static void disableMouseEventWhenTimeStopping(ScreenEvent.MouseButtonPressed.Pre event) {
         Minecraft mc = Minecraft.getInstance();
@@ -51,5 +56,26 @@ public class ClientEventHandler {
                 RenderSystem.enableDepthTest();
             }
         }
+    }
+    @SubscribeEvent
+    public static void prePlayerRendering(RenderPlayerEvent.Pre event) {
+        Player player = ClientWrapped.clientPlayer();
+        CommonProxy.getCameraCapOptional(ClientWrapped.clientPlayer()).ifPresent(cap -> {
+            if (!cap.otherPlayerRendering()) {
+                if (event.getEntity() != player)
+                    event.setCanceled(true);
+            } else if (!cap.otherSpectorRendering()) {
+                if (event.getEntity().isSpectator() && event.getEntity() != player)
+                    event.setCanceled(true);
+            }
+        });
+    }
+    public static byte setByteFlags(byte flagData, int mask, boolean value) { ;
+        if (value) {
+            flagData |= mask;
+        } else {
+            flagData &= ~mask;
+        }
+        return (byte) (flagData & 255);
     }
 }

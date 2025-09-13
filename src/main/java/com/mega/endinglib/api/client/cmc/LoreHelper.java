@@ -4,6 +4,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.phys.Vec3;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.Map;
 
@@ -19,7 +25,43 @@ public class LoreHelper {
     public static String codeMode(ChatFormatting formatting) {
         return codeMap.getOrDefault(formatting, String.valueOf(ChatFormatting.PREFIX_CODE) + formatting.getChar());
     }
+    public static MutableComponent bool(boolean z) {
+        return z ? Component.translatable("tooltip.endinglib.on") : Component.translatable("tooltip.endinglib.off");
+    }
+    public static MutableComponent withCopy(MutableComponent mutableComponent, String valueToString) {
+        return mutableComponent
+                .withStyle(style -> style
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))
+        );
+    }
 
+    public static Component vec3(Vec3 vec3) {
+        return Component.literal("[").withStyle(ChatFormatting.GREEN)
+                .append(
+                        Component.literal(String.valueOf(vec3.x))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(vec3.x)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.valueOf(vec3.y))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(vec3.y)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.valueOf(vec3.z))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(vec3.z)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
+    }
     public static boolean hasControlDown() {
         if (Minecraft.ON_OSX) {
             return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 343) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 347);

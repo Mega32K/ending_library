@@ -13,8 +13,12 @@ public interface AccessorEntity {
     void setPositionField(Vec3 position);
     @Accessor("blockPosition")
     void setBlockPositionField(BlockPos blockPosition);
-    @Accessor("isAddedToWorld")
+    @Accessor(value = "isAddedToWorld", remap = false)
     void setAddedToWorldField(boolean z);
     @Invoker
     void callMarkHurt();
+    @Accessor
+    Entity getVehicle();
+    @Accessor
+    void setVehicle(Entity entity);
 }

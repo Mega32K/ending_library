@@ -1,13 +1,15 @@
 package com.mega.endinglib.common.eventhandler;
 
-import com.mega.endinglib.network.PacketHandler;
-import com.mega.endinglib.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.common.init.ModAttributes;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -22,6 +24,14 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber
 public class CommonEventHandler {
+    @SubscribeEvent
+    public static void onPlayerPreTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            float extra = ModAttributes.getExhaustion(event.player);
+            if (extra > 0F)
+                event.player.causeFoodExhaustion(extra);
+        }
+    }
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class TimeStopEvents {
         static boolean cannotMove(PlayerInteractEvent event) {
@@ -120,7 +130,7 @@ public class CommonEventHandler {
             if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level())) {
                 try {
                     TimeStopEntityData.setTimeStopCount(event.getEntity(), 0);
-                    PacketHandler.sendToPlayer(new TimeStopSkillPacket(false, event.getEntity().getId()), (ServerPlayer) event.getEntity());
+                    PacketHandler.sendToPlayer(new TimeStopSkillPacket(false, false, event.getEntity().getId()), (ServerPlayer) event.getEntity());
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
@@ -131,11 +141,12 @@ public class CommonEventHandler {
         public static void onPlayerLeave(PlayerEvent.PlayerLoggedInEvent event) {
             if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(event.getEntity().level())) {
                 try {
-                    PacketHandler.sendToPlayer(new TimeStopSkillPacket(true, -1), (ServerPlayer) event.getEntity());
+                    PacketHandler.sendToPlayer(new TimeStopSkillPacket(true, false, -1), (ServerPlayer) event.getEntity());
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
                 }
             }
         }
     }
+
 }

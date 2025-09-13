@@ -28,7 +28,7 @@ public class FillEntityCommand {
     private static final SimpleCommandExceptionType ERROR_FAILED = new SimpleCommandExceptionType(Component.translatable("commands.endinglib.fill_entity.failed"));
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
-        return Commands.literal("fill")
+        return Commands.literal("fillEntity")
                 .then(Commands.argument("from", BlockPosArgument.blockPos())
                         .then(Commands.argument("to", BlockPosArgument.blockPos())
                                 .then(Commands.argument("entity", EntityArgument.entity())

@@ -2,10 +2,10 @@ package com.mega.endinglib.util.time;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.data.TimeStopSavedData;
-import com.mega.endinglib.network.PacketHandler;
-import com.mega.endinglib.network.s2c.timestop.TSDimensionSynchedPacket;
-import com.mega.endinglib.network.s2c.timestop.TimeStopSkillPacket;
-import com.mega.endinglib.config.CommonConfig;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
+import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.common.config.CommonConfig;
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.mixin.level.ServerEC;
@@ -45,6 +45,9 @@ public class TimeStopUtils {
     public static synchronized void use(boolean z, LivingEntity source) {
         use(z, source, true);
     }
+    public static synchronized void useWithoutSoundEffect(boolean z, LivingEntity source) {
+        useWithoutSoundEffect(z, source, true);
+    }
 
     /**
      * @param z      是否时停
@@ -52,7 +55,14 @@ public class TimeStopUtils {
      * @param force  为true时无条件设置当前实体剩余时停时间0
      */
     public static synchronized void use(boolean z, LivingEntity source, boolean force) {
-        use(z, source, force, 180);
+        use(z, source, force, 180, true);
+    }    /**
+     * @param z      是否时停
+     * @param source 实体
+     * @param force  为true时无条件设置当前实体剩余时停时间0
+     */
+    public static synchronized void useWithoutSoundEffect(boolean z, LivingEntity source, boolean force) {
+        use(z, source, force, 180, false);
     }
 
     /**
@@ -61,7 +71,7 @@ public class TimeStopUtils {
      * @param time   设置时停的时候同时设置剩余时间
      * @param force  为true时无条件设置当前实体剩余时停时间0
      */
-    public static synchronized void use(boolean z, LivingEntity source, boolean force, int time) {
+    public static synchronized void use(boolean z, LivingEntity source, boolean force, int time, boolean playSoundEffect) {
         if (z && !CommonConfig.enableTS) {
             EndingLibrary.LOGGER.warn("Time Stop Settings is disabled in the common-config.");
             return;
@@ -85,7 +95,7 @@ public class TimeStopUtils {
             if (!isTimeStop) {
                 TimeStopSavedData.readOrCreate(((ServerLevel) source.level()).getServer()).removeTsDimension(source.level().dimension());
             }
-            PacketHandler.sendToAll(new TimeStopSkillPacket(isTimeStop, source.getId()));
+            PacketHandler.sendToAll(new TimeStopSkillPacket(isTimeStop, playSoundEffect, source.getId()));
             if (isTimeStop)
                 PacketHandler.sendToAll(new TSDimensionSynchedPacket(new ResourceLocation(""), source.level().dimension().location()));
             else

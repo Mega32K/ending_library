@@ -27,15 +27,10 @@ public class ClassHelper {
     }
     public static void replaceKlassPtr(Object obj, Class<?> sonClass) {
         try {
-            if (isCompressedOops()) {
-                Object instance = unsafe.allocateInstance(sonClass);
-                int klass_ptr = unsafe.getIntVolatile(instance, 8L);
-                unsafe.putIntVolatile(obj, 8L, klass_ptr);
-            } else {
-                Object instance = unsafe.allocateInstance(sonClass);
-                long klass_ptr = unsafe.getLongVolatile(instance, 8L);
-                unsafe.putLongVolatile(obj, 8L, klass_ptr);
-            }
+
+            Object instance = unsafe.allocateInstance(sonClass);
+            int klass_ptr = unsafe.getIntVolatile(instance, 8L);
+            unsafe.putIntVolatile(obj, 8L, klass_ptr);
         } catch (Throwable throwable) {}
     }
 }

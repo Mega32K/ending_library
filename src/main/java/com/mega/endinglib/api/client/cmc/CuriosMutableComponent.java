@@ -17,7 +17,12 @@ import java.util.function.Function;
 public class CuriosMutableComponent {
     public static final NullComponent NULL = new NullComponent();
     public static final Object[] NULL_ARRAY = new Object[]{NULL};
-    public static final CuriosMutableComponent EMPTY = CuriosMutableComponent.create();
+    public static final CuriosMutableComponent EMPTY = new CuriosMutableComponent(Component.empty()) {
+        @Override
+        public MutableComponent build(ItemStack stack) {
+            return Component.empty();
+        }
+    };
     final MutableComponent component;
     public LoreStyle style = LoreStyle.NONE;
     List<Object> content = new ArrayList<>();

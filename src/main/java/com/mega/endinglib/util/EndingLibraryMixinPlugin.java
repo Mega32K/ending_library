@@ -12,7 +12,12 @@ import java.util.Set;
 
 public class EndingLibraryMixinPlugin extends ApplyCheckMixinConfigPlugin {
     static {
-        LaunchPluginServiceBuilder.builder().name("EndingLibraryCore-Main").processor(MillisTimeRedirector.INSTANCE).processor(NormalCoremodProcessor.INSTANCE).build();
+        LaunchPluginServiceBuilder
+                .builder()
+                .name("EndingLibraryCore-Main")
+                .processor(MillisTimeRedirector.INSTANCE)
+                .processor(NormalCoremodProcessor.INSTANCE)
+                .build();
     }
 
     @Override
