@@ -15,10 +15,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
-    @Shadow private float zoom;
-
-    @Shadow @Final
+    @Shadow
+    @Final
     Minecraft minecraft;
+    @Shadow
+    private float zoom;
 
     @Inject(method = "getProjectionMatrix", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;last()Lcom/mojang/blaze3d/vertex/PoseStack$Pose;", ordinal = 1, shift = At.Shift.BEFORE))
     private void customCameraZoomModify(double p_254507_, CallbackInfoReturnable<Matrix4f> cir, @Local(ordinal = 0) PoseStack poseStack) {

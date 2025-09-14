@@ -1,18 +1,20 @@
 package com.mega.endinglib.common.network.s2c.camera;
 
 import com.mega.endinglib.api.client.camera.CameraUtils;
+import com.mega.endinglib.api.client.camera.CameraValueInstance;
 import com.mega.endinglib.api.client.camera.ICameraManager;
 import com.mega.endinglib.api.client.camera.ModifierType;
-import com.mega.endinglib.api.client.camera.CameraValueInstance;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public class S2CCameraModifierRemovePacket {
     private final Map<ModifierType, UUID> modifiers;
+
     public S2CCameraModifierRemovePacket(Map<ModifierType, UUID> modifiers) {
         if (modifiers == null) {
             this.modifiers = Map.of();

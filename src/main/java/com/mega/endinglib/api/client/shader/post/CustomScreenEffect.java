@@ -1,6 +1,5 @@
 package com.mega.endinglib.api.client.shader.post;
 
-import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 
@@ -21,6 +20,7 @@ public interface CustomScreenEffect {
 
     /**
      * 渲染更新方法
+     *
      * @param partialTicks 渲染插值
      */
 
@@ -37,6 +37,7 @@ public interface CustomScreenEffect {
     default boolean autoProcess() {
         return true;
     }
+
     /**
      * @return 当前特殊屏幕效果的post chain
      */

@@ -17,17 +17,21 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientProxy implements ModProxy {
+
+    public static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor();
     public final Lock LOCK = new ReentrantLock();
+
     public ClientProxy() {
         LOCK.lock();
         try {
             Minecraft mc = Minecraft.getInstance();
-            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            SERVICE.scheduleAtFixedRate(() -> {
                 TimeContext.Client.count++;
                 if (TimeContext.Client.timeStopGLFW == 0L)
                     TimeContext.Client.timeStopGLFW = (long) (GLFW.glfwGetTime() * 1000L);

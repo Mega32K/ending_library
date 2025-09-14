@@ -1,6 +1,5 @@
 package com.mega.endinglib.util.menu;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -13,20 +12,18 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class AdvancedOpenMenuHelper {
     /**
      * Request to open a GUI on the client, from the server
-     *
+     * <p>
      * Refer to {@link ConfigScreenHandler.ConfigScreenFactory} for how to provide a function to consume
      * these GUI requests on the client.
      *
-     * @param player The player to open the GUI for
+     * @param player            The player to open the GUI for
      * @param containerSupplier A supplier of container properties including the registry name of the container
      */
-    public static void openScreen(ServerPlayer player, Component containerTitle, MenuCreator containerSupplier, Consumer<FriendlyByteBuf> extraData)
-    {
+    public static void openScreen(ServerPlayer player, Component containerTitle, MenuCreator containerSupplier, Consumer<FriendlyByteBuf> extraData) {
         NetworkHooks.openScreen(player, new MenuProvider() {
             @Override
             public Component getDisplayName() {
@@ -40,6 +37,7 @@ public class AdvancedOpenMenuHelper {
             }
         }, extraData);
     }
+
     public interface MenuCreator {
         AbstractContainerMenu createMenu(int id, Inventory openerInventory, Player opener);
     }

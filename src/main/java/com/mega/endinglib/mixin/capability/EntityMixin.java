@@ -13,14 +13,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Entity.class)
-public abstract class EntityMixin extends net.minecraftforge.common.capabilities.CapabilityProvider<Entity>{
-    @Shadow private Level level;
-
-    @Shadow public abstract int getId();
+public abstract class EntityMixin extends net.minecraftforge.common.capabilities.CapabilityProvider<Entity> {
+    @Shadow
+    private Level level;
 
     EntityMixin(Class<Entity> baseClass) {
         super(baseClass);
     }
+
+    @Shadow
+    public abstract int getId();
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {

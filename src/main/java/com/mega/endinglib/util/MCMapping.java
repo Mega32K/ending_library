@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 public enum MCMapping implements IExtensibleEnum {
     Scoreboard$FIELD$DISPLAY_SLOT_TEAMS_SIDEBAR_END("DISPLAY_SLOT_TEAMS_SIDEBAR_END", "f_166091_", "I"),
     Scoreboard$FIELD$DISPLAY_SLOTS("DISPLAY_SLOTS", "f_166092_", "I"),
+    GlyphInfo$METHOD$getBoldOffset("getBoldOffset", "getBoldOffset", "()F"),
     Util$METHOD$getMillis("getMillis", "m_137550_", "()J");
     public static int isWorkingspace = 0;
     public final String workspace;
@@ -36,6 +37,23 @@ public enum MCMapping implements IExtensibleEnum {
             } else isWorkingspace = 2;
         }
         return isWorkingspace == 1;
+    }
+
+
+    public boolean equalsFieldNode(FieldNode node) {
+        return this.get().equals(node.name) && this.desc.equals(node.desc);
+    }
+
+    public boolean equalsFieldNode(FieldInsnNode node) {
+        return this.get().equals(node.name) && this.desc.equals(node.desc);
+    }
+
+    public boolean equalsMethodNode(MethodNode node) {
+        return this.get().equals(node.name) && this.desc.equals(node.desc);
+    }
+
+    public boolean equalsMethodNode(MethodInsnNode node) {
+        return this.get().equals(node.name) && this.desc.equals(node.desc);
     }
 
     public static boolean equalsFieldNode(FieldNode node, MCMapping o) {

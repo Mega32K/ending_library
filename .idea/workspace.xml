@@ -75,27 +75,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;1.20.1&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;E:/CollapsingWorld/System-e/EndingLibrary/build/resources/main/assets/ending_library/lang&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.45287958&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "1.20.1",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/libs",
+    "project.structure.last.edited": "模块",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.45287958",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary" />
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\common\command\argument" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\lang" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\textures\ui" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library\shaders\program" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library\shaders\post" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
@@ -107,11 +107,11 @@
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="com.mega.endinglib.common.command" />
-      <recent name="com.mega.endinglib.mixin.personal_rule" />
+      <recent name="com.mega.endinglib.common.network.s2c.rot" />
+      <recent name="com.mega.endinglib.common.network.s2c" />
+      <recent name="com.mega.endinglib.common.command.entity.player" />
       <recent name="com.mega.endinglib.common.command.argument" />
-      <recent name="com.mega.endinglib.common.network.s2c.camera" />
-      <recent name="com.mega.endinglib.mixin.shader" />
+      <recent name="com.mega.endinglib.common.command" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">

@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(FoodData.class)
 public abstract class FoodDataMixin {
     @ModifyExpressionValue(method = "tick", at = @At(value = "INVOKE", target = "Ljava/lang/Math;min(FF)F", ordinal = 0))
-    private float increaseNaturalRegeneration(float original, @Local(ordinal = 0)Player player) {
+    private float increaseNaturalRegeneration(float original, @Local(ordinal = 0) Player player) {
         if (player != null) {
             original *= ModAttributes.getNaturalRegenerationIncrease(player);
         }

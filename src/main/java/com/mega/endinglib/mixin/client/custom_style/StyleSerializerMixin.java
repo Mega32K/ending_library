@@ -17,7 +17,11 @@ import java.lang.reflect.Type;
 
 @Mixin(Style.Serializer.class)
 public abstract class StyleSerializerMixin {
-    @Shadow @Nullable private static Boolean getOptionalFlag(JsonObject p_131206_, String p_131207_) {throw new AssertionError("");}
+    @Shadow
+    @Nullable
+    private static Boolean getOptionalFlag(JsonObject p_131206_, String p_131207_) {
+        throw new AssertionError("");
+    }
 
     @Inject(method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/network/chat/Style;", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void modifyStyle(JsonElement par1, Type par2, JsonDeserializationContext par3, CallbackInfoReturnable<Style> cir) {
@@ -29,6 +33,7 @@ public abstract class StyleSerializerMixin {
             cir.setReturnValue(style);
         }
     }
+
     @Inject(method = "serialize(Lnet/minecraft/network/chat/Style;Ljava/lang/reflect/Type;Lcom/google/gson/JsonSerializationContext;)Lcom/google/gson/JsonElement;", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
     private void modifyStyle(Style p_131209_, Type p_131210_, JsonSerializationContext p_131211_, CallbackInfoReturnable<JsonObject> cir) {
         Boolean b = ((StyleItf) p_131209_).endingLibrary$isCentered();

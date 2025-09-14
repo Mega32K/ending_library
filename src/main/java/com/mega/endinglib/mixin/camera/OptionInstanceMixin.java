@@ -2,7 +2,6 @@ package com.mega.endinglib.mixin.camera;
 
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.annotation.DeprecatedMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,6 +22,7 @@ public abstract class OptionInstanceMixin {
                         ci.cancel();
                 });
             }
-        } catch (Throwable throwable) {}
+        } catch (Throwable throwable) {
+        }
     }
 }

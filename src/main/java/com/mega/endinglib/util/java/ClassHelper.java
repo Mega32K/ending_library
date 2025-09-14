@@ -11,6 +11,7 @@ public class ClassHelper {
     private static final ReentrantLock LOCK = new ReentrantLock();
     static MethodHandles.Lookup IMPL_LOOKUP = null;
     static Unsafe unsafe = UnsafeAccess.UNSAFE;
+
     public static MethodHandles.Lookup IMPL_LOOKUP() throws NoSuchFieldException {
         if (IMPL_LOOKUP == null) {
             Field f = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
@@ -22,15 +23,18 @@ public class ClassHelper {
     public static Unsafe getUnsafe() {
         return unsafe;
     }
+
     public static boolean isCompressedOops() {
         return Unsafe.ARRAY_INT_INDEX_SCALE == 4;
     }
+
     public static void replaceKlassPtr(Object obj, Class<?> sonClass) {
         try {
 
             Object instance = unsafe.allocateInstance(sonClass);
             int klass_ptr = unsafe.getIntVolatile(instance, 8L);
             unsafe.putIntVolatile(obj, 8L, klass_ptr);
-        } catch (Throwable throwable) {}
+        } catch (Throwable throwable) {
+        }
     }
 }

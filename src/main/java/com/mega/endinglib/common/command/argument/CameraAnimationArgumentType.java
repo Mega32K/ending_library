@@ -47,7 +47,8 @@ public class CameraAnimationArgumentType implements ArgumentType<String> {
                 }
 
                 return builder.buildFuture();
-            } catch (Throwable throwable){}
+            } catch (Throwable throwable) {
+            }
         }
         return ArgumentType.super.listSuggestions(context, builder);
     }

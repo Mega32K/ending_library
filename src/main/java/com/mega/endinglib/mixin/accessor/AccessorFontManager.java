@@ -14,10 +14,13 @@ import java.util.Map;
 public interface AccessorFontManager {
     @Accessor
     FontSet getMissingFontSet();
+
     @Accessor
     List<GlyphProvider> getProvidersToClose();
+
     @Accessor
     Map<ResourceLocation, FontSet> getFontSets();
+
     @Accessor
     Map<ResourceLocation, ResourceLocation> getRenames();
 

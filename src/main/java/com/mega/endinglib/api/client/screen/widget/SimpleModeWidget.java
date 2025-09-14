@@ -11,8 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class SimpleModeWidget extends AbstractWidget {
-    public static final ResourceLocation INFO_ICON_LOCATION = new ResourceLocation("minecraft", "textures/gui/info_icon.png");
+    public static final ResourceLocation INFO_ICON_LOCATION = new ResourceLocation("mc", "textures/gui/info_icon.png");
     public static final ResourceLocation ICON = EndingLibrary.loc("textures/ui/gui_icon.png");
+
     public SimpleModeWidget(int x, int y, int width, int height, Component message) {
         super(x, y, width, height, message);
     }

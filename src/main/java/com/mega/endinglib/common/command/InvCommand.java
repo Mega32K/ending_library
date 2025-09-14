@@ -27,6 +27,7 @@ public class InvCommand {
 
         );
     }
+
     private static int openPlayerInv(CommandSourceStack stack, ServerPlayer targetPlayer) {
         if (stack.getPlayer() != null) {
             ServerPlayer player = stack.getPlayer();

@@ -11,6 +11,7 @@ import java.util.Map;
 public interface AccessorModelPart {
     @Accessor
     List<ModelPart.Cube> getCubes();
+
     @Accessor
     Map<String, ModelPart> getChildren();
 }

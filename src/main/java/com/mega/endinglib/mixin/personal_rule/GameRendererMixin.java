@@ -1,8 +1,6 @@
 package com.mega.endinglib.mixin.personal_rule;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
-import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.client.Minecraft;
@@ -15,10 +13,12 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
-    @Shadow private float zoom;
-
-    @Shadow @Final
+    @Shadow
+    @Final
     Minecraft minecraft;
+    @Shadow
+    private float zoom;
+
     @ModifyExpressionValue(method = "bobView", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F", ordinal = 0))
     private float modifyMultiplierOfWalkingView(float original) {
         Player player = ClientWrapped.clientPlayer();
@@ -27,6 +27,7 @@ public abstract class GameRendererMixin {
         }
         return original;
     }
+
     @ModifyExpressionValue(method = "bobHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;", ordinal = 0))
     private <T> T modifyMultiplierOfHurtView(T original) {
         Player player = ClientWrapped.clientPlayer();

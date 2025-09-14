@@ -31,6 +31,7 @@ public class TimeStopAPI {
     public static synchronized void use(boolean z, LivingEntity source, boolean force, int time) {
         TimeStopUtils.use(z, source, force, time, true);
     }
+
     public static synchronized void useWithoutSoundEffect(boolean z, LivingEntity source) {
         TimeStopUtils.useWithoutSoundEffect(z, source, true);
     }

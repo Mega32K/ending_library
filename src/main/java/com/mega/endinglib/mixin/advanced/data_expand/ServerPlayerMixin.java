@@ -14,12 +14,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @DeprecatedMixin
 public abstract class ServerPlayerMixin implements ExtraServerPlayerItf {
     @Unique
-    private final short[] endingLibrary$clientInput = new short[] {0,0,0,0,0,0};
+    private final short[] endingLibrary$clientInput = new short[]{0, 0, 0, 0, 0, 0};
 
     @Override
     public short[] endinglib$getClientInputData() {
         return this.endingLibrary$clientInput;
     }
+
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     private void tempInputInject(CompoundTag p_9197_, CallbackInfo ci) {
         CompoundTag tag = new CompoundTag();

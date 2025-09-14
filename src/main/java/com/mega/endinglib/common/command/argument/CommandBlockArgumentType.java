@@ -1,6 +1,5 @@
 package com.mega.endinglib.common.command.argument;
 
-import com.mega.endinglib.common.command.argument.scehdule.CommandScheduleEntry;
 import com.mega.endinglib.common.command.argument.scehdule.StringCommandScheduleReader;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -49,7 +48,7 @@ public class CommandBlockArgumentType implements ArgumentType<List<String>> {
 
             try {
                 ParseResults<CommandSourceStack> parseResults = dispatcher.parse(remaining, server.createCommandSourceStack());
-                Suggestions suggestions = (Suggestions)dispatcher.getCompletionSuggestions(parseResults).get();
+                Suggestions suggestions = (Suggestions) dispatcher.getCompletionSuggestions(parseResults).get();
                 List<String> adjusted = new ObjectArrayList<>();
                 suggestions.getList().forEach((suggestion) -> {
                     adjusted.add(suggestion.getText());

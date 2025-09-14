@@ -2,8 +2,6 @@ package com.mega.endinglib.mixin.client.custom_style;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Options;
-import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

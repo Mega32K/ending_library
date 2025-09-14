@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class CameraOperationArgumentType implements ArgumentType<String> {
     public static final Collection<String> EXAMPLES = Arrays.stream(CameraModifier.Operation.values()).map(CameraModifier.Operation::toString).toList();
+
     public static CameraOperationArgumentType operation() {
         return new CameraOperationArgumentType();
     }
@@ -21,6 +22,7 @@ public class CameraOperationArgumentType implements ArgumentType<String> {
     public static CameraModifier.Operation getOperation(final CommandContext<?> context, final String name) {
         return CameraModifier.Operation.valueOf(context.getArgument(name, String.class));
     }
+
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
         return reader.readUnquotedString();

@@ -6,8 +6,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.sounds.SoundSource;
 
-import java.util.UUID;
-
 //Client
 public class TimeStopUtilsWrapped {
     public static void enable(int id, boolean playSound) {

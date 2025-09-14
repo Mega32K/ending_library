@@ -25,10 +25,14 @@
   "commands.endinglib.message.time_stop.set": "§7已将%s§7的时停时间设置为%.2f秒",
   "commands.endinglib.message.time_stop.set.multi": "§7已将%d个实体的时停时间设置为%.2f秒",
 
-  "commands.endinglib.message.camera.camera_action.open_screen": "§7Open the custom camera screen",
-  "commands.endinglib.message.camera.camera_action.first_person_camera": "§7设置为§a第一人称",
-  "commands.endinglib.message.camera.camera_action.third_person_camera": "§7设置为§a第三人称",
-  "commands.endinglib.message.camera.camera_action.third_person_back_camera": "§7设置为§a第三人称(背)",
+  "commands.endinglib.message.action.open_screen": "§7Open the custom camera screen",
+  "commands.endinglib.message.action.first_person_camera": "§7设置为§a第一人称",
+  "commands.endinglib.message.action.third_person_camera": "§7设置为§a第三人称",
+  "commands.endinglib.message.action.third_person_back_camera": "§7设置为§a第三人称(背)",
+  "commands.endinglib.message.action.chat_clear": "§7清空了聊天栏消息",
+  "commands.endinglib.message.action.mouse_grab": "§7隐藏鼠标",
+  "commands.endinglib.message.action.mouse_release": "§7显示鼠标",
+
   "commands.endinglib.message.camera.camera_enable": "§7为%s §a启用 §7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s §c关闭 §7自定义相机模式",
   "commands.endinglib.message.camera.camera_mode_modify": "§7已修改%s§7的自定义相机属性",
@@ -43,11 +47,15 @@
   "commands.endinglib.message.camera.camera_anim.get_anims": "§7已列出修饰符§6%s§7的所有动画:",
   "commands.endinglib.message.camera.camera_anim.get_anim": "§7已列出修饰符§6%s§7的名为§a%s§7的动画:",
   "commands.endinglib.message.camera.camera_anim.list_keyframes": "§7已列出所有关键帧:",
-  "commands.endinglib.message.camera.camera_mode.enable": "§7自定义相机:",
-  "commands.endinglib.message.camera.camera_mode.freezing_origin": "§7冻结原版相机:",
-  "commands.endinglib.message.camera.camera_mode.freezing_origin.follow_position": "§7冻结原版相机-坐标跟随玩家:",
-  "commands.endinglib.message.camera.camera_mode.is_camera_person_locked": "§7人称视角锁定:",
-  "commands.endinglib.message.camera.camera_mode.is_fov_locked": "§7视场角锁定:",
+  "commands.endinglib.message.camera.option.enable": "§7自定义相机:",
+  "commands.endinglib.message.camera.option.freezing_origin": "§7冻结原版相机:",
+  "commands.endinglib.message.camera.option.freezing_origin.follow_position": "§7冻结原版相机-坐标跟随玩家:",
+  "commands.endinglib.message.camera.option.is_camera_person_locked": "§7人称视角锁定:",
+  "commands.endinglib.message.camera.option.is_fov_locked": "§7视场角锁定:",
+  "commands.endinglib.message.camera.option.available_camera_area": "§7相机约束范围:",
+  "commands.endinglib.message.camera.option.available_camera_area.set": "§7已将%s§7的相机约束范围设为:%s",
+  "commands.endinglib.message.camera.option.mouse_control": "§7鼠标上帝模式:",
+  "commands.endinglib.message.camera.option.mouse_control.failure.no_freezing_origin": "§7你没有开启 冻结原版相机, 无法开启 鼠标上帝模式。",
 
   "commands.endinglib.message.personal.rule.set": "§7已将%s的§7个人规则 %s §7设置为:%s",
   "commands.endinglib.message.personal.rule.get": "%s§7当前的个人规则 %s §7为:%s",
@@ -61,10 +69,19 @@
 
   "commands.endinglib.message.roll": "%s§7随机获取到了:§6%s",
 
-  "commands.endinglib.message.setFov": "§7已将%s§7的视场角设为§6%s",
+  "commands.endinglib.message.setFov": "§7已将%s§7的视场角设为%s",
+
+  "commands.endinglib.message.setRot": "§7已将%s§7的旋转角度设为%s",
+  "commands.endinglib.message.addRot": "§7已将%s§7的旋转角度增加%s",
+  "commands.endinglib.message.setRot.multi": "§7已将%s个实体的旋转角度设为%s",
+  "commands.endinglib.message.addRot.multi": "§7已将%s个实体的旋转角度增加%s",
 
   "commands.endinglib.message.motion.set": "§7已将%s§7的矢量设为%s",
   "commands.endinglib.message.motion.push": "§7已将%s§7的矢量增加%s",
+
+  "commands.endinglib.message.schedule.create": "§7已添加服务端命令任务到队列",
+  "commands.endinglib.message.schedule.stop": "§7已关闭服务端命令任务%s",
+  "commands.endinglib.message.schedule.list": "§7已列出所有服务端命令任务:",
 
   "tooltip.endinglib.specialEffect": "§5Special Effect:",
   "tooltip.endinglib.holdShiftSetEffect": "§5Hold §6Shift§5 to see set effect details.",
@@ -73,6 +90,7 @@
   "tooltip.endinglib.itemLimitDamage": "§7Single durability loss limit : %d",
   "tooltip.endinglib.on": "§a开启",
   "tooltip.endinglib.off": "§c关闭",
+  "tooltip.endinglib.optional_empty": "空",
   "tooltip.endinglib.example": "以下为示例:",
 
   "screen.endinglib.camera.title" : "Custom Camera Screen",

@@ -1,11 +1,11 @@
 package com.mega.endinglib.util.time;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.common.config.CommonConfig;
 import com.mega.endinglib.common.data.TimeStopSavedData;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
-import com.mega.endinglib.common.config.CommonConfig;
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.mixin.level.ServerEC;
@@ -45,6 +45,7 @@ public class TimeStopUtils {
     public static synchronized void use(boolean z, LivingEntity source) {
         use(z, source, true);
     }
+
     public static synchronized void useWithoutSoundEffect(boolean z, LivingEntity source) {
         useWithoutSoundEffect(z, source, true);
     }
@@ -56,7 +57,9 @@ public class TimeStopUtils {
      */
     public static synchronized void use(boolean z, LivingEntity source, boolean force) {
         use(z, source, force, 180, true);
-    }    /**
+    }
+
+    /**
      * @param z      是否时停
      * @param source 实体
      * @param force  为true时无条件设置当前实体剩余时停时间0

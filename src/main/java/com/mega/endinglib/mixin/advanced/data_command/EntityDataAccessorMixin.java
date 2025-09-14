@@ -14,7 +14,9 @@ import java.util.UUID;
 
 @Mixin(EntityDataAccessor.class)
 public abstract class EntityDataAccessorMixin {
-    @Shadow @Final private Entity entity;
+    @Shadow
+    @Final
+    private Entity entity;
 
     @Inject(method = "setData", at = @At("HEAD"), cancellable = true)
     private void setData(CompoundTag p_139519_, CallbackInfo ci) {

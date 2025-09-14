@@ -4,13 +4,11 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.screen.widget.InfoImageWidget;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.common.menu.OtherPlayerInventoryMenu;
-import com.mega.endinglib.mixin.accessor.AccessorGui;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -32,15 +30,15 @@ import java.util.List;
 
 public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPlayerInventoryMenu> {
     public static final ResourceLocation BG = EndingLibrary.loc("textures/ui/inv.png");
-
+    protected final float maxRadius = 12F;
+    private final int textureWidth = 176;
+    private final int textureHeight = 204;
     protected Minecraft mc = Minecraft.getInstance();
     protected boolean hasBlurOneTime;
     protected boolean blurring;
     protected float radiusOld = 1F;
     protected float radius = 1F;
-    protected final float maxRadius = 12F;
-    private final int textureWidth = 176;
-    private final int textureHeight = 204;
+
     public OtherPlayerInventoryScreen(OtherPlayerInventoryMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
         this.imageWidth = this.textureWidth;
@@ -79,10 +77,10 @@ public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPla
         PostChain pc = ModernGaussianBlurPostEffect.INSTANCE.current();
         int z = 0;
         if (this.mc.level == null) {
-            consumer.vertex(pose, (float)x2, (float)y1, (float)z).color(30, 31, 34, 255).endVertex();
-            consumer.vertex(pose, (float)x1, (float)y1, (float)z).color(30, 31, 34, 255).endVertex();
-            consumer.vertex(pose, (float)x1, (float)y2, (float)z).color(30, 31, 34, 255).endVertex();
-            consumer.vertex(pose, (float)x2, (float)y2, (float)z).color(30, 31, 34, 255).endVertex();
+            consumer.vertex(pose, (float) x2, (float) y1, (float) z).color(30, 31, 34, 255).endVertex();
+            consumer.vertex(pose, (float) x1, (float) y1, (float) z).color(30, 31, 34, 255).endVertex();
+            consumer.vertex(pose, (float) x1, (float) y2, (float) z).color(30, 31, 34, 255).endVertex();
+            consumer.vertex(pose, (float) x2, (float) y2, (float) z).color(30, 31, 34, 255).endVertex();
         } else {
             float rad = getRadius(this.mc.getPartialTick());
             if (this.blurring && pc != null) {
@@ -94,11 +92,11 @@ public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPla
                     this.hasBlurOneTime = true;
             }
 
-            int color = FastColor.ARGB32.color((int) ((rad-0.1F) / this.maxRadius * 80), 30, 30, 30);
-            consumer.vertex(pose, (float)x2, (float)y1, (float)z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
-            consumer.vertex(pose, (float)x1, (float)y1, (float)z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
-            consumer.vertex(pose, (float)x1, (float)y2, (float)z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
-            consumer.vertex(pose, (float)x2, (float)y2, (float)z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
+            int color = FastColor.ARGB32.color((int) ((rad - 0.1F) / this.maxRadius * 80), 30, 30, 30);
+            consumer.vertex(pose, (float) x2, (float) y1, (float) z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
+            consumer.vertex(pose, (float) x1, (float) y1, (float) z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
+            consumer.vertex(pose, (float) x1, (float) y2, (float) z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
+            consumer.vertex(pose, (float) x2, (float) y2, (float) z).color(color >> 16 & 255, color >> 8 & 255, color & 255, color >>> 24).endVertex();
         }
 
         gr.flush();
@@ -108,12 +106,13 @@ public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPla
     public void renderBackground(@NotNull GuiGraphics guiGraphics) {
         if (this.mc.level != null) {
             blurring = true;
-            drawBlurScreenBackground(guiGraphics, -1, -1, guiGraphics.guiWidth()+1, guiGraphics.guiHeight()+1);
+            drawBlurScreenBackground(guiGraphics, -1, -1, guiGraphics.guiWidth() + 1, guiGraphics.guiHeight() + 1);
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.ScreenEvent.BackgroundRendered(this, guiGraphics));
         } else {
             this.renderDirtBackground(guiGraphics);
         }
     }
+
     @Override
     public void onClose() {
         super.onClose();
@@ -128,14 +127,16 @@ public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPla
     }
 
     private void updateRadius(@Nonnull PostChain effect, float radius) {
-        List<PostPass> passes = ((AccessorPostChain)effect).getPasses();
+        List<PostPass> passes = ((AccessorPostChain) effect).getPasses();
         for (PostPass s : passes) {
             s.getEffect().safeGetUniform("Progress").set(radius);
         }
     }
+
     public float getRadius(float partialTicks) {
         return Mth.lerp(partialTicks, this.radiusOld, this.radius);
     }
+
     public record PlayerEntityTooltipComponent(Player player) implements ClientTooltipComponent {
 
         @Override

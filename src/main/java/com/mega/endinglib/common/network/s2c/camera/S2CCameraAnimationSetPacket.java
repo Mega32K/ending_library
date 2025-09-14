@@ -1,7 +1,6 @@
 package com.mega.endinglib.common.network.s2c.camera;
 
 import com.mega.endinglib.api.client.camera.*;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,11 +14,13 @@ import java.util.function.Supplier;
 
 public class S2CCameraAnimationSetPacket {
     private final List<CameraSnapshot> cameraValues;
+
     public S2CCameraAnimationSetPacket(ModifierType modifierType, CameraValueInstance cvi) {
         this.cameraValues = new ObjectArrayList<>();
         cameraValues.add(new CameraSnapshot(modifierType, cvi.getKeyframeAnimations()));
 
     }
+
     public S2CCameraAnimationSetPacket(Map<ModifierType, Collection<CameraKeyframeAnimation>> map) {
         this.cameraValues = new ObjectArrayList<>();
         for (var v : map.entrySet()) {

@@ -1,8 +1,8 @@
 package com.mega.endinglib.common.network.c2s;
 
 import com.mega.endinglib.api.capability.CapabilitySyncType;
-import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
+import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +19,7 @@ public class C2SCapabilityDataSyncPacket {
     private final String registryName;
     private final CompoundTag nbt;
     private final CapabilitySyncType syncType;
+
     public C2SCapabilityDataSyncPacket(int entityID, String registryName, CompoundTag nbt, CapabilitySyncType syncType) {
         this.entityID = entityID;
         this.registryName = registryName;

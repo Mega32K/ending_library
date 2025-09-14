@@ -13,8 +13,10 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface AccessorClientLevel {
     @Accessor
     EntityTickList getTickingEntities();
+
     @Invoker
     LevelEntityGetter<Entity> invokeGetEntities();
+
     @Accessor
     TransientEntitySectionManager<Entity> getEntityStorage();
 }

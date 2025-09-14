@@ -19,8 +19,7 @@ public class CameraModifyScreen extends SimpleModeScreen {
     public static double RELATIVE_X;
     public static double RELATIVE_Y;
     public static double RELATIVE_Z;
-    public Checkbox PAUSE_CHECK = new Checkbox(15, 15, 20, 20, Component.translatable("screen.endinglib.camera.button.pause"), false);
-    public static ForgeSlider BLUR_SLIDER = new ForgeSlider(15, 15+20+2, 150, 20, Component.translatable("screen.endinglib.camera.slider.blur_prefix"), Component.translatable("screen.endinglib.camera.slider.blur_suffix"), 0, 0F, 0F, 0.1F, 3, true);
+    public static ForgeSlider BLUR_SLIDER = new ForgeSlider(15, 15 + 20 + 2, 150, 20, Component.translatable("screen.endinglib.camera.slider.blur_prefix"), Component.translatable("screen.endinglib.camera.slider.blur_suffix"), 0, 0F, 0F, 0.1F, 3, true);
     public static ForgeSlider FOV_SLIDER = new ForgeSlider(-1, BLUR_SLIDER.getY() + BLUR_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -50, 90F, 0F, 1F, 0, true);
     public static ForgeSlider TRANSLATION_X_SLIDER = new ForgeSlider(-1, FOV_SLIDER.getY() + FOV_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, 0F, 0.05F, 3, true);
     public static ForgeSlider TRANSLATION_Y_SLIDER = new ForgeSlider(-1, TRANSLATION_X_SLIDER.getY() + TRANSLATION_X_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, 0F, 0.05F, 3, true);
@@ -28,9 +27,23 @@ public class CameraModifyScreen extends SimpleModeScreen {
     public static ForgeSlider RELATIVE_X_SLIDER = new ForgeSlider(-1, TRANSLATION_Z_SLIDER.getY() + TRANSLATION_Z_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, 0F, 0.05F, 3, true);
     public static ForgeSlider RELATIVE_Y_SLIDER = new ForgeSlider(-1, RELATIVE_X_SLIDER.getY() + RELATIVE_X_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, 0F, 0.05F, 3, true);
     public static ForgeSlider RELATIVE_Z_SLIDER = new ForgeSlider(-1, RELATIVE_Y_SLIDER.getY() + RELATIVE_Y_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, 0F, 0.05F, 3, true);
+    public Checkbox PAUSE_CHECK = new Checkbox(15, 15, 20, 20, Component.translatable("screen.endinglib.camera.button.pause"), false);
+
     public CameraModifyScreen() {
         super(Component.translatable("screen.endinglib.camera.title"));
     }
+
+    static void reClinit(@Nullable CameraModifyScreen screen) {
+        BLUR_SLIDER = new ForgeSlider(15, 15 + 20 + 2, 150, 20, Component.translatable("screen.endinglib.camera.slider.blur_prefix"), Component.translatable("screen.endinglib.camera.slider.blur_suffix"), screen != null ? -screen.maxRadius : 0F, 0F, BLUR_SLIDER.getValue(), 0.05F, 3, true);
+        FOV_SLIDER = new ForgeSlider(-1, BLUR_SLIDER.getY() + BLUR_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -50, 90F, FOV_SLIDER.getValue(), 1F, 3, true);
+        TRANSLATION_X_SLIDER = new ForgeSlider(-1, FOV_SLIDER.getY() + FOV_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, TRANSLATION_X_SLIDER.getValue(), 0.01F, 3, true);
+        TRANSLATION_Y_SLIDER = new ForgeSlider(-1, TRANSLATION_X_SLIDER.getY() + TRANSLATION_X_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, TRANSLATION_Y_SLIDER.getValue(), 0.01F, 3, true);
+        TRANSLATION_Z_SLIDER = new ForgeSlider(-1, TRANSLATION_Y_SLIDER.getY() + TRANSLATION_Y_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, TRANSLATION_Z_SLIDER.getValue(), 0.01F, 3, true);
+        RELATIVE_X_SLIDER = new ForgeSlider(-1, TRANSLATION_Z_SLIDER.getY() + TRANSLATION_Z_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, RELATIVE_X_SLIDER.getValue(), 0.05F, 3, true);
+        RELATIVE_Y_SLIDER = new ForgeSlider(-1, RELATIVE_X_SLIDER.getY() + RELATIVE_X_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, RELATIVE_Y_SLIDER.getValue(), 0.05F, 3, true);
+        RELATIVE_Z_SLIDER = new ForgeSlider(-1, RELATIVE_Y_SLIDER.getY() + RELATIVE_Y_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, RELATIVE_Z_SLIDER.getValue(), 0.05F, 3, true);
+    }
+
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 
@@ -108,15 +121,5 @@ public class CameraModifyScreen extends SimpleModeScreen {
     @Override
     public float getRadius(float partialTicks) {
         return Math.max(1F, super.getRadius(partialTicks) + (float) BLUR_SLIDER.getValue());
-    }
-    static void reClinit(@Nullable CameraModifyScreen screen) {
-        BLUR_SLIDER = new ForgeSlider(15, 15+20+2, 150, 20, Component.translatable("screen.endinglib.camera.slider.blur_prefix"), Component.translatable("screen.endinglib.camera.slider.blur_suffix"), screen != null ? -screen.maxRadius : 0F, 0F, BLUR_SLIDER.getValue(), 0.05F, 3, true);
-        FOV_SLIDER = new ForgeSlider(-1, BLUR_SLIDER.getY() + BLUR_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -50, 90F, FOV_SLIDER.getValue(), 1F, 3, true);
-        TRANSLATION_X_SLIDER = new ForgeSlider(-1, FOV_SLIDER.getY() + FOV_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, TRANSLATION_X_SLIDER.getValue(), 0.01F, 3, true);
-        TRANSLATION_Y_SLIDER = new ForgeSlider(-1, TRANSLATION_X_SLIDER.getY() + TRANSLATION_X_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, TRANSLATION_Y_SLIDER.getValue(), 0.01F, 3, true);
-        TRANSLATION_Z_SLIDER = new ForgeSlider(-1, TRANSLATION_Y_SLIDER.getY() + TRANSLATION_Y_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, TRANSLATION_Z_SLIDER.getValue(), 0.01F, 3, true);
-        RELATIVE_X_SLIDER = new ForgeSlider(-1, TRANSLATION_Z_SLIDER.getY() + TRANSLATION_Z_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, RELATIVE_X_SLIDER.getValue(), 0.05F, 3, true);
-        RELATIVE_Y_SLIDER = new ForgeSlider(-1, RELATIVE_X_SLIDER.getY() + RELATIVE_X_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, RELATIVE_Y_SLIDER.getValue(), 0.05F, 3, true);
-        RELATIVE_Z_SLIDER = new ForgeSlider(-1, RELATIVE_Y_SLIDER.getY() + RELATIVE_Y_SLIDER.getHeight() + 2, 150, 15, Component.empty(), Component.empty(), -16, 16F, RELATIVE_Z_SLIDER.getValue(), 0.05F, 3, true);
     }
 }

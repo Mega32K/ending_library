@@ -19,14 +19,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-    @Shadow @Final private ItemModelShaper itemModelShaper;
+    @Shadow
+    @Final
+    private ItemModelShaper itemModelShaper;
 
     @Inject(method = "getModel", at = @At("HEAD"), cancellable = true)
     private void getModel(ItemStack p_174265_, Level p_174266_, LivingEntity p_174267_, int p_174268_, CallbackInfoReturnable<BakedModel> cir) {
         ItemComponentManager manager = new ItemComponentManager(p_174265_);
         manager.getItemModel().ifPresent(s -> {
             BakedModel bakedmodel = this.itemModelShaper.getModelManager().getModel(new ModelResourceLocation(new ResourceLocation(s), "inventory"));
-            ClientLevel clientlevel = p_174266_ instanceof ClientLevel ? (ClientLevel)p_174266_ : null;
+            ClientLevel clientlevel = p_174266_ instanceof ClientLevel ? (ClientLevel) p_174266_ : null;
             BakedModel bakedmodel1 = bakedmodel.getOverrides().resolve(bakedmodel, p_174265_, clientlevel, p_174267_, p_174268_);
             cir.setReturnValue(bakedmodel1 == null ? this.itemModelShaper.getModelManager().getMissingModel() : bakedmodel1);
         });

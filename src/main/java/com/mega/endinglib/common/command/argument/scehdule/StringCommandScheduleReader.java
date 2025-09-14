@@ -6,12 +6,16 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class StringCommandScheduleReader {
-    private final StringReader reader;
     private static final DynamicCommandExceptionType PARSE_EXCEPTION;
+
+    static {
+        PARSE_EXCEPTION = CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException();
+    }
+
+    private final StringReader reader;
 
     public StringCommandScheduleReader(StringReader reader) {
         this.reader = reader;
@@ -21,6 +25,19 @@ public class StringCommandScheduleReader {
         return (new StringCommandScheduleReader(reader)).parseBlockEntry();
     }
 
+    private static String cleanString(String string) {
+        if (string.isEmpty()) {
+            return string;
+        } else {
+            int endIndex = string.length();
+            if (string.charAt(endIndex - 1) == '\\') {
+                --endIndex;
+            }
+
+            return string.substring(0, endIndex);
+        }
+    }
+
     private List<String> parseBlockEntry() throws CommandSyntaxException {
         List<String> list = new ObjectArrayList<>();
         this.reader.skipWhitespace();
@@ -28,7 +45,7 @@ public class StringCommandScheduleReader {
         StringBuilder stringBuilder = new StringBuilder();
         int bracketDepth = 1;
 
-        while(this.reader.canRead() && bracketDepth > 0) {
+        while (this.reader.canRead() && bracketDepth > 0) {
             char c = this.reader.read();
             if (c == '{') {
                 ++bracketDepth;
@@ -58,22 +75,5 @@ public class StringCommandScheduleReader {
         } else {
             return list;
         }
-    }
-
-    private static String cleanString(String string) {
-        if (string.isEmpty()) {
-            return string;
-        } else {
-            int endIndex = string.length();
-            if (string.charAt(endIndex - 1) == '\\') {
-                --endIndex;
-            }
-
-            return string.substring(0, endIndex);
-        }
-    }
-
-    static {
-        PARSE_EXCEPTION = CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException();
     }
 }

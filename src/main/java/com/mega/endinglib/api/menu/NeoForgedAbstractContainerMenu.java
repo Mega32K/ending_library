@@ -9,5 +9,6 @@ public abstract class NeoForgedAbstractContainerMenu extends AbstractContainerMe
     protected NeoForgedAbstractContainerMenu(@Nullable MenuType<?> menuType, int containerID) {
         super(menuType, containerID);
     }
+
     public abstract void additionalData(FriendlyByteBuf byteBuf);
 }

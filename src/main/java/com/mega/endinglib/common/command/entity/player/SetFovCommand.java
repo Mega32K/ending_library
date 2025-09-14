@@ -1,7 +1,7 @@
 package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.camera.S2CSetFovPacket;
+import com.mega.endinglib.common.network.s2c.S2CSetFovPacket;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -22,9 +22,10 @@ public class SetFovCommand {
                         )
                 );
     }
+
     private static int setFov(CommandSourceStack stack, ServerPlayer player, int fov) {
         PacketHandler.sendToPlayer(new S2CSetFovPacket(fov), player);
-        stack.sendSuccess(()-> Component.translatable("commands.endinglib.message.setFov", player.getDisplayName(), Component.literal(String.valueOf(fov)).withStyle(ChatFormatting.GOLD)), false);
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.setFov", player.getDisplayName(), Component.literal(String.valueOf(fov)).withStyle(ChatFormatting.GOLD)), false);
         return fov;
     }
 }

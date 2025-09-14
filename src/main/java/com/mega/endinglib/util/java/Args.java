@@ -31,14 +31,14 @@ public class Args {
      * Retrieve the argument value at the specified index
      *
      * @param index argument index to retrieve
-     * @param <T> the argument type
+     * @param <T>   the argument type
      * @return the argument value
      * @throws ArrayIndexOutOfBoundsException if a value outside the range of
-     *      available arguments is accessed
+     *                                        available arguments is accessed
      */
     @SuppressWarnings("unchecked")
     public <T> T get(int index) {
-        return (T)this.values[index];
+        return (T) this.values[index];
     }
 
     /**
@@ -55,9 +55,9 @@ public class Args {
      *
      * @param index Argument index to set
      * @param value Argument value
-     * @param <T> Argument type
+     * @param <T>   Argument type
      * @throws ArgumentIndexOutOfBoundsException if the specified argument index
-     *      is outside the range of available arguments
+     *                                           is outside the range of available arguments
      */
     public <T> void set(int index, T value) {
         this.values[index] = value;

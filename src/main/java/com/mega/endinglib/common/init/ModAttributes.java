@@ -1,16 +1,13 @@
 package com.mega.endinglib.common.init;
 
 import com.mega.endinglib.EndingLibrary;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -26,13 +23,16 @@ public class ModAttributes {
         e.add(EntityType.PLAYER, MULTI_JUMP.get());
         e.add(EntityType.PLAYER, NATURAL_REGENERATION_INCREASE.get());
     }
+
     public static int getMultiJump(LivingEntity entity) {
         return entity instanceof Player player ? Mth.floor(player.getAttributeValue(MULTI_JUMP.get())) : 1;
     }
+
     public static float getExhaustion(LivingEntity entity) {
-        return entity instanceof Player player ? (float) player.getAttributeValue(EXTRA_EXHAUSTION_INCREASE.get()): 0;
+        return entity instanceof Player player ? (float) player.getAttributeValue(EXTRA_EXHAUSTION_INCREASE.get()) : 0;
     }
+
     public static float getNaturalRegenerationIncrease(LivingEntity entity) {
-        return entity instanceof Player player ? (float) player.getAttributeValue(NATURAL_REGENERATION_INCREASE.get()): 0;
+        return entity instanceof Player player ? (float) player.getAttributeValue(NATURAL_REGENERATION_INCREASE.get()) : 0;
     }
 }

@@ -14,6 +14,7 @@ public class TimeStopSkillPacket {
     private final boolean safelyCanCancel;
 
     private final boolean playSoundEffect;
+
     public TimeStopSkillPacket(boolean isTimeStop, boolean playSoundEffect, int user, boolean onlyRemoveEntity, boolean safelyCanCancel) {
         this.isTimeStop = isTimeStop;
         this.playSoundEffect = playSoundEffect;

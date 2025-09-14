@@ -3,9 +3,9 @@ package com.mega.endinglib.test;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
-import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +22,7 @@ public class TestCapability extends EntitySyncCapabilityBase {
     public static final Supplier<TestCapability> INSTANCE_SUPPLIER = Suppliers.memoize(TestCapability::new);
     public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "ex");
     public CapabilityEntityData<Optional<UUID>> userName = this.dataManager.define(0, "UserName", Optional.empty(), CapabilityDataSerializers.OPTIONAL_UUID);
+
     @Override
     public ResourceLocation getRegistryName() {
         return NAME;

@@ -3,7 +3,6 @@ package com.mega.endinglib.client.renderer.shader.post;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.scores.Scoreboard;
 
 public class ModernGaussianBlurPostEffect implements CustomScreenEffect {
     public static ModernGaussianBlurPostEffect INSTANCE;

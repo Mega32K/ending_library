@@ -12,10 +12,13 @@ import java.util.Map;
 public interface AccessorItemCooldowns {
     @Accessor
     int getTickCount();
+
     @Accessor
     Map<Item, ItemCooldowns.CooldownInstance> getCooldowns();
+
     @Invoker
     void invokeOnCooldownStarted(Item p_41529_, int p_41530_);
+
     @Invoker
     void invokeOnCooldownEnded(Item p_41531_);
 }

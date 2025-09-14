@@ -13,10 +13,13 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface AccessorServerLevel {
     @Invoker("shouldDiscardEntity")
     boolean shouldDiscardEntity$el(Entity p_143343_);
+
     @Accessor("entityTickList")
     EntityTickList getEntityTickList();
+
     @Accessor("chunkSource")
     ServerChunkCache getChunkSource();
+
     @Accessor("entityManager")
     PersistentEntitySectionManager<Entity> getEntityManager();
 }

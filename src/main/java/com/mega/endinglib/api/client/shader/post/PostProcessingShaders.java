@@ -20,10 +20,11 @@ import java.util.function.Predicate;
 public class PostProcessingShaders implements ResourceManagerReloadListener {
     public static final PostProcessingShaders INSTANCE = new PostProcessingShaders(Minecraft.getInstance());
     public static final Predicate<CustomScreenEffect> SHOULD_PROCESS = (effect -> effect.autoProcess() && effect.canUse());
-    public static volatile boolean isReloading = false;
     public static final Object2ObjectOpenHashMap<CustomScreenEffect, PostChain> postChains = new Object2ObjectOpenHashMap<>();
+    public static volatile boolean isReloading = false;
     private final Minecraft minecraft;
     private final Logger LOGGER = LogManager.getLogger();
+
     public PostProcessingShaders(Minecraft minecraft) {
         this.minecraft = minecraft;
     }

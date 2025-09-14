@@ -4,76 +4,148 @@ import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 
 public interface ICameraManager {
     void oldUpdate();
+
     void onFreezingMode(EndingLibraryPlayerCapability capability);
+
     void updateModifier();
+
     void tick(EndingLibraryPlayerCapability capability);
+
     CameraValueInstance getXOffset0();
+
     CameraValueInstance getYOffset0();
+
     CameraValueInstance getZOffset0();
+
     CameraValueInstance getXRelative0();
+
     CameraValueInstance getYRelative0();
+
     CameraValueInstance getZRelative0();
+
     CameraValueInstance getXRot0();
+
     CameraValueInstance getYRot0();
+
     CameraValueInstance getZRot0();
+
     CameraValueInstance getFovOffset0();
+
     CameraValueInstance getZoomOffset0();
+
     void addRelativeXModifier(CameraModifier modifier);
+
     void addRelativeYModifier(CameraModifier modifier);
+
     void addRelativeZModifier(CameraModifier modifier);
+
     void addTranslationXModifier(CameraModifier modifier);
+
     void addTranslationYModifier(CameraModifier modifier);
+
     void addTranslationZModifier(CameraModifier modifier);
+
     void addRotationXModifier(CameraModifier modifier);
+
     void addRotationYModifier(CameraModifier modifier);
+
     void addRotationZModifier(CameraModifier modifier);
+
     void addFovModifier(CameraModifier modifier);
+
     void addZoomModifier(CameraModifier modifier);
+
     void addPermanentRelativeXModifier(CameraModifier modifier);
+
     void addPermanentRelativeYModifier(CameraModifier modifier);
+
     void addPermanentRelativeZModifier(CameraModifier modifier);
+
     void addPermanentTranslationXModifier(CameraModifier modifier);
+
     void addPermanentTranslationYModifier(CameraModifier modifier);
+
     void addPermanentTranslationZModifier(CameraModifier modifier);
+
     void addPermanentRotationXModifier(CameraModifier modifier);
+
     void addPermanentRotationYModifier(CameraModifier modifier);
+
     void addPermanentRotationZModifier(CameraModifier modifier);
+
     void addPermanentFovModifier(CameraModifier modifier);
+
     void addPermanentZoomModifier(CameraModifier modifier);
+
     void removeRelativeXModifier(CameraModifier modifier);
+
     void removeRelativeYModifier(CameraModifier modifier);
+
     void removeRelativeZModifier(CameraModifier modifier);
+
     void removeTranslationXModifier(CameraModifier modifier);
+
     void removeTranslationYModifier(CameraModifier modifier);
+
     void removeTranslationZModifier(CameraModifier modifier);
+
     void removeRotationXModifier(CameraModifier modifier);
+
     void removeRotationYModifier(CameraModifier modifier);
+
     void removeRotationZModifier(CameraModifier modifier);
+
     void removeFovModifier(CameraModifier modifier);
+
     void removeZoomModifier(CameraModifier modifier);
+
     double getXRelative(float partialTicks);
+
     double getYRelative(float partialTicks);
+
     double getZRelative(float partialTicks);
+
     double getXOffset(float partialTicks);
+
     double getYOffset(float partialTicks);
+
     double getZOffset(float partialTicks);
+
     double getXRotation(float partialTicks);
+
     double getYRotation(float partialTicks);
+
     double getZRotation(float partialTicks);
+
     double getFovOffset(float partialTicks);
+
     double getZoomOffset(float partialTicks);
+
     double getOriginX();
-    double getOriginY();
-    double getOriginZ();
+
     void setOriginX(double originX);
+
+    double getOriginY();
+
     void setOriginY(double originY);
+
+    double getOriginZ();
+
     void setOriginZ(double originZ);
+
     double getOriginXRot();
-    double getOriginYRot();
-    double getOriginZRot();
+
     void setOriginXRot(double originXRot);
+
+    double getOriginYRot();
+
     void setOriginYRot(double originYRot);
+
+    double getOriginZRot();
+
     void setOriginZRot(double originZRot);
+
     float getOriginZoom();
+
     void setOriginZoom(float originZoom);
 }

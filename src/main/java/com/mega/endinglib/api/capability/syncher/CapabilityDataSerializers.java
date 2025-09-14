@@ -9,12 +9,21 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public class CapabilityDataSerializers {
-    private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
+    public static final FriendlyByteBuf.Writer<AABB> F_AABB_WRITER = (byteBuf, aabb) -> {
+        byteBuf.writeDouble(aabb.minX);
+        byteBuf.writeDouble(aabb.minY);
+        byteBuf.writeDouble(aabb.minZ);
+        byteBuf.writeDouble(aabb.maxX);
+        byteBuf.writeDouble(aabb.maxY);
+        byteBuf.writeDouble(aabb.maxZ);
+    };
+    public static final FriendlyByteBuf.Reader<AABB> F_AABB_READER = byteBuf -> new AABB(byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble());
     public static final CapabilityDataSerializer<Byte> BYTE = CapabilityDataSerializer.simple((p_238118_, p_238119_) -> p_238118_.writeByte(p_238119_), FriendlyByteBuf::readByte, CompoundTag::putByte, CompoundTag::getByte);
     public static final CapabilityDataSerializer<Integer> INT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt, CompoundTag::putInt, CompoundTag::getInt);
     public static final CapabilityDataSerializer<Long> LONG = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarLong, FriendlyByteBuf::readVarLong, CompoundTag::putLong, CompoundTag::getLong);
@@ -82,15 +91,10 @@ public class CapabilityDataSerializers {
             return p_238146_.copy();
         }
     };
-    public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {
-        if (SERIALIZERS.add(p_135051_) >= 256) throw new RuntimeException("Capability DataSerializer ID limit exceeded");
-    }
-    public static CapabilityDataSerializer<?> getByID(int id) {
-        return SERIALIZERS.byId(id);
-    }
-    public static int getID(CapabilityDataSerializer<?> serializer) {
-        return SERIALIZERS.getId(serializer);
-    }
+    public static final CapabilityDataSerializer<AABB> AABB = CapabilityDataSerializer.simple(F_AABB_WRITER, F_AABB_READER, CompoundTagUtils::putAABB, CompoundTagUtils::getAABB);
+    public static final CapabilityDataSerializer<Optional<AABB>> OPTIONAL_AABB = CapabilityDataSerializer.optional(F_AABB_WRITER, F_AABB_READER, CompoundTagUtils::putAABB, CompoundTagUtils::getAABB);
+    private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
+
     static {
         registerSerializer(BYTE);
         registerSerializer(INT);
@@ -107,5 +111,20 @@ public class CapabilityDataSerializers {
         registerSerializer(OPTIONAL_UUID);
         registerSerializer(OPTIONAL_GLOBAL_POS);
         registerSerializer(COMPOUND_TAG);
+        registerSerializer(AABB);
+        registerSerializer(OPTIONAL_AABB);
+    }
+
+    public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {
+        if (SERIALIZERS.add(p_135051_) >= 256)
+            throw new RuntimeException("Capability DataSerializer ID limit exceeded");
+    }
+
+    public static CapabilityDataSerializer<?> getByID(int id) {
+        return SERIALIZERS.byId(id);
+    }
+
+    public static int getID(CapabilityDataSerializer<?> serializer) {
+        return SERIALIZERS.getId(serializer);
     }
 }

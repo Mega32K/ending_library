@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.util.Mth;
 
 public enum Easing {
-    NONE(x->x),
+    NONE(x -> x),
     IN_SINE(x -> 1 - Mth.cos((float) ((x * Math.PI) / 2))),
     OUT_SINE(x -> Mth.sin((float) ((x * Math.PI) / 2))),
     IN_OUT_SINE(x -> -(Mth.cos((float) (Math.PI * x)) - 1) / 2),
@@ -99,11 +99,12 @@ public enum Easing {
             : (1 + OUT_BOUNCE.calculate(2 * x - 1)) / 2),
     QUADRATIC(x -> x * x - x);
 
+    private final Float2FloatFunction function;
+
     Easing(Float2FloatFunction function) {
         this.function = function;
     }
 
-    private final Float2FloatFunction function;
     public float calculate(float f) {
         return this.function.apply(f);
     }

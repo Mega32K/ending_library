@@ -2,7 +2,6 @@ package com.mega.endinglib.api.item.curios;
 
 import com.mega.endinglib.api.item.NameCenteredItem;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import top.theillusivec4.curios.api.CuriosApi;

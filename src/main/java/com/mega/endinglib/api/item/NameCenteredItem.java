@@ -22,6 +22,7 @@ public class NameCenteredItem extends Item {
         }
         return component;
     }
+
     public boolean shouldCenteredName(@NotNull ItemStack stack) {
         return true;
     }

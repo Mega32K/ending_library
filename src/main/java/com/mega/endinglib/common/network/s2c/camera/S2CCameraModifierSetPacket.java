@@ -1,10 +1,6 @@
 package com.mega.endinglib.common.network.s2c.camera;
 
-import com.mega.endinglib.api.client.camera.CameraModifier;
-import com.mega.endinglib.api.client.camera.CameraUtils;
-import com.mega.endinglib.api.client.camera.ICameraManager;
-import com.mega.endinglib.api.client.camera.ModifierType;
-import com.mega.endinglib.api.client.camera.CameraValueInstance;
+import com.mega.endinglib.api.client.camera.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -17,6 +13,7 @@ import java.util.function.Supplier;
 
 public class S2CCameraModifierSetPacket {
     private final List<CameraSnapshot> cameraValues;
+
     public S2CCameraModifierSetPacket(Map<ModifierType, Set<CameraModifier>> modifiers) {
         this.cameraValues = new ObjectArrayList<>();
         for (var v : modifiers.entrySet()) {

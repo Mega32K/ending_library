@@ -12,19 +12,21 @@ import java.util.function.Supplier;
 
 public class C2SItemToggleModePacket {
     private final ResourceLocation itemRegistryID;
+
     public C2SItemToggleModePacket(Item item) {
         this(ForgeRegistries.ITEMS.getKey(item));
     }
+
     public C2SItemToggleModePacket(ResourceLocation itemRegistryID) {
         this.itemRegistryID = itemRegistryID;
     }
 
     public static C2SItemToggleModePacket decode(FriendlyByteBuf friendlyByteBuf) {
-         return new C2SItemToggleModePacket(friendlyByteBuf.readResourceLocation());
+        return new C2SItemToggleModePacket(friendlyByteBuf.readResourceLocation());
     }
 
     public static void encode(C2SItemToggleModePacket packet, FriendlyByteBuf friendlyByteBuf) {
-         friendlyByteBuf.writeResourceLocation(packet.itemRegistryID);
+        friendlyByteBuf.writeResourceLocation(packet.itemRegistryID);
     }
 
     public static void handle(C2SItemToggleModePacket packet, Supplier<NetworkEvent.Context> context) {

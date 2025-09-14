@@ -30,5 +30,5 @@ public abstract class EntityRendererDispatcherMixin {
             });
         }
 
-     }
+    }
 }

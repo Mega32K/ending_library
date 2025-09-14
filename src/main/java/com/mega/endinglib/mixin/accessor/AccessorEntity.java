@@ -11,14 +11,19 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface AccessorEntity {
     @Accessor("position")
     void setPositionField(Vec3 position);
+
     @Accessor("blockPosition")
     void setBlockPositionField(BlockPos blockPosition);
+
     @Accessor(value = "isAddedToWorld", remap = false)
     void setAddedToWorldField(boolean z);
+
     @Invoker
     void callMarkHurt();
+
     @Accessor
     Entity getVehicle();
+
     @Accessor
     void setVehicle(Entity entity);
 }

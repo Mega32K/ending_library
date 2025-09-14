@@ -8,7 +8,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource; 
+import net.minecraft.util.RandomSource;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -38,6 +38,18 @@ public class CameraModifier {
         this.operation = p_22208_;
     }
 
+    @Nullable
+    public static CameraModifier load(CompoundTag p_22213_) {
+        try {
+            UUID uuid = p_22213_.getUUID("UUID");
+            CameraModifier.Operation CameraModifier$operation = CameraModifier.Operation.fromValue(p_22213_.getInt("Operation"));
+            return new CameraModifier(uuid, p_22213_.getString("Name"), p_22213_.getDouble("Amount"), CameraModifier$operation);
+        } catch (Exception exception) {
+            LOGGER.warn("Unable to create modifier: {}", (Object) exception.getMessage());
+            return null;
+        }
+    }
+
     public UUID getId() {
         return this.id;
     }
@@ -58,7 +70,7 @@ public class CameraModifier {
         if (this == p_22221_) {
             return true;
         } else if (p_22221_ != null && this.getClass() == p_22221_.getClass()) {
-            CameraModifier CameraModifier = (CameraModifier)p_22221_;
+            CameraModifier CameraModifier = (CameraModifier) p_22221_;
             return Objects.equals(this.id, CameraModifier.id);
         } else {
             return false;
@@ -82,17 +94,6 @@ public class CameraModifier {
         return compoundtag;
     }
 
-    @Nullable
-    public static CameraModifier load(CompoundTag p_22213_) {
-        try {
-            UUID uuid = p_22213_.getUUID("UUID");
-            CameraModifier.Operation CameraModifier$operation = CameraModifier.Operation.fromValue(p_22213_.getInt("Operation"));
-            return new CameraModifier(uuid, p_22213_.getString("Name"), p_22213_.getDouble("Amount"), CameraModifier$operation);
-        } catch (Exception exception) {
-            LOGGER.warn("Unable to create modifier: {}", (Object)exception.getMessage());
-            return null;
-        }
-    }
     public MutableComponent toComponent() {
         return Component.literal("  {").withStyle(ChatFormatting.GREEN)
                 .append(
@@ -130,16 +131,16 @@ public class CameraModifier {
             this.value = p_22234_;
         }
 
-        public int toValue() {
-            return this.value;
-        }
-
         public static CameraModifier.Operation fromValue(int p_22237_) {
             if (p_22237_ >= 0 && p_22237_ < OPERATIONS.length) {
                 return OPERATIONS[p_22237_];
             } else {
                 throw new IllegalArgumentException("No operation with value " + p_22237_);
             }
+        }
+
+        public int toValue() {
+            return this.value;
         }
     }
 }

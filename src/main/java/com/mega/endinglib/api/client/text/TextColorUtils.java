@@ -101,11 +101,13 @@ public class TextColorUtils {
     public static int getCenteredTooltipWidth() {
         return centeredTooltipWidth;
     }
+
     public static Component component() {
         MutableComponent component = Component.literal("A");
         component.setStyle(component.getStyle().applyFormat(MIDDLE));
         return component;
     }
+
     public static Font font() {
         return Minecraft.getInstance().font;
     }

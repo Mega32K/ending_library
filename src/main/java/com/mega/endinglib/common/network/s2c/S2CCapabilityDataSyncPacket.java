@@ -1,11 +1,7 @@
 package com.mega.endinglib.common.network.s2c;
 
-import com.mega.endinglib.api.capability.CapabilitySyncType;
-import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
+import com.mega.endinglib.api.capability.*;
 import com.mega.endinglib.client.ClientWrapped;
-import com.mega.endinglib.api.capability.CapabilityEntityData;
-import com.mega.endinglib.api.capability.ELCapabilityManager;
-import com.mega.endinglib.api.capability.SynchedCapabilityData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -23,6 +19,7 @@ public class S2CCapabilityDataSyncPacket {
     private final CompoundTag nbt;
     private final CapabilitySyncType syncType;
     private final List<CapabilityEntityData<?>> syncDataList;
+
     public S2CCapabilityDataSyncPacket(int entityID, String registryName, CompoundTag nbt, CapabilitySyncType syncType, List<CapabilityEntityData<?>> syncDataList) {
         this.entityID = entityID;
         this.registryName = registryName;

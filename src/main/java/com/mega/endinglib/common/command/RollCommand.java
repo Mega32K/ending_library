@@ -28,9 +28,9 @@ public class RollCommand {
                                             if (entity == null)
                                                 return 0;
                                             final int i = RandomSource.create().nextInt(IntegerArgumentType.getInteger(context, "min"), IntegerArgumentType.getInteger(context, "max") + 1);
-                                            context.getSource().sendSuccess(()-> Component.translatable("commands.endinglib.message.roll",
-                                                    entity.getDisplayName(),
-                                                    LoreHelper.withCopy(Component.literal(String.valueOf(i)).withStyle(ChatFormatting.GOLD), String.valueOf(i)))
+                                            context.getSource().sendSuccess(() -> Component.translatable("commands.endinglib.message.roll",
+                                                            entity.getDisplayName(),
+                                                            LoreHelper.withCopy(Component.literal(String.valueOf(i)).withStyle(ChatFormatting.GOLD), String.valueOf(i)))
                                                     , false);
                                             return i;
                                         })

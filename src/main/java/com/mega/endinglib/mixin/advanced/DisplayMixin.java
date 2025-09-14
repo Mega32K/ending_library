@@ -1,7 +1,6 @@
 package com.mega.endinglib.mixin.advanced;
 
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -16,8 +15,8 @@ public abstract class DisplayMixin extends Entity {
 
     @Override
     public void turn(double p_19885_, double p_19886_) {
-        float f = (float)p_19886_ * 0.15F;
-        float f1 = (float)p_19885_ * 0.15F;
+        float f = (float) p_19886_ * 0.15F;
+        float f1 = (float) p_19885_ * 0.15F;
         this.setXRot(this.getXRot() + f);
         this.setYRot(this.getYRot() + f1);
         this.xRotO += f;

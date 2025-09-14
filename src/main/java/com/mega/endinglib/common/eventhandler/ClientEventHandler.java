@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.eventhandler;
 
+import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
 import com.mega.endinglib.client.ClientWrapped;
@@ -7,26 +8,34 @@ import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.render.ClientUtils;
+import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.concurrent.CompletionException;
+
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ClientEventHandler {
+    private static final byte[] clientInput = new byte[]{0, 0};
     private static boolean clientInputDirty;
-    private static final byte[] clientInput = new byte[] {0, 0};
+
     @SubscribeEvent
     public static void disableMouseEventWhenTimeStopping(ScreenEvent.MouseButtonPressed.Pre event) {
         Minecraft mc = Minecraft.getInstance();
@@ -57,6 +66,7 @@ public class ClientEventHandler {
             }
         }
     }
+
     @SubscribeEvent
     public static void prePlayerRendering(RenderPlayerEvent.Pre event) {
         Player player = ClientWrapped.clientPlayer();
@@ -70,7 +80,36 @@ public class ClientEventHandler {
             }
         });
     }
-    public static byte setByteFlags(byte flagData, int mask, boolean value) { ;
+    @SubscribeEvent
+    public static void renderLevelStageEvent(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            Player player = ClientWrapped.clientPlayer();
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.isWindowActive() && mc.screen == null) {
+                if (player != null && !player.isSpectator() && mc.options.getCameraType() != CameraType.FIRST_PERSON) {
+                    CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+                        if (capability.isUsingCustomCamera()) {
+                            if (capability.isMouseControlled()) {
+                                if (TimeContext.Client.count - ClientUtils.lastRunAsync > 20) {
+                                    ClientUtils.lastRunAsync = TimeContext.Client.count;
+                                    ProfilerFiller p = Minecraft.getInstance().getProfiler();
+                                    p.push("AsyncMouseControlledData");
+                                    try {
+                                        ClientUtils.mouseCF().join();
+                                    } catch (CompletionException e) {
+                                        EndingLibrary.LOGGER.warn("CompletableFuture MouseControlledMode failed!");
+                                    }
+                                    p.pop();
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+    public static byte setByteFlags(byte flagData, int mask, boolean value) {
+        ;
         if (value) {
             flagData |= mask;
         } else {

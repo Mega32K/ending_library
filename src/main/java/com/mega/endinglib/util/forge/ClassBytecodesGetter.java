@@ -3,7 +3,6 @@ package com.mega.endinglib.util.forge;
 import com.mega.endinglib.util.java.ClassHelper;
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.TransformingClassLoader;
-import cpw.mods.modlauncher.api.ITransformer;
 import cpw.mods.modlauncher.api.ITransformerActivity;
 import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 import sun.misc.Unsafe;
@@ -13,11 +12,12 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 public class ClassBytecodesGetter {
+    public static final String CLASSLOADING_REASON = ITransformerActivity.CLASSLOADING_REASON;
+    public static final String COMPUTING_FRAMES_REASON = ITransformerActivity.COMPUTING_FRAMES_REASON;
     private static final Unsafe unsafe = UnsafeAccess.UNSAFE;
     public static VarHandle Launcher$classLoader_field;
     public static MethodHandle TransformingClassLoader$buildTransformedClassNodeFor;
-    public static final String CLASSLOADING_REASON = ITransformerActivity.CLASSLOADING_REASON;
-    public static final String COMPUTING_FRAMES_REASON = ITransformerActivity.COMPUTING_FRAMES_REASON;
+
     public static byte[] copyBytecodesFromClass(Class<?> clazz, String reason) {
         try {
             MethodHandles.Lookup IMPL = ClassHelper.IMPL_LOOKUP();

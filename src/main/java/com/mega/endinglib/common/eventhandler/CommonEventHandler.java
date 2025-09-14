@@ -32,6 +32,7 @@ public class CommonEventHandler {
                 event.player.causeFoodExhaustion(extra);
         }
     }
+
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class TimeStopEvents {
         static boolean cannotMove(PlayerInteractEvent event) {

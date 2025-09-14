@@ -15,6 +15,7 @@ import java.util.Queue;
 public class ServerTaskManager {
     public static final Queue<ServerTask> toAdd = Queues.newArrayDeque();
     public static final Queue<ServerTask> queue = EvictingQueue.create(512);
+
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {

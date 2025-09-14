@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.network.s2c.camera;
+package com.mega.endinglib.common.network.s2c;
 
 import com.mega.endinglib.client.ClientWrapped;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,5 +34,5 @@ public class S2CSetFovPacket {
         if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT)
             ClientWrapped.setFov(packet.fov);
     }
-    
+
 }

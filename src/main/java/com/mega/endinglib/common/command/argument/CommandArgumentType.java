@@ -11,14 +11,11 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,7 +28,7 @@ public class CommandArgumentType implements ArgumentType<String> {
     }
 
     public static String getCommand(CommandContext<?> context, String name) {
-        return (String)context.getArgument(name, String.class);
+        return (String) context.getArgument(name, String.class);
     }
 
     public String parse(StringReader reader) throws CommandSyntaxException {
@@ -51,7 +48,7 @@ public class CommandArgumentType implements ArgumentType<String> {
 
             try {
                 ParseResults<CommandSourceStack> parseResults = dispatcher.parse(remaining, server.createCommandSourceStack());
-                Suggestions suggestions = (Suggestions)dispatcher.getCompletionSuggestions(parseResults).get();
+                Suggestions suggestions = (Suggestions) dispatcher.getCompletionSuggestions(parseResults).get();
                 List<String> adjusted = new ObjectArrayList<>();
                 suggestions.getList().forEach((suggestion) -> {
                     adjusted.add(suggestion.getText());

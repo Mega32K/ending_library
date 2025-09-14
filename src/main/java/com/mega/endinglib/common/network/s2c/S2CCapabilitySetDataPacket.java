@@ -1,10 +1,10 @@
 package com.mega.endinglib.common.network.s2c;
 
-import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
-import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
+import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.SynchedCapabilityData;
+import com.mega.endinglib.client.ClientWrapped;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -18,6 +18,7 @@ public class S2CCapabilitySetDataPacket {
     private final int entityID;
     private final String registryName;
     private final List<CapabilityEntityData<?>> syncDataList;
+
     public S2CCapabilitySetDataPacket(int entityID, String registryName, List<CapabilityEntityData<?>> syncDataList) {
         this.entityID = entityID;
         this.registryName = registryName;
@@ -25,7 +26,7 @@ public class S2CCapabilitySetDataPacket {
     }
 
     public static S2CCapabilitySetDataPacket decode(FriendlyByteBuf friendlyByteBuf) {
-        return new S2CCapabilitySetDataPacket(friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(),SynchedCapabilityData.unpackCapabilityDataList(friendlyByteBuf));
+        return new S2CCapabilitySetDataPacket(friendlyByteBuf.readVarInt(), friendlyByteBuf.readUtf(), SynchedCapabilityData.unpackCapabilityDataList(friendlyByteBuf));
     }
 
     public static void encode(S2CCapabilitySetDataPacket packet, FriendlyByteBuf friendlyByteBuf) {

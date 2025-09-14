@@ -1,13 +1,13 @@
 package com.mega.endinglib.common.command.argument.scehdule;
 
 import com.mega.endinglib.mixin.accessor.AccessorCommandSourceStack;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.*;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -19,25 +19,50 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
-public record CommandScheduleEntry(CommandSourceStack commandSourceStack, LinkedList<String> commandList, String resourceLocation, long delay) {
-    public static final CommandSourceStack DUMMY_SOURCE = new CommandSourceStack(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel)null, 0, "", CommonComponents.EMPTY, (MinecraftServer)null, (Entity)null);
+public record CommandScheduleEntry(CommandSourceStack commandSourceStack, LinkedList<String> commandList,
+                                   String resourceLocation, long delay, UUID entityID) {
+    public static final CommandSourceStack DUMMY_SOURCE = new CommandSourceStack(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) null, 0, "", CommonComponents.EMPTY, (MinecraftServer) null, (Entity) null);
 
     public static CommandScheduleEntry empty() {
         LinkedList<String> commandEntry = new LinkedList<>();
-        return new CommandScheduleEntry(DUMMY_SOURCE, commandEntry, "", 0L);
+        return new CommandScheduleEntry(DUMMY_SOURCE, commandEntry, "", 0L, null);
     }
 
     public CommandScheduleEntry signature(CommandSourceStack source, String identifier, long delay) {
-        return new CommandScheduleEntry(source.withMaximumPermission(2), this.commandList, identifier, delay);
+        return new CommandScheduleEntry(source.withMaximumPermission(2), this.commandList, identifier, delay, null);
     }
 
     public void addCommandLine(String commandLine) {
         this.commandList.add(commandLine);
+    }
+    public Component commandsComponent() {
+        MutableComponent component = Component.literal("").withStyle(ChatFormatting.YELLOW);
+        List<String> commands = this.commandList;
+        for (int i=0;i<commands.size();i++) {
+            String s = commands.get(i);
+            if (i < commands.size()-1)
+                component.append(
+                        Component.literal("\"" + s + "\"")
+                                .withStyle(ChatFormatting.AQUA)
+                                .withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))).
+                                append(Component.literal(", "))
+                );
+            else
+                component.append(
+                        Component.literal(s)
+                                .withStyle(ChatFormatting.AQUA)
+                                .withStyle(
+                                        style -> style
+                                                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s))
+                                                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))
+                                )
+                );
+        }
+
+        return component;
     }
     public static class Serializer {
         private static final UUID EMPTY_UUID = new UUID(0L, 0L);
@@ -95,10 +120,11 @@ public record CommandScheduleEntry(CommandSourceStack commandSourceStack, Linked
             Vec2 rotation = new Vec2(rotList.getFloat(0), rotList.getFloat(1));
             ServerLevel world = null;
             Entity entity = null;
+            UUID uuid = null;
             if (server != null) {
                 ResourceKey<Level> worldRegistryKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(sourceNbt.getString("World")));
                 world = server.getLevel(worldRegistryKey);
-                UUID uuid = sourceNbt.getUUID("Entity");
+                uuid = sourceNbt.getUUID("Entity");
 
                 ServerLevel serverWorld;
                 for (Iterator<ServerLevel> serverLevelIterator = server.getAllLevels().iterator(); serverLevelIterator.hasNext(); entity = serverWorld.getEntity(uuid)) {
@@ -113,7 +139,7 @@ public record CommandScheduleEntry(CommandSourceStack commandSourceStack, Linked
             CommandSourceStack source = new CommandSourceStack(output, position, rotation, world, level, sourceNbt.getString("Name"), Objects.requireNonNull(Component.Serializer.fromJson(sourceNbt.getString("DisplayName"))), server, entity);
             LinkedList<String> commands = new LinkedList<>();
             nbt.getList("CommandList", 8).forEach((tag) -> commands.add(tag.getAsString()));
-            return new CommandScheduleEntry(source, commands, nbt.getString("Identifier"), nbt.getLong("Delay"));
+            return new CommandScheduleEntry(source, commands, nbt.getString("Identifier"), nbt.getLong("Delay"), uuid);
         }
     }
 }

@@ -13,18 +13,22 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Font.class)
 public interface AccessorFont {
-    @Accessor
-    boolean isFilterFishyGlyphs();
     @Accessor("SHADOW_OFFSET")
     static Vector3f shadowLifting() {
         throw new IllegalStateException();
     }
+
     @Invoker
     static int callAdjustColor(int p_92720_) {
         throw new IllegalStateException();
     }
+
+    @Accessor
+    boolean isFilterFishyGlyphs();
+
     @Invoker
     void callRenderChar(BakedGlyph p_254105_, boolean p_254001_, boolean p_254262_, float p_254256_, float p_253753_, float p_253629_, Matrix4f p_254014_, VertexConsumer p_253852_, float p_254317_, float p_253809_, float p_253870_, float p_254287_, int p_253905_);
+
     @Invoker
     FontSet invokeGetFontSet(ResourceLocation p_92864_);
 

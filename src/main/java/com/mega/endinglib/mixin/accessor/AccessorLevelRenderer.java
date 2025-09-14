@@ -8,8 +8,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AccessorLevelRenderer {
     @Accessor
     int getTicks();
+
     @Accessor
     float[] getRainSizeX();
+
     @Accessor
     float[] getRainSizeZ();
 }

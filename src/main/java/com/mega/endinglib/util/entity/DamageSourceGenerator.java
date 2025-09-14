@@ -14,12 +14,15 @@ public class DamageSourceGenerator {
     public DamageSourceGenerator(LivingEntity living) {
         this.living = living;
     }
+
     public Holder<DamageType> toHolder(ResourceKey<DamageType> key) {
         return ((AccessorDamageSources) living.damageSources()).getDamageTypes().getHolderOrThrow(key);
     }
+
     public DamageSource source(ResourceKey<DamageType> key) {
         return new DamageSource(((AccessorDamageSources) living.damageSources()).getDamageTypes().getHolderOrThrow(key));
     }
+
     public DamageSource source(ResourceKey<DamageType> key, Entity causing) {
         return new DamageSource(((AccessorDamageSources) living.damageSources()).getDamageTypes().getHolderOrThrow(key), causing);
     }

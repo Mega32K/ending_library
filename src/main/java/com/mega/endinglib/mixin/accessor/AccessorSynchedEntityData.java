@@ -12,10 +12,13 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface AccessorSynchedEntityData {
     @Accessor
     Entity getEntity();
+
     @Accessor
     Int2ObjectMap<SynchedEntityData.DataItem<?>> getItemsById();
+
     @Accessor("isDirty")
     boolean isDirtyNow();
+
     @Accessor
     ReadWriteLock getLock();
 }

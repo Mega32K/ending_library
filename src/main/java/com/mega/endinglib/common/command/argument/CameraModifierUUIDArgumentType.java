@@ -62,7 +62,8 @@ public class CameraModifierUUIDArgumentType implements ArgumentType<UUID> {
                     builder.suggest(modifier.getId().toString(), modifier.toComponent());
                 }
                 return builder.buildFuture();
-            } catch (Throwable throwable) {}
+            } catch (Throwable throwable) {
+            }
         }
         return ArgumentType.super.listSuggestions(context, builder);
     }

@@ -3,7 +3,6 @@ package com.mega.endinglib.api.client.camera;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.mega.endinglib.api.data.CompoundTagUtils;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -12,7 +11,6 @@ import net.minecraft.nbt.ListTag;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Consumer;
@@ -22,19 +20,22 @@ public class CameraValueInstance {
     private final Map<UUID, CameraModifier> modifierById = new Object2ObjectArrayMap<>();
     private final Map<String, CameraKeyframeAnimation> animationByName = new Object2ObjectArrayMap<>();
     private final Set<CameraModifier> permanentModifiers = new ObjectArraySet<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final Consumer<CameraValueInstance> onDirty;
     private double baseValue;
     private boolean dirty = true;
     private boolean animDirty = true;
     private double cachedValue;
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+
     public CameraValueInstance() {
-        this(0D, (s)-> {});
+        this(0D, (s) -> {
+        });
     }
 
     public CameraValueInstance(double baseValue) {
-        this(baseValue, (s)-> {});
+        this(baseValue, (s) -> {
+        });
     }
-    private final Consumer<CameraValueInstance> onDirty;
 
     public CameraValueInstance(double baseValue, Consumer<CameraValueInstance> p_22098_) {
         this.onDirty = p_22098_;
@@ -51,6 +52,7 @@ public class CameraValueInstance {
             this.setDirty();
         }
     }
+
     public void removeKeyframeAnimation(CameraKeyframeAnimation animation) {
         lock.writeLock().lock();
         try {
@@ -60,6 +62,7 @@ public class CameraValueInstance {
             lock.writeLock().unlock();
         }
     }
+
     public void removeKeyframeAnimation(String name) {
         lock.writeLock().lock();
         try {
@@ -69,6 +72,7 @@ public class CameraValueInstance {
             lock.writeLock().unlock();
         }
     }
+
     public void removeKeyframeAnimations() {
         lock.writeLock().lock();
         try {
@@ -78,6 +82,7 @@ public class CameraValueInstance {
             lock.writeLock().unlock();
         }
     }
+
     public void addKeyframeAnimation(CameraKeyframeAnimation animation) {
         lock.writeLock().lock();
         try {
@@ -92,6 +97,7 @@ public class CameraValueInstance {
             lock.writeLock().unlock();
         }
     }
+
     public Collection<CameraKeyframeAnimation> getKeyframeAnimations() {
         this.lock.readLock().lock();
         try {
@@ -100,6 +106,7 @@ public class CameraValueInstance {
             this.lock.readLock().unlock();
         }
     }
+
     public Collection<CameraKeyframeAnimation> packData() {
         this.lock.readLock().lock();
         try {
@@ -115,12 +122,14 @@ public class CameraValueInstance {
             this.lock.readLock().unlock();
         }
     }
+
     @Nullable
     public CameraKeyframeAnimation getKeyframeAnimation(String name) {
         return this.animationByName.get(name);
     }
+
     public Set<CameraModifier> getModifiers(CameraModifier.Operation p_22105_) {
-        return this.modifiersByOperation.computeIfAbsent(p_22105_, (o)-> new ObjectOpenHashSet<>());
+        return this.modifiersByOperation.computeIfAbsent(p_22105_, (o) -> new ObjectOpenHashSet<>());
     }
 
     public Set<CameraModifier> getModifiers() {
@@ -145,6 +154,7 @@ public class CameraValueInstance {
             this.setDirty();
         }
     }
+
     private void addModifierWithoutDirty(CameraModifier modifier) {
         CameraModifier cameraModifier = this.modifierById.putIfAbsent(modifier.getId(), modifier);
         if (cameraModifier != null) {
@@ -154,6 +164,7 @@ public class CameraValueInstance {
             //this.setDirty();
         }
     }
+
     public void addTransientModifierWithoutDirty(CameraModifier p_22119_) {
         this.addModifierWithoutDirty(p_22119_);
     }
@@ -162,6 +173,7 @@ public class CameraValueInstance {
         this.addModifierWithoutDirty(p_22126_);
         this.permanentModifiers.add(p_22126_);
     }
+
     public void addTransientModifier(CameraModifier p_22119_) {
         this.addModifier(p_22119_);
     }
@@ -195,12 +207,12 @@ public class CameraValueInstance {
         return animDirty;
     }
 
-    public void setAnimDirty() {
-        this.animDirty = true;
-    }
-
     public void setAnimDirty(boolean animDirty) {
         this.animDirty = animDirty;
+    }
+
+    public void setAnimDirty() {
+        this.animDirty = true;
     }
 
     public void removeModifierWithoutDirty(CameraModifier modifier) {
@@ -208,6 +220,7 @@ public class CameraValueInstance {
         this.modifierById.remove(modifier.getId());
         this.permanentModifiers.remove(modifier);
     }
+
     public void removeModifier(UUID uuid) {
         CameraModifier modifier = this.getModifier(uuid);
         if (modifier != null) {
@@ -226,10 +239,11 @@ public class CameraValueInstance {
     }
 
     public void removeModifiers() {
-        for(CameraModifier cameraModifier : this.getModifiers()) {
+        for (CameraModifier cameraModifier : this.getModifiers()) {
             this.removeModifier(cameraModifier);
         }
     }
+
     public void removeModifierWithoutDirty(UUID uuid) {
         CameraModifier modifier = this.getModifier(uuid);
         if (modifier != null) {
@@ -248,10 +262,11 @@ public class CameraValueInstance {
     }
 
     public void removeModifiersWithoutDirty() {
-        for(CameraModifier cameraModifier : this.getModifiers()) {
+        for (CameraModifier cameraModifier : this.getModifiers()) {
             this.removeModifierWithoutDirty(cameraModifier);
         }
     }
+
     public double getValue() {
         if (this.dirty) {
             this.cachedValue = this.calculateValue();
@@ -260,6 +275,7 @@ public class CameraValueInstance {
 
         return this.cachedValue;
     }
+
     public float getAnimationValue(float partialTicks) {
         float animValue = 0F;
         if (this.animationByName.isEmpty())
@@ -269,6 +285,7 @@ public class CameraValueInstance {
         }
         return animValue;
     }
+
     public void tickAnimations() {
         if (!animationByName.isEmpty()) {
             this.lock.readLock().lock();
@@ -283,20 +300,21 @@ public class CameraValueInstance {
             }
         }
     }
+
     private double calculateValue() {
         double d0 = this.getBaseValue();
 
-        for(CameraModifier cameraModifier : this.getModifiersOrEmpty(CameraModifier.Operation.ADDITION)) {
+        for (CameraModifier cameraModifier : this.getModifiersOrEmpty(CameraModifier.Operation.ADDITION)) {
             d0 += cameraModifier.getAmount();
         }
 
         double d1 = d0;
 
-        for(CameraModifier CameraModifier1 : this.getModifiersOrEmpty(CameraModifier.Operation.MULTIPLY_BASE)) {
+        for (CameraModifier CameraModifier1 : this.getModifiersOrEmpty(CameraModifier.Operation.MULTIPLY_BASE)) {
             d1 += d0 * CameraModifier1.getAmount();
         }
 
-        for(CameraModifier CameraModifier2 : this.getModifiersOrEmpty(CameraModifier.Operation.MULTIPLY_TOTAL)) {
+        for (CameraModifier CameraModifier2 : this.getModifiersOrEmpty(CameraModifier.Operation.MULTIPLY_TOTAL)) {
             d1 *= 1.0D + CameraModifier2.getAmount();
         }
 
@@ -327,7 +345,7 @@ public class CameraValueInstance {
         if (!this.permanentModifiers.isEmpty()) {
             ListTag listtag = new ListTag();
 
-            for(CameraModifier cameraModifier : this.permanentModifiers) {
+            for (CameraModifier cameraModifier : this.permanentModifiers) {
                 listtag.add(cameraModifier.save());
             }
 
@@ -337,7 +355,7 @@ public class CameraValueInstance {
 
             ListTag listtag = new ListTag();
 
-            for(CameraKeyframeAnimation animation : this.animationByName.values()) {
+            for (CameraKeyframeAnimation animation : this.animationByName.values()) {
                 listtag.add(animation.serializeNBT());
             }
 
@@ -345,7 +363,7 @@ public class CameraValueInstance {
         } else modifersAndAnimBothNull++;
 
         if (modifersAndAnimBothNull >= 2)
-             return null;
+            return null;
         return compoundtag;
     }
 
@@ -353,7 +371,7 @@ public class CameraValueInstance {
         this.baseValue = compoundTag.getDouble("Base");
         if (CompoundTagUtils.containsListTag(compoundTag, "Modifiers")) {
             ListTag listtag = compoundTag.getList("Modifiers", 10);
-            for(int i = 0; i < listtag.size(); ++i) {
+            for (int i = 0; i < listtag.size(); ++i) {
                 CameraModifier modifier = CameraModifier.load(listtag.getCompound(i));
                 if (modifier != null) {
                     this.modifierById.put(modifier.getId(), modifier);
@@ -365,7 +383,7 @@ public class CameraValueInstance {
 
         if (CompoundTagUtils.containsListTag(compoundTag, "Animations")) {
             ListTag listtag = compoundTag.getList("Animations", 10);
-            for(int i = 0; i < listtag.size(); ++i) {
+            for (int i = 0; i < listtag.size(); ++i) {
                 CameraKeyframeAnimation animation = CameraKeyframeAnimation.load(listtag.getCompound(i));
                 if (animation != null) {
                     this.animationByName.put(animation.getName(), animation);

@@ -17,28 +17,27 @@ public class NormalCoremodProcessor implements IClassProcessor {
     public static final String EVENT_FIELD$el_isUnCancelable = "el_isUnCancelable";
     public static final String EVENT_FIELD$el_isUnCancelable$desc = "Z";
     public static final int SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND = 16;
+
     @Override
     public void processClass(ILaunchPluginService.Phase phase, ClassNode classNode, Type classType, AtomicBoolean shouldWrite) {
         if (phase == ILaunchPluginService.Phase.AFTER) {
             String name = classNode.name;
             if (name.equals(SCOREBOARD_CLASS)) {
-                classNode.methods.forEach(methodNode -> {
-                    methodNode.instructions.forEach(insnNode -> {
-                        if (insnNode instanceof IntInsnNode intInsn && intInsn.getOpcode() == Opcodes.BIPUSH) {
-                            if (intInsn.operand == 19) {
-                                InsnList list = new InsnList();
-                                list.add(new IntInsnNode(Opcodes.BIPUSH, SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND));
-                                list.add(new InsnNode(Opcodes.IADD));
-                                methodNode.instructions.insert(intInsn, list);
-                            } else if (intInsn.operand == 18) {
-                                InsnList list = new InsnList();
-                                list.add(new IntInsnNode(Opcodes.BIPUSH, SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND));
-                                list.add(new InsnNode(Opcodes.IADD));
-                                methodNode.instructions.insert(intInsn, list);
-                            }
+                classNode.methods.forEach(methodNode -> methodNode.instructions.forEach(insnNode -> {
+                    if (insnNode instanceof IntInsnNode intInsn && intInsn.getOpcode() == Opcodes.BIPUSH) {
+                        if (intInsn.operand == 19) {
+                            InsnList list = new InsnList();
+                            list.add(new IntInsnNode(Opcodes.BIPUSH, SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND));
+                            list.add(new InsnNode(Opcodes.IADD));
+                            methodNode.instructions.insert(intInsn, list);
+                        } else if (intInsn.operand == 18) {
+                            InsnList list = new InsnList();
+                            list.add(new IntInsnNode(Opcodes.BIPUSH, SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND));
+                            list.add(new InsnNode(Opcodes.IADD));
+                            methodNode.instructions.insert(intInsn, list);
                         }
-                    });
-                });
+                    }
+                }));
                 classNode.fields.forEach(fieldNode -> {
                     if (MCMapping.equalsFieldNode(fieldNode, MCMapping.Scoreboard$FIELD$DISPLAY_SLOTS)) {
                         if (fieldNode.value instanceof Integer integer && integer.compareTo(19) == 0) {
@@ -51,6 +50,16 @@ public class NormalCoremodProcessor implements IClassProcessor {
                     }
                 });
                 shouldWrite.set(true);
+            } else if ("com/mojang/blaze3d/font/GlyphInfo".equals(name)) {
+                classNode.methods.forEach(methodNode -> {
+                    if (MCMapping.GlyphInfo$METHOD$getBoldOffset.equalsMethodNode(methodNode)) {
+                        InsnList insnNodes = new InsnList();
+                        insnNodes.add(new LdcInsnNode(0.5F));
+                        insnNodes.add(new InsnNode(Opcodes.FRETURN));
+                        methodNode.instructions.insert(methodNode.instructions.get(0), insnNodes);
+                        shouldWrite.set(true);
+                    }
+                });
             }
             if (classNode.superName.equals(EVENT_CLASS)) {
                 classNode.interfaces.add("com/mega/endinglib/api/event/EventItf");

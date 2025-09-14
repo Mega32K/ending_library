@@ -12,6 +12,7 @@ import java.util.Set;
 public interface AccessorArrow {
     @Accessor
     Set<MobEffectInstance> getEffects();
+
     @Accessor
     Potion getPotion();
 }

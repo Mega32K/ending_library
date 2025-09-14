@@ -8,8 +8,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(Timer.class)
 public interface AccessorMcTimer {
     @Accessor("msPerTick")
+    float getMsPerTick();
+
+    @Accessor("msPerTick")
     @Mutable
     void setMsPerTick(float msPerTick);
-    @Accessor("msPerTick")
-    float getMsPerTick();
 }

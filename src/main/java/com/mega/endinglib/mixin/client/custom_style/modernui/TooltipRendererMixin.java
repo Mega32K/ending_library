@@ -25,6 +25,7 @@ public class TooltipRendererMixin {
             TextColorUtils.pushCentered(tooltipWidth);
         }
     }
+
     @Inject(method = "drawTooltip", at = @At("RETURN"))
     private void tooltipMaxWidthPop(ItemStack itemStack, GuiGraphics gr, List<ClientTooltipComponent> list, int mouseX, int mouseY, Font font, int screenWidth, int screenHeight, float partialX, float partialY, ClientTooltipPositioner positioner, CallbackInfo ci) {
         TextColorUtils.popCentered();

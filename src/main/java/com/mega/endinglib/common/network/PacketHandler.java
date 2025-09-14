@@ -4,14 +4,17 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
 import com.mega.endinglib.common.network.c2s.C2SItemToggleModePacket;
 import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
-import com.mega.endinglib.common.network.s2c.S2CCapabilityDataSyncPacket;
+import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
+import com.mega.endinglib.common.network.s2c.rot.S2CListSetRotationPacket;
+import com.mega.endinglib.common.network.s2c.rot.S2CMapSetRotationPacket;
+import com.mega.endinglib.common.network.s2c.rot.S2CSetPlayerRotationPacket;
+import com.mega.endinglib.common.network.s2c.rot.S2CSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.mixin.accessor.AccessorChunkMap;
 import com.mega.endinglib.mixin.accessor.AccessorTrackedEntity;
-import com.mega.endinglib.common.network.s2c.S2CCapabilitySetDataPacket;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -48,6 +51,11 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CCameraAnimationSetPacket.class, S2CCameraAnimationSetPacket::encode, S2CCameraAnimationSetPacket::decode, S2CCameraAnimationSetPacket::handle);
         INSTANCE.registerMessage(id(), S2CSetFovPacket.class, S2CSetFovPacket::encode, S2CSetFovPacket::decode, S2CSetFovPacket::handle);
         INSTANCE.registerMessage(id(), C2SUserInputPacket.class, C2SUserInputPacket::encode, C2SUserInputPacket::decode, C2SUserInputPacket::handle);
+        INSTANCE.registerMessage(id(), S2CSetPlayerRotationPacket.class, S2CSetPlayerRotationPacket::encode, S2CSetPlayerRotationPacket::decode, S2CSetPlayerRotationPacket::handle);
+        INSTANCE.registerMessage(id(), S2CSetRotationPacket.class, S2CSetRotationPacket::encode, S2CSetRotationPacket::decode, S2CSetRotationPacket::handle);
+        INSTANCE.registerMessage(id(), S2CListSetRotationPacket.class, S2CListSetRotationPacket::encode, S2CListSetRotationPacket::decode, S2CListSetRotationPacket::handle);
+        INSTANCE.registerMessage(id(), S2CMapSetRotationPacket.class, S2CMapSetRotationPacket::encode, S2CMapSetRotationPacket::decode, S2CMapSetRotationPacket::handle);
+
     }
 
     public static int id() {
@@ -65,9 +73,11 @@ public class PacketHandler {
     public static <MSG> void sendToPlayer(MSG msg, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
+
     public static <MSG> void sendToEntity(MSG message, LivingEntity entity) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
     }
+
     public static <MSG> void sendToSeen(MSG message, Entity entity, ServerLevel serverLevel) {
         AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;
         ChunkMap.TrackedEntity trackedEntity = chunkMapAccessor.getEntityMap().get(entity.getId());
@@ -82,6 +92,7 @@ public class PacketHandler {
         if (!hasSelf && entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(message, player);
     }
+
     public static void playSound(ServerPlayer serverPlayer, SoundEvent soundEvent, SoundSource source, float volume, float s) {
         ServerLevel serverLevel = serverPlayer.serverLevel();
         for (ServerPlayer player : serverLevel.players()) {

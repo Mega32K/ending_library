@@ -11,11 +11,13 @@ public class RotationUtils {
         return p_24957_ + f1;
     }
 
-    public static void rotationAtoB(Entity a, Vec3 targetPos) {
+    public static void rotateAtoB(Entity a, Vec3 targetPos) {
         a.setYRot(rotateTowards(a.getYRot(), getYRotD(a, targetPos.x, targetPos.z), 360));
         a.setXRot(rotateTowards(a.getXRot(), getXRotD(a, targetPos.x, targetPos.y, targetPos.z), 360));
     }
-
+    public static float[] rotationAtoB(Entity a, Vec3 targetPos) {
+        return new float[] {rotateTowards(a.getXRot(), getXRotD(a, targetPos.x, targetPos.y, targetPos.z), 360), rotateTowards(a.getYRot(), getYRotD(a, targetPos.x, targetPos.z), 360)};
+    }
     public static float getXRotD(Entity e, double wantedX, double wantedY, double wantedZ) {
         double d0 = wantedX - e.getX();
         double d1 = wantedY - e.getEyeY();

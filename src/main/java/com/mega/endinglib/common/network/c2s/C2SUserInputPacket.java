@@ -1,9 +1,7 @@
 package com.mega.endinglib.common.network.c2s;
 
 import com.mega.endinglib.util.mixin.data_expand.ExtraServerPlayerItf;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.commands.data.DataCommands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
@@ -12,6 +10,7 @@ import java.util.function.Supplier;
 
 public class C2SUserInputPacket {
     private final byte[] bytes;
+
     public C2SUserInputPacket(byte... bytes) {
         this.bytes = bytes;
     }
@@ -49,6 +48,7 @@ public class C2SUserInputPacket {
             }
         }
     }
+
     private static boolean g(byte b, int f) {
         return (b & f) != 0;
     }

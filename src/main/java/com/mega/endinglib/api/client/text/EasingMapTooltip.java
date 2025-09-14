@@ -7,7 +7,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.joml.Matrix4f;
 
 public record EasingMapTooltip(Easing easing) implements ClientTooltipComponent {
@@ -31,7 +30,7 @@ public record EasingMapTooltip(Easing easing) implements ClientTooltipComponent 
     public void renderImage(Font pFont, int pX, int pY, GuiGraphics pGuiGraphics) {
         PoseStack poseStack = pGuiGraphics.pose();
         poseStack.pushPose();
-        pGuiGraphics.fill(pX+2, pY+1, pX + 2 + 256, pY + 1 + 128, 0xF0A0A0A0);
+        pGuiGraphics.fill(pX + 2, pY + 1, pX + 2 + 256, pY + 1 + 128, 0xF0A0A0A0);
         poseStack.popPose();
     }
 }

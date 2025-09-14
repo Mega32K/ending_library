@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
@@ -20,11 +19,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 public abstract class EntitySyncCapabilityBase implements ICapabilitySerializable<CompoundTag> {
-    protected final SynchedCapabilityData dataManager = new SynchedCapabilityData(this);
     public final LazyOptional<EntitySyncCapabilityBase> holder = LazyOptional.of(() -> this);
+    protected final SynchedCapabilityData dataManager = new SynchedCapabilityData(this);
+
     public abstract ResourceLocation getRegistryName();
+
     public abstract Class<? extends net.minecraftforge.common.capabilities.CapabilityProvider<Entity>> getEnableClass();
+
     public abstract void syncData(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity);
+
     public final void sync(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity) {
         if (type == CapabilitySyncType.TICK)
             if (!canSyncWhenTick(entity, entity.level())) {
@@ -44,7 +47,9 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
                     this.createPacket(this.getRegistryName().toString(), toWrite, from, type, entity.getId()));
         }
     }
+
     public abstract void readSyncData(CompoundTag toRead, Dist from, CapabilitySyncType type, Entity entity);
+
     public Object createPacket(String registryName, CompoundTag compoundTag, Dist originalDist, CapabilitySyncType type, int entityID) {
         switch (originalDist) {
             case CLIENT -> {
@@ -56,6 +61,7 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
             default -> throw new AssertionError("NULL");
         }
     }
+
     public boolean shouldAttachTo(Entity entity) {
         return this.getEnableClass().isInstance(entity);
     }
@@ -65,15 +71,20 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
         Capability<EntitySyncCapabilityBase> capability = ELCapabilityManager.getCapability(this.getRegistryName().toString());
         return capability.orEmpty(cap, this.holder);
     }
+
     public Set<CapabilitySyncType> getEnabledSyncTypes() {
         return Set.of(CapabilitySyncType.PLAYER_CLONE, CapabilitySyncType.PLAYER_RESPAWN, CapabilitySyncType.PLAYER_LOGGED_IN, CapabilitySyncType.DIMENSION_CHANGE);
     }
+
     public abstract boolean canSyncWhenTick(Entity entity, Level level);
-    public void onSyncedDataUpdated(CapabilityEntityData<?> data) {}
+
+    public void onSyncedDataUpdated(CapabilityEntityData<?> data) {
+    }
 
     public SynchedCapabilityData getDataManager() {
         return dataManager;
     }
+
     @Override
     public final CompoundTag serializeNBT() {
         CompoundTag compoundTag = new CompoundTag();
@@ -88,9 +99,11 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
         this.dataManager.forEachRead(data -> data.read(nbt));
         this.customDeserializeNBT(nbt);
     }
+
     public abstract void customSerializeNBT(CompoundTag nbt);
 
     public abstract void customDeserializeNBT(CompoundTag nbt);
+
     public void tick(Entity entity) {
     }
 }

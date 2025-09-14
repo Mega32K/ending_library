@@ -23,7 +23,6 @@ public class EndingLibraryMixinPlugin extends ApplyCheckMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
     }
-
     @Override
     public String getRefMapperConfig() {
         return null;

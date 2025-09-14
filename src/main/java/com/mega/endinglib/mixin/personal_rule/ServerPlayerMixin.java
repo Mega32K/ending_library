@@ -19,22 +19,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixin extends Player {
-    @Shadow @Final public ServerPlayerGameMode gameMode;
-
-    @Shadow public abstract void sendSystemMessage(Component p_240560_, boolean p_240545_);
+    @Shadow
+    @Final
+    public ServerPlayerGameMode gameMode;
 
     ServerPlayerMixin(Level p_250508_, BlockPos p_250289_, float p_251702_, GameProfile p_252153_) {
         super(p_250508_, p_250289_, p_251702_, p_252153_);
     }
 
+    @Shadow
+    public abstract void sendSystemMessage(Component p_240560_, boolean p_240545_);
+
     @Inject(method = "setGameMode", at = @At("HEAD"), cancellable = true)
     private void canChangeGameMode(GameType p_143404_, CallbackInfoReturnable<Boolean> cir) {
         CommonProxy.getCameraCapOptional(this).ifPresent(cap -> {
-           if (cap.isGameModeLocked())
-               if (this.gameMode.getGameModeForPlayer() != p_143404_) {
-                   this.sendSystemMessage(Component.translatable("chat.endinglib.cannot_change_gamemode").withStyle(ChatFormatting.RED), true);
-                   cir.setReturnValue(false);
-               }
+            if (cap.isGameModeLocked())
+                if (this.gameMode.getGameModeForPlayer() != p_143404_) {
+                    this.sendSystemMessage(Component.translatable("chat.endinglib.cannot_change_gamemode").withStyle(ChatFormatting.RED), true);
+                    cir.setReturnValue(false);
+                }
         });
     }
 }

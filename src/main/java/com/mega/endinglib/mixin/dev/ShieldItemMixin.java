@@ -26,6 +26,7 @@ public abstract class ShieldItemMixin extends Item {
     public Component getName(ItemStack p_41458_) {
         return TextColorUtils.component();
     }
+
     @Inject(method = "appendHoverText", at = @At("TAIL"))
     private void aht(ItemStack p_43094_, Level p_43095_, List<Component> p_43096_, TooltipFlag p_43097_, CallbackInfo ci) {
         p_43096_.add(TextColorUtils.component());
