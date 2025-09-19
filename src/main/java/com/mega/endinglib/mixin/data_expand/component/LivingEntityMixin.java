@@ -11,6 +11,7 @@ import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import net.minecraft.core.Holder;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -53,7 +54,7 @@ public abstract class LivingEntityMixin extends Entity {
         breakStack.set(p_21279_);
     }
     @WrapWithCondition(method = "breakItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"))
-    private boolean playComponentBreakSoundCondition(@Share("breakStack")LocalRef<ItemStack> breakStack) {
+    private boolean playComponentBreakSoundCondition(Level level, double p_46482_, double p_46483_, double p_46484_, SoundEvent p_46485_, SoundSource p_46486_, float p_46487_, float p_46488_, boolean p_46489_, @Share("breakStack")LocalRef<ItemStack> breakStack) {
         ItemStack itemStack = breakStack.get();
         if (itemStack != null && !itemStack.isEmpty()) {
             Optional<Holder<SoundEvent>> o = ItemComponentManager.get(itemStack).breakSound();

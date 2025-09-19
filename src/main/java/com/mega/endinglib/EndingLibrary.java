@@ -43,7 +43,7 @@ public class EndingLibrary {
         PacketHandler.registerPackets();
         new CommonProxy();
         MinecraftForge.EVENT_BUS.register(this);
-        ModConstructorRun.run();
+        //ModConstructorRun.run();
     }
 
     public static IEventBus getModEventBus() {
