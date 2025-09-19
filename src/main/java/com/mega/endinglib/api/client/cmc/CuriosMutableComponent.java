@@ -153,7 +153,7 @@ public class CuriosMutableComponent {
 
     public MutableComponent build(ItemStack stack) {
         MutableComponent component = this.component.copy();
-        component = this.style.getDelegate().call(component);
+        component = this.style.getDelegate().apply(component);
         Dist dist = FMLEnvironment.dist;
         for (Object o : content) {
             if (o instanceof FormatWrapper formatWrapper) {

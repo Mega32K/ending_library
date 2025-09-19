@@ -1,22 +1,22 @@
 package com.mega.endinglib.util.java;
 
-import com.mega.endinglib.util.java.funtion.Exe;
 import com.mega.endinglib.util.java.funtion.ExeCollection;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class MUtils {
     @SuppressWarnings("StatementWithEmptyBody")
-    public static <T> void safelyForEach(final List<T> collection, Exe<T> callable) {
+    public static <T> void safelyForEach(final List<T> collection, Consumer<T> callable) {
         if (collection.isEmpty()) {
-        } else if (collection.size() == 1) callable.run(collection.get(0));
+        } else if (collection.size() == 1) callable.accept(collection.get(0));
         else if (collection.size() == 2) {
-            callable.run(collection.get(0));
-            callable.run(collection.get(1));
+            callable.accept(collection.get(0));
+            callable.accept(collection.get(1));
         } else for (int i = collection.size() - 1; i >= 0; i--)
-            callable.run(collection.get(i));
+            callable.accept(collection.get(i));
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
