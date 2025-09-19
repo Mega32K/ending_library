@@ -20,7 +20,7 @@ public class RollCommand {
     public static void load(RegisterCommandsEvent event) {
         event.getDispatcher().register(
                 LiteralArgumentBuilder.<CommandSourceStack>literal("roll")
-                        .requires((p_138087_) -> p_138087_.hasPermission(2))
+                        .requires((p_138087_) -> p_138087_.hasPermission(1))
                         .then(Commands.argument("min", IntegerArgumentType.integer())
                                 .then(Commands.argument("max", IntegerArgumentType.integer())
                                         .executes(context -> {

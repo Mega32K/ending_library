@@ -19,12 +19,12 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class CommandArgumentType implements ArgumentType<String> {
-    public CommandArgumentType() {
+public class CommandArgument implements ArgumentType<String> {
+    public CommandArgument() {
     }
 
-    public static CommandArgumentType command() {
-        return new CommandArgumentType();
+    public static CommandArgument command() {
+        return new CommandArgument();
     }
 
     public static String getCommand(CommandContext<?> context, String name) {

@@ -8,6 +8,7 @@ import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -25,51 +26,51 @@ public class CompoundTagUtils {
     }
 
     public static boolean containsBoolean(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_BYTE);
     }
 
     public static boolean containsShort(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_SHORT);
     }
 
     public static boolean containsByte(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_BYTE);
     }
 
     public static boolean containsInt(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_INT);
     }
 
     public static boolean containsFloat(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_FLOAT);
     }
 
     public static boolean containsDouble(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_DOUBLE);
     }
 
     public static boolean containsLong(CompoundTag nbt, String key) {
-        return nbt.contains(key, 99);
+        return nbt.contains(key, Tag.TAG_LONG);
     }
 
     public static boolean containsString(CompoundTag nbt, String key) {
-        return nbt.contains(key, 8);
+        return nbt.contains(key, Tag.TAG_STRING);
     }
 
     public static boolean containsCompound(CompoundTag nbt, String key) {
-        return nbt.contains(key, 10);
+        return nbt.contains(key, Tag.TAG_COMPOUND);
     }
 
     public static boolean containsByteArray(CompoundTag nbt, String key) {
-        return nbt.contains(key, 7);
+        return nbt.contains(key, Tag.TAG_BYTE_ARRAY);
     }
 
     public static boolean containsIntArray(CompoundTag nbt, String key) {
-        return nbt.contains(key, 11);
+        return nbt.contains(key, Tag.TAG_INT_ARRAY);
     }
 
     public static boolean containsLongArray(CompoundTag nbt, String key) {
-        return nbt.contains(key, 12);
+        return nbt.contains(key, Tag.TAG_LONG_ARRAY);
     }
 
     public static <T> void putOptional(CompoundTag nbt, String key, Optional<T> optional, CompoundTagWriter<T> writer) {

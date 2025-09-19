@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
-public class CameraAnimationArgumentType implements ArgumentType<String> {
+public class CameraAnimationArgument implements ArgumentType<String> {
     public static final SimpleCommandExceptionType ERROR_INVALID_UUID = new SimpleCommandExceptionType(Component.translatable("argument.uuid.invalid"));
     private static final Collection<String> EXAMPLES = List.of("dd12be42-52a9-4a91-a8a1-11c01849e498");
     private static final Pattern ALLOWED_CHARACTERS = Pattern.compile("^([-A-Fa-f0-9]+)");
@@ -26,8 +26,8 @@ public class CameraAnimationArgumentType implements ArgumentType<String> {
         return p_113854_.getArgument(p_113855_, String.class);
     }
 
-    public static CameraAnimationArgumentType name() {
-        return new CameraAnimationArgumentType();
+    public static CameraAnimationArgument name() {
+        return new CameraAnimationArgument();
     }
 
     public String parse(StringReader p_113852_) throws CommandSyntaxException {

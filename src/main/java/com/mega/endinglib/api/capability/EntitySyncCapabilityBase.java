@@ -28,6 +28,13 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
 
     public abstract void syncData(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity);
 
+    /**
+     * 手动调用此方法
+     * @param toWrite 将要写入的数据
+     * @param from 从哪个端发送数据包
+     * @param type 同步类型
+     * @param entity 能力持有实体
+     */
     public final void sync(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity) {
         if (type == CapabilitySyncType.TICK)
             if (!canSyncWhenTick(entity, entity.level())) {

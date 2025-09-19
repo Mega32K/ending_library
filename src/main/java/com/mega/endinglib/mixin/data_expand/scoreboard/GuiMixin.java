@@ -12,4 +12,8 @@ public abstract class GuiMixin {
     private int expandMaxCount(int constant) {
         return constant + NormalCoremodProcessor.SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND;
     }
+    @ModifyConstant(method = "displayScoreboardSidebar", constant = @Constant(intValue = 3, ordinal = 0))
+    private int modifyScoreboardLocation(int constant) {
+        return constant - 1;
+    }
 }

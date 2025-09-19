@@ -31,4 +31,8 @@ public class ClientWrapped {
     public static void setFov(int fov) {
         Minecraft.getInstance().options.fov().set(fov);
     }
+
+    public static void setCameraType(short cameraType) {
+        Minecraft.getInstance().options.setCameraType(CameraType.class.getEnumConstants()[cameraType]);
+    }
 }

@@ -55,7 +55,7 @@ public class C2SCapabilityDataSyncPacket {
             Capability<EntitySyncCapabilityBase> capability = ELCapabilityManager.getCapability(packet.registryName);
             if (capability != null) {
                 entity.getCapability(capability).ifPresent(c -> {
-                    c.readSyncData(packet.nbt, Dist.DEDICATED_SERVER, packet.syncType, entity);
+                    c.readSyncData(packet.nbt, Dist.CLIENT, packet.syncType, entity);
                 });
             }
         }

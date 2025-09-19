@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.rot.S2CListSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rot.S2CMapSetRotationPacket;
@@ -34,7 +35,7 @@ import java.util.function.BiFunction;
 public class SetRotationCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("rotate")
-                .requires((p_138087_) -> p_138087_.hasPermission(2))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_SET_ROTATION.get()))
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .then(Commands.literal("set")
                                 .then(Commands.argument("rotation", Vec2Argument.vec2(false))

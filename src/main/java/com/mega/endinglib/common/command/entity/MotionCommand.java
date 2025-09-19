@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.command.entity;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -18,7 +19,7 @@ import org.joml.Vector3f;
 public class MotionCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("motion")
-                .requires((p_138087_) -> p_138087_.hasPermission(2))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_MOTION.get()))
                 .then(Commands.argument("target", EntityArgument.entity())
                         .then(Commands.literal("set")
                                 .then(Commands.argument("motion", Vec3Argument.vec3(false))
@@ -46,7 +47,7 @@ public class MotionCommand {
         Vec3 motion = vec3;
         entity.setDeltaMovement(motion);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.set", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
-        return (int) motion.length();
+        return (int) (motion.length() * 100);
     }
 
     private static int push(CommandSourceStack stack, Entity entity, Vec3 vec3, boolean relative) {
@@ -58,7 +59,7 @@ public class MotionCommand {
         Vec3 motion = vec3;
         entity.push(motion.x, motion.y, motion.z);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.push", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
-        return (int) motion.length();
+        return (int) (motion.length() * 100);
     }
 
     private static Vec3 relative(Entity entity, Vec3 origin) {

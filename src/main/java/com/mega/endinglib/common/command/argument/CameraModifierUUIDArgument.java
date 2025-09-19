@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CameraModifierUUIDArgumentType implements ArgumentType<UUID> {
+public class CameraModifierUUIDArgument implements ArgumentType<UUID> {
     public static final SimpleCommandExceptionType ERROR_INVALID_UUID = new SimpleCommandExceptionType(Component.translatable("argument.uuid.invalid"));
     private static final Collection<String> EXAMPLES = Arrays.asList("dd12be42-52a9-4a91-a8a1-11c01849e498");
     private static final Pattern ALLOWED_CHARACTERS = Pattern.compile("^([-A-Fa-f0-9]+)");
@@ -31,8 +31,8 @@ public class CameraModifierUUIDArgumentType implements ArgumentType<UUID> {
         return p_113854_.getArgument(p_113855_, UUID.class);
     }
 
-    public static CameraModifierUUIDArgumentType uuid() {
-        return new CameraModifierUUIDArgumentType();
+    public static CameraModifierUUIDArgument uuid() {
+        return new CameraModifierUUIDArgument();
     }
 
     public UUID parse(StringReader p_113852_) throws CommandSyntaxException {

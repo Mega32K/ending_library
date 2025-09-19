@@ -20,12 +20,12 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class CommandBlockArgumentType implements ArgumentType<List<String>> {
-    public CommandBlockArgumentType() {
+public class CommandBlockArgument implements ArgumentType<List<String>> {
+    public CommandBlockArgument() {
     }
 
-    public static CommandBlockArgumentType commandBlock() {
-        return new CommandBlockArgumentType();
+    public static CommandBlockArgument commandBlock() {
+        return new CommandBlockArgument();
     }
 
     public static List<String> getCommand(CommandContext<?> context, String name) {

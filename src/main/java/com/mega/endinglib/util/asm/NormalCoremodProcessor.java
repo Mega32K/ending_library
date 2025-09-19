@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class NormalCoremodProcessor implements IClassProcessor {
     public static final NormalCoremodProcessor INSTANCE = new NormalCoremodProcessor();
-    public static final String SCOREBOARD_CLASS = "net/minecraft/world/scores/Scoreboard";
+    static final String EVENT_UTIL_CLASS = "com/mega/endinglib/util/asm/EventUtil";
     public static final String EVENT_CLASS = "net/minecraftforge/eventbus/api/Event";
     public static final String EVENT_FIELD$el_isUnCancelable = "el_isUnCancelable";
     public static final String EVENT_FIELD$el_isUnCancelable$desc = "Z";
@@ -22,6 +22,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
     public void processClass(ILaunchPluginService.Phase phase, ClassNode classNode, Type classType, AtomicBoolean shouldWrite) {
         if (phase == ILaunchPluginService.Phase.AFTER) {
             String name = classNode.name;
+            /*
             if (name.equals(SCOREBOARD_CLASS)) {
                 classNode.methods.forEach(methodNode -> methodNode.instructions.forEach(insnNode -> {
                     if (insnNode instanceof IntInsnNode intInsn && intInsn.getOpcode() == Opcodes.BIPUSH) {
@@ -50,7 +51,9 @@ public class NormalCoremodProcessor implements IClassProcessor {
                     }
                 });
                 shouldWrite.set(true);
-            } else if ("com/mojang/blaze3d/font/GlyphInfo".equals(name)) {
+            } else
+             */
+            if ("com/mojang/blaze3d/font/GlyphInfo".equals(name)) {
                 classNode.methods.forEach(methodNode -> {
                     if (MCMapping.GlyphInfo$METHOD$getBoldOffset.equalsMethodNode(methodNode)) {
                         InsnList insnNodes = new InsnList();
@@ -58,6 +61,25 @@ public class NormalCoremodProcessor implements IClassProcessor {
                         insnNodes.add(new InsnNode(Opcodes.FRETURN));
                         methodNode.instructions.insert(methodNode.instructions.get(0), insnNodes);
                         shouldWrite.set(true);
+                    }
+                });
+            } else if ("net/minecraftforge/common/extensions/IForgeItemStack".equals(name)) {
+                classNode.methods.forEach(methodNode -> {
+                    if (methodNode.name.equals("canElytraFly") || methodNode.name.equals("elytraFlightTick")) {
+                        methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                LabelNode returnNode = new LabelNode();
+                                insnNodes.add(new InsnNode(Opcodes.DUP));
+                                insnNodes.add(new JumpInsnNode(Opcodes.IFNE, returnNode));
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "canElytraFly", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                                insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                                insnNodes.add(returnNode);
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
                     }
                 });
             }

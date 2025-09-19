@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.command.entity;
 
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -16,7 +17,7 @@ import java.util.Collection;
 public class TimeStopCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("timestop")
-                .requires(cs -> cs.hasPermission(2)) //permission
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_TIMESTOP.get()))
                 .then(Commands.argument("seconds", FloatArgumentType.floatArg(0F))
                         .executes(context -> execute(context.getSource(), FloatArgumentType.getFloat(context, "seconds")))
                 )
@@ -45,7 +46,7 @@ public class TimeStopCommand {
             TimeStopUtils.use(true, living, false, (int) (seconds * 20), false);
             sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), seconds), false);
         }
-        return 0;
+        return (int) (seconds * 20);
     }
 
     private static int execute(CommandSourceStack sender, Collection<? extends Entity> entities, float seconds) {
@@ -68,6 +69,6 @@ public class TimeStopCommand {
         }
         if (!single)
             sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set.multi", entities.size(), seconds), false);
-        return 0;
+        return (int) (seconds * 20);
     }
 }

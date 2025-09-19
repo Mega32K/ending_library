@@ -6,6 +6,7 @@ public enum CapabilitySyncType implements IExtensibleEnum {
     COMPLETELY,
     TICK,
     REMOVE,
+    CLIENT_OPTIONS,
     PLAYER_CLONE,
     PLAYER_RESPAWN,
     DEATH,

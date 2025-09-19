@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
-public class CameraOperationArgumentType implements ArgumentType<String> {
+public class CameraOperationArgument implements ArgumentType<String> {
     public static final Collection<String> EXAMPLES = Arrays.stream(CameraModifier.Operation.values()).map(CameraModifier.Operation::toString).toList();
 
-    public static CameraOperationArgumentType operation() {
-        return new CameraOperationArgumentType();
+    public static CameraOperationArgument operation() {
+        return new CameraOperationArgument();
     }
 
     public static CameraModifier.Operation getOperation(final CommandContext<?> context, final String name) {

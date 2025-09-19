@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.command.entity.player;
 
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CSetFovPacket;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -15,7 +16,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class SetFovCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("fov")
-                .requires((p_138087_) -> p_138087_.hasPermission(2))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_SET_FOV.get()))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.argument("fov", IntegerArgumentType.integer(30, 110))
                                 .executes(context -> setFov(context.getSource(), EntityArgument.getPlayer(context, "player"), IntegerArgumentType.getInteger(context, "fov")))

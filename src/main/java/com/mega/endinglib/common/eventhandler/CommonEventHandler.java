@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.eventhandler;
 
+import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
@@ -7,7 +8,9 @@ import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
@@ -30,6 +33,20 @@ public class CommonEventHandler {
             float extra = ModAttributes.getExhaustion(event.player);
             if (extra > 0F)
                 event.player.causeFoodExhaustion(extra);
+        }
+    }
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void afterDamageEvent(LivingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.invulnerableTime > 0) {
+            GameRules gameRules = entity.level().getGameRules();
+            if (!gameRules.getBoolean(EndingLibraryGameRules.MOB_DAMAGE_INVULNERABLE)) {
+                entity.invulnerableTime = 0;
+            } else if (entity instanceof Player) {
+                if (!gameRules.getBoolean(EndingLibraryGameRules.PLAYER_DAMAGE_INVULNERABLE)) {
+                    entity.invulnerableTime = 0;
+                }
+            }
         }
     }
 

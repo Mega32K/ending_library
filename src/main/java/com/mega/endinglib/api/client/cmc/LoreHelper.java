@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.client.cmc;
 
+import com.mega.endinglib.api.data.TagEnum;
 import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
@@ -12,12 +13,17 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.EnumMap;
 import java.util.Map;
 
 public class LoreHelper {
     public static final MutableComponent[] BRACKETS = new MutableComponent[]{
             Component.literal("[").withStyle(ChatFormatting.DARK_GRAY),
             Component.literal("]").withStyle(ChatFormatting.DARK_GRAY)
+    };
+    public static final MutableComponent[] IDENTIFIERS = new MutableComponent[]{
+            Component.literal("<").withStyle(ChatFormatting.GRAY),
+            Component.literal(">").withStyle(ChatFormatting.GRAY)
     };
     public static final Map<ChatFormatting, String> codeMap = new Object2ObjectOpenHashMap<>();
 
@@ -26,7 +32,52 @@ public class LoreHelper {
             codeMap.put(cf, String.valueOf(ChatFormatting.PREFIX_CODE) + cf.getChar());
         }
     }
-
+    public static MutableComponent tag_byte() {
+        return identifierWrap(Component.literal("Byte").withStyle(ChatFormatting.BLUE));
+    }
+    public static MutableComponent tag_boolean() {
+        return identifierWrap(Component.literal("Boolean").withStyle(ChatFormatting.GREEN));
+    }
+    public static MutableComponent tag_byte_array() {
+        return identifierWrap(Component.literal("[ByteArray]").withStyle(ChatFormatting.BLUE));
+    }
+    public static MutableComponent tag_short() {
+        return identifierWrap(Component.literal("Short").withStyle(ChatFormatting.DARK_GREEN));
+    }
+    public static MutableComponent tag_int() {
+        return identifierWrap(Component.literal("Int").withStyle(ChatFormatting.AQUA));
+    }
+    public static MutableComponent tag_int_array() {
+        return identifierWrap(Component.literal("[IntArray]").withStyle(ChatFormatting.AQUA));
+    }
+    public static MutableComponent tag_float() {
+        return identifierWrap(Component.literal("Float").withStyle(ChatFormatting.LIGHT_PURPLE));
+    }
+    public static MutableComponent tag_double() {
+        return identifierWrap(Component.literal("Double").withStyle(ChatFormatting.YELLOW));
+    }
+    public static MutableComponent tag_string() {
+        return identifierWrap(Component.literal("String").withStyle(ChatFormatting.GOLD));
+    }
+    public static MutableComponent tag_long() {
+        return identifierWrap(Component.literal("Long").withStyle(ChatFormatting.RED));
+    }
+    public static MutableComponent tag_long_array() {
+        return identifierWrap(Component.literal("[LongArray]").withStyle(ChatFormatting.RED));
+    }
+    public static MutableComponent tag_snbt() {
+        return identifierWrap(Component.literal("SNBT").withStyle(ChatFormatting.LIGHT_PURPLE));
+    }
+    public static MutableComponent tag_list_snbt() {
+        return identifierWrap(Component.literal("[SNBT List]").withStyle(ChatFormatting.LIGHT_PURPLE));
+    }
+    public static int toInt(String s) {
+        try {
+            return Integer.parseInt(s.replaceAll("[^0-9]", ""));
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
     public static String codeMode(ChatFormatting formatting) {
         return codeMap.getOrDefault(formatting, String.valueOf(ChatFormatting.PREFIX_CODE) + formatting.getChar());
     }
@@ -34,7 +85,9 @@ public class LoreHelper {
     public static MutableComponent wrap(Component component) {
         return BRACKETS[0].copy().append(component).append(BRACKETS[1].copy());
     }
-
+    public static MutableComponent identifierWrap(Component component) {
+        return IDENTIFIERS[0].copy().append(component).append(IDENTIFIERS[1].copy());
+    }
     public static MutableComponent empty() {
         return Component.translatable("tooltip.endinglib.optional_empty");
     }

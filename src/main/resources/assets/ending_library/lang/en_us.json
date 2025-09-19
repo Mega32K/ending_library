@@ -1,4 +1,7 @@
 {
+  "item.components": "%s fake component(s)",
+  "component.minecraft.item_model" : "Item Model",
+
   "attribute.name.ending_library.extra_exhaustion_increase" : "Extra Exhaustion Increase",
   "attribute.name.ending_library.extra_exhaustion_increase.description" : "玩家每tick多增加的消耗度",
   "attribute.name.ending_library.multi_jump" : "Multi Jump",
@@ -36,6 +39,7 @@
   "commands.endinglib.message.camera.camera_enable": "§7为%s §a启用 §7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s §c关闭 §7自定义相机模式",
   "commands.endinglib.message.camera.camera_mode_modify": "§7已修改%s§7的自定义相机属性",
+  "commands.endinglib.message.camera.camera_mode_default": "§7已修改%s§7的自定义相机属性为默认值",
   "commands.endinglib.message.camera.add_modifier": "§7为%s§7添加了相机修饰符 ",
   "commands.endinglib.message.camera.add_modifier_null_id": "§7为%s§7添加了相机修饰符(UUID随机生成) ",
   "commands.endinglib.message.camera.remove_modifier": "§7为%s§7清除了相机修饰符 ",
@@ -57,6 +61,7 @@
   "commands.endinglib.message.camera.option.mouse_control": "§7鼠标上帝模式:",
   "commands.endinglib.message.camera.option.mouse_control.failure.no_freezing_origin": "§7你没有开启 冻结原版相机, 无法开启 鼠标上帝模式。",
 
+  "commands.endinglib.message.personal.rule.default": "§7已将%s的§7个人规则 %s §7重置为默认值:%s",
   "commands.endinglib.message.personal.rule.set": "§7已将%s的§7个人规则 %s §7设置为:%s",
   "commands.endinglib.message.personal.rule.get": "%s§7当前的个人规则 %s §7为:%s",
   "commands.endinglib.message.personal_rule.othrSpectorRender": "其他旁观玩家渲染",
@@ -73,6 +78,10 @@
 
   "commands.endinglib.message.setRot": "§7已将%s§7的旋转角度设为%s",
   "commands.endinglib.message.addRot": "§7已将%s§7的旋转角度增加%s",
+  "commands.endinglib.message.facing": "§7已将%s§7朝向世界坐标%s",
+  "commands.endinglib.message.facing.multi": "§7已将%s个实体朝向世界坐标%s",
+  "commands.endinglib.message.facing.entity": "§7已将%s§7朝向实体%s",
+  "commands.endinglib.message.facing.entity.multi": "§7已将%s个实体朝向实体%s",
   "commands.endinglib.message.setRot.multi": "§7已将%s个实体的旋转角度设为%s",
   "commands.endinglib.message.addRot.multi": "§7已将%s个实体的旋转角度增加%s",
 
@@ -99,8 +108,29 @@
   "screen.endinglib.camera.slider.blur_suffix" : "正常",
 
   "screen.endinglib.other_player_inv.title" : "%s的背包",
+  "container.endinglib.enderchest": "%s 's Ender Chest",
   "screen.endinglib.other_player_inv.info_0" : "这一排栏位表示%s的背包快捷栏",
   "screen.endinglib.other_player_inv.info_1" : "这一排栏位表示%s的装备栏及副手栏",
 
-  "chat.endinglib.cannot_change_gamemode" : "你无法切换游戏模式!"
+  "chat.endinglib.cannot_change_gamemode" : "你无法切换游戏模式!",
+
+  "config.endinglib.server.command_permission.root_command" : "Command permission requirement of /endinglib.",
+  "config.endinglib.server.command_permission.camera" : "Command permission requirement of /endinglib camera.",
+  "config.endinglib.server.command_permission.enderchest" : "Command permission requirement of /enderchest.",
+  "config.endinglib.server.command_permission.inv" : "Command permission requirement of /inv.",
+  "config.endinglib.server.command_permission.personal" : "Command permission requirement of /endinglib personal.",
+  "config.endinglib.server.command_permission.schedule" : "Command permission requirement of /endinglib schedule.",
+  "config.endinglib.server.command_permission.timestop" : "Command permission requirement of /endinglib timestop.",
+  "config.endinglib.server.command_permission.fov" : "Command permission requirement of /endinglib fov.",
+  "config.endinglib.server.command_permission.action" : "Command permission requirement of /endinglib action.",
+  "config.endinglib.server.command_permission.rotate" : "Command permission requirement of /endinglib rotate.",
+  "config.endinglib.server.command_permission.motion" : "Command permission requirement of /endinglib motion.",
+  "config.endinglib.server.command_permission.fill_entity" : "Command permission requirement of /endinglib fillEntity.",
+
+  "argument.entity.selector.nearestEntity" : "Nearest Entity",
+
+  "arguments.item.component.expected": "Expected item component",
+  "arguments.item.component.malformed": "Malformed '%s' component: '%s'",
+  "arguments.item.component.repeated": "Item component '%s' was repeated, but only one value can be specified",
+  "arguments.item.component.unknown": "Unknown item component '%s'"
 }

@@ -82,7 +82,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "1.20.1",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/libs",
+    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/build/resources/main/assets/ending_library/lang",
     "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.45287958",
@@ -91,27 +91,31 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\lang" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\common\command\argument" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\lang" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\textures\ui" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
     </key>
+    <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.config.ClientConfig" />
+    </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.mega.endinglib.api.event" />
     </key>
     <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.api.item.component" />
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.config" />
+      <recent name="com.mega.endinglib.common.command" />
       <recent name="com.mega.endinglib.common.network.s2c.rot" />
       <recent name="com.mega.endinglib.common.network.s2c" />
       <recent name="com.mega.endinglib.common.command.entity.player" />
-      <recent name="com.mega.endinglib.common.command.argument" />
-      <recent name="com.mega.endinglib.common.command" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">

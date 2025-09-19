@@ -1,4 +1,7 @@
 {
+  "item.components": "%s个(伪)组件",
+  "component.minecraft.item_model" : "物品模型",
+
   "attribute.name.ending_library.extra_exhaustion_increase" : "额外消耗度增值",
   "attribute.name.ending_library.extra_exhaustion_increase.description" : "玩家每tick多增加的消耗度",
   "attribute.name.ending_library.multi_jump" : "多段跳",
@@ -36,6 +39,7 @@
   "commands.endinglib.message.camera.camera_enable": "§7为%s§a启用§7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s§c关闭§7自定义相机模式",
   "commands.endinglib.message.camera.camera_mode_modify": "§7已修改%s§7的自定义相机属性",
+  "commands.endinglib.message.camera.camera_mode_default": "§7已修改%s§7的自定义相机属性为默认值",
   "commands.endinglib.message.camera.add_modifier": "§7为%s§7添加了相机修饰符 ",
   "commands.endinglib.message.camera.add_modifier_null_id": "§7为%s§7添加了相机修饰符(UUID随机生成) ",
   "commands.endinglib.message.camera.remove_modifier": "§7为%s§7清除了相机修饰符 ",
@@ -57,6 +61,7 @@
   "commands.endinglib.message.camera.option.mouse_control": "§7鼠标上帝模式:",
   "commands.endinglib.message.camera.option.mouse_control.failure.no_freezing_origin": "§7你没有开启 冻结原版相机, 无法开启 鼠标上帝模式。",
 
+  "commands.endinglib.message.personal.rule.default": "§7已将%s的§7个人规则 %s §7重置为默认值:%s",
   "commands.endinglib.message.personal.rule.set": "§7已将%s的§7个人规则 %s §7设置为:%s",
   "commands.endinglib.message.personal.rule.get": "%s§7当前的个人规则 %s §7为:%s",
   "commands.endinglib.message.personal_rule.othrSpectorRender": "其他旁观玩家渲染",
@@ -73,6 +78,10 @@
 
   "commands.endinglib.message.setRot": "§7已将%s§7的旋转角度设为%s",
   "commands.endinglib.message.addRot": "§7已将%s§7的旋转角度增加%s",
+  "commands.endinglib.message.facing": "§7已将%s§7朝向世界坐标%s",
+  "commands.endinglib.message.facing.multi": "§7已将%s个实体朝向世界坐标%s",
+  "commands.endinglib.message.facing.entity": "§7已将%s§7朝向实体%s",
+  "commands.endinglib.message.facing.entity.multi": "§7已将%s个实体朝向实体%s",
   "commands.endinglib.message.setRot.multi": "§7已将%s个实体的旋转角度设为%s",
   "commands.endinglib.message.addRot.multi": "§7已将%s个实体的旋转角度增加%s",
 
@@ -99,8 +108,29 @@
   "screen.endinglib.camera.slider.blur_suffix" : "正常",
 
   "screen.endinglib.other_player_inv.title" : "%s的背包",
+  "container.endinglib.enderchest": "%s的末影箱",
   "screen.endinglib.other_player_inv.info_0" : "这一排栏位表示%s的背包快捷栏",
   "screen.endinglib.other_player_inv.info_1" : "这一排栏位表示%s的装备栏及副手栏",
 
-  "chat.endinglib.cannot_change_gamemode" : "你无法切换游戏模式!"
+  "chat.endinglib.cannot_change_gamemode" : "你无法切换游戏模式!",
+
+  "config.endinglib.server.command_permission.root_command" : "",
+  "config.endinglib.server.command_permission.camera" : "",
+  "config.endinglib.server.command_permission.enderchest" : "",
+  "config.endinglib.server.command_permission.inv" : "",
+  "config.endinglib.server.command_permission.personal" : "",
+  "config.endinglib.server.command_permission.schedule" : "",
+  "config.endinglib.server.command_permission.timestop" : "",
+  "config.endinglib.server.command_permission.fov" : "",
+  "config.endinglib.server.command_permission.action" : "",
+  "config.endinglib.server.command_permission.rotate" : "",
+  "config.endinglib.server.command_permission.motion" : "",
+  "config.endinglib.server.command_permission.fill_entity" : "",
+
+  "argument.entity.selector.nearestEntity" : "最近的实体",
+
+  "arguments.item.component.expected": "应为物品组件",
+  "arguments.item.component.malformed": "错误的“%s”组件：“%s”",
+  "arguments.item.component.repeated": "物品组件“%s”重复，只能指定一个值",
+  "arguments.item.component.unknown": "未知的物品组件“%s”"
 }

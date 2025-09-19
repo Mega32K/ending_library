@@ -4,12 +4,15 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
+import com.mega.endinglib.common.command.entity.selector.NearestEntitySelector;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.init.ModCommandArgumentTypes;
+import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.command.EntitySelectorManager;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -37,17 +40,19 @@ public class CommonProxy implements ModProxy {
 
     public void commonSetup(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            EntitySelectorManager.register("n", new NearestEntitySelector());
             EndingLibraryGameRules.init();
             ELCapabilityManager.regsterCapability(EndingLibraryPlayerCapability::new);
-            ArgumentTypeInfos.registerByClass(CameraModifierArgumentType.class, ModCommandArgumentTypes.CAMERA_MODIFIER.get());
-            ArgumentTypeInfos.registerByClass(CameraOperationArgumentType.class, ModCommandArgumentTypes.CAMERA_OPERATION.get());
-            ArgumentTypeInfos.registerByClass(CameraActionArgumentType.class, ModCommandArgumentTypes.CAMERA_ACTION.get());
-            ArgumentTypeInfos.registerByClass(CameraModifierUUIDArgumentType.class, ModCommandArgumentTypes.CAMERA_MODIFIER_ID.get());
-            ArgumentTypeInfos.registerByClass(CameraAnimationArgumentType.class, ModCommandArgumentTypes.CAMERA_ANIMATION_ID.get());
-            ArgumentTypeInfos.registerByClass(CameraAnimTypeArgumentType.class, ModCommandArgumentTypes.CAMERA_ANIMATION_TYPE.get());
-            ArgumentTypeInfos.registerByClass(EasingArgumentType.class, ModCommandArgumentTypes.EASING.get());
-            ArgumentTypeInfos.registerByClass(CommandArgumentType.class, ModCommandArgumentTypes.COMMAND.get());
-            ArgumentTypeInfos.registerByClass(CommandBlockArgumentType.class, ModCommandArgumentTypes.COMMAND_BLOCK.get());
+            ArgumentTypeInfos.registerByClass(CameraModifierArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER.get());
+            ArgumentTypeInfos.registerByClass(CameraOperationArgument.class, ModCommandArgumentTypes.CAMERA_OPERATION.get());
+            ArgumentTypeInfos.registerByClass(CameraActionArgument.class, ModCommandArgumentTypes.CAMERA_ACTION.get());
+            ArgumentTypeInfos.registerByClass(CameraModifierUUIDArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER_ID.get());
+            ArgumentTypeInfos.registerByClass(CameraAnimationArgument.class, ModCommandArgumentTypes.CAMERA_ANIMATION_ID.get());
+            ArgumentTypeInfos.registerByClass(CameraAnimTypeArgument.class, ModCommandArgumentTypes.CAMERA_ANIMATION_TYPE.get());
+            ArgumentTypeInfos.registerByClass(EasingArgument.class, ModCommandArgumentTypes.EASING.get());
+            ArgumentTypeInfos.registerByClass(CommandArgument.class, ModCommandArgumentTypes.COMMAND.get());
+            ArgumentTypeInfos.registerByClass(CommandBlockArgument.class, ModCommandArgumentTypes.COMMAND_BLOCK.get());
+            ArgumentTypeInfos.registerByClass(ItemComponentArgument.class, ModCommandArgumentTypes.ITEM_COMPONENT.get());
         });
     }
 

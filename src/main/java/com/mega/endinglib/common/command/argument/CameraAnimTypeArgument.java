@@ -1,7 +1,6 @@
 package com.mega.endinglib.common.command.argument;
 
-import com.mega.endinglib.api.client.camera.ModifierType;
-import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
+import com.mega.endinglib.api.client.camera.CameraKeyframeAnimation;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -10,19 +9,20 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.network.chat.Component;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-public class CameraModifierArgumentType implements ArgumentType<String> {
-    public static final Collection<String> EXAMPLES = EndingLibraryPlayerCapability.MODIFIER_TYPES.stream().map(ModifierType::toString).toList();
+public class CameraAnimTypeArgument implements ArgumentType<String> {
+    public static final Collection<String> EXAMPLES = Arrays.stream(CameraKeyframeAnimation.AnimType.values()).map(CameraKeyframeAnimation.AnimType::toString).toList();
 
-    public static CameraModifierArgumentType modifierType() {
-        return new CameraModifierArgumentType();
+    public static CameraAnimTypeArgument animType() {
+        return new CameraAnimTypeArgument();
     }
 
-    public static ModifierType getModifierType(final CommandContext<?> context, final String name) {
-        return ModifierType.valueOf(context.getArgument(name, String.class));
+    public static CameraKeyframeAnimation.AnimType getAnimType(final CommandContext<?> context, final String name) {
+        return CameraKeyframeAnimation.AnimType.valueOf(context.getArgument(name, String.class));
     }
 
     @Override
@@ -33,7 +33,7 @@ public class CameraModifierArgumentType implements ArgumentType<String> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         for (String example : EXAMPLES)
-            builder.suggest(example, Component.translatable("commands.endinglib.message.modifierType." + example.toLowerCase(Locale.ROOT)));
+            builder.suggest(example, Component.translatable("commands.endinglib.message.camera_anim_type." + example.toLowerCase(Locale.ROOT)));
         return builder.buildFuture();
     }
 

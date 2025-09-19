@@ -1,6 +1,6 @@
 package com.mega.endinglib.mixin.data_expand.component;
 
-import com.mega.endinglib.api.item.fake_component.ItemComponentManager;
+import com.mega.endinglib.api.item.component.ItemComponentManager;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.ItemModelShaper;
 import net.minecraft.client.renderer.entity.ItemRenderer;

@@ -1,6 +1,6 @@
 package com.mega.endinglib.common.command.argument.scehdule;
 
-import com.mega.endinglib.common.command.argument.CommandArgumentType;
+import com.mega.endinglib.common.command.argument.CommandArgument;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -60,7 +60,7 @@ public class StringCommandScheduleReader {
             } else {
                 String command = stringBuilder.toString().trim();
                 if (!command.isEmpty()) {
-                    String parsedCommandLine = CommandArgumentType.command().parse(new StringReader(command));
+                    String parsedCommandLine = CommandArgument.command().parse(new StringReader(command));
                     list.add(parsedCommandLine);
                 } else if (isOuterSemicolon) {
                     throw PARSE_EXCEPTION.create("Empty command at: " + this.reader.getCursor());

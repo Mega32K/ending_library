@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -9,8 +10,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,13 +21,16 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class PersonalRuleCommand {
+    public static final BiFunction<PersonalRule<Boolean>, EndingLibraryPlayerCapability, Integer> BOOL_COMMAND_RESULT = (rule, cap) -> rule.getCapValue(cap) ? 1 : 0;
+    public static final BiFunction<PersonalRule<Integer>, EndingLibraryPlayerCapability, Integer> INT_COMMAND_RESULT = PersonalRule::getCapValue;
+    public static final BiFunction<PersonalRule<Float>, EndingLibraryPlayerCapability, Integer> FLOAT_COMMAND_RESULT = (rule, cap) -> (int) (rule.getCapValue(cap) * 100.0F);
     public static final CommandFunction<CommandContext<CommandSourceStack>, PersonalRule<?>, Integer> NORMAL_COMMAND_GET_RULE = (context, personalRule) -> get(context.getSource(), EntityArgument.getPlayer(context, "player"), personalRule);
     public static final PersonalRule<Boolean> OTHER_SPECTOR_RENDERING = build("othrSpectorRender", (command, personalRule) ->
                     command.then(Commands.argument("value", BoolArgumentType.bool())
@@ -37,6 +39,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setOtherSpectorRendering,
             EndingLibraryPlayerCapability::otherSpectorRendering,
+            BOOL_COMMAND_RESULT,
             true
     );
     public static final PersonalRule<Boolean> OTHER_PLAYERS_RENDERING = build("othrPlayersRender", (command, personalRule) ->
@@ -46,6 +49,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setOtherPlayerRendering,
             EndingLibraryPlayerCapability::otherPlayerRendering,
+            BOOL_COMMAND_RESULT,
             true
     );
 
@@ -56,6 +60,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setOtherPlayerRenderingName,
             EndingLibraryPlayerCapability::otherPlayerRenderingName,
+            BOOL_COMMAND_RESULT,
             true
     );
     public static final PersonalRule<Float> WALKING_VIEW_MULTIPLIER = build("walkingViewMultiplier", (command, personalRule) ->
@@ -65,6 +70,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setWalkingViewMultiplier,
             EndingLibraryPlayerCapability::getWalkingViewMultiplier,
+            FLOAT_COMMAND_RESULT,
             1.0F
     );
     public static final PersonalRule<Float> HURT_VIEW_MULTIPLIER = build("hurtViewMultiplier", (command, personalRule) ->
@@ -74,6 +80,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setHurtViewMultiplier,
             EndingLibraryPlayerCapability::getHurtViewMultiplier,
+            FLOAT_COMMAND_RESULT,
             1.0F
     );
     public static final PersonalRule<Boolean> LOCKED_GAME_MODE = build("lockedGameMode", (command, personalRule) ->
@@ -83,6 +90,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setLockedGameMode,
             EndingLibraryPlayerCapability::isGameModeLocked,
+            BOOL_COMMAND_RESULT,
             false
     );
     public static final PersonalRule<Boolean> OTHER_TEAM_PLAYERS_NAMES_RENDER = build("othrTeamPNameRender", (command, personalRule) ->
@@ -92,12 +100,13 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setOtherTeamsPlayerRenderingName,
             EndingLibraryPlayerCapability::otherTeamsPlayerRenderingName,
+            BOOL_COMMAND_RESULT,
             true
     );
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("personal")
-                .requires((p_138087_) -> p_138087_.hasPermission(2))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_PERSONAL_RULE.get()))
                 .then(buildAllCommands(Commands.argument("player", EntityArgument.player())));
     }
 
@@ -115,18 +124,34 @@ public class PersonalRuleCommand {
         return 0;
     }
 
-    private static <T> int get(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule) {
-        sendGetMessage(stack, player, rule.getName(), String.valueOf(rule.getCapValue(CommonProxy.getCameraCap(player))));
+    private static <T> int set0(CommandSourceStack stack, ServerPlayer player, PersonalRule<?> rule, T value) {
+        rule.setCapValue(CommonProxy.getCameraCap(player), value);
+        sendModifyMessage(stack, player, rule.getName(), String.valueOf(value));
         return 0;
     }
+    private static <T> int get(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule) {
+        EndingLibraryPlayerCapability cap = CommonProxy.getCameraCap(player);
+        T v = rule.getCapValue(cap);
+        sendGetMessage(stack, player, rule.getName(), String.valueOf(v));
+        return rule.getCommandResult(cap);
+    }
 
-    static <T> PersonalRule<T> build(String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, T defaultValue) {
-        return new PersonalRule<>(capValueSetter, capValueGetter, serializerName, commandBuilder, defaultValue);
+    static <T> PersonalRule<T> build(String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult, T defaultValue) {
+        return new PersonalRule<>(capValueSetter, capValueGetter, serializerName, commandBuilder, defaultValue, commandResult);
     }
 
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> buildAllCommands(RequiredArgumentBuilder<CommandSourceStack, EntitySelector> p) {
         for (PersonalRule<?> rule : PersonalRule.RULES) {
             p.then(rule.command(Commands.literal(rule.getName())));
+            p.then(Commands.literal(rule.getName())
+                    .then(Commands.literal("default")
+                            .executes(context -> {
+                                ServerPlayer player = EntityArgument.getPlayer(context, "player");
+                                set0(context.getSource(), player, rule, rule.defaultValue);
+                                return 0;
+                            })
+                    )
+            );
         }
         return p;
     }
@@ -150,13 +175,15 @@ public class PersonalRuleCommand {
         private final Function<EndingLibraryPlayerCapability, T> capValueGetter;
         private final String serializerName;
         private final BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder;
+        private final BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult;
         private final T defaultValue;
-        public PersonalRule(BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, T defaultValue) {
+        public PersonalRule(BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, T defaultValue, BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult) {
             this.capValueSetter = capValueSetter;
             this.capValueGetter = capValueGetter;
             this.serializerName = serializerName;
             this.commandBuilder = commandBuilder;
             this.defaultValue = defaultValue;
+            this.commandResult = commandResult;
             RULES.add(this);
         }
 
@@ -181,9 +208,11 @@ public class PersonalRuleCommand {
             return capValueGetter.apply(cap);
         }
 
-        public void setCapValue(EndingLibraryPlayerCapability cap, T value) {
-            capValueSetter.accept(cap, value);
+        public void setCapValue(EndingLibraryPlayerCapability cap, Object value) {
+            capValueSetter.accept(cap, (T) value);
         }
-
+        public int getCommandResult(EndingLibraryPlayerCapability cap) {
+            return this.commandResult.apply(this, cap);
+        }
     }
 }

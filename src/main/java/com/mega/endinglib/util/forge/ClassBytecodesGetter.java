@@ -7,6 +7,7 @@ import cpw.mods.modlauncher.api.ITransformerActivity;
 import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 import sun.misc.Unsafe;
 
+import javax.annotation.Nullable;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -17,7 +18,7 @@ public class ClassBytecodesGetter {
     private static final Unsafe unsafe = UnsafeAccess.UNSAFE;
     public static VarHandle Launcher$classLoader_field;
     public static MethodHandle TransformingClassLoader$buildTransformedClassNodeFor;
-
+    private static volatile ClassLoader transformLoader;
     public static byte[] copyBytecodesFromClass(Class<?> clazz, String reason) {
         try {
             MethodHandles.Lookup IMPL = ClassHelper.IMPL_LOOKUP();
@@ -37,5 +38,19 @@ public class ClassBytecodesGetter {
             }
         }
         return new byte[0];
+    }
+    public static @Nullable ClassLoader transformLoader() {
+        try {
+            if (transformLoader == null) {
+                if (Launcher$classLoader_field == null) {
+                    MethodHandles.Lookup IMPL = ClassHelper.IMPL_LOOKUP();
+                    Launcher$classLoader_field = IMPL.unreflectVarHandle(Launcher.class.getDeclaredField("classLoader"));
+                }
+                transformLoader = (ClassLoader) Launcher$classLoader_field.get(Launcher.INSTANCE);
+            }
+        } catch (Throwable throwable) {
+            return null;
+        }
+        return transformLoader;
     }
 }

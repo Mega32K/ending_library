@@ -2,9 +2,10 @@ package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.server.CommandTask;
 import com.mega.endinglib.api.server.ServerTask;
-import com.mega.endinglib.common.command.argument.CommandArgumentType;
-import com.mega.endinglib.common.command.argument.CommandBlockArgumentType;
+import com.mega.endinglib.common.command.argument.CommandArgument;
+import com.mega.endinglib.common.command.argument.CommandBlockArgument;
 import com.mega.endinglib.common.command.argument.scehdule.CommandScheduleEntry;
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.server.ServerTaskManager;
 import com.mojang.brigadier.CommandDispatcher;
@@ -25,18 +26,18 @@ import java.util.concurrent.CompletableFuture;
 public class ScheduleCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("task")
-                .requires((p_138087_) -> p_138087_.hasPermission(2))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_SCHEDULE.get()))
                 .then(Commands.literal("create")
                         .then(Commands.argument("name", ResourceLocationArgument.id())
                                 .then(Commands.argument("wait", IntegerArgumentType.integer(0))
                                         .then(Commands.literal("single")
-                                                .then(Commands.argument("run", CommandArgumentType.command())
-                                                        .executes(context -> execute(context.getSource(), ResourceLocationArgument.getId(context, "name"), IntegerArgumentType.getInteger(context, "wait"), CommandArgumentType.getCommand(context, "run")))
+                                                .then(Commands.argument("run", CommandArgument.command())
+                                                        .executes(context -> execute(context.getSource(), ResourceLocationArgument.getId(context, "name"), IntegerArgumentType.getInteger(context, "wait"), CommandArgument.getCommand(context, "run")))
                                                 )
                                         )
                                         .then(Commands.literal("block")
-                                                .then(Commands.argument("block", CommandBlockArgumentType.commandBlock())
-                                                        .executes(context -> execute(context.getSource(), ResourceLocationArgument.getId(context, "name"), IntegerArgumentType.getInteger(context, "wait"), CommandBlockArgumentType.getCommand(context, "block")))
+                                                .then(Commands.argument("block", CommandBlockArgument.commandBlock())
+                                                        .executes(context -> execute(context.getSource(), ResourceLocationArgument.getId(context, "name"), IntegerArgumentType.getInteger(context, "wait"), CommandBlockArgument.getCommand(context, "block")))
                                                 )
                                         )
                                 )
@@ -73,6 +74,7 @@ public class ScheduleCommand {
         return wait;
     }
     private static int listTasks(CommandSourceStack stack) {
+        int taskSize = ServerTaskManager.queue.size();
         Runnable r = () -> {
             synchronized (ServerTaskManager.queue) {
                 stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.schedule.list"), false);
@@ -83,24 +85,26 @@ public class ScheduleCommand {
                 }
             }
         };
-        if (ServerTaskManager.queue.size() > 2) {
+        if (taskSize > 2) {
             CompletableFuture.runAsync(r);
         } else {
             r.run();
         }
-        return 0;
+        return taskSize;
     }
     private static int stopTask(CommandSourceStack stack, ResourceLocation name) {
         synchronized (ServerTaskManager.queue) {
+            int stoppedCount = 0;
             for (ServerTask task : ServerTaskManager.queue) {
                 if (task instanceof CommandTask commandTask) {
                     if (commandTask.getCommand().resourceLocation().equals(name.toString())) {
+                        stoppedCount++;
                         commandTask.setRemoved(true);
                         stack.sendSuccess(()-> Component.translatable("commands.endinglib.message.schedule.stop", commandTask.toComponent()), false);
                     }
                 }
             }
-            return 0;
+            return stoppedCount;
         }
     }
 }

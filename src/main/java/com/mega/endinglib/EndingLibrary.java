@@ -1,6 +1,8 @@
 package com.mega.endinglib;
 
+import com.mega.endinglib.common.config.ClientConfig;
 import com.mega.endinglib.common.config.CommonConfig;
+import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.init.ModCommandArgumentTypes;
 import com.mega.endinglib.common.init.ModMenus;
@@ -10,6 +12,7 @@ import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.proxy.ModProxy;
 import com.mega.endinglib.proxy.ServerProxy;
+import com.mega.endinglib.test.ModConstructorRun;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -29,7 +32,9 @@ public class EndingLibrary {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public EndingLibrary() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC, "ending_library/ending_library-common.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC, "endinglib/endinglib-common.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "endinglib/endinglib-client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC, "endinglib/endinglib-server.toml");
         IEventBus bus = getModEventBus();
         ModSounds.SOUNDS.register(bus);
         ModMenus.REGISTRIES.register(bus);
@@ -38,6 +43,7 @@ public class EndingLibrary {
         PacketHandler.registerPackets();
         new CommonProxy();
         MinecraftForge.EVENT_BUS.register(this);
+        ModConstructorRun.run();
     }
 
     public static IEventBus getModEventBus() {
