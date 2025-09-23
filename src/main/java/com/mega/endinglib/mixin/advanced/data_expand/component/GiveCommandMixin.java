@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.data_expand.component;
+package com.mega.endinglib.mixin.advanced.data_expand.component;
 
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.common.command.argument.ItemComponentArgument;

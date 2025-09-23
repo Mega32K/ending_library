@@ -2,6 +2,7 @@ package com.mega.endinglib.proxy;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
+import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.command.entity.selector.NearestEntitySelector;
@@ -39,6 +40,7 @@ public class CommonProxy implements ModProxy {
     }
 
     public void commonSetup(final FMLCommonSetupEvent event) {
+        ItemComponentManager.init();
         event.enqueueWork(() -> {
             EntitySelectorManager.register("n", new NearestEntitySelector());
             EndingLibraryGameRules.init();

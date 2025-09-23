@@ -5,6 +5,7 @@ import com.mega.endinglib.api.item.component.parser.ItemComponentParser;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -17,8 +18,20 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface ItemComponentType<T> {
+    Codec<ItemComponentType<?>> CODEC = ResourceLocation.CODEC.flatXmap(
+            id -> {
+                ItemComponentType<?> type = ItemComponentManager.getComponentType(id);
+                return type == null
+                        ? DataResult.error(() -> "Unknown item component type :" + id)
+                        : DataResult.success(type);
+            },
+            com -> DataResult.success(com.registryName())
+    );
+
     Codec<T> codec();
+
     ResourceLocation registryName();
+
     default Component translation() {
         MutableComponent base = Component.translatable("component." + this.registryName().getNamespace() + "." + this.registryName().getPath());
         return this.translationSuffix()
@@ -29,12 +42,15 @@ public interface ItemComponentType<T> {
                                 .append(o)
                 ).orElse(base);
     }
+
     default Optional<Component> translationSuffix() {
         if (this.getRootTagType() == TagEnum.NONE)
             return Optional.empty();
         return Optional.of(this.getRootTagType().toComponent());
     }
+
     TagEnum getRootTagType();
+
     default Function<ItemComponentParser, BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>>> suggestionComponentValue() {
         return ItemComponentParser.TAG_SUGGEST_NOTHING;
     }

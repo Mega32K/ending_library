@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.data_expand.scoreboard;
+package com.mega.endinglib.mixin.advanced.data_expand.scoreboard;
 
 import com.mega.endinglib.util.asm.NormalCoremodProcessor;
 import net.minecraft.client.gui.Gui;

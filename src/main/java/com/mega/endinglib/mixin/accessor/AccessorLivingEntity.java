@@ -6,6 +6,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -82,4 +83,6 @@ public interface AccessorLivingEntity {
 
     @Accessor
     void setLastDamageStamp(long lastDamageStamp);
+    @Invoker
+    void callSpawnItemParticles(ItemStack p_21061_, int p_21062_);
 }

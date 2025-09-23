@@ -1,7 +1,6 @@
 package com.mega.endinglib.api.item.component.parser;
 
 import com.google.common.collect.Lists;
-import com.mega.endinglib.api.item.component.ItemComponent;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.ItemComponentType;
 import com.mojang.brigadier.StringReader;
@@ -31,7 +30,6 @@ public class ItemComponentParser {
     public static final Function<ItemComponentParser, BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>>> TAG_SUGGEST_NOTHING = parser -> ((suggestionsBuilder, builderConsumer) -> suggestionsBuilder.buildFuture());
 
     public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> SUGGEST_NOTHING = (p_121363_, p_121364_) -> p_121363_.buildFuture();
-    private BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestions = SUGGEST_NOTHING;
     public static final SimpleCommandExceptionType ERROR_TRAILING_DATA = new SimpleCommandExceptionType(Component.translatable("argument.nbt.trailing"));
     public static final SimpleCommandExceptionType ERROR_EXPECTED_KEY = new SimpleCommandExceptionType(Component.translatable("argument.nbt.expected.key"));
     public static final SimpleCommandExceptionType ERROR_EXPECTED_VALUE = new SimpleCommandExceptionType(Component.translatable("argument.nbt.expected.value"));
@@ -41,7 +39,6 @@ public class ItemComponentParser {
     public static final DynamicCommandExceptionType UNKNOWN_COMPONENT_EXCEPTION = new DynamicCommandExceptionType((p_121520_) -> Component.translatable("arguments.item.component.unknown", p_121520_));
     public static final DynamicCommandExceptionType ERROR_EXPECTED_OPTION_VALUE = new DynamicCommandExceptionType((p_121267_) -> Component.translatable("argument.entity.options.valueless", p_121267_));
     public static final SimpleCommandExceptionType ERROR_EXPECTED_END_OF_OPTIONS = new SimpleCommandExceptionType(Component.translatable("argument.entity.options.unterminated"));
-
     public static final DynamicCommandExceptionType REPEATED_COMPONENT_EXCEPTION = new DynamicCommandExceptionType((p_121267_) -> Component.translatable("arguments.item.component.repeated", p_121267_));
     public static final Dynamic2CommandExceptionType MALFORMED_COMPONENT_EXCEPTION = new Dynamic2CommandExceptionType((a1, a2) -> Component.translatable("arguments.item.component.malformed", a1, a2));
     public static final SimpleCommandExceptionType COMPONENT_EXPECTED_EXCEPTION = new SimpleCommandExceptionType(Component.translatable("arguments.item.component.expected"));
@@ -61,10 +58,37 @@ public class ItemComponentParser {
     private static final Pattern SHORT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)s", 2);
     private static final Pattern INT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)");
     private final StringReader reader;
+    private BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestions = SUGGEST_NOTHING;
+
+    public ItemComponentParser(StringReader p_129350_) {
+        this.reader = p_129350_;
+    }
+
+    public static ItemComponentType<?> get(ItemComponentParser parser, String key, int cursor) throws CommandSyntaxException {
+        ItemComponentType<?> componentType = ItemComponentManager.getComponentType(new ResourceLocation(key));
+        if (componentType != null) {
+            return componentType;
+        } else {
+            parser.getReader().setCursor(cursor);
+            throw UNKNOWN_COMPONENT_EXCEPTION.createWithContext(parser.getReader(), key);
+        }
+    }
+
+    public static void suggestNames(ItemComponentParser parser, SuggestionsBuilder builder) {
+        String s = builder.getRemaining().toLowerCase(Locale.ROOT);
+
+        ItemComponentManager.getRegistryMap().forEach((key, type) -> {
+            if (s.isEmpty() || (key.toString().toLowerCase(Locale.ROOT).startsWith(s) || key.getPath().toLowerCase(Locale.ROOT).startsWith(s))) {
+                builder.suggest(key + "=", type.translation());
+            }
+        });
+
+    }
 
     public StringReader getReader() {
         return reader;
     }
+
     public CompoundTag parse() throws CommandSyntaxException {
         this.suggestions = this::suggestBracket;
         CompoundTag compoundtag = new CompoundTag();
@@ -77,6 +101,7 @@ public class ItemComponentParser {
         //this.expect(STRUCT_CLOSE);
         return compoundtag;
     }
+
     protected void parseComponentKeys(CompoundTag compoundTag) throws CommandSyntaxException {
         this.reader.expect(STRUCT_OPEN);
         this.suggestions = this::suggestOptionsKey;
@@ -91,6 +116,7 @@ public class ItemComponentParser {
             this.reader.skipWhitespace();
             this.reader.expect('=');
 
+            this.suggestions = componentType.suggestionComponentValue().apply(this);
             this.reader.skipWhitespace();
             this.readComponentValue(compoundTag, componentType);
 
@@ -118,9 +144,6 @@ public class ItemComponentParser {
         }
          */
     }
-    public ItemComponentParser(StringReader p_129350_) {
-        this.reader = p_129350_;
-    }
 
     protected String readKey() throws CommandSyntaxException {
         this.reader.skipWhitespace();
@@ -130,22 +153,31 @@ public class ItemComponentParser {
             return this.reader.readString();
         }
     }
-    protected void readComponentValue(CompoundTag compoundTag, ItemComponentType<?> componentType) throws CommandSyntaxException{
+
+    protected <T> void readComponentValue(CompoundTag compoundTag, ItemComponentType<T> componentType) throws CommandSyntaxException {
         String componentName = componentType.registryName().toString();
-        Codec<ItemComponent<?>> codec = (Codec<ItemComponent<?>>) componentType.codec();
+        Codec<T> codec = componentType.codec();
         int i = this.reader.getCursor();
         NbtOps ops = NbtOps.INSTANCE;
         Tag value = this.readValue();
-        DataResult<ItemComponent<?>> dataResult = codec.parse(ops, value);
 
+        System.out.println(value);
+        DataResult<T> dataResult = codec.parse(ops, value);
+        if (dataResult.error().isPresent()) {
+            this.reader.setCursor(i);
+            throw MALFORMED_COMPONENT_EXCEPTION.create(value, componentName);
+        }
         if (dataResult.result().isPresent()) {
-            ItemComponent<?> itemComponent = dataResult.result().get();
-            compoundTag.put(componentName, codec.encodeStart(NbtOps.INSTANCE, itemComponent).result().get());
+            T itemComponent = dataResult.result().get();
+            System.out.println(itemComponent);
+            System.out.println(codec.encodeStart(ops, itemComponent).result().get());
+            compoundTag.put(componentName, codec.encodeStart(ops, itemComponent).result().get());
         } else {
             this.reader.setCursor(i);
             throw MALFORMED_COMPONENT_EXCEPTION.create(value, componentName);
         }
     }
+
     protected Tag readTypedValue() throws CommandSyntaxException {
         this.reader.skipWhitespace();
         int i = this.reader.getCursor();
@@ -214,18 +246,17 @@ public class ItemComponentParser {
             if (c0 == SNBT_STRUCT_OPEN) {
                 return this.readStruct();
             } else {
-                return c0 == SNBT_STRUCT_CLOSE ? this.readList() : this.readTypedValue();
+                return c0 == LIST_OPEN ? this.readList() : this.readTypedValue();
             }
         }
     }
-
 
     public CompoundTag readStruct() throws CommandSyntaxException {
         this.expect(SNBT_STRUCT_OPEN);
         CompoundTag compoundtag = new CompoundTag();
         this.reader.skipWhitespace();
 
-        while(this.reader.canRead() && this.reader.peek() != SNBT_STRUCT_CLOSE) {
+        while (this.reader.canRead() && this.reader.peek() != SNBT_STRUCT_CLOSE) {
             int i = this.reader.getCursor();
             String s = this.readKey();
             if (s.isEmpty()) {
@@ -247,6 +278,7 @@ public class ItemComponentParser {
         this.expect(SNBT_STRUCT_CLOSE);
         return compoundtag;
     }
+
     protected Tag readList() throws CommandSyntaxException {
         return this.reader.canRead(3) && !StringReader.isQuotedStringStart(this.reader.peek(1)) && this.reader.peek(2) == ';' ? this.readArrayTag() : this.readListTag();
     }
@@ -288,7 +320,7 @@ public class ItemComponentParser {
             ListTag listtag = new ListTag();
             TagType<?> tagtype = null;
 
-            while(this.reader.peek() != LIST_CLOSE) {
+            while (this.reader.peek() != LIST_CLOSE) {
                 int i = this.reader.getCursor();
                 Tag tag = this.readValue();
                 TagType<?> tagtype1 = tag.getType();
@@ -309,7 +341,7 @@ public class ItemComponentParser {
                 }
             }
 
-            this.expect(']');
+            this.expect(LIST_CLOSE);
             return listtag;
         }
     }
@@ -337,7 +369,7 @@ public class ItemComponentParser {
     private <T extends Number> List<T> readArray(TagType<?> p_129362_, TagType<?> p_129363_) throws CommandSyntaxException {
         List<T> list = Lists.newArrayList();
 
-        while(true) {
+        while (true) {
             if (this.reader.peek() != LIST_CLOSE) {
                 int i = this.reader.getCursor();
                 Tag tag = this.readValue();
@@ -348,11 +380,11 @@ public class ItemComponentParser {
                 }
 
                 if (p_129363_ == ByteTag.TYPE) {
-                    list.add((T)(Byte)((NumericTag)tag).getAsByte());
+                    list.add((T) (Byte) ((NumericTag) tag).getAsByte());
                 } else if (p_129363_ == LongTag.TYPE) {
-                    list.add((T)(Long)((NumericTag)tag).getAsLong());
+                    list.add((T) (Long) ((NumericTag) tag).getAsLong());
                 } else {
-                    list.add((T)(Integer)((NumericTag)tag).getAsInt());
+                    list.add((T) (Integer) ((NumericTag) tag).getAsInt());
                 }
 
                 if (this.hasElementSeparator()) {
@@ -363,7 +395,7 @@ public class ItemComponentParser {
                 }
             }
 
-            this.expect(']');
+            this.expect(LIST_CLOSE);
             return list;
         }
     }
@@ -384,7 +416,6 @@ public class ItemComponentParser {
         this.reader.expect(p_129353_);
     }
 
-
     private CompletableFuture<Suggestions> suggestBracket(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(STRUCT_OPEN));
@@ -396,7 +427,7 @@ public class ItemComponentParser {
     private CompletableFuture<Suggestions> suggestEndOfComponent(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf(','));
-            builder.suggest(String.valueOf(']'));
+            builder.suggest(String.valueOf(STRUCT_CLOSE));
         }
 
         return builder.buildFuture();
@@ -409,39 +440,22 @@ public class ItemComponentParser {
 
         return builder.buildFuture();
     }
+
     private CompletableFuture<Suggestions> suggestEqualOrEnd(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
         if (builder.getRemaining().isEmpty()) {
             builder.suggest(String.valueOf('='));
-            builder.suggest(String.valueOf(']'));
+            builder.suggest(String.valueOf(STRUCT_CLOSE));
         }
 
         return builder.buildFuture();
     }
+
     private CompletableFuture<Suggestions> suggestOptionsKey(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> builderConsumer) {
         suggestNames(this, suggestionsBuilder);
         return suggestionsBuilder.buildFuture();
     }
 
-    public static ItemComponentType<?> get(ItemComponentParser parser, String key, int cursor) throws CommandSyntaxException {
-        ItemComponentType<?> componentType = ItemComponentManager.getComponentType(new ResourceLocation(key));
-        if (componentType != null) {
-            return componentType;
-        } else {
-            parser.getReader().setCursor(cursor);
-            throw UNKNOWN_COMPONENT_EXCEPTION.createWithContext(parser.getReader(), key);
-        }
-    }
     public CompletableFuture<Suggestions> fillSuggestions(SuggestionsBuilder p_121250_, Consumer<SuggestionsBuilder> p_121251_) {
         return this.suggestions.apply(p_121250_.createOffset(this.reader.getCursor()), p_121251_);
-    }
-    public static void suggestNames(ItemComponentParser parser, SuggestionsBuilder builder) {
-        String s = builder.getRemaining().toLowerCase(Locale.ROOT);
-
-        ItemComponentManager.getRegistryMap().forEach((key, type) -> {
-            if (s.isEmpty() || key.toString().toLowerCase(Locale.ROOT).startsWith(s)) {
-                builder.suggest(key + "=", type.translation());
-            }
-        });
-
     }
 }

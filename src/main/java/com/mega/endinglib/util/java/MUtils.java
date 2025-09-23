@@ -56,4 +56,7 @@ public class MUtils {
     public static <T> T randomSelect(List<T> list) {
         return list.get((int) (Math.random() * (list.size() - 1)));
     }
+    public static <T> T objectForced(Object o) {
+        return (T) o;
+    }
 }

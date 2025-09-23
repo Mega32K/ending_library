@@ -80,6 +80,62 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 shouldWrite.set(true);
                             }
                         });
+                    } else if (methodNode.name.equals("getFoodProperties")) {
+                        methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.ARETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getFoodProperties", "(Lnet/minecraft/world/food/FoodProperties;Lnet/minecraftforge/common/extensions/IForgeItemStack;)Lnet/minecraft/world/food/FoodProperties;", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                    } else if (methodNode.name.equals("canPerformAction")) {
+                        InsnList insnNodes = new InsnList();
+                        insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                        insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                        insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "canPerformAction", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;Lnet/minecraftforge/common/ToolAction;)Z", false));
+                        LabelNode elseNode = new LabelNode();
+                        insnNodes.add(new JumpInsnNode(Opcodes.IFNE, elseNode));
+                        insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                        insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                        insnNodes.add(elseNode);
+                        methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                        shouldWrite.set(true);
+                    } else if (methodNode.name.equals("canDisableShield")) {
+                        methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "canDisableShield", "(ZLnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                    } else if (methodNode.name.equals("getEnchantmentValue")) {
+                        methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getEnchantmentValue", "(ILnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                    }
+                });
+            } else if ("net/minecraftforge/common/extensions/IForgeItem".equals(classNode.name)) {
+                classNode.methods.forEach(methodNode -> {
+                    if (methodNode.name.equals("getMaxStackSize")) {
+                        methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getMaxStackSize", "(ILnet/minecraft/world/item/ItemStack;)I", false));
+                                methodNode.instructions.insertBefore(insnNode, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
                     }
                 });
             }

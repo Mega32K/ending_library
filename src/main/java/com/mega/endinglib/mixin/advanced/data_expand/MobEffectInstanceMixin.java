@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.data_expand;
+package com.mega.endinglib.mixin.advanced.data_expand;
 
 import com.mega.endinglib.api.entity.MobEffectInstanceItf;
 import net.minecraft.world.effect.MobEffectInstance;
