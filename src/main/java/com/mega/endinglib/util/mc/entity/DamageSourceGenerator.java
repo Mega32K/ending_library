@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.entity;
+package com.mega.endinglib.util.mc.entity;
 
 import com.mega.endinglib.mixin.accessor.AccessorDamageSources;
 import net.minecraft.core.Holder;

@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.codec;
+package com.mega.endinglib.util.mc.codec;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Pair;

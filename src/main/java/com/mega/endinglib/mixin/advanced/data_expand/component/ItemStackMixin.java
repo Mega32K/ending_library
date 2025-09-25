@@ -2,16 +2,15 @@ package com.mega.endinglib.mixin.advanced.data_expand.component;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mega.endinglib.api.item.component.*;
-import com.mega.endinglib.api.item.component.type.ConsumableComponent;
-import com.mega.endinglib.api.item.component.type.EnchantableComponent;
-import com.mega.endinglib.api.item.component.type.ItemModelComponent;
-import com.mega.endinglib.api.item.component.type.WeaponComponent;
+import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.util.annotation.DeprecatedMixin;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -137,6 +136,16 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         Boolean bool_ = this.componentManager.get(ItemComponentManager.ENCHANTMENT_GLINT_OVERRIDE);
         if (bool_ != null) {
             cir.setReturnValue(bool_);
+        }
+    }
+    @Inject(method = "interactLivingEntity", at = @At("HEAD"), cancellable = true)
+    private void componentEquipOnInteract(Player user, LivingEntity entity, InteractionHand p_41650_, CallbackInfoReturnable<InteractionResult> cir) {
+        EquippableComponent equippableComponent = this.componentManager.get(ItemComponentManager.EQUIPPABLE);
+        if (equippableComponent != null && equippableComponent.equipOnInteract()) {
+            InteractionResult actionResult = equippableComponent.equipOnInteract(user, entity, (ItemStack) (Object) this);
+            if (actionResult != InteractionResult.PASS) {
+                cir.setReturnValue(actionResult);
+            }
         }
     }
 }

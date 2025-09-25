@@ -2,7 +2,7 @@ package com.mega.endinglib.common.command;
 
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.menu.OtherPlayerInventoryMenu;
-import com.mega.endinglib.util.menu.AdvancedOpenMenuHelper;
+import com.mega.endinglib.util.mc.menu.AdvancedOpenMenuHelper;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;

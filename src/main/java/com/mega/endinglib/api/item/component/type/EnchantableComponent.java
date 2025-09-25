@@ -1,9 +1,8 @@
 package com.mega.endinglib.api.item.component.type;
 
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 
 public record EnchantableComponent(int value) {
     public static final Codec<EnchantableComponent> CODEC = RecordCodecBuilder.create(

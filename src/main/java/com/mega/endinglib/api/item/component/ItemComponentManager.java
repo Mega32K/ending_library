@@ -3,7 +3,7 @@ package com.mega.endinglib.api.item.component;
 import com.mega.endinglib.api.data.TagEnum;
 import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.consume.ConsumeEffect;
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;

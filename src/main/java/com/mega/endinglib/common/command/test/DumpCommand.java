@@ -1,6 +1,6 @@
 package com.mega.endinglib.common.command.test;
 
-import com.mega.endinglib.util.forge.ClassBytecodesGetter;
+import com.mega.endinglib.util.mc.forge.ClassBytecodesGetter;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
 public class DumpCommand {

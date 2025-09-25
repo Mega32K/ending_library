@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.menu;
+package com.mega.endinglib.util.mc.menu;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;

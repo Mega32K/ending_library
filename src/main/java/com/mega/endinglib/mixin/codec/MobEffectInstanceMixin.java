@@ -1,6 +1,6 @@
 package com.mega.endinglib.mixin.codec;
 
-import com.mega.endinglib.util.codec.impl.MobEffectInstanceParameters;
+import com.mega.endinglib.util.mc.codec.impl.MobEffectInstanceParameters;
 import com.mega.endinglib.util.mixin.data_expand.ExtraMobEffectInstanceItf;
 import net.minecraft.world.effect.MobEffectInstance;
 import org.spongepowered.asm.mixin.Mixin;

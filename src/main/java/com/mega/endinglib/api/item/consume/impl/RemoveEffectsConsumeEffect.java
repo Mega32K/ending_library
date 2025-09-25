@@ -1,8 +1,7 @@
 package com.mega.endinglib.api.item.consume.impl;
 
 import com.mega.endinglib.api.item.consume.ConsumeEffect;
-import com.mega.endinglib.util.codec.Codecs;
-import com.mojang.serialization.Codec;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.world.effect.MobEffect;

@@ -8,7 +8,7 @@ import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.render.ClientUtils;
+import com.mega.endinglib.util.mc.render.ClientUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.blaze3d.systems.RenderSystem;

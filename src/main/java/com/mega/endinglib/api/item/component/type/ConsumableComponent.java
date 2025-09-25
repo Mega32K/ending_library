@@ -4,7 +4,7 @@ import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.consume.ConsumeEffect;
 import com.mega.endinglib.api.item.consume.impl.PlaySoundConsumeEffect;
 import com.mega.endinglib.mixin.accessor.AccessorLivingEntity;
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

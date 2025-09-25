@@ -1,13 +1,12 @@
 package com.mega.endinglib.api.item.component.type;
 
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.RegistryCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.TagKey;
@@ -117,11 +116,11 @@ public record BlocksAttacksComponent(
         return Mth.clamp(f, 0.0F, damage);
     }
 
-    public record DamageReduction(float horizontalBlockingAngle, Optional<List<DamageType>> type, float base, float factor) {
+    public record DamageReduction(float horizontalBlockingAngle, Optional<HolderSet<DamageType>> type, float base, float factor) {
         public static final Codec<BlocksAttacksComponent.DamageReduction> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
                                 Codecs.POSITIVE_FLOAT.optionalFieldOf("horizontal_blocking_angle", 90.0F).forGetter(BlocksAttacksComponent.DamageReduction::horizontalBlockingAngle),
-                                DamageType.CODEC.listOf().optionalFieldOf("type").forGetter(BlocksAttacksComponent.DamageReduction::type),
+                                RegistryCodecs.entryList(Registries.DAMAGE_TYPE).optionalFieldOf("type").forGetter(BlocksAttacksComponent.DamageReduction::type),
                                 Codec.FLOAT.fieldOf("base").forGetter(BlocksAttacksComponent.DamageReduction::base),
                                 Codec.FLOAT.fieldOf("factor").forGetter(BlocksAttacksComponent.DamageReduction::factor)
                         )
@@ -132,7 +131,7 @@ public record BlocksAttacksComponent(
             if (angle > (float) Mth.DEG_TO_RAD * this.horizontalBlockingAngle) {
                 return 0.0F;
             } else {
-                return this.type.isPresent() && !(this.type.get()).contains(source.type())
+                return this.type.isPresent() && !(this.type.get()).contains(source.typeHolder())
                         ? 0.0F
                         : Mth.clamp(this.base + this.factor * damage, 0.0F, damage);
             }

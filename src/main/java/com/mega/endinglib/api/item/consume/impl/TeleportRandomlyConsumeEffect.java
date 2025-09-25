@@ -1,7 +1,7 @@
 package com.mega.endinglib.api.item.consume.impl;
 
 import com.mega.endinglib.api.item.consume.ConsumeEffect;
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerLevel;
@@ -11,7 +11,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Fox;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;

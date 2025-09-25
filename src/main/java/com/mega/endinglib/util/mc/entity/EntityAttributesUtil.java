@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.entity;
+package com.mega.endinglib.util.mc.entity;
 
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;

@@ -19,7 +19,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CameraKeyframeAnimation {
-
     public static final Function<CameraKeyframeAnimation, CompoundTag> WRITER = CameraKeyframeAnimation::serializeNBT;
     public static final FriendlyByteBuf.Reader<CameraKeyframeAnimation> READER_F = byteBuf -> {
         CameraKeyframeAnimation anim = new CameraKeyframeAnimation(byteBuf.readUtf(), byteBuf.readEnum(AnimType.class), byteBuf.readFloat());

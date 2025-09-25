@@ -6,7 +6,7 @@ import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.rot.S2CListSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rot.S2CMapSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rot.S2CSetRotationPacket;
-import com.mega.endinglib.util.entity.RotationUtils;
+import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;

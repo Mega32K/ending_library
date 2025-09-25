@@ -1,11 +1,12 @@
-package com.mega.endinglib.util.codec;
+package com.mega.endinglib.util.mc.codec;
 
 import com.google.common.primitives.UnsignedBytes;
-import com.mega.endinglib.util.codec.impl.MobEffectInstanceParameters;
+import com.mega.endinglib.util.mc.codec.impl.MobEffectInstanceParameters;
 import com.mega.endinglib.util.mixin.data_expand.ExtraMobEffectInstanceItf;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Lifecycle;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -23,10 +24,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
 import org.joml.Vector3f;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -149,6 +147,27 @@ public class Codecs {
                                 : DataResult.error(() -> (String)messageFactory.apply(value))
                 );
     }
+
+
+    public static <E, L extends Collection<E>, T> Function<L, DataResult<L>> createEqualTypeChecker(Function<E, T> typeGetter) {
+        return collection -> {
+            Iterator<E> iterator = collection.iterator();
+            if (iterator.hasNext()) {
+                T object = (T)typeGetter.apply(iterator.next());
+
+                while (iterator.hasNext()) {
+                    E object2 = (E)iterator.next();
+                    T object3 = (T)typeGetter.apply(object2);
+                    if (object3 != object) {
+                        return DataResult.error(() -> "Mixed type list: element " + object2 + " had type " + object3 + ", but list is of type " + object);
+                    }
+                }
+            }
+
+            return DataResult.success(collection, Lifecycle.stable());
+        };
+    }
+
     public static <A> Codec<A> validate(Codec<A> codec, final Function<A, DataResult<A>> checker) {
         return codec.flatXmap(checker, checker);
     }
@@ -157,5 +176,11 @@ public class Codecs {
     }
     public static <A> Codec<A> lazyInitialized(final Supplier<Codec<A>> delegate) {
         return new RecursiveCodec<>(delegate.toString(), self -> delegate.get());
+    }
+
+
+    public static <E> Codec<List<E>> listOrSingle(Codec<E> entryCodec, Codec<List<E>> listCodec) {
+        return Codec.either(listCodec, entryCodec)
+                .xmap(either -> either.map(list -> list, List::of), list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list));
     }
 }

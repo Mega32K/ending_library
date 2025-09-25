@@ -11,6 +11,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
+    Inventory$METHOD$hurtArmor("hurtArmor", "m_150072_", "(Lnet/minecraft/world/damagesource/DamageSource;F[I)V"),
+    Equipable$METHOD$get("get", "m_269088_", "(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/Equipable;"),
     Scoreboard$FIELD$DISPLAY_SLOT_TEAMS_SIDEBAR_END("DISPLAY_SLOT_TEAMS_SIDEBAR_END", "f_166091_", "I"),
     Scoreboard$FIELD$DISPLAY_SLOTS("DISPLAY_SLOTS", "f_166092_", "I"),
     GlyphInfo$METHOD$getBoldOffset("getBoldOffset", "getBoldOffset", "()F"),

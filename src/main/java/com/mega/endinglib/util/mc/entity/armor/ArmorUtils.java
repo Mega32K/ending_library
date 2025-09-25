@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.entity.armor;
+package com.mega.endinglib.util.mc.entity.armor;
 
 import com.mega.endinglib.api.item.armor.ArmorOption;
 import com.mega.endinglib.api.item.armor.ModifiableArmorItem;

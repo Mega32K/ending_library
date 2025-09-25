@@ -1,6 +1,6 @@
 package com.mega.endinglib.api.item.component;
 
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mega.endinglib.util.java.MUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;

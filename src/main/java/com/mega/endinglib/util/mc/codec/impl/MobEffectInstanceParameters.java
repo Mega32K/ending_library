@@ -1,12 +1,10 @@
-package com.mega.endinglib.util.codec.impl;
+package com.mega.endinglib.util.mc.codec.impl;
 
-import com.mega.endinglib.mixin.accessor.AccessorMobEffectInstance;
-import com.mega.endinglib.util.codec.Codecs;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mega.endinglib.util.mixin.data_expand.ExtraMobEffectInstanceItf;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 

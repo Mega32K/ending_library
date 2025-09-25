@@ -3,6 +3,7 @@ package com.mega.endinglib.mixin.advanced.data_expand.component;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.BlocksAttacksComponent;
 import com.mega.endinglib.api.item.component.type.ConsumableComponent;
+import com.mega.endinglib.api.item.component.type.EquippableComponent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,14 +23,20 @@ public abstract class ItemMixin {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void componentUse(Level world, Player user, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         ItemStack itemStack = user.getItemInHand(hand);
-        ConsumableComponent consumableComponent = ItemComponentManager.get(itemStack, ItemComponentManager.CONSUMABLE);
+        ItemComponentManager manager = ItemComponentManager.get(itemStack);
+        ConsumableComponent consumableComponent = manager.get(ItemComponentManager.CONSUMABLE);
         if (consumableComponent != null) {
             cir.setReturnValue(consumableComponent.consume(user, itemStack, hand));
         } else {
-            BlocksAttacksComponent blocksAttacksComponent = ItemComponentManager.get(itemStack, ItemComponentManager.BLOCKS_ATTACKS);
-            if (blocksAttacksComponent != null) {
-                user.startUsingItem(hand);
-                cir.setReturnValue(InteractionResultHolder.consume(itemStack));
+            EquippableComponent equippableComponent = manager.get(ItemComponentManager.EQUIPPABLE);
+            if (equippableComponent != null && equippableComponent.swappable()) {
+                 cir.setReturnValue(equippableComponent.equip(itemStack, user));
+            } else {
+                BlocksAttacksComponent blocksAttacksComponent = manager.get(ItemComponentManager.BLOCKS_ATTACKS);
+                if (blocksAttacksComponent != null) {
+                    user.startUsingItem(hand);
+                    cir.setReturnValue(InteractionResultHolder.consume(itemStack));
+                }
             }
         }
     }

@@ -3,7 +3,7 @@ package com.mega.endinglib.common.eventhandler;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.item.armor.ModifiableArmorItem;
 import com.mega.endinglib.api.item.armor.OptionArmorMaterial;
-import com.mega.endinglib.util.entity.armor.ArmorUtils;
+import com.mega.endinglib.util.mc.entity.armor.ArmorUtils;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;

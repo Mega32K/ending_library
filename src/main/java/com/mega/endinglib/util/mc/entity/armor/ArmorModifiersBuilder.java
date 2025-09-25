@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.entity.armor;
+package com.mega.endinglib.util.mc.entity.armor;
 
 import com.google.common.collect.ImmutableMultimap;
 import net.minecraft.world.entity.ai.attributes.Attribute;

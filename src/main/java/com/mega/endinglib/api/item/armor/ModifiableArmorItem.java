@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import com.mega.endinglib.api.client.cmc.CuriosMutableComponent;
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.api.client.cmc.LoreStyle;
-import com.mega.endinglib.util.entity.armor.ArmorModifiersBuilder;
+import com.mega.endinglib.util.mc.entity.armor.ArmorModifiersBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;

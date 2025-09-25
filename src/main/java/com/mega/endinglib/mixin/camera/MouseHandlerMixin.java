@@ -2,7 +2,7 @@ package com.mega.endinglib.mixin.camera;
 
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.render.ClientUtils;
+import com.mega.endinglib.util.mc.render.ClientUtils;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;

@@ -1,4 +1,4 @@
-package com.mega.endinglib.util.forge;
+package com.mega.endinglib.util.mc.forge;
 
 import com.mega.endinglib.util.java.ClassHelper;
 import cpw.mods.modlauncher.Launcher;

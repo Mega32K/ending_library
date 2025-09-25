@@ -1,8 +1,8 @@
-package com.mega.endinglib.util.render;
+package com.mega.endinglib.util.mc.render;
 
 import com.mega.endinglib.mixin.accessor.AccessorGameRenderer;
-import com.mega.endinglib.util.entity.RaycastHelper;
-import com.mega.endinglib.util.entity.RotationUtils;
+import com.mega.endinglib.util.mc.entity.RaycastHelper;
+import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.blaze3d.platform.Window;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
