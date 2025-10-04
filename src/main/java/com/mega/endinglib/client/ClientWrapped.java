@@ -40,6 +40,11 @@ public class ClientWrapped {
             case CHAT_CLEAR -> Minecraft.getInstance().gui.getChat().clearMessages(false);
             case MOUSE_GRAB -> Minecraft.getInstance().mouseHandler.grabMouse();
             case MOUSE_RELEASE -> Minecraft.getInstance().mouseHandler.releaseMouse();
+            case FORCED_POSE_CLEAR -> {
+                Player player = clientPlayer();
+                if (player != null)
+                    player.setForcedPose(null);
+            }
         }
     }
     public static void setFov(int fov) {

@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.command.argument;
 
 import com.mega.endinglib.api.client.camera.CameraKeyframeAnimation;
+import com.mega.endinglib.common.command.CommandsEvent;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -32,8 +33,7 @@ public class CameraAnimTypeArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        for (String example : EXAMPLES)
-            builder.suggest(example, Component.translatable("commands.endinglib.message.camera_anim_type." + example.toLowerCase(Locale.ROOT)));
+        CommandsEvent.suggestFromExamples(EXAMPLES, "commands.endinglib.message.camera_anim_type.", builder);
         return builder.buildFuture();
     }
 

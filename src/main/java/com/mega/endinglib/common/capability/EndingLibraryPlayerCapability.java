@@ -15,6 +15,9 @@ import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
 import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.S2CSetPlayerForcedPosePacket;
+import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
+import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -23,6 +26,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -50,6 +54,8 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Boolean> HIDE_SCOREBOARD_NUM = this.defineByPersonalRule(10, PersonalRuleCommand.HIDE_SCOREBOARD_NUMBERS, CapabilityDataSerializers.BOOLEAN);
     public short cameraType = -1;
+    public int poseLockingTime;
+    public @Nullable Pose lockedPose;
     public ELServerCameraManager cameraDataManager = new ELServerCameraManager();
     private boolean isUsingCustomCamera;
     private boolean isVanillaCameraFreezing;
@@ -115,6 +121,10 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         if (this.cameraType > -1) {
             nbt.putShort("CameraType", cameraType);
         }
+        if (this.poseLockingTime > 0)
+            nbt.putInt("PoseLockingTime", poseLockingTime);
+        if (this.lockedPose != null)
+            nbt.putShort("LockedPose", (short) this.lockedPose.ordinal());
     }
 
     @Override
@@ -122,25 +132,49 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         this.cameraDataManager.customDeserializeNBT(nbt, this);
         if (CompoundTagUtils.containsShort(nbt, "CameraType"))
             this.cameraType = nbt.getShort("CameraType");
+        if (CompoundTagUtils.containsInt(nbt, "PoseLockingTime"))
+            this.poseLockingTime = nbt.getInt("PoseLockingTime");
+        if (CompoundTagUtils.containsShort(nbt, "LockedPose")) {
+            try {
+                this.lockedPose = Pose.class.getEnumConstants()[nbt.getShort("LockedPose")];
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void tick(Entity entity) {
-        this.setFieldFromCapData();
-        if (entity.level().isClientSide) {
-            CameraUtils.getInstance().tick(this);
-
-        } else {
-            if (this.isUsingCustomCamera && entity instanceof ServerPlayer player) {
-                {
-                    Map<ModifierType, Set<CameraModifier>> map = cameraDataManager.createDirtyMap();
-                    if (!map.isEmpty())
-                        PacketHandler.sendToPlayer(new S2CCameraModifierSetPacket(map), player);
+        if (entity instanceof Player player) {
+            this.setFieldFromCapData();
+            if (entity.level().isClientSide) {
+                CameraUtils.getInstance().tick(this);
+            } else if (player instanceof ServerPlayer sp) {
+                if (this.isUsingCustomCamera) {
+                    {
+                        Map<ModifierType, Set<CameraModifier>> map = cameraDataManager.createDirtyMap();
+                        if (!map.isEmpty())
+                            PacketHandler.sendToPlayer(new S2CCameraModifierSetPacket(map), sp);
+                    }
+                    {
+                        Map<ModifierType, Collection<CameraKeyframeAnimation>> map = cameraDataManager.createDirtyAnimMap();
+                        if (!map.isEmpty())
+                            PacketHandler.sendToPlayer(new S2CCameraAnimationSetPacket(map), sp);
+                    }
                 }
-                {
-                    Map<ModifierType, Collection<CameraKeyframeAnimation>> map = cameraDataManager.createDirtyAnimMap();
-                    if (!map.isEmpty())
-                        PacketHandler.sendToPlayer(new S2CCameraAnimationSetPacket(map), player);
+                if (this.poseLockingTime > 0) {
+                    if (this.lockedPose != null) {
+                        if (sp.getForcedPose() != this.lockedPose) {
+                            this.lockedPose(this.lockedPose, this.poseLockingTime, sp);
+                        }
+                    }
+                    this.poseLockingTime--;
+                    if (this.poseLockingTime <= 0) {
+                        PacketHandler.sendToPlayer(new S2CClientActionPacket(CameraPacketAction.FORCED_POSE_CLEAR), sp);
+                        if (player.getForcedPose() != null)
+                            player.setForcedPose(null);
+                        this.lockedPose = null;
+                    }
                 }
             }
         }
@@ -270,6 +304,20 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setScoreboardNumDisplay(boolean value) {
         this.dataManager.setValue(HIDE_SCOREBOARD_NUM, value);
+    }
+    public void lockedPose(Pose pose, int time, ServerPlayer serverPlayer) {
+        this.poseLockingTime = time;
+        this.lockedPose = pose;
+        serverPlayer.setPose(pose);
+        serverPlayer.setForcedPose(pose);
+        PacketHandler.sendToPlayer(new S2CSetPlayerForcedPosePacket(pose), serverPlayer);
+    }
+    public void unlockPose(ServerPlayer serverPlayer) {
+        this.poseLockingTime = 0;
+        this.lockedPose = null;
+        if (serverPlayer.getForcedPose() != null)
+            serverPlayer.setForcedPose(null);
+        PacketHandler.sendToPlayer(new S2CClientActionPacket(CameraPacketAction.FORCED_POSE_CLEAR), serverPlayer);
     }
     protected void setFieldFromCapData() {
         int flags = this.getFlags();

@@ -23,6 +23,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_PERMISSION_MOTION;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_PERMISSION_FILL_ENTITY;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_KICK;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_POSE;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -69,6 +70,9 @@ public class ServerConfig {
         COMMAND_KICK = BUILDER
                 .comment("/endinglib kick命令的权限要求")
                 .defineInRange("KickPermission", 2, 0, 6);
+        COMMAND_POSE = BUILDER
+                .comment("/endinglib pose命令的权限要求")
+                .defineInRange("PosePermission", 2, 0, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

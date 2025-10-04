@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
@@ -58,8 +59,11 @@ public class CameraModifierUUIDArgument implements ArgumentType<UUID> {
             try {
                 ICameraManager manager = CameraUtils.getInstance();
                 ModifierType modifierType = ModifierType.valueOf(context.getArgument("modifierType", String.class));
+                String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
                 for (CameraModifier modifier : modifierType.getFieldGetter().apply(manager).getModifiers()) {
-                    builder.suggest(modifier.getId().toString(), modifier.toComponent());
+                    String uuidToString = modifier.getId().toString();
+                    if (remaining.isEmpty() || uuidToString.toLowerCase(Locale.ROOT).startsWith(remaining))
+                        builder.suggest(uuidToString, modifier.toComponent());
                 }
                 return builder.buildFuture();
             } catch (Throwable throwable) {

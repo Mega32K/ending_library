@@ -47,7 +47,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraModifierSetPacket.class, S2CCameraModifierSetPacket::encode, S2CCameraModifierSetPacket::decode, S2CCameraModifierSetPacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraModifierRemovePacket.class, S2CCameraModifierRemovePacket::encode, S2CCameraModifierRemovePacket::decode, S2CCameraModifierRemovePacket::handle);
-        INSTANCE.registerMessage(id(), S2CCameraActionPacket.class, S2CCameraActionPacket::encode, S2CCameraActionPacket::decode, S2CCameraActionPacket::handle);
+        INSTANCE.registerMessage(id(), S2CClientActionPacket.class, S2CClientActionPacket::encode, S2CClientActionPacket::decode, S2CClientActionPacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraAnimationSetPacket.class, S2CCameraAnimationSetPacket::encode, S2CCameraAnimationSetPacket::decode, S2CCameraAnimationSetPacket::handle);
         INSTANCE.registerMessage(id(), S2CSetFovPacket.class, S2CSetFovPacket::encode, S2CSetFovPacket::decode, S2CSetFovPacket::handle);
         INSTANCE.registerMessage(id(), C2SUserInputPacket.class, C2SUserInputPacket::encode, C2SUserInputPacket::decode, C2SUserInputPacket::handle);
@@ -56,6 +56,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CListSetRotationPacket.class, S2CListSetRotationPacket::encode, S2CListSetRotationPacket::decode, S2CListSetRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CMapSetRotationPacket.class, S2CMapSetRotationPacket::encode, S2CMapSetRotationPacket::decode, S2CMapSetRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CMouseControlPacket.class, S2CMouseControlPacket::encode, S2CMouseControlPacket::decode, S2CMouseControlPacket::handle);
+        INSTANCE.registerMessage(id(), S2CSetPlayerForcedPosePacket.class, S2CSetPlayerForcedPosePacket::encode, S2CSetPlayerForcedPosePacket::decode, S2CSetPlayerForcedPosePacket::handle);
 
     }
 

@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.command.argument;
 
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.common.command.CommandsEvent;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -30,8 +31,7 @@ public class EasingArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        for (String example : EXAMPLES)
-            builder.suggest(example);
+        CommandsEvent.suggestFromExamples(EXAMPLES, builder);
         return builder.buildFuture();
     }
 

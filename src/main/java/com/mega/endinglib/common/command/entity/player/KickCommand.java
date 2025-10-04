@@ -1,11 +1,6 @@
 package com.mega.endinglib.common.command.entity.player;
 
-import com.mega.endinglib.common.command.argument.CameraActionArgument;
 import com.mega.endinglib.common.config.ServerConfig;
-import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
-import com.mega.endinglib.common.network.s2c.camera.S2CCameraActionPacket;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -16,7 +11,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;
-import java.util.Locale;
 
 public class KickCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
@@ -31,7 +25,7 @@ public class KickCommand {
     }
 
     private static int kick(CommandSourceStack stack, Collection<ServerPlayer> serverPlayers, Component reason) {
-        for(ServerPlayer serverplayer : serverPlayers) {
+        for (ServerPlayer serverplayer : serverPlayers) {
             serverplayer.connection.disconnect(reason);
             stack.sendSuccess(() -> {
                 return Component.translatable("commands.kick.success", serverplayer.getDisplayName(), reason);

@@ -55,6 +55,7 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(CommandArgument.class, ModCommandArgumentTypes.COMMAND.get());
             ArgumentTypeInfos.registerByClass(CommandBlockArgument.class, ModCommandArgumentTypes.COMMAND_BLOCK.get());
             ArgumentTypeInfos.registerByClass(ItemComponentArgument.class, ModCommandArgumentTypes.ITEM_COMPONENT.get());
+            ArgumentTypeInfos.registerByClass(PoseArgument.class, ModCommandArgumentTypes.POSE.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {

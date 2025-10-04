@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -42,8 +43,12 @@ public class CameraAnimationArgument implements ArgumentType<String> {
                 ModifierType modifierType = ModifierType.valueOf(context.getArgument("modifierType", String.class));
                 CameraValueInstance cvi = modifierType.getFieldGetter().apply(manager);
 
+                String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+
                 for (CameraKeyframeAnimation animation : cvi.getKeyframeAnimations()) {
-                    builder.suggest(animation.getName(), animation.toComponent());
+                    String animName = animation.getName();
+                    if (remaining.isEmpty() || animName.toLowerCase(Locale.ROOT).startsWith(remaining))
+                        builder.suggest(animName, animation.toComponent());
                 }
 
                 return builder.buildFuture();

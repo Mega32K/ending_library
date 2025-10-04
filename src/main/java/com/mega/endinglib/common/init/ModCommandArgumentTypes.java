@@ -21,6 +21,7 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<CommandArgument, ?>> COMMAND = REGISTRIES.register("command", () -> SingletonArgumentInfo.contextFree(CommandArgument::command));
     public static final RegistryObject<ArgumentTypeInfo<CommandBlockArgument, ?>> COMMAND_BLOCK = REGISTRIES.register("command_block", () -> SingletonArgumentInfo.contextFree(CommandBlockArgument::commandBlock));
     public static final RegistryObject<ArgumentTypeInfo<ItemComponentArgument, ?>> ITEM_COMPONENT = REGISTRIES.register("item_component", () -> SingletonArgumentInfo.contextFree(ItemComponentArgument::component));
+    public static final RegistryObject<ArgumentTypeInfo<PoseArgument, ?>> POSE = REGISTRIES.register("pose", () -> SingletonArgumentInfo.contextFree(PoseArgument::pose));
 
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);

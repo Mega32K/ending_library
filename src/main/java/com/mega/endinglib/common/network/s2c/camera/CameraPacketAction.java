@@ -9,7 +9,8 @@ public enum CameraPacketAction {
     THIRD_PERSON_BACK_CAMERA,
     CHAT_CLEAR,
     MOUSE_GRAB,
-    MOUSE_RELEASE;
+    MOUSE_RELEASE,
+    FORCED_POSE_CLEAR;
     public void execute() {
         ClientWrapped.executeAction(this);
     }

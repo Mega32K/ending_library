@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.command.argument;
 
+import com.mega.endinglib.common.command.CommandsEvent;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -32,8 +33,7 @@ public class CameraActionArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        for (String example : EXAMPLES)
-            builder.suggest(example, Component.translatable("commands.endinglib.message.action." + example.toLowerCase(Locale.ROOT)));
+        CommandsEvent.suggestFromExamples(EXAMPLES, "commands.endinglib.message.action.", builder);
         return builder.buildFuture();
     }
 

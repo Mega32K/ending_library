@@ -4,7 +4,7 @@ import com.mega.endinglib.common.command.argument.CameraActionArgument;
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
-import com.mega.endinglib.common.network.s2c.camera.S2CCameraActionPacket;
+import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -32,7 +32,7 @@ public class ClientActionCommand {
 
     private static int action(CommandSourceStack stack, ServerPlayer player, CameraPacketAction action, boolean sendMessage) {
         if (player.isDeadOrDying()) return 0;
-        PacketHandler.sendToPlayer(new S2CCameraActionPacket(action), player);
+        PacketHandler.sendToPlayer(new S2CClientActionPacket(action), player);
         if (sendMessage)
             stack.sendSuccess(()-> Component.empty().append(player.getDisplayName()).append(Component.translatable("commands.endinglib.message.action." + action.name().toLowerCase(Locale.ROOT))), false);
         return 1;

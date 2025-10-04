@@ -9,11 +9,13 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class LoreHelper {
@@ -81,7 +83,6 @@ public class LoreHelper {
     public static String codeMode(ChatFormatting formatting) {
         return codeMap.getOrDefault(formatting, String.valueOf(ChatFormatting.PREFIX_CODE) + formatting.getChar());
     }
-
     public static MutableComponent wrap(Component component) {
         return BRACKETS[0].copy().append(component).append(BRACKETS[1].copy());
     }
@@ -95,7 +96,6 @@ public class LoreHelper {
     public static MutableComponent bool(boolean z) {
         return z ? Component.translatable("tooltip.endinglib.on") : Component.translatable("tooltip.endinglib.off");
     }
-
     public static MutableComponent withCopy(MutableComponent mutableComponent, String valueToString) {
         return mutableComponent
                 .withStyle(style -> style
@@ -103,7 +103,9 @@ public class LoreHelper {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))
                 );
     }
-
+    public static Component number(Number number, ChatFormatting color) {
+        return withCopy(Component.literal(String.valueOf(number)).withStyle(color), String.valueOf(number));
+    }
     public static Component vec2(Vec2 vec2) {
         return Component.literal("[").withStyle(ChatFormatting.GREEN)
                 .append(
@@ -148,7 +150,6 @@ public class LoreHelper {
                                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
                 ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
     }
-
     public static Component aabb(AABB aabb) {
         return Component.literal("[").withStyle(ChatFormatting.GREEN)
                 .append(
@@ -200,7 +201,12 @@ public class LoreHelper {
                 )
                 .append(Component.literal("]").withStyle(ChatFormatting.GREEN));
     }
-
+    public static Component pose(Pose pose) {
+        return withCopy(
+                Component.translatable("commands.endinglib.message.pose.name." + pose.name().toLowerCase(Locale.ROOT)).withStyle(ChatFormatting.GREEN),
+                pose.name()
+        );
+    }
     public static boolean hasControlDown() {
         if (Minecraft.ON_OSX) {
             return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 343) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 347);
