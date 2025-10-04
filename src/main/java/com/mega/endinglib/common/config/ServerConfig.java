@@ -22,6 +22,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_PERMISSION_SET_ROTATION;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_PERMISSION_MOTION;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_PERMISSION_FILL_ENTITY;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_KICK;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -65,6 +66,9 @@ public class ServerConfig {
         COMMAND_PERMISSION_FILL_ENTITY = BUILDER
                 .comment("/endinglib fillEntity命令的权限要求")
                 .defineInRange("FillEntityPermission", 2, 0, 6);
+        COMMAND_KICK = BUILDER
+                .comment("/endinglib kick命令的权限要求")
+                .defineInRange("KickPermission", 2, 0, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

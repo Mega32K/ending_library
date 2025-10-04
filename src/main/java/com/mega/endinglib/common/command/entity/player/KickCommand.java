@@ -21,7 +21,7 @@ import java.util.Locale;
 public class KickCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("kick")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_CLIENT_ACTION.get()))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_KICK.get()))
                 .then(Commands.argument("targets", EntityArgument.players())
                         .executes(context -> kick(context.getSource(), EntityArgument.getPlayers(context, "targets"), Component.translatable("multiplayer.disconnect.kicked")))
                         .then(Commands.argument("reason", ComponentArgument.textComponent())
