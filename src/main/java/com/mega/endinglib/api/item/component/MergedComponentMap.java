@@ -216,6 +216,10 @@ public class MergedComponentMap implements ComponentMap {
 
     public void setChanges(ComponentChanges changes) {
         this.onWrite();
+        if (changes == null) {
+            this.changedComponents.clear();
+            return;
+        }
         this.changedComponents.clear();
         this.changedComponents.putAll(changes.changedComponents);
     }

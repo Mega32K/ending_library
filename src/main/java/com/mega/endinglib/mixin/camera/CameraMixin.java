@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.camera;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
@@ -34,6 +35,8 @@ public abstract class CameraMixin {
 
     @Shadow
     protected abstract void move(double p_90569_, double p_90570_, double p_90571_);
+
+    @Shadow protected abstract double getMaxZoom(double p_90567_);
 
     @Inject(method = "setup", at = @At("HEAD"))
     private void argExtra(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci, @Share("partialTicks") LocalFloatRef partialTicks) {
@@ -105,5 +108,17 @@ public abstract class CameraMixin {
             throwable.printStackTrace();
         }
         return true;
+    }
+    @ModifyExpressionValue(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(D)D"))
+    private double replaceMaxZoomRaycast(double original, @Share("partialTicks") LocalFloatRef partialTicks) {
+        try {
+            if (CameraUtils.isUsingCustomCamera()) {
+                ICameraManager manager = CameraUtils.getInstance();
+                return this.getMaxZoom(manager.getRaycastOffset(partialTicks.get()) + 4.0D);
+            }
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        return original;
     }
 }

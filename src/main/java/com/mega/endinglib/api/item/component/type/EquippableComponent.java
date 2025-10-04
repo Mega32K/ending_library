@@ -1,18 +1,14 @@
 package com.mega.endinglib.api.item.component.type;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.util.mc.codec.Codecs;
-import com.mega.endinglib.util.mc.codec.RegistryCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderSet;
+import net.minecraft.core.*;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.HolderSetCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -20,16 +16,13 @@ import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.extensions.IForgeItemStack;
 
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +60,7 @@ public record EquippableComponent(
                             SoundEvent.CODEC.optionalFieldOf("equip_sound", Holder.direct(SoundEvents.ARMOR_EQUIP_GENERIC)).forGetter(EquippableComponent::equipSound),
                             ResourceLocation.CODEC.optionalFieldOf("asset_id").forGetter(EquippableComponent::assetId),
                             ResourceLocation.CODEC.optionalFieldOf("camera_overlay").forGetter(EquippableComponent::cameraOverlay),
-                            RegistryCodecs.entryList(Registries.ENTITY_TYPE).optionalFieldOf("allowed_entities").forGetter(EquippableComponent::allowedEntities),
+                            RegistryCodecs.homogeneousList(Registries.ENTITY_TYPE).optionalFieldOf("allowed_entities").forGetter(EquippableComponent::allowedEntities),
                             Codec.BOOL.optionalFieldOf("dispensable", true).forGetter(EquippableComponent::dispensable),
                             Codec.BOOL.optionalFieldOf("swappable", true).forGetter(EquippableComponent::swappable),
                             Codec.BOOL.optionalFieldOf("damage_on_hurt", true).forGetter(EquippableComponent::damageOnHurt),
@@ -92,7 +85,7 @@ public record EquippableComponent(
             return false;
         } else {
             LivingEntity livingentity = list.get(0);
-            EquippableComponent equippableComponent = ItemComponentManager.get(itemStack, ItemComponentManager.EQUIPPABLE);
+            EquippableComponent equippableComponent = ItemComponentManager.get(itemStack, DataComponents.EQUIPPABLE);
             if (equippableComponent != null) {
                 if (!equippableComponent.allows(livingentity.getType()))
                     return false;

@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.advanced.data_expand.component;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.BlocksAttacksComponent;
 import net.minecraft.world.entity.EntityType;
@@ -21,7 +22,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(method = "blockUsingShield", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;blockUsingShield(Lnet/minecraft/world/entity/LivingEntity;)V", shift = At.Shift.AFTER), cancellable = true)
     private void componentBlockUsingShield(LivingEntity p_36295_, CallbackInfo ci) {
         ItemStack itemStack = ItemComponentManager.getBlockingItem(this);
-        BlocksAttacksComponent blocksAttacksComponent = itemStack != null ? ItemComponentManager.get(itemStack, ItemComponentManager.BLOCKS_ATTACKS) : null;
+        BlocksAttacksComponent blocksAttacksComponent = itemStack != null ? ItemComponentManager.get(itemStack, DataComponents.BLOCKS_ATTACKS) : null;
         float f = ItemComponentManager.getWeaponDisableBlockingForSeconds(this);
         if (f > 0.0F && blocksAttacksComponent != null) {
             blocksAttacksComponent.applyShieldCooldown(level(), this, f, itemStack);

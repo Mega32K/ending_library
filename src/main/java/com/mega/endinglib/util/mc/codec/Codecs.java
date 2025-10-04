@@ -1,32 +1,31 @@
 package com.mega.endinglib.util.mc.codec;
 
 import com.google.common.primitives.UnsignedBytes;
+import com.mega.endinglib.mixin.accessor.AccessorToolAction;
 import com.mega.endinglib.util.mc.codec.impl.MobEffectInstanceParameters;
 import com.mega.endinglib.util.mixin.data_expand.ExtraMobEffectInstanceItf;
 import com.mojang.datafixers.util.Either;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Lifecycle;
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.util.Unit;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.UseAnim;
+import net.minecraftforge.common.ToolAction;
 import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Codecs {
     public static final Codec<Unit> UNIT_CODEC = Codec.unit(Unit.INSTANCE);
@@ -45,6 +44,7 @@ public class Codecs {
     public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
     public static final Codec<Float> NON_NEGATIVE_FLOAT = rangedInclusiveFloat(0.0F, Float.MAX_VALUE, v -> "Value must be non-negative: " + v);
     public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
+    public static final Codec<Float> O2ONE_FLOAT = rangedInclusiveFloat(0F, 1.0F, v -> "Value must be in the interval [0,1]: " + v);
     public static final Codec<MobEffect> MOB_EFFECT_DIRECT_CODEC = BuiltInRegistries.MOB_EFFECT.byNameCodec();
     public static final Codec<Holder<MobEffect>> MOB_EFFECT_CODEC = RegistryFixedCodec.create(Registries.MOB_EFFECT);
     public static final Codec<Holder<EntityType<?>>> ENTITY_TYPE_CODEC = RegistryFixedCodec.create(Registries.ENTITY_TYPE);
@@ -55,6 +55,18 @@ public class Codecs {
                             MobEffectInstanceParameters.CODEC.forGetter(ei -> ((ExtraMobEffectInstanceItf) ei).asParameters())
                     )
                     .apply(instance, MobEffectInstanceParameters::fromParameters)
+    );
+    public static final Codec<InteractionHand> HAND_CODEC = Codec.STRING.flatXmap(
+            string -> {
+                InteractionHand hand;
+                try {
+                    hand = InteractionHand.valueOf(string.toUpperCase(Locale.ROOT));
+                } catch (Throwable throwable) {
+                    return DataResult.error(() -> "\"%s\" is not a InteractionHand".formatted(string));
+                }
+                return DataResult.success(hand);
+            },
+            anim -> DataResult.success(anim.name().toLowerCase(Locale.ROOT))
     );
     public static final Codec<UseAnim> USE_ANIM_CODEC = Codec.STRING.flatXmap(
             string -> {
@@ -92,6 +104,13 @@ public class Codecs {
             },
             slot -> DataResult.success(slot.getName())
     );
+    public static final Codec<ToolAction> TOOL_ACTION_CODEC = Codec.STRING.comapFlatMap(
+            string -> {
+                ToolAction action = AccessorToolAction.getActions().get(string);
+                return action == null ? DataResult.error(() -> "No Tool action called " + string) : DataResult.success(action);
+            },
+            ToolAction::name
+    );
     static <T, U> Codec<T> withAlternative(final Codec<T> primary, final Codec<U> alternative, final Function<U, T> converter) {
         return Codec.either(
                 primary,
@@ -110,13 +129,8 @@ public class Codecs {
             return DataResult.success(list);
         }
     }
-    public static <T> Optional<String> firstKeyOfMapCodec_NBT(MapCodec<T> codec) {
-        Optional<Tag> optional = codec.keys(NbtOps.INSTANCE).findFirst();
-        return optional.map(Tag::getAsString);
-    }
-    public static <T> Optional<String> firstKeyOfMapCodec_NBT(MapCodec.MapCodecCodec<T> codec) {
-        Optional<Tag> optional = codec.codec().keys(NbtOps.INSTANCE).findFirst();
-        return optional.map(Tag::getAsString);
+    public static <T> Stream<T> mapCodecKeys(MapCodec<T> codec, DynamicOps<T> ops) {
+        return codec.keys(ops);
     }
 
     public static <A> MapCodec<A> recursive(final String name, final Function<Codec<A>, MapCodec<A>> wrapped) {

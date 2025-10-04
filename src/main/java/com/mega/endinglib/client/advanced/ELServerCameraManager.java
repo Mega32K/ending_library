@@ -25,6 +25,7 @@ public class ELServerCameraManager implements ICameraManager {
     public final CameraValueInstance zRot = new CameraValueInstance();
     public final CameraValueInstance fovOffset = new CameraValueInstance();
     public final CameraValueInstance zoomOffset = new CameraValueInstance();
+    public final CameraValueInstance raycastOffset = new CameraValueInstance();
     public boolean vanillaFovNeedsToFreeze;
     public boolean vanillaAngelsNeedsToFreeze;
     public boolean vanillaZoomNeedsToFreeze;
@@ -47,6 +48,7 @@ public class ELServerCameraManager implements ICameraManager {
     private double fovOffsetOld;
     private float originZoom;
     private double zoomOffsetOld;
+    private double raycastOffsetOld;
 
     public ELServerCameraManager() {
     }
@@ -109,6 +111,9 @@ public class ELServerCameraManager implements ICameraManager {
         return zoomOffset;
     }
 
+    public CameraValueInstance getRaycastOffset0() {
+        return raycastOffset;
+    }
     public void addRelativeXModifier(CameraModifier modifier) {
         this.xRelative.addTransientModifier(modifier);
     }
@@ -152,6 +157,9 @@ public class ELServerCameraManager implements ICameraManager {
     public void addZoomModifier(CameraModifier modifier) {
         this.zoomOffset.addTransientModifier(modifier);
     }
+    public void addRaycastModifier(CameraModifier modifier) {
+        this.raycastOffset.addTransientModifier(modifier);
+    }
 
 
     public void addPermanentRelativeXModifier(CameraModifier modifier) {
@@ -193,7 +201,9 @@ public class ELServerCameraManager implements ICameraManager {
     public void addPermanentFovModifier(CameraModifier modifier) {
         this.fovOffset.addPermanentModifier(modifier);
     }
-
+    public void addPermanentRaycastModifier(CameraModifier modifier) {
+        this.raycastOffset.addPermanentModifier(modifier);
+    }
     public void addPermanentZoomModifier(CameraModifier modifier) {
         this.zoomOffset.addPermanentModifier(modifier);
     }
@@ -242,6 +252,9 @@ public class ELServerCameraManager implements ICameraManager {
         this.zoomOffset.removeModifier(modifier);
     }
 
+    public void removeRaycastModifier(CameraModifier modifier) {
+        this.raycastOffset.removeModifier(modifier);
+    }
     public double getXRelative(float partialTicks) {
         return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue());
     }
@@ -287,6 +300,9 @@ public class ELServerCameraManager implements ICameraManager {
         return Mth.lerp(partialTicks, this.zoomOffsetOld, this.zoomOffset.getValue());
     }
 
+    public double getRaycastOffset(float partialTicks) {
+        return Mth.lerp(partialTicks, this.raycastOffsetOld, this.raycastOffset.getValue()) + raycastOffset.getAnimationValue(partialTicks);
+    }
     public double getOriginX() {
         return originX;
     }

@@ -21,17 +21,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public record CommandScheduleEntry(CommandSourceStack commandSourceStack, LinkedList<String> commandList,
-                                   String resourceLocation, long delay, UUID entityID) {
-    public static final CommandSourceStack DUMMY_SOURCE = new CommandSourceStack(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) null, 0, "", CommonComponents.EMPTY, (MinecraftServer) null, (Entity) null);
+public record CommandScheduleEntry(ICommandSourceStackBuilder commandSourceStack, LinkedList<String> commandList,
+                                   String resourceLocation, long delay) {
+    public static final WrappedCSSBuilder DUMMY_SOURCE = new WrappedCSSBuilder(new CommandSourceStack(CommandSource.NULL, Vec3.ZERO, Vec2.ZERO, (ServerLevel) null, 0, "", CommonComponents.EMPTY, (MinecraftServer) null, (Entity) null));
 
     public static CommandScheduleEntry empty() {
         LinkedList<String> commandEntry = new LinkedList<>();
-        return new CommandScheduleEntry(DUMMY_SOURCE, commandEntry, "", 0L, null);
-    }
-
-    public CommandScheduleEntry signature(CommandSourceStack source, String identifier, long delay) {
-        return new CommandScheduleEntry(source.withMaximumPermission(2), this.commandList, identifier, delay, null);
+        return new CommandScheduleEntry(DUMMY_SOURCE, commandEntry, "", 0L);
     }
 
     public void addCommandLine(String commandLine) {
@@ -69,7 +65,7 @@ public record CommandScheduleEntry(CommandSourceStack commandSourceStack, Linked
 
         public static void serialize(CompoundTag nbt, CommandScheduleEntry entry) {
             CompoundTag sourceNbt = new CompoundTag();
-            CommandSourceStack source = entry.commandSourceStack;
+            CommandSourceStack source = entry.commandSourceStack.build(ServerLifecycleHooks.getCurrentServer());
             AccessorCommandSourceStack accessor = (AccessorCommandSourceStack) source;
             CommandSource commandSource = source.source;
             sourceNbt.putString("Output", commandSource.getClass().getName());
@@ -100,9 +96,9 @@ public record CommandScheduleEntry(CommandSourceStack commandSourceStack, Linked
             nbt.putLong("Delay", entry.delay);
         }
 
-        public static @NotNull CommandScheduleEntry deserialize(CompoundTag nbt) {
-            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        public static @NotNull CommandScheduleEntry deserialize(CompoundTag nbt, MinecraftServer server) {
             CompoundTag sourceNbt = nbt.getCompound("Source");
+            /*
             String outputClass = sourceNbt.getString("Output");
             CommandSource output = CommandSource.NULL;
 
@@ -135,11 +131,13 @@ public record CommandScheduleEntry(CommandSourceStack commandSourceStack, Linked
             int level = sourceNbt.getInt("PermissionLevel");
 
             assert world != null;
+             */
 
-            CommandSourceStack source = new CommandSourceStack(output, position, rotation, world, level, sourceNbt.getString("Name"), Objects.requireNonNull(Component.Serializer.fromJson(sourceNbt.getString("DisplayName"))), server, entity);
+            //CommandSourceStack source = new CommandSourceStack(output, position, rotation, world, permission, sourceNbt.getString("Name"), Objects.requireNonNull(Component.Serializer.fromJson(sourceNbt.getString("DisplayName"))), server, entity);
+            ICommandSourceStackBuilder builder = new RealCSSBuilder(sourceNbt, server);
             LinkedList<String> commands = new LinkedList<>();
             nbt.getList("CommandList", 8).forEach((tag) -> commands.add(tag.getAsString()));
-            return new CommandScheduleEntry(source, commands, nbt.getString("Identifier"), nbt.getLong("Delay"), uuid);
+            return new CommandScheduleEntry(builder, commands, nbt.getString("Identifier"), nbt.getLong("Delay"));
         }
     }
 }

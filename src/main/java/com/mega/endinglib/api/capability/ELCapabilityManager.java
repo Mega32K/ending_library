@@ -8,6 +8,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -125,7 +126,7 @@ public class ELCapabilityManager {
         }));
     }
 
-    private static Dist distFromLevel(Level level) {
+    public static Dist distFromLevel(Level level) {
         return level.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
     }
 
@@ -137,7 +138,7 @@ public class ELCapabilityManager {
         });
     }
 
-    private static boolean canUseSync(EntitySyncCapabilityBase cap, CapabilitySyncType type) {
+    public static boolean canUseSync(EntitySyncCapabilityBase cap, CapabilitySyncType type) {
         return cap.getEnabledSyncTypes().contains(type);
     }
 }

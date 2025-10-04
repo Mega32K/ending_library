@@ -24,11 +24,12 @@
   "commands.endinglib.message.modifierType.rotation_z": "§aZ轴旋转/Roll",
   "commands.endinglib.message.modifierType.fov": "§a额外Fov值",
   "commands.endinglib.message.modifierType.zoom": "§a额外Zoom值",
+  "commands.endinglib.message.modifierType.raycast": "§a额外射线距离",
 
   "commands.endinglib.message.time_stop.set": "§7已将%s§7的时停时间设置为%.2f秒",
   "commands.endinglib.message.time_stop.set.multi": "§7已将%d个实体的时停时间设置为%.2f秒",
 
-  "commands.endinglib.message.action.open_screen": "§7Open the custom camera screen",
+  "commands.endinglib.message.action.open_camera_bench_screen": "§7Open CameraBench screen",
   "commands.endinglib.message.action.first_person_camera": "§7设置为§a第一人称",
   "commands.endinglib.message.action.third_person_camera": "§7设置为§a第三人称",
   "commands.endinglib.message.action.third_person_back_camera": "§7设置为§a第三人称(背)",
@@ -71,6 +72,7 @@
   "commands.endinglib.message.personal_rule.walkingViewMultiplier": "玩家行走视角摇晃乘数",
   "commands.endinglib.message.personal_rule.hurtViewMultiplier": "玩家受伤视角Z轴摇晃乘数",
   "commands.endinglib.message.personal_rule.lockedGameMode": "游戏模式锁定",
+  "commands.endinglib.message.personal_rule.hideScoreboardNum": "显示计分板数字",
 
   "commands.endinglib.message.roll": "%s§7随机获取到了:§6%s",
 
@@ -90,7 +92,10 @@
 
   "commands.endinglib.message.schedule.create": "§7已添加服务端命令任务到队列",
   "commands.endinglib.message.schedule.stop": "§7已关闭服务端命令任务%s",
-  "commands.endinglib.message.schedule.list": "§7已列出所有服务端命令任务:",
+  "commands.endinglib.message.schedule.freeze": "§7已冻结服务端命令任务%s %s秒",
+  "commands.endinglib.message.schedule.unfreeze": "§7已解冻服务端命令任务%s",
+  "commands.endinglib.message.schedule.list": "§7已列出所有服务端命令任务(共%s§7个):",
+  "commands.endinglib.message.schedule.list.clear": "§7已结束所有服务端命令任务(共%s§7个):",
 
   "tooltip.endinglib.specialEffect": "§5Special Effect:",
   "tooltip.endinglib.holdShiftSetEffect": "§5Hold §6Shift§5 to see set effect details.",

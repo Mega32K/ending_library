@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.advanced.data_expand.component;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.EquippableComponent;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -52,7 +53,7 @@ public abstract class HumanoidArmorLayerMixin<T extends LivingEntity, M extends 
         Item item = itemstack.getItem();
         if (!(item instanceof ArmorItem)) {
             EquippableComponent component;
-            if ((component = ItemComponentManager.get(itemstack, ItemComponentManager.EQUIPPABLE)) != null) {
+            if ((component = ItemComponentManager.get(itemstack, DataComponents.EQUIPPABLE)) != null) {
                 if (component.getEquipmentSlot() == slot && component.assetId().isPresent()) {
                     this.getParentModel().copyPropertiesTo(p_117124_);
                     this.setPartVisibility(p_117124_, slot);

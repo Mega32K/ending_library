@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.advanced.data_expand.component;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.EquippableComponent;
 import net.minecraft.client.Minecraft;
@@ -40,7 +41,7 @@ public abstract class ForgeGuiMixin extends Gui{
                 else
                 {
 
-                    EquippableComponent equippable = ItemComponentManager.get(itemstack, ItemComponentManager.EQUIPPABLE);
+                    EquippableComponent equippable = ItemComponentManager.get(itemstack, DataComponents.EQUIPPABLE);
                     if (equippable != null && equippable.slot() == equipmentslot) {
                         if (equippable.cameraOverlay().isPresent()) {
                             this.renderTextureOverlay(guiGraphics, equippable.cameraOverlay().get().withPath(p_380782_ -> "textures/" + p_380782_ + ".png"), 1.0F);

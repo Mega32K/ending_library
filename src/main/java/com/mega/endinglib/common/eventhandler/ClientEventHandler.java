@@ -1,6 +1,8 @@
 package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.api.client.ClientTaskInstance;
+import com.mega.endinglib.api.client.LambdaClientTaskInstance;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
 import com.mega.endinglib.client.ClientWrapped;
@@ -16,6 +18,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +27,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.ScreenEvent;
@@ -91,21 +96,52 @@ public class ClientEventHandler {
                         if (capability.isUsingCustomCamera()) {
                             if (capability.isMouseControlled()) {
                                 if (TimeContext.Client.count - ClientUtils.lastRunAsync > 20) {
-                                    ClientUtils.lastRunAsync = TimeContext.Client.count;
-                                    ProfilerFiller p = Minecraft.getInstance().getProfiler();
-                                    p.push("AsyncMouseControlledData");
+                                    ClientUtils.lastRunAsync = TimeContext.Client.count; 
                                     try {
-                                        ClientUtils.mouseCF().join();
+                                        ClientUtils.mouseCF();
                                     } catch (CompletionException e) {
                                         EndingLibrary.LOGGER.warn("CompletableFuture MouseControlledMode failed!");
                                     }
-                                    p.pop();
                                 }
                             }
                         }
                     });
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDisconnected(ClientPlayerNetworkEvent.LoggingOut event) {
+        if (ClientUtils.customCursorHandle != -1L)
+            new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::resetCursor).onAddedToWorld();
+    }
+    @SubscribeEvent
+    public static void onScreenOpen(ScreenEvent.Opening event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+                if (capability.isUsingCustomCamera()) {
+                    if (capability.isMouseControlled()) {
+                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_NORMAL))
+                            ClientUtils.createMouseCursor(RendererUtils.CURSOR_NORMAL, 3.2F, (int) (8 * 3.2F), (int) (8 * 3.2F), Minecraft.getInstance().mouseHandler);
+                    }
+                }
+            });
+        }
+    }
+    @SubscribeEvent
+    public static void onScreenClose(ScreenEvent.Closing event) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+                if (capability.isUsingCustomCamera()) {
+                    if (capability.isMouseControlled()) {
+                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_1))
+                            ClientUtils.createMouseCursor(RendererUtils.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), Minecraft.getInstance().mouseHandler);
+                    }
+                }
+            });
         }
     }
     public static byte setByteFlags(byte flagData, int mask, boolean value) {

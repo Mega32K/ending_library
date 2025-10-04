@@ -1,5 +1,6 @@
 package com.mega.endinglib.util.mc.render;
 
+import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.mixin.accessor.AccessorGameRenderer;
 import com.mega.endinglib.util.mc.entity.RaycastHelper;
 import com.mega.endinglib.util.mc.entity.RotationUtils;
@@ -8,6 +9,8 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
@@ -17,17 +20,51 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWImage;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClientUtils {
-    public static final ExecutorService MOUSE_RAY_TEST_POOL = Executors.newFixedThreadPool(2);
+    public static final ExecutorService CLIENT_TEST_POOL = Executors.newFixedThreadPool(3);
     public static Minecraft mc = Minecraft.getInstance();
+    public static ResourceLocation CURRENT_CURSOR_ICON = null;
+    public static long customCursorHandle = -1L;
     private static Vec3 MOUSE_CLIP_POS = Vec3.ZERO;
     private static final float[] MOUSE_POINT_TO_ROT = new float[] {0F, 0F};
     public static long lastRunAsync = 0L;
+    public static void createMouseCursor(ResourceLocation icon, float scale, int xHot, int yHot, MouseHandler mouseHandler) {
+        CURRENT_CURSOR_ICON = icon;
+        mc.execute(()-> {
+            try {
+                if (customCursorHandle != -1L)
+                    GLFW.glfwDestroyCursor(customCursorHandle);
+                Resource resource = mc.getResourceManager().getResourceOrThrow(icon);
+                GLFWImageUtils.safeGetImage(resource.open(), scale, glfwImage -> {
+                    customCursorHandle = GLFW.glfwCreateCursor(glfwImage, xHot, yHot);
+                });
+                long windowHandle = mc.getWindow().getWindow();
+                GLFW.glfwSetCursor(windowHandle, customCursorHandle);
+                GLFW.glfwSetCursorPos(windowHandle, mouseHandler.xpos(), mouseHandler.ypos());
+            } catch (IOException e) {
+                EndingLibrary.LOGGER.error("Failed to load cursor icon", e);
+            }
+        });
+    }
+    public static void resetCursor() {
+        mc.execute(() -> {
+            long window = mc.getWindow().getWindow();
+            if (customCursorHandle != -1L) {
+                GLFW.glfwDestroyCursor(customCursorHandle);
+                customCursorHandle = -1L;
+            }
+            GLFW.glfwSetCursor(window, 0L);
+            GLFW.glfwSetCursorPos(window, mc.mouseHandler.xpos(), mc.mouseHandler.ypos());
+        });
+    }
     /**
      * @param posX           在屏幕上的X坐标  {@link MouseHandler#xpos()}
      * @param posY           在屏幕上的Y坐标  {@link MouseHandler#ypos()}
@@ -92,14 +129,14 @@ public class ClientUtils {
                 MOUSE_CLIP_POS = new AABB(hitResult.getBlockPos()).clip(start, end).orElseGet(() -> localPlayer.getEyePosition().add(localPlayer.getLookAngle()));
             }
             return MOUSE_CLIP_POS;
-        }, MOUSE_RAY_TEST_POOL).thenAcceptAsync((vec3) -> {
+        }, CLIENT_TEST_POOL).thenAcceptAsync((vec3) -> {
             Entity focusedEntity = mc.getCameraEntity();
             if (focusedEntity == null)
                 return;
             float[] r = RotationUtils.rotationAtoB(focusedEntity, vec3);
             MOUSE_POINT_TO_ROT[0] = r[0];
             MOUSE_POINT_TO_ROT[1] = r[1] ;
-        }, MOUSE_RAY_TEST_POOL);
+        }, CLIENT_TEST_POOL);
     }
 
     private static BlockHitResult getBlockHitResultFromMouse(Entity focusedEntity, Vec3 start, Vec3 end) {

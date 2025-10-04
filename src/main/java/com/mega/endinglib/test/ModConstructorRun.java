@@ -1,6 +1,7 @@
 package com.mega.endinglib.test;
 
-import com.mega.endinglib.api.item.component.ItemComponentManager;
+import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentType;
 import com.mega.endinglib.api.item.component.MergedComponentMap;
 import com.mega.endinglib.api.item.component.type.ItemModelComponent;
@@ -19,11 +20,10 @@ public class ModConstructorRun {
     public static final Lock L = new ReentrantLock();
     public static void run() {
         synchronized (System.out) {
-            NbtOps nbtOps = NbtOps.INSTANCE;
             System.out.println("--------Encode--------");
             Map<ItemComponentType<?>, Object> map = new Reference2ObjectArrayMap<>();
-            map.put(ItemComponentManager.ITEM_MODEL, new ItemModelComponent(new ResourceLocation("wooden_sword")));
-            System.out.println(MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.encodeStart(nbtOps, map).result().get());
+            map.put(DataComponents.ITEM_MODEL, new ItemModelComponent(new ResourceLocation("wooden_sword")));
+            System.out.println(MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), map).result().get());
             System.out.println("--------Decode--------");
         }
         System.exit(-1);

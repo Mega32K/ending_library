@@ -16,19 +16,19 @@ public class EndingLibrarySavedData extends SavedData {
     private MinecraftServer server;
 
     public static EndingLibrarySavedData readOrCreate(MinecraftServer server) {
-        EndingLibrarySavedData data = server.overworld().getDataStorage().computeIfAbsent(EndingLibrarySavedData::create, EndingLibrarySavedData::new, "endinglib_saved_data");
+        EndingLibrarySavedData data = server.overworld().getDataStorage().computeIfAbsent(tag-> create(tag,server), EndingLibrarySavedData::new, "endinglib_saved_data");
         data.server = server;
         return data;
     }
 
-    public static EndingLibrarySavedData create(CompoundTag tag) {
+    public static EndingLibrarySavedData create(CompoundTag tag, MinecraftServer server) {
         EndingLibrarySavedData data = new EndingLibrarySavedData();
         {
             ListTag listTag = tag.getList("CommandTasks", 10);
             if (!listTag.isEmpty()) {
                 for (int i = 0; i < listTag.size(); i++) {
                     CompoundTag compoundTag = listTag.getCompound(i);
-                    CommandTask task = CommandTask.load(compoundTag);
+                    CommandTask task = CommandTask.load(compoundTag, server);
                     if (task != null) {
                         task.addToManager();
                         data.commandTasks.add(task);

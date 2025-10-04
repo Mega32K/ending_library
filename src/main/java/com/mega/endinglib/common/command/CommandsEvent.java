@@ -30,6 +30,7 @@ public class CommandsEvent {
                         .then(SetRotationCommand.register())
                         .then(MotionCommand.register())
                         .then(ScheduleCommand.register(event.getDispatcher()))
+                        .then(KickCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )

@@ -1,11 +1,11 @@
 package com.mega.endinglib.api.item.component.type;
 
 import com.mega.endinglib.util.mc.codec.Codecs;
-import com.mega.endinglib.util.mc.codec.RegistryCodecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.Stats;
@@ -42,7 +42,7 @@ public record BlocksAttacksComponent(
                             BlocksAttacksComponent.ItemDamage.CODEC
                                     .optionalFieldOf("item_damage", BlocksAttacksComponent.ItemDamage.DEFAULT)
                                     .forGetter(BlocksAttacksComponent::itemDamage),
-                            TagKey.codec(Registries.DAMAGE_TYPE).optionalFieldOf("bypassed_by").forGetter(BlocksAttacksComponent::bypassedBy),
+                            TagKey.hashedCodec(Registries.DAMAGE_TYPE).optionalFieldOf("bypassed_by").forGetter(BlocksAttacksComponent::bypassedBy),
                             SoundEvent.CODEC.optionalFieldOf("block_sound").forGetter(BlocksAttacksComponent::blockSound),
                             SoundEvent.CODEC.optionalFieldOf("disabled_sound").forGetter(BlocksAttacksComponent::disableSound)
                     )
@@ -53,11 +53,9 @@ public record BlocksAttacksComponent(
         this.blockSound
                 .ifPresent(
                         sound -> {
-                            System.out.println(sound.value().getLocation());
                             level.playSound(null, from.getX(), from.getY(), from.getZ(), sound.value(), from.getSoundSource(), 1.0F, 0.8F + level.random.nextFloat() * 0.4F);
                         }
                 );
-        System.out.println(blockSound.isPresent());
     }
 
     public void applyShieldCooldown(Level world, LivingEntity affectedEntity, float cooldownSeconds, ItemStack stack) {
@@ -120,7 +118,7 @@ public record BlocksAttacksComponent(
         public static final Codec<BlocksAttacksComponent.DamageReduction> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
                                 Codecs.POSITIVE_FLOAT.optionalFieldOf("horizontal_blocking_angle", 90.0F).forGetter(BlocksAttacksComponent.DamageReduction::horizontalBlockingAngle),
-                                RegistryCodecs.entryList(Registries.DAMAGE_TYPE).optionalFieldOf("type").forGetter(BlocksAttacksComponent.DamageReduction::type),
+                                RegistryCodecs.homogeneousList(Registries.DAMAGE_TYPE).optionalFieldOf("type").forGetter(BlocksAttacksComponent.DamageReduction::type),
                                 Codec.FLOAT.fieldOf("base").forGetter(BlocksAttacksComponent.DamageReduction::base),
                                 Codec.FLOAT.fieldOf("factor").forGetter(BlocksAttacksComponent.DamageReduction::factor)
                         )

@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.advanced.data_expand.component;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.BlocksAttacksComponent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -16,7 +17,7 @@ public abstract class ForgeHooksMixin {
     private static float componentModifyBlockedDamage(float blocked, LivingEntity blocker, DamageSource source, float blocked_) {
         ItemStack stack;
         if (blocker.isUsingItem() && !(stack = blocker.getUseItem()).isEmpty()) {
-            BlocksAttacksComponent component = ItemComponentManager.get(stack, ItemComponentManager.BLOCKS_ATTACKS);
+            BlocksAttacksComponent component = ItemComponentManager.get(stack, DataComponents.BLOCKS_ATTACKS);
             if (component != null) {
                 return ItemComponentManager.getDamageBlockedAmount(blocker, source, blocked, stack, component);
             }

@@ -30,8 +30,8 @@ public interface ICameraManager {
     CameraValueInstance getZRot0();
 
     CameraValueInstance getFovOffset0();
-
     CameraValueInstance getZoomOffset0();
+    CameraValueInstance getRaycastOffset0();
 
     void addRelativeXModifier(CameraModifier modifier);
 
@@ -52,8 +52,8 @@ public interface ICameraManager {
     void addRotationZModifier(CameraModifier modifier);
 
     void addFovModifier(CameraModifier modifier);
-
     void addZoomModifier(CameraModifier modifier);
+    void addRaycastModifier(CameraModifier modifier);
 
     void addPermanentRelativeXModifier(CameraModifier modifier);
 
@@ -74,8 +74,8 @@ public interface ICameraManager {
     void addPermanentRotationZModifier(CameraModifier modifier);
 
     void addPermanentFovModifier(CameraModifier modifier);
-
     void addPermanentZoomModifier(CameraModifier modifier);
+    void addPermanentRaycastModifier(CameraModifier modifier);
 
     void removeRelativeXModifier(CameraModifier modifier);
 
@@ -96,8 +96,8 @@ public interface ICameraManager {
     void removeRotationZModifier(CameraModifier modifier);
 
     void removeFovModifier(CameraModifier modifier);
-
     void removeZoomModifier(CameraModifier modifier);
+    void removeRaycastModifier(CameraModifier modifier);
 
     double getXRelative(float partialTicks);
 
@@ -118,8 +118,8 @@ public interface ICameraManager {
     double getZRotation(float partialTicks);
 
     double getFovOffset(float partialTicks);
-
     double getZoomOffset(float partialTicks);
+    double getRaycastOffset(float partialTicks);
 
     double getOriginX();
 

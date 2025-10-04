@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.advanced.data_expand.component;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.DamageResistantComponent;
 import net.minecraft.tags.DamageTypeTags;
@@ -18,7 +19,7 @@ public abstract class ItemEntityMixin {
 
     @Inject(method = "fireImmune", at = @At("HEAD"), cancellable = true)
     private void componentForeImmune(CallbackInfoReturnable<Boolean> cir) {
-        DamageResistantComponent component = ItemComponentManager.get(this.getItem(), ItemComponentManager.DAMAGE_RESISTANT);
+        DamageResistantComponent component = ItemComponentManager.get(this.getItem(), DataComponents.DAMAGE_RESISTANT);
         if (component != null) {
             if (component.types().equals(DamageTypeTags.IS_FIRE))
                 cir.setReturnValue(true);
@@ -26,10 +27,10 @@ public abstract class ItemEntityMixin {
     }
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/item/ItemEntity;markHurt()V", shift = At.Shift.BEFORE), cancellable = true)
     private void componentInvulnerableTo(DamageSource p_32013_, float p_32014_, CallbackInfoReturnable<Boolean> cir) {
-        DamageResistantComponent component = ItemComponentManager.get(this.getItem(), ItemComponentManager.DAMAGE_RESISTANT);
+        DamageResistantComponent component = ItemComponentManager.get(this.getItem(), DataComponents.DAMAGE_RESISTANT);
         if (component != null) {
             if (component.resists(p_32013_))
-                cir.setReturnValue(true);
+                cir.setReturnValue(false);
         }
     }
 }

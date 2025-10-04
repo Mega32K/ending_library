@@ -35,6 +35,6 @@ public abstract class MinecraftMixin implements MinecraftExtra {
     @Inject(method = "close", at = @At("TAIL"))
     private void close(CallbackInfo ci) {
         ClientProxy.SERVICE.shutdown();
-        ClientUtils.MOUSE_RAY_TEST_POOL.shutdown();
+        ClientUtils.CLIENT_TEST_POOL.shutdown();
     }
 }

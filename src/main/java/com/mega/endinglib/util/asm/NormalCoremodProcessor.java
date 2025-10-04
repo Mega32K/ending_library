@@ -93,9 +93,9 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             InsnList insnNodes = new InsnList();
                             insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
                             insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "canPerformAction", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;Lnet/minecraftforge/common/ToolAction;)Z", false));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "componentCanPerformAction", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;Lnet/minecraftforge/common/ToolAction;)Z", false));
                             LabelNode elseNode = new LabelNode();
-                            insnNodes.add(new JumpInsnNode(Opcodes.IFNE, elseNode));
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
                             insnNodes.add(new InsnNode(Opcodes.ICONST_1));
                             insnNodes.add(new InsnNode(Opcodes.IRETURN));
                             insnNodes.add(elseNode);
@@ -121,25 +121,22 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             }
                         });
                         case "canEquip" -> methodNode.instructions.forEach(insnNode -> {
-                            InsnList insnNodes = new InsnList();
-                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 2));
-                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "canEquip", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/entity/Entity;)Z", false));
-                            LabelNode elseNode = new LabelNode();
-                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
-                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
-                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
-                            insnNodes.add(elseNode);
-                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
-                            shouldWrite.set(true);
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 2));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "canEquip", "(ZLnet/minecraftforge/common/extensions/IForgeItemStack;Lnet/minecraft/world/entity/EquipmentSlot;Lnet/minecraft/world/entity/Entity;)Z", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
                         });
                     }
                 });
             } else if ("net/minecraftforge/common/extensions/IForgeItem".equals(classNode.name)) {
                 classNode.methods.forEach(methodNode -> {
-                    if (methodNode.name.equals("getMaxStackSize")) {
-                        methodNode.instructions.forEach(insnNode -> {
+                    switch (methodNode.name) {
+                        case "getMaxStackSize" -> methodNode.instructions.forEach(insnNode -> {
                             if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
                                 InsnList insnNodes = new InsnList();
                                 insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
@@ -148,15 +145,34 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 shouldWrite.set(true);
                             }
                         });
-                    } else if (methodNode.name.equals("getArmorTexture")) {
-                        InsnList insnNodes = new InsnList();
-                        insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                        insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 3));
-                        insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 4));
-                        insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "componentArmorTexture", "(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;Ljava/lang/String;)Ljava/lang/String;", false));
-                        insnNodes.add(new InsnNode(Opcodes.ARETURN));
-                        InjectionFinder.injectHead(methodNode, insnNodes);
-                        shouldWrite.set(true);
+                        case "getArmorTexture" -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 3));
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 4));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "componentArmorTexture", "(Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/entity/EquipmentSlot;Ljava/lang/String;)Ljava/lang/String;", false));
+                            insnNodes.add(new InsnNode(Opcodes.ARETURN));
+                            InjectionFinder.injectHead(methodNode, insnNodes);
+                            shouldWrite.set(true);
+                        }
+                        case "getMaxDamage" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getComponentMaxDamage", "(ILnet/minecraft/world/item/ItemStack;)I", false));
+                                methodNode.instructions.insertBefore(insnNode, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                        case "isDamageable" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "isComponentItemDamageable", "(ZLnet/minecraft/world/item/ItemStack;)Z", false));
+                                methodNode.instructions.insertBefore(insnNode, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
                     }
                 });
             } else if ("net/minecraft/world/item/Equipable".equals(classNode.name)) {
@@ -181,17 +197,35 @@ public class NormalCoremodProcessor implements IClassProcessor {
                         AtomicBoolean visited = new AtomicBoolean(false);
                         methodNode.instructions.forEach(insnNode -> {
                             if (!visited.get()) {
-                                if (insnNode instanceof TypeInsnNode typeInsnNode && typeInsnNode.getOpcode() == Opcodes.INSTANCEOF) {
+                                if (insnNode instanceof TypeInsnNode instanceofNode && instanceofNode.getOpcode() == Opcodes.INSTANCEOF) {
                                     InsnList instructions = methodNode.instructions;
-                                    if (instructions.get(instructions.indexOf(typeInsnNode)-1) instanceof MethodInsnNode getItemNode && getItemNode.desc.equals("()Lnet/minecraft/world/item/Item;")) {
+                                    if (instructions.get(instructions.indexOf(instanceofNode)-1) instanceof MethodInsnNode getItemNode && getItemNode.desc.equals("()Lnet/minecraft/world/item/Item;")) {
                                         InsnList insnNodes = new InsnList();
                                         insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "isArmorOrEquippableComponentStack", "(Lnet/minecraft/world/item/ItemStack;)Z", false));
                                         instructions.insertBefore(getItemNode, insnNodes);
                                         instructions.remove(getItemNode);
-                                        instructions.remove(typeInsnNode);
+                                        instructions.remove(instanceofNode);
                                         shouldWrite.set(true);
                                         visited.set(true);
                                     }
+                                }
+                            }
+                        });
+                    }
+                });
+            } else if ("net/minecraft/world/inventory/LoomMenu".equals(classNode.name)) {
+                classNode.methods.forEach(methodNode -> {
+                    if (MCMapping.AbstractContainerMenu$METHOD$quickMoveStack.equalsMethodNode(methodNode)) {
+                        methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof TypeInsnNode instanceofNode && instanceofNode.getOpcode() == Opcodes.INSTANCEOF) {
+                                InsnList instructions = methodNode.instructions;
+                                if (instructions.get(instructions.indexOf(instanceofNode)-1) instanceof MethodInsnNode getItemNode && getItemNode.desc.equals("()Lnet/minecraft/world/item/Item;")) {
+                                    InsnList insnNodes = new InsnList();
+                                    insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "isBannerPatternOrComponentStack", "(Lnet/minecraft/world/item/ItemStack;)Z", false));
+                                    instructions.insertBefore(getItemNode, insnNodes);
+                                    instructions.remove(getItemNode);
+                                    instructions.remove(instanceofNode);
+                                    shouldWrite.set(true);
                                 }
                             }
                         });

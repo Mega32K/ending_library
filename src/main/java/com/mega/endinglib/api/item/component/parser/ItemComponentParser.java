@@ -1,8 +1,11 @@
 package com.mega.endinglib.api.item.component.parser;
 
 import com.google.common.collect.Lists;
+import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.ItemComponentType;
+import com.mega.endinglib.client.ClientWrapped;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
@@ -14,12 +17,25 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Function;
 import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.armortrim.TrimMaterial;
+import net.minecraft.world.item.armortrim.TrimMaterials;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -58,10 +74,12 @@ public class ItemComponentParser {
     private static final Pattern SHORT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)s", 2);
     private static final Pattern INT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)");
     private final StringReader reader;
+    private final RegistryOps<Tag> registryOps;
     private BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestions = SUGGEST_NOTHING;
 
-    public ItemComponentParser(StringReader p_129350_) {
-        this.reader = p_129350_;
+    public ItemComponentParser(StringReader reader) {
+        this.reader = reader;
+        this.registryOps = EndingLibrary.PROXY.registryTagOps();
     }
 
     public static ItemComponentType<?> get(ItemComponentParser parser, String key, int cursor) throws CommandSyntaxException {
@@ -158,23 +176,29 @@ public class ItemComponentParser {
         String componentName = componentType.registryName().toString();
         Codec<T> codec = componentType.codec();
         int i = this.reader.getCursor();
-        NbtOps ops = NbtOps.INSTANCE;
         Tag value = this.readValue();
-
-        System.out.println(value);
-        DataResult<T> dataResult = codec.parse(ops, value);
-        if (dataResult.error().isPresent()) {
-            this.reader.setCursor(i);
-            throw MALFORMED_COMPONENT_EXCEPTION.create(value, componentName);
-        }
-        if (dataResult.result().isPresent()) {
-            T itemComponent = dataResult.result().get();
-            System.out.println(itemComponent);
-            System.out.println(codec.encodeStart(ops, itemComponent).result().get());
-            compoundTag.put(componentName, codec.encodeStart(ops, itemComponent).result().get());
-        } else {
-            this.reader.setCursor(i);
-            throw MALFORMED_COMPONENT_EXCEPTION.create(value, componentName);
+        //System.out.println(value);
+        try {
+            DataResult<T> dataResult = codec.parse(registryOps, value);
+            Optional<DataResult.PartialResult<T>> error = dataResult.error();
+            if (error.isPresent()) {
+                this.reader.setCursor(i);
+                throw MALFORMED_COMPONENT_EXCEPTION.create(componentType, error.get().message());
+            }
+            if (dataResult.result().isPresent()) {
+                T itemComponent = dataResult.result().get();
+                //System.out.println(itemComponent);
+                //System.out.println(codec.encodeStart(registryOps, itemComponent).result().get());
+                compoundTag.put(componentName, codec.encodeStart(registryOps, itemComponent).result().get());
+            } else {
+                this.reader.setCursor(i);
+                throw MALFORMED_COMPONENT_EXCEPTION.create(componentType, componentName);
+            }
+        } catch (Throwable throwable) {
+            if (!(throwable instanceof CommandSyntaxException)) {
+                this.reader.setCursor(i);
+                throw MALFORMED_COMPONENT_EXCEPTION.create(componentType, throwable.getMessage());
+            } else throw throwable;
         }
     }
 

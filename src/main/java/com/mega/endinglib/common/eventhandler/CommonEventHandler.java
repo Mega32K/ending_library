@@ -1,5 +1,8 @@
 package com.mega.endinglib.common.eventhandler;
 
+import com.mega.endinglib.api.item.component.DataComponents;
+import com.mega.endinglib.api.item.component.ItemComponentManager;
+import com.mega.endinglib.api.item.component.type.ToolComponent;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
@@ -10,6 +13,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
@@ -21,6 +25,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -47,6 +52,15 @@ public class CommonEventHandler {
                     entity.invulnerableTime = 0;
                 }
             }
+        }
+    }
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void componentCanPlayerDestroyBlock(BlockEvent.BreakEvent event) {
+        ItemStack mainHand = event.getPlayer().getMainHandItem();
+        ToolComponent component;
+        if ((component = ItemComponentManager.get(mainHand, DataComponents.TOOL)) != null) {
+            if (!component.canDestroyBlocksInCreative() && event.getPlayer().getAbilities().instabuild)
+                event.setCanceled(true);
         }
     }
 

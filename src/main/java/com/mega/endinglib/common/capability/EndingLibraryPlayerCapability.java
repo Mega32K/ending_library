@@ -19,8 +19,6 @@ import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.Util;
-import net.minecraft.client.CameraType;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -37,8 +35,7 @@ import java.util.*;
 public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public static final Set<ModifierType> MODIFIER_TYPES = Util.make(() -> {
         ObjectOpenHashSet<ModifierType> set = new ObjectOpenHashSet<>();
-        for (ModifierType modifierType : ModifierType.values())
-            set.add(modifierType);
+        set.addAll(Arrays.asList(ModifierType.values()));
         return set;
     });
     public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "ending_library_cap");
@@ -51,6 +48,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Boolean> LOCKED_GAME_MODE = this.defineByPersonalRule(7, PersonalRuleCommand.LOCKED_GAME_MODE, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> OTHER_TEAMS_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(8, PersonalRuleCommand.OTHER_TEAM_PLAYERS_NAMES_RENDER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
+    public final CapabilityEntityData<Boolean> HIDE_SCOREBOARD_NUM = this.defineByPersonalRule(10, PersonalRuleCommand.HIDE_SCOREBOARD_NUMBERS, CapabilityDataSerializers.BOOLEAN);
     public short cameraType = -1;
     public ELServerCameraManager cameraDataManager = new ELServerCameraManager();
     private boolean isUsingCustomCamera;
@@ -80,9 +78,13 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                     Map<ModifierType, Collection<CameraKeyframeAnimation>> map = this.cameraDataManager.createAllAnimMap();
                     if (!map.isEmpty())
                         PacketHandler.sendToSeen(new S2CCameraAnimationSetPacket(map), player, player.serverLevel());
-                    if (this.cameraType > 0)
+                    if (this.cameraType > -1)
                         toWrite.putShort("CameraType", this.cameraType);
                 }
+            }
+        } else {
+            if (type == CapabilitySyncType.PLAYER_LOGGED_IN) {
+                toWrite.putShort("CameraType", (short) ClientWrapped.getCameraTypeOrdinal());
             }
         }
     }
@@ -90,7 +92,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     @Override
     public void readSyncData(CompoundTag toRead, Dist from, CapabilitySyncType type, Entity entity) {
         if (from == Dist.CLIENT) {
-            if (type == CapabilitySyncType.CLIENT_OPTIONS) {
+            if (type == CapabilitySyncType.CLIENT_OPTIONS || type == CapabilitySyncType.PLAYER_LOGGED_IN) {
                 if (CompoundTagUtils.containsShort(toRead, "CameraType"))
                     this.cameraType = toRead.getShort("CameraType");
             }
@@ -110,7 +112,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     @Override
     public void customSerializeNBT(CompoundTag nbt) {
         this.cameraDataManager.customSerializeNBT(nbt, this);
-        if (this.cameraType > 0 ) {
+        if (this.cameraType > -1) {
             nbt.putShort("CameraType", cameraType);
         }
     }
@@ -127,6 +129,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         this.setFieldFromCapData();
         if (entity.level().isClientSide) {
             CameraUtils.getInstance().tick(this);
+
         } else {
             if (this.isUsingCustomCamera && entity instanceof ServerPlayer player) {
                 {
@@ -261,6 +264,13 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         this.dataManager.setValue(CAMERA_AVAILABLE_AREA, aabb == null ? Optional.empty() : Optional.of(aabb));
     }
 
+    public boolean isScoreboardNumDisplay() {
+        return this.dataManager.getValue(HIDE_SCOREBOARD_NUM);
+    }
+
+    public void setScoreboardNumDisplay(boolean value) {
+        this.dataManager.setValue(HIDE_SCOREBOARD_NUM, value);
+    }
     protected void setFieldFromCapData() {
         int flags = this.getFlags();
         this.isUsingCustomCamera = CompoundTagUtils.getIntFlag(flags, 1);

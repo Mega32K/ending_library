@@ -7,12 +7,16 @@ import net.minecraftforge.event.TickEvent;
 public class LambdaClientTaskInstance extends ClientTaskInstance {
     private final E1 exe1;
     private final E2 exe2;
+    private final Runnable stop;
     public int tickCount;
+    private final int maxTickCount;
     private boolean removed;
 
-    public LambdaClientTaskInstance(E1 e1, E2 e2) {
+    public LambdaClientTaskInstance(int maxTickCount, E1 e1, E2 e2, Runnable stop) {
+        this.maxTickCount = tickCount;
         this.exe1 = e1;
         this.exe2 = e2;
+        this.stop = stop;
     }
 
     public boolean isRemoved() {
@@ -27,6 +31,12 @@ public class LambdaClientTaskInstance extends ClientTaskInstance {
     public void tick(Level level) {
         if (exe1 != null)
             exe1.tick(level);
+        if (tickCount < maxTickCount)
+            tickCount++;
+        if (tickCount >= maxTickCount) {
+            this.setRemoved(true);
+            stop.run();
+        }
     }
 
     @Override

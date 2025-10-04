@@ -5,8 +5,10 @@ import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.CameraValueInstance;
 import com.mega.endinglib.api.client.camera.ICameraManager;
 import com.mega.endinglib.client.ClientWrapped;
+import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.screen.CameraModifyScreen;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
+import com.mega.endinglib.util.mc.render.ClientUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -15,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
 
@@ -30,6 +33,7 @@ public class ELCameraManager implements ICameraManager {
     public final CameraValueInstance zRot = new CameraValueInstance();
     public final CameraValueInstance fovOffset = new CameraValueInstance();
     public final CameraValueInstance zoomOffset = new CameraValueInstance();
+    public final CameraValueInstance raycastOffset = new CameraValueInstance();
     private final Minecraft minecraft;
     private final GameRenderer gameRenderer;
     private final Camera mainCamera;
@@ -55,6 +59,7 @@ public class ELCameraManager implements ICameraManager {
     private double fovOffsetOld;
     private float originZoom;
     private double zoomOffsetOld;
+    private double raycastOffsetOld;
 
     public ELCameraManager(Minecraft minecraft, GameRenderer gameRenderer, Camera mainCamera) {
         this.minecraft = minecraft;
@@ -87,6 +92,7 @@ public class ELCameraManager implements ICameraManager {
         this.zRotOld = this.zRot.getValue();
         this.fovOffsetOld = this.fovOffset.getValue();
         this.zoomOffsetOld = this.zoomOffset.getValue();
+        this.raycastOffsetOld = this.raycastOffset.getValue();
     }
 
     public void onFreezingMode(EndingLibraryPlayerCapability capability) {
@@ -115,6 +121,7 @@ public class ELCameraManager implements ICameraManager {
         this.zRot.tickAnimations();
         this.zoomOffset.tickAnimations();
         this.fovOffset.tickAnimations();
+        this.raycastOffset.tickAnimations();
 
 
         CameraUtils.isUsingCustomCamera = capability.isUsingCustomCamera();
@@ -130,8 +137,25 @@ public class ELCameraManager implements ICameraManager {
                         aabb -> CameraUtils.availableCameraArea = Optional.of(aabb),
                         ()-> CameraUtils.availableCameraArea = Optional.empty()
                 );
-        if (capability.isMouseControlled() && ClientWrapped.clientPlayer() != null && minecraft.options.getCameraType() != CameraType.FIRST_PERSON) {
-            minecraft.mouseHandler.releaseMouse();
+        if (capability.isUsingCustomCamera()) {
+            if (capability.isMouseControlled()) {
+                if (ClientWrapped.clientPlayer() != null && minecraft.options.getCameraType() != CameraType.FIRST_PERSON)
+                    minecraft.mouseHandler.releaseMouse();
+                if (ClientUtils.customCursorHandle == -1L)
+                    ClientUtils.createMouseCursor(RendererUtils.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), minecraft.mouseHandler);
+                else {
+                    if (minecraft.screen != null) {
+                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_NORMAL))
+                            ClientUtils.createMouseCursor(RendererUtils.CURSOR_NORMAL, 3.2F, (int) (8 * 3.2F),(int) (8 * 3.2F), minecraft.mouseHandler);
+                    }
+                    else if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_1))
+                        ClientUtils.createMouseCursor(RendererUtils.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), minecraft.mouseHandler);
+                }
+            }
+        }
+        if (!capability.isMouseControlled()) {
+            if (ClientUtils.customCursorHandle != -1L)
+                ClientUtils.resetCursor();
         }
     }
 
@@ -179,6 +203,10 @@ public class ELCameraManager implements ICameraManager {
         return zoomOffset;
     }
 
+    public CameraValueInstance getRaycastOffset0() {
+        return raycastOffset;
+    }
+
     public void addRelativeXModifier(CameraModifier modifier) {
         this.xRelative.addTransientModifier(modifier);
     }
@@ -223,6 +251,9 @@ public class ELCameraManager implements ICameraManager {
         this.zoomOffset.addTransientModifier(modifier);
     }
 
+    public void addRaycastModifier(CameraModifier modifier) {
+        this.raycastOffset.addTransientModifier(modifier);
+    }
 
     public void addPermanentRelativeXModifier(CameraModifier modifier) {
         this.xRelative.addPermanentModifier(modifier);
@@ -266,6 +297,9 @@ public class ELCameraManager implements ICameraManager {
 
     public void addPermanentZoomModifier(CameraModifier modifier) {
         this.zoomOffset.addPermanentModifier(modifier);
+    }
+    public void addPermanentRaycastModifier(CameraModifier modifier) {
+        this.raycastOffset.addPermanentModifier(modifier);
     }
 
     public void removeRelativeXModifier(CameraModifier modifier) {
@@ -311,6 +345,9 @@ public class ELCameraManager implements ICameraManager {
     public void removeZoomModifier(CameraModifier modifier) {
         this.zoomOffset.removeModifier(modifier);
     }
+    public void removeRaycastModifier(CameraModifier modifier) {
+        this.raycastOffset.removeModifier(modifier);
+    }
 
     public double getXRelative(float partialTicks) {
         return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue()) + CameraModifyScreen.RELATIVE_X + xRelative.getAnimationValue(partialTicks);
@@ -354,6 +391,10 @@ public class ELCameraManager implements ICameraManager {
 
     public double getZoomOffset(float partialTicks) {
         return Mth.lerp(partialTicks, this.zoomOffsetOld, this.zoomOffset.getValue()) + zoomOffset.getAnimationValue(partialTicks);
+    }
+
+    public double getRaycastOffset(float partialTicks) {
+        return Mth.lerp(partialTicks, this.raycastOffsetOld, this.raycastOffset.getValue()) + raycastOffset.getAnimationValue(partialTicks);
     }
 
     public double getOriginX() {

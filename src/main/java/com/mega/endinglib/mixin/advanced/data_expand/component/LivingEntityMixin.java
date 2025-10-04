@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.BlocksAttacksComponent;
 import com.mega.endinglib.api.item.component.type.DeathProtectionComponent;
@@ -79,7 +80,7 @@ public abstract class LivingEntityMixin extends Entity {
         boolean flag = this.getSharedFlag(7);
         if (checkGliderComponent.get() && !flag) {
             ItemStack itemstack = this.getItemBySlot(EquipmentSlot.CHEST);
-            if (ItemComponentManager.get(itemstack).getComponents().get(ItemComponentManager.GLIDER) != null)
+            if (ItemComponentManager.get(itemstack).getComponents().get(DataComponents.GLIDER) != null)
                 this.setSharedFlag(7, true);
         }
     }
@@ -94,7 +95,7 @@ public abstract class LivingEntityMixin extends Entity {
         ItemStack itemStack = breakStack.get();
         if (itemStack != null && !itemStack.isEmpty()) {
             Holder<SoundEvent> soundEventHolder;
-            if ((soundEventHolder = ItemComponentManager.get(itemStack).getComponents().get(ItemComponentManager.BREAK_SOUND)) != null) {
+            if ((soundEventHolder = ItemComponentManager.get(itemStack).getComponents().get(DataComponents.BREAK_SOUND)) != null) {
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), soundEventHolder.value(), this.getSoundSource(), 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F, false);
                 return false;
             }
@@ -104,13 +105,13 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "triggerItemUseEffects", at = @At(value = "HEAD"), cancellable = true)
     private void componentCancelItemEffects(ItemStack p_21138_, int p_21139_, CallbackInfo ci) {
-        if (ItemComponentManager.get(p_21138_, ItemComponentManager.CONSUMABLE) != null)
+        if (ItemComponentManager.get(p_21138_, DataComponents.CONSUMABLE) != null)
             ci.cancel();
     }
 
     @WrapWithCondition(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;broadcastEntityEvent(Lnet/minecraft/world/entity/Entity;B)V", ordinal = 0))
     private boolean wrapComponentBlocksSound(Level level, Entity entity, byte b) {
-        BlocksAttacksComponent component = ItemComponentManager.get(this.getUseItem(), ItemComponentManager.BLOCKS_ATTACKS);
+        BlocksAttacksComponent component = ItemComponentManager.get(this.getUseItem(), DataComponents.BLOCKS_ATTACKS);
         if (component != null) {
             component.playBlockSound(level, (LivingEntity) (Object) this);
             return false;
@@ -121,7 +122,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "isBlocking", at = @At("HEAD"), cancellable = true)
     private void componentBlocking(CallbackInfoReturnable<Boolean> cir) {
         if (this.isUsingItem() && !this.useItem.isEmpty()) {
-            BlocksAttacksComponent component = ItemComponentManager.get(useItem, ItemComponentManager.BLOCKS_ATTACKS);
+            BlocksAttacksComponent component = ItemComponentManager.get(useItem, DataComponents.BLOCKS_ATTACKS);
             if (component != null) {
                 cir.setReturnValue(useItem.getItem().getUseDuration(this.useItem) - this.useItemRemaining >= component.getBlockDelayTicks());
             }
@@ -131,7 +132,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "isDamageSourceBlocked", at = @At("HEAD"), cancellable = true)
     private void componentDamageSourceBlocked(DamageSource p_21276_, CallbackInfoReturnable<Boolean> cir) {
         if (this.isUsingItem() && !this.useItem.isEmpty()) {
-            BlocksAttacksComponent component = ItemComponentManager.get(useItem, ItemComponentManager.BLOCKS_ATTACKS);
+            BlocksAttacksComponent component = ItemComponentManager.get(useItem, DataComponents.BLOCKS_ATTACKS);
             if (component != null) {
                 if (useItem.getItem().getUseDuration(this.useItem) - this.useItemRemaining >= component.getBlockDelayTicks()) {
                     cir.setReturnValue(true);
@@ -148,7 +149,7 @@ public abstract class LivingEntityMixin extends Entity {
 
             for (InteractionHand interactionhand : InteractionHand.values()) {
                 ItemStack itemstack1 = this.getItemInHand(interactionhand);
-                deathProtectionComponent = ItemComponentManager.get(itemstack1, ItemComponentManager.DEATH_PROTECTION);
+                deathProtectionComponent = ItemComponentManager.get(itemstack1, DataComponents.DEATH_PROTECTION);
                 if (deathProtectionComponent != null) {
                     itemStack = itemstack1.copy();
                     itemstack1.shrink(1);

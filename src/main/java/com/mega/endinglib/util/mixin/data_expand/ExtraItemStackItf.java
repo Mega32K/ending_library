@@ -4,4 +4,5 @@ import com.mega.endinglib.api.item.component.ItemComponentManager;
 
 public interface ExtraItemStackItf {
     ItemComponentManager endingLibrary$getComponentManager();
+    void endingLibrary$setComponentManager(ItemComponentManager manager);
 }

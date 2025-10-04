@@ -55,9 +55,9 @@
         <option value="package-info" />
         <option value="module-info" />
         <option value="Enum" />
-        <option value="Record" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Record" />
       </list>
     </option>
   </component>
@@ -95,10 +95,10 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\lang" />
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\textures\ui" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\common\command\argument" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\textures\ui" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
@@ -228,21 +228,6 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>jar://$PROJECT_DIR$/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.12_mapped_official_1.20.1/forge-1.20.1-47.3.12_mapped_official_1.20.1-sources.jar!/net/minecraft/world/item/Item.java</url>
-          <line>204</line>
-          <properties class="net.minecraft.world.item.Item" method="interactLivingEntity">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -66,7 +66,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo ci) {
         ProfilerFiller filler = level().getProfiler();
-        filler.push(EndingLibrary.MODID + "_custom_tickData");
+        filler.push(EndingLibrary.MODID + "_entity_tickTimeStop");
         try {
             LivingEntity living = (LivingEntity) (Object) this;
             if (!level().isClientSide) {

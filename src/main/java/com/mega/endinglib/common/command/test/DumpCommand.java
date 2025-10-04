@@ -7,8 +7,10 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,13 +37,13 @@ public class DumpCommand {
                     FileOutputStream stream = new FileOutputStream(file1);
                     stream.write(bytes);
                     stream.close();
-                    stack.sendSuccess(()-> Component.literal("Class %s dump successful".formatted(classname)).withStyle(ChatFormatting.GREEN), false);
+                    stack.sendSuccess(()-> Component.literal("Class %s dump successful".formatted(classname)).withStyle(ChatFormatting.GREEN).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file1.getAbsolutePath()))), false);
 
                 } catch (IOException e) {
-                    stack.sendFailure(Component.literal(e.getMessage()));
+                    stack.sendFailure(Component.literal("Dumped Class failed:+"+e.getLocalizedMessage()));
                 }
             } catch (ClassNotFoundException exception) {
-                stack.sendFailure(Component.literal(exception.getMessage()));
+                stack.sendFailure(Component.literal("No class def found:"+exception.getLocalizedMessage()));
             }
         });
         return 0;

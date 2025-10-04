@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.item.component.type;
 
+import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.consume.ConsumeEffect;
 import com.mega.endinglib.api.item.consume.impl.PlaySoundConsumeEffect;
@@ -80,7 +81,7 @@ public record ConsumableComponent(
         return stack;
     }
     public boolean canConsume(LivingEntity user, ItemStack stack) {
-        FoodComponent foodComponent = ItemComponentManager.get(stack, ItemComponentManager.FOOD);
+        FoodComponent foodComponent = ItemComponentManager.get(stack, DataComponents.FOOD);
         return foodComponent == null || !(user instanceof Player playerEntity) || playerEntity.canEat(foodComponent.canAlwaysEat());
     }
 

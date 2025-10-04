@@ -2,6 +2,8 @@ package com.mega.endinglib.api.server;
 
 import com.mega.endinglib.api.client.camera.CameraKeyframeAnimation;
 import com.mega.endinglib.common.command.argument.scehdule.CommandScheduleEntry;
+import com.mega.endinglib.common.command.argument.scehdule.ICommandSourceStackBuilder;
+import com.mega.endinglib.common.command.argument.scehdule.RealCSSBuilder;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.mixin.accessor.AccessorCommandSourceStack;
 import com.mega.endinglib.util.java.Args;
@@ -13,24 +15,30 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
 import javax.annotation.Nullable;
 
 public class CommandTask extends ServerTask {
     public long tickCount;
+    public long freezingTime;
+    public MinecraftServer server;
 
-    public CommandTask(CommandScheduleEntry command) {
+    public CommandTask(CommandScheduleEntry command, MinecraftServer server) {
         super(new Args(command));
         this.tickCount = command.delay();
+        this.server = server;
     }
 
-    public static @Nullable CommandTask load(CompoundTag tag) {
+    public static @Nullable CommandTask load(CompoundTag tag, MinecraftServer server) {
         try {
             long tick = tag.getLong("Tick");
-            CommandScheduleEntry entry = CommandScheduleEntry.Serializer.deserialize(tag.getCompound("Schedule"));
-            CommandTask task = new CommandTask(entry);
+            long freeze = tag.getLong("Freeze");
+            CommandScheduleEntry entry = CommandScheduleEntry.Serializer.deserialize(tag.getCompound("Schedule"), server);
+            CommandTask task = new CommandTask(entry, server);
             task.tickCount = tick;
+            task.freezingTime = freeze;
             return task;
         } catch (Throwable throwable) {
             return null;
@@ -44,26 +52,15 @@ public class CommandTask extends ServerTask {
             setRemoved(true);
             return;
         }
-        CommandSourceStack stack = entry.commandSourceStack();
-        if (stack.getLevel().isLoaded(new BlockPos((int) stack.getPosition().x, (int) stack.getPosition().y, (int) stack.getPosition().z)) || stack.getEntity() != null) {
+        if (freezingTime > 0L) {
+            freezingTime--;
+        } else {
             if (tickCount > 0L) {
                 tickCount--;
             } else {
+                ICommandSourceStackBuilder builder = entry.commandSourceStack();
+                CommandSourceStack stack = builder.build(this.server);
                 MinecraftServer server = stack.getServer();
-                Entity entity = stack.getEntity();
-                boolean flag1 = false;
-                if (entity != null || entry.entityID() != null) {
-                    if (entity == null) {
-                        entity = stack.getLevel().getEntity(entry.entityID());
-                        if (entity != null && stack.source.getClass() == entity.getClass()) {
-                            flag1 = true;
-                        }
-                    }
-                    if (flag1) {
-                        stack = new CommandSourceStack(entity, stack.getPosition(), stack.getRotation(), stack.getLevel(), ((AccessorCommandSourceStack) stack).getPermissionLevel(), stack.getTextName(), stack.getDisplayName(), stack.getServer(), entity);
-                        this.getArgs().set(0, new CommandScheduleEntry(stack, entry.commandList(), entry.resourceLocation(), entry.delay(), entry.entityID()));
-                    }
-                }
                 for (String command : this.getCommand().commandList()) {
                     server.getCommands().performPrefixedCommand(stack, command);
                 }
@@ -79,6 +76,8 @@ public class CommandTask extends ServerTask {
     public CompoundTag serialize() {
         CompoundTag tag = new CompoundTag();
         tag.putLong("Tick", tickCount);
+        if (freezingTime > 0)
+            tag.putLong("Freeze", freezingTime);
         CommandScheduleEntry entry = this.getCommand();
         CompoundTag scheduleTag = new CompoundTag();
         if (entry != null)
@@ -92,7 +91,6 @@ public class CommandTask extends ServerTask {
         if (flag) {
             CommandScheduleEntry entry = this.getCommand();
             if (entry != null) {
-                MinecraftServer server = entry.commandSourceStack().getServer();
                 EndingLibrarySavedData.readOrCreate(server).removeCommandTask(this);
             }
         }

@@ -103,6 +103,16 @@ public class PersonalRuleCommand {
             BOOL_COMMAND_RESULT,
             true
     );
+    public static final PersonalRule<Boolean> HIDE_SCOREBOARD_NUMBERS = build("hideScoreboardNum", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), EntityArgument.getPlayer(context, "player"), personalRule, BoolArgumentType.getBool(context, "value")))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryPlayerCapability::setScoreboardNumDisplay,
+            EndingLibraryPlayerCapability::isScoreboardNumDisplay,
+            BOOL_COMMAND_RESULT,
+            false
+    );
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("personal")
