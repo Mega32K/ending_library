@@ -6,10 +6,13 @@ import com.mega.endinglib.common.network.c2s.C2SItemToggleModePacket;
 import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
 import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
-import com.mega.endinglib.common.network.s2c.rot.S2CListSetRotationPacket;
-import com.mega.endinglib.common.network.s2c.rot.S2CMapSetRotationPacket;
-import com.mega.endinglib.common.network.s2c.rot.S2CSetPlayerRotationPacket;
-import com.mega.endinglib.common.network.s2c.rot.S2CSetRotationPacket;
+import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
+import com.mega.endinglib.common.network.s2c.input.S2CInputCooldownPacket;
+import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
+import com.mega.endinglib.common.network.s2c.rotation.S2CListSetRotationPacket;
+import com.mega.endinglib.common.network.s2c.rotation.S2CMapSetRotationPacket;
+import com.mega.endinglib.common.network.s2c.rotation.S2CSetPlayerRotationPacket;
+import com.mega.endinglib.common.network.s2c.rotation.S2CSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
@@ -57,6 +60,9 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CMapSetRotationPacket.class, S2CMapSetRotationPacket::encode, S2CMapSetRotationPacket::decode, S2CMapSetRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CMouseControlPacket.class, S2CMouseControlPacket::encode, S2CMouseControlPacket::decode, S2CMouseControlPacket::handle);
         INSTANCE.registerMessage(id(), S2CSetPlayerForcedPosePacket.class, S2CSetPlayerForcedPosePacket::encode, S2CSetPlayerForcedPosePacket::decode, S2CSetPlayerForcedPosePacket::handle);
+        INSTANCE.registerMessage(id(), S2CDisabledInputPermissionsPacket.class, S2CDisabledInputPermissionsPacket::encode, S2CDisabledInputPermissionsPacket::decode, S2CDisabledInputPermissionsPacket::handle);
+        INSTANCE.registerMessage(id(), S2CInputOperationPacket.class, S2CInputOperationPacket::encode, S2CInputOperationPacket::decode, S2CInputOperationPacket::handle);
+        INSTANCE.registerMessage(id(), S2CInputCooldownPacket.class, S2CInputCooldownPacket::encode, S2CInputCooldownPacket::decode, S2CInputCooldownPacket::handle);
 
     }
 

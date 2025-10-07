@@ -14,6 +14,7 @@ import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
+import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CSetPlayerForcedPosePacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
@@ -53,6 +54,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Boolean> OTHER_TEAMS_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(8, PersonalRuleCommand.OTHER_TEAM_PLAYERS_NAMES_RENDER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Boolean> HIDE_SCOREBOARD_NUM = this.defineByPersonalRule(10, PersonalRuleCommand.HIDE_SCOREBOARD_NUMBERS, CapabilityDataSerializers.BOOLEAN);
+    protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
     public int poseLockingTime;
     public @Nullable Pose lockedPose;
@@ -147,6 +149,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public void tick(Entity entity) {
         if (entity instanceof Player player) {
             this.setFieldFromCapData();
+            this.inputCooldowns.tick(player);
             if (entity.level().isClientSide) {
                 CameraUtils.getInstance().tick(this);
             } else if (player instanceof ServerPlayer sp) {
@@ -318,6 +321,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         if (serverPlayer.getForcedPose() != null)
             serverPlayer.setForcedPose(null);
         PacketHandler.sendToPlayer(new S2CClientActionPacket(CameraPacketAction.FORCED_POSE_CLEAR), serverPlayer);
+    }
+    public InputCooldowns getInputCooldowns() {
+        return inputCooldowns;
     }
     protected void setFieldFromCapData() {
         int flags = this.getFlags();

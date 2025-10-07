@@ -1,10 +1,7 @@
-package com.mega.endinglib.util.mc.render;
+package com.mega.endinglib.util.mc.client;
 
 import com.mega.endinglib.EndingLibrary;
 import org.lwjgl.glfw.GLFWImage;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -13,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.function.Consumer;
 
 public class GLFWImageUtils {

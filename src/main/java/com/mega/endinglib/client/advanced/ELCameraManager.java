@@ -8,7 +8,7 @@ import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.screen.CameraModifyScreen;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
-import com.mega.endinglib.util.mc.render.ClientUtils;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -17,7 +17,6 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
 

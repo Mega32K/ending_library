@@ -1,7 +1,6 @@
 package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
-import com.mega.endinglib.api.client.ClientTaskInstance;
 import com.mega.endinglib.api.client.LambdaClientTaskInstance;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
@@ -9,8 +8,9 @@ import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
+import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.mc.render.ClientUtils;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -18,10 +18,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -34,6 +32,7 @@ import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.EnumSet;
 import java.util.concurrent.CompletionException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
@@ -113,8 +112,10 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onDisconnected(ClientPlayerNetworkEvent.LoggingOut event) {
-        if (ClientUtils.customCursorHandle != -1L)
+        if (ClientUtils.customCursorHandle != -1L) {
             new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::resetCursor).onAddedToWorld();
+        }
+        ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
     }
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {
@@ -145,7 +146,6 @@ public class ClientEventHandler {
         }
     }
     public static byte setByteFlags(byte flagData, int mask, boolean value) {
-        ;
         if (value) {
             flagData |= mask;
         } else {

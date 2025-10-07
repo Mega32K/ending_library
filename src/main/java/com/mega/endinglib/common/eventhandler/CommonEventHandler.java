@@ -4,12 +4,16 @@ import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.ToolComponent;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
+import com.mega.endinglib.common.data.EndingLibrarySavedData;
+import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -29,6 +33,8 @@ import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.util.EnumSet;
 
 @Mod.EventBusSubscriber
 public class CommonEventHandler {
@@ -61,6 +67,16 @@ public class CommonEventHandler {
         if ((component = ItemComponentManager.get(mainHand, DataComponents.TOOL)) != null) {
             if (!component.canDestroyBlocksInCreative() && event.getPlayer().getAbilities().instabuild)
                 event.setCanceled(true);
+        }
+    }
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            MinecraftServer server = serverPlayer.server;
+            EndingLibrarySavedData data = EndingLibrarySavedData.readOrCreate(server);
+            EnumSet<InputOperations> permissions = data.getOrPutPlayerDisabledPermissions(serverPlayer);
+            if (!permissions.isEmpty())
+                PacketHandler.sendToPlayer(new S2CDisabledInputPermissionsPacket(permissions), serverPlayer);
         }
     }
 

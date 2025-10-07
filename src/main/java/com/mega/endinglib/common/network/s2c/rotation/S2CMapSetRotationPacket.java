@@ -1,8 +1,6 @@
-package com.mega.endinglib.common.network.s2c.rot;
+package com.mega.endinglib.common.network.s2c.rotation;
 
 import com.mega.endinglib.client.ClientWrapped;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;

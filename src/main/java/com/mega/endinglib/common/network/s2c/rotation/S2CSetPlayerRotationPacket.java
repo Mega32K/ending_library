@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.network.s2c.rot;
+package com.mega.endinglib.common.network.s2c.rotation;
 
 import com.mega.endinglib.client.ClientWrapped;
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,28 +8,25 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class S2CSetRotationPacket {
+public class S2CSetPlayerRotationPacket {
     private final float xRot;
     private final float yRot;
-    private final int id;
 
-    public S2CSetRotationPacket(float xRot, float yRot, int id) {
+    public S2CSetPlayerRotationPacket(float xRot, float yRot) {
         this.xRot = xRot;
         this.yRot = yRot;
-        this.id = id;
     }
 
-    public static S2CSetRotationPacket decode(FriendlyByteBuf friendlyByteBuf) {
-        return new S2CSetRotationPacket(friendlyByteBuf.readFloat(), friendlyByteBuf.readFloat(), friendlyByteBuf.readVarInt());
+    public static S2CSetPlayerRotationPacket decode(FriendlyByteBuf friendlyByteBuf) {
+        return new S2CSetPlayerRotationPacket(friendlyByteBuf.readFloat(), friendlyByteBuf.readFloat());
     }
 
-    public static void encode(S2CSetRotationPacket packet, FriendlyByteBuf friendlyByteBuf) {
+    public static void encode(S2CSetPlayerRotationPacket packet, FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeFloat(packet.xRot);
         friendlyByteBuf.writeFloat(packet.yRot);
-        friendlyByteBuf.writeVarInt(packet.id);
     }
 
-    public static void handle(S2CSetRotationPacket packet, Supplier<NetworkEvent.Context> context) {
+    public static void handle(S2CSetPlayerRotationPacket packet, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
             if (packet != null)
                 handle0(packet, context);
@@ -37,9 +34,9 @@ public class S2CSetRotationPacket {
         context.get().setPacketHandled(true);
     }
 
-    static void handle0(S2CSetRotationPacket packet, Supplier<NetworkEvent.Context> context) {
+    static void handle0(S2CSetPlayerRotationPacket packet, Supplier<NetworkEvent.Context> context) {
         if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
-            Entity entity = ClientWrapped.clientLevel().getEntity(packet.id);
+            Entity entity = ClientWrapped.clientPlayer();
             if (entity != null) {
                 entity.setXRot(packet.xRot);
                 entity.setYRot(packet.yRot);

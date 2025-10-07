@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.network.s2c.rot;
+package com.mega.endinglib.common.network.s2c.rotation;
 
 import com.mega.endinglib.client.ClientWrapped;
 import it.unimi.dsi.fastutil.ints.IntArrayList;

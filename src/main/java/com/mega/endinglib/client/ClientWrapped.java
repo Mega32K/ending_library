@@ -2,10 +2,13 @@ package com.mega.endinglib.client;
 
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.client.screen.CameraModifyScreen;
+import com.mega.endinglib.common.data.InputCooldowns;
+import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
+import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.mixin.accessor.AccessorOptions;
 import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.mc.render.ClientUtils;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -16,9 +19,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -46,6 +46,41 @@ public class ClientWrapped {
                     player.setForcedPose(null);
             }
         }
+    }
+    public static void operateInputAction(InputOperations operations) {
+        switch (operations) {
+            case MOVE_FORWARD -> Minecraft.getInstance().options.keyUp.setDown(true);
+            case MOVE_BACKWARD -> Minecraft.getInstance().options.keyDown.setDown(true);
+            case MOVE_LEFT -> Minecraft.getInstance().options.keyLeft.setDown(true);
+            case MOVE_RIGHT -> Minecraft.getInstance().options.keyRight.setDown(true);
+            case JUMP -> Minecraft.getInstance().options.keyJump.setDown(true);
+            case SNEAK -> Minecraft.getInstance().options.keyShift.setDown(true);
+            case MOUSE_ATTACK -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyAttack).setClickCount(1);
+            case MOUSE_USE -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyUse).setClickCount(1);
+            case MOUSE_PICK_ITEM -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyPickItem).setClickCount(1);
+            case SMOOTH_CAMERA -> ((AccessorKeyMapping) Minecraft.getInstance().options.keySmoothCamera).setClickCount(1);
+            case SOCIAL_INTERACTION -> ((AccessorKeyMapping) Minecraft.getInstance().options.keySocialInteractions).setClickCount(1);
+            case INVENTORY -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyInventory).setClickCount(1);
+            case ADVANCEMENT -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyAdvancements).setClickCount(1);
+            case SWAP_HAND -> ((AccessorKeyMapping) Minecraft.getInstance().options.keySwapOffhand).setClickCount(1);
+            case DROP_ITEM -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyDrop).setClickCount(1);
+            case HOTBAR_1 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[0]).setClickCount(1);
+            case HOTBAR_2 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[1]).setClickCount(1);
+            case HOTBAR_3 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[2]).setClickCount(1);
+            case HOTBAR_4 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[3]).setClickCount(1);
+            case HOTBAR_5 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[4]).setClickCount(1);
+            case HOTBAR_6 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[5]).setClickCount(1);
+            case HOTBAR_7 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[6]).setClickCount(1);
+            case HOTBAR_8 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[7]).setClickCount(1);
+            case HOTBAR_9 -> ((AccessorKeyMapping) Minecraft.getInstance().options.keyHotbarSlots[8]).setClickCount(1);
+            default -> {}
+        }
+    }
+    public static void onInputOperationCooldownStart(InputOperations operations) {
+
+    }
+    public static void onInputOperationCooldownEnd(InputOperations operations) {
+
     }
     public static void setFov(int fov) {
         Minecraft.getInstance().options.fov().set(fov);

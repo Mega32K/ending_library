@@ -7,13 +7,11 @@ import com.mega.endinglib.common.command.entity.TimeStopCommand;
 import com.mega.endinglib.common.command.entity.player.*;
 import com.mega.endinglib.common.command.test.DumpCommand;
 import com.mega.endinglib.common.config.ServerConfig;
-import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.commands.ScoreboardCommand;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -39,6 +37,8 @@ public class CommandsEvent {
                         .then(ScheduleCommand.register(event.getDispatcher()))
                         .then(KickCommand.register())
                         .then(PoseCommand.register())
+                        .then(CooldownCommand.register(event.getBuildContext()))
+                        .then(InputCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )

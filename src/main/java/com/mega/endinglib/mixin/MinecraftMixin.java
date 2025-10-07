@@ -3,7 +3,7 @@ package com.mega.endinglib.mixin;
 import com.mega.endinglib.api.client.MinecraftExtra;
 import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.proxy.ClientProxy;
-import com.mega.endinglib.util.mc.render.ClientUtils;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.renderer.GameRenderer;

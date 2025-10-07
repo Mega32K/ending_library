@@ -24,6 +24,8 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_PERMISSION_FILL_ENTITY;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_KICK;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_POSE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_COOLDOWN;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_INPUT;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -42,7 +44,7 @@ public class ServerConfig {
                 .defineInRange("EnderChestOtherPermission", 3, 0, 6);
         COMMAND_PERMISSION_INV = BUILDER
                 .comment("/inv命令的权限要求")
-                .defineInRange("InventoryPermission", 2, 0, 6);
+                .defineInRange("InventoryPermission", 3, 0, 6);
         COMMAND_PERMISSION_PERSONAL_RULE = BUILDER
                 .comment("/endinglib personal命令的权限要求")
                 .defineInRange("PersonalRulePermission", 2, 0, 6);
@@ -73,6 +75,12 @@ public class ServerConfig {
         COMMAND_POSE = BUILDER
                 .comment("/endinglib pose命令的权限要求")
                 .defineInRange("PosePermission", 2, 0, 6);
+        COMMAND_COOLDOWN = BUILDER
+                .comment("/endinglib cooldown命令的权限要求")
+                .defineInRange("CooldownPermission", 2, 0, 6);
+        COMMAND_INPUT = BUILDER
+                .comment("/endinglib input命令的权限要求")
+                .defineInRange("InputPermission", 2, 0, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

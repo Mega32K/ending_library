@@ -103,6 +103,9 @@ public class LoreHelper {
                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))
                 );
     }
+    public static <T extends Enum<T>> MutableComponent withCopyEnum(String translationKey, T enum_) {
+        return withCopy(Component.translatable(translationKey + enum_.name().toLowerCase(Locale.ROOT)), enum_.name());
+    }
     public static Component number(Number number, ChatFormatting color) {
         return withCopy(Component.literal(String.valueOf(number)).withStyle(color), String.valueOf(number));
     }

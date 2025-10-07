@@ -9,7 +9,6 @@ import com.mega.endinglib.common.command.entity.selector.NearestEntitySelector;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.init.ModCommandArgumentTypes;
-import net.minecraft.commands.arguments.selector.EntitySelectorParser;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
@@ -56,6 +55,8 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(CommandBlockArgument.class, ModCommandArgumentTypes.COMMAND_BLOCK.get());
             ArgumentTypeInfos.registerByClass(ItemComponentArgument.class, ModCommandArgumentTypes.ITEM_COMPONENT.get());
             ArgumentTypeInfos.registerByClass(PoseArgument.class, ModCommandArgumentTypes.POSE.get());
+            ArgumentTypeInfos.registerByClass(InteractionHandArgument.class, ModCommandArgumentTypes.HAND.get());
+            ArgumentTypeInfos.registerByClass(InputOperationArgument.class, ModCommandArgumentTypes.INPUT_OPERATION.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {
