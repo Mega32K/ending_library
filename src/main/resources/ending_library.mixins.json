@@ -30,6 +30,7 @@
     "accessor.AccessorSynchedEntityData",
     "accessor.AccessorToolAction",
     "accessor.AccessorTrackedEntity",
+    "accessor.HoglinAiAccessor",
     "advanced.DisplayMixin",
     "advanced.data_command.EntityDataAccessorMixin",
     "advanced.data_expand.LivingEntityMixin",

@@ -26,6 +26,8 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_POSE;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_COOLDOWN;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_INPUT;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_HOTBAR;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_TARGET;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -81,6 +83,12 @@ public class ServerConfig {
         COMMAND_INPUT = BUILDER
                 .comment("/endinglib input命令的权限要求")
                 .defineInRange("InputPermission", 2, 0, 6);
+        COMMAND_HOTBAR = BUILDER
+                .comment("/endinglib hotbar命令的权限要求")
+                .defineInRange("HotbarPermission", 2, 0, 6);
+        COMMAND_TARGET = BUILDER
+                .comment("/endinglib target命令的权限要求")
+                .defineInRange("TargetPermission", 2, 0, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

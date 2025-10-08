@@ -1,6 +1,7 @@
 package com.mega.endinglib.util;
 
 import net.minecraftforge.common.IExtensibleEnum;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -11,6 +12,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
+    Inventory$FIELD$selected("selected", "f_35977_", "I"),
+    KeyMapping$METHOD$consumeClick("consumeClick", "m_90859_", "()Z"),
+    Options$FIELD$keyHotbarSlots("keyHotbarSlots", "f_92056_", "[Lnet/minecraft/client/KeyMapping;"),
+    Minecraft$FIELD$options("options", "f_91066_", "Lnet/minecraft/client/Options;"),
+    Minecraft$METHOD$handleKeybinds("handleKeybinds", "m_91279_", "()V"),
     AbstractContainerMenu$METHOD$quickMoveStack("quickMoveStack", "m_7648_", "(Lnet/minecraft/world/entity/player/Player;I)Lnet/minecraft/world/item/ItemStack;"),
     Inventory$METHOD$hurtArmor("hurtArmor", "m_150072_", "(Lnet/minecraft/world/damagesource/DamageSource;F[I)V"),
     Equipable$METHOD$get("get", "m_269088_", "(Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/item/Equipable;"),
@@ -74,7 +80,12 @@ public enum MCMapping implements IExtensibleEnum {
     public static boolean equalsMethodNode(MethodInsnNode node, MCMapping o) {
         return o.get().equals(node.name) && o.desc.equals(node.desc);
     }
-
+    public FieldInsnNode makeFIN(int opcode, String owner) {
+        return new FieldInsnNode(opcode, owner, this.get(), this.desc);
+    }
+    public MethodInsnNode makeMIN(int opcode, String owner) {
+        return new MethodInsnNode(opcode, owner, this.get(), this.desc);
+    }
     public static boolean isDevelopmentEnvironment() {
         Path projectDir = Paths.get(System.getProperty("user.dir")).getParent();
         return Files.exists(projectDir.resolve(".gradle")) &&

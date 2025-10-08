@@ -3,22 +3,21 @@ package com.mega.endinglib.util.asm;
 import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.*;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.time.TimeContext;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BannerPatternItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.extensions.IForgeItemStack;
 
-import java.util.List;
-import java.util.Optional;
-
+@SuppressWarnings("unused")
 public class EventUtil {
     public static long getMillis(long src) {
         return TimeContext.Both.timeStopModifyMillis;
@@ -116,5 +115,12 @@ public class EventUtil {
     }
     public static boolean isComponentItemDamageable(boolean origin, ItemStack stack) {
         return origin || ItemComponentManager.has(stack, DataComponents.MAX_DAMAGE);
+    }
+    public static void onInventorySelectedSet(Inventory inventory, int index) {
+        try {
+            int i = CommonProxy.getCameraCap(inventory.player).getLockedHotbar();
+            if (i > 0) index = i-1;
+        } catch (Throwable ignore) {}
+        inventory.selected = index;
     }
 }

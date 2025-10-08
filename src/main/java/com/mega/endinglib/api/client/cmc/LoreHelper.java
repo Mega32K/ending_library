@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -124,6 +125,32 @@ public class LoreHelper {
                                 .withStyle(ChatFormatting.GOLD)
                                 .withStyle(style -> style
                                         .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec2.y)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
+    }
+    public static Component blockPos(BlockPos blockPos) {
+        return Component.literal("[").withStyle(ChatFormatting.GREEN)
+                .append(
+                        Component.literal(String.valueOf(blockPos.getX()))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(blockPos.getX())))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.valueOf(blockPos.getY()))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(blockPos.getY())))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.valueOf(blockPos.getZ()))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(blockPos.getZ())))
                                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
                 ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
     }

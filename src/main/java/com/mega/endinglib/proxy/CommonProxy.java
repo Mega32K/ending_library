@@ -2,7 +2,9 @@ package com.mega.endinglib.proxy;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
+import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
+import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.command.entity.selector.NearestEntitySelector;
@@ -10,8 +12,10 @@ import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.init.ModCommandArgumentTypes;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.command.EntitySelectorManager;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
@@ -22,7 +26,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 @Mod.EventBusSubscriber
 
 public class CommonProxy implements ModProxy {
-    public static LazyOptional<Capability<EndingLibraryPlayerCapability>> CAMERA_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()));
+    public static LazyOptional<Capability<EndingLibraryPlayerCapability>> PLAYER_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()));
+    public static LazyOptional<Capability<EndingLibraryLivingCapability>> LIVING_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString()));
 
     public CommonProxy() {
         IEventBus modBus = EndingLibrary.getModEventBus();
@@ -31,19 +36,25 @@ public class CommonProxy implements ModProxy {
     }
 
     public static EndingLibraryPlayerCapability getCameraCap(Player player) {
-        return player.getCapability(CAMERA_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()))).orElseThrow(NullPointerException::new);
+        return player.getCapability(PLAYER_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()))).orElseThrow(NullPointerException::new);
     }
 
     public static LazyOptional<EndingLibraryPlayerCapability> getCameraCapOptional(Player player) {
-        return player.getCapability(CAMERA_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString())));
+        return player.getCapability(PLAYER_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString())));
     }
 
+    public static LazyOptional<EndingLibraryLivingCapability> getLivingCapOptional(LivingEntity livingEntity) {
+        return livingEntity.getCapability(LIVING_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString())));
+    }
     public void commonSetup(final FMLCommonSetupEvent event) {
         ItemComponentManager.init();
+        EntitySelectorManager.register("n", new NearestEntitySelector());
         event.enqueueWork(() -> {
-            EntitySelectorManager.register("n", new NearestEntitySelector());
             EndingLibraryGameRules.init();
-            ELCapabilityManager.regsterCapability(EndingLibraryPlayerCapability::new);
+            ELCapabilityManager.regsterCapability(EndingLibraryPlayerCapability::new, new CapabilityToken<EndingLibraryPlayerCapability>() {
+            });
+            ELCapabilityManager.regsterCapability(EndingLibraryLivingCapability::new, new CapabilityToken<EndingLibraryLivingCapability>() {
+            });
             ArgumentTypeInfos.registerByClass(CameraModifierArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER.get());
             ArgumentTypeInfos.registerByClass(CameraOperationArgument.class, ModCommandArgumentTypes.CAMERA_OPERATION.get());
             ArgumentTypeInfos.registerByClass(CameraActionArgument.class, ModCommandArgumentTypes.CAMERA_ACTION.get());

@@ -13,14 +13,17 @@ import com.mega.endinglib.api.client.camera.ModifierType;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
+import com.mega.endinglib.common.command.entity.player.HotbarCommand;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
 import com.mega.endinglib.common.data.InputCooldowns;
+import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CSetPlayerForcedPosePacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
+import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -54,6 +57,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Boolean> OTHER_TEAMS_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(8, PersonalRuleCommand.OTHER_TEAM_PLAYERS_NAMES_RENDER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Boolean> HIDE_SCOREBOARD_NUM = this.defineByPersonalRule(10, PersonalRuleCommand.HIDE_SCOREBOARD_NUMBERS, CapabilityDataSerializers.BOOLEAN);
+    public final CapabilityEntityData<Byte> LOCKED_HOTBAR = this.dataManager.define(11, "lockedHotbar", (byte)-1, CapabilityDataSerializers.BYTE);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
     public int poseLockingTime;
@@ -89,7 +93,12 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                     if (this.cameraType > -1)
                         toWrite.putShort("CameraType", this.cameraType);
                 }
-            }
+            } else if (type == CapabilitySyncType.PLAYER_RESPAWN || type == CapabilitySyncType.PLAYER_CLONE)
+                if (entity instanceof ServerPlayer player) {
+                    InputOperations operations = InputOperations.of(new ResourceLocation("hotbar/"+this.getLockedHotbar()));
+                    if (operations != InputOperations.UNDEFINED)
+                        PacketHandler.sendToPlayer(new S2CInputOperationPacket(operations), player);
+                }
         } else {
             if (type == CapabilitySyncType.PLAYER_LOGGED_IN) {
                 toWrite.putShort("CameraType", (short) ClientWrapped.getCameraTypeOrdinal());
@@ -324,6 +333,14 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     }
     public InputCooldowns getInputCooldowns() {
         return inputCooldowns;
+    }
+    public int getLockedHotbar() {
+        return (int) this.dataManager.getValue(LOCKED_HOTBAR);
+    }
+    public void setLockedHotbar(int i) {
+        if (i < 0 || i > 9)
+            i = -1;
+        this.dataManager.setValue(LOCKED_HOTBAR, (byte) (i));
     }
     protected void setFieldFromCapData() {
         int flags = this.getFlags();

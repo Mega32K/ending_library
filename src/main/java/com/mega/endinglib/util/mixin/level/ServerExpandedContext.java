@@ -30,7 +30,6 @@ public class ServerExpandedContext {
                 Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> permissionsToUpdate = endingLibrarySavedData.packDisabledPermissionsData();
                 if (permissionsToUpdate != null && !permissionsToUpdate.isEmpty()) {
                     for (var entry : permissionsToUpdate.reference2ReferenceEntrySet()) {
-                        System.out.println(entry.getValue());
                         PacketHandler.sendToPlayer(new S2CDisabledInputPermissionsPacket(entry.getValue()), playerList.getPlayer(entry.getKey()));
                     }
                 }

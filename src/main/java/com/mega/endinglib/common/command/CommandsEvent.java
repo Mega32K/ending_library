@@ -2,7 +2,8 @@ package com.mega.endinglib.common.command;
 
 import com.mega.endinglib.common.command.entity.FillEntityCommand;
 import com.mega.endinglib.common.command.entity.MotionCommand;
-import com.mega.endinglib.common.command.entity.PoseCommand;
+import com.mega.endinglib.common.command.entity.TargetCommand;
+import com.mega.endinglib.common.command.entity.player.PoseCommand;
 import com.mega.endinglib.common.command.entity.TimeStopCommand;
 import com.mega.endinglib.common.command.entity.player.*;
 import com.mega.endinglib.common.command.test.DumpCommand;
@@ -39,6 +40,8 @@ public class CommandsEvent {
                         .then(PoseCommand.register())
                         .then(CooldownCommand.register(event.getBuildContext()))
                         .then(InputCommand.register())
+                        .then(HotbarCommand.register())
+                        .then(TargetCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )

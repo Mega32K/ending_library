@@ -32,11 +32,10 @@ public class ELCapabilityManager {
         return (Capability<T>) CAPABILITY_MAP.get(registryName);
     }
 
-    public static Capability<EntitySyncCapabilityBase> regsterCapability(Supplier<EntitySyncCapabilityBase> capability) {
+    public static <T extends EntitySyncCapabilityBase> Capability<EntitySyncCapabilityBase> regsterCapability(Supplier<T> capability, CapabilityToken<T> token) {
         String registryName = capability.get().getRegistryName().toString();
-        CAPABILITY_MAP.put(registryName, CapabilityManager.get(new CapabilityToken<>() {
-        }));
-        CAPABILITY_SUPPLIER_MAP.put(registryName, capability);
+        CAPABILITY_MAP.put(registryName, (Capability<EntitySyncCapabilityBase>) CapabilityManager.get(token));
+        CAPABILITY_SUPPLIER_MAP.put(registryName, (Supplier<EntitySyncCapabilityBase>) capability);
         return CAPABILITY_MAP.get(registryName);
     }
 

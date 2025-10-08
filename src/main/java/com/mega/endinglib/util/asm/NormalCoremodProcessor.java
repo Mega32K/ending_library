@@ -9,11 +9,16 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NormalCoremodProcessor implements IClassProcessor {
     public static final NormalCoremodProcessor INSTANCE = new NormalCoremodProcessor();
     static final String EVENT_UTIL_CLASS = "com/mega/endinglib/util/asm/EventUtil";
-    public static final String EVENT_CLASS = "net/minecraftforge/eventbus/api/Event";
+    static final String CLIENT_EVENT_UTIL_CLASS = "com/mega/endinglib/util/asm/ClientEventUtil";
+    static final String EVENT_CLASS = "net/minecraftforge/eventbus/api/Event";
+    static final String MINECRAFT_CLASS = "net/minecraft/client/Minecraft";
+    static final String OPTIONS_CLASS = "net/minecraft/client/Options";
+    public static String KEYMAPPING_CLASS = "net/minecraft/client/KeyMapping";
     public static final String EVENT_FIELD$el_isUnCancelable = "el_isUnCancelable";
     public static final String EVENT_FIELD$el_isUnCancelable$desc = "Z";
     public static final int SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND = 16;
@@ -22,6 +27,8 @@ public class NormalCoremodProcessor implements IClassProcessor {
     public void processClass(ILaunchPluginService.Phase phase, ClassNode classNode, Type classType, AtomicBoolean shouldWrite) {
         if (phase == ILaunchPluginService.Phase.AFTER) {
             String name = classNode.name;
+            if (isUnsupportModifyingClass(name))
+                return;
             /*
             if (name.equals(SCOREBOARD_CLASS)) {
                 classNode.methods.forEach(methodNode -> methodNode.instructions.forEach(insnNode -> {
@@ -231,6 +238,37 @@ public class NormalCoremodProcessor implements IClassProcessor {
                         });
                     }
                 });
+            } else if (MINECRAFT_CLASS.equals(classNode.name)) {
+                classNode.methods.forEach(methodNode -> {
+                    if (MCMapping.Minecraft$METHOD$handleKeybinds.equalsMethodNode(methodNode)) {
+                        InsnList instructions = methodNode.instructions;
+                        AtomicBoolean finished = new AtomicBoolean(false);
+                        AtomicInteger ordinalOf_vin_index_of_array = new AtomicInteger(-1);
+                        instructions.forEach(insnNode -> {
+                            if (!finished.get()) {
+                                if ((insnNode instanceof FieldInsnNode fin_keyHotbarSlots
+                                        && fin_keyHotbarSlots.owner.equals(OPTIONS_CLASS)
+                                        && MCMapping.Options$FIELD$keyHotbarSlots.equalsFieldNode(fin_keyHotbarSlots))) {
+                                    //查找下一个insn node 是否是对象数值的索引
+                                    if (instructions.get(instructions.indexOf(fin_keyHotbarSlots) + 1) instanceof VarInsnNode vin_index_of_array) {
+                                        ordinalOf_vin_index_of_array.set(vin_index_of_array.var);
+                                    }
+                                } else {
+                                    if (ordinalOf_vin_index_of_array.get() > 0) {
+                                        if (insnNode instanceof MethodInsnNode min_consumeClick && min_consumeClick.owner.equals(KEYMAPPING_CLASS) && MCMapping.KeyMapping$METHOD$consumeClick.equalsMethodNode(min_consumeClick)) {
+                                            InsnList insnNodes = new InsnList();
+                                            insnNodes.add(new VarInsnNode(Opcodes.ILOAD, ordinalOf_vin_index_of_array.get()));
+                                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, CLIENT_EVENT_UTIL_CLASS, "hotbarKeyConsumeClickAndCanUse", "(ZI)Z"));
+                                            instructions.insert(min_consumeClick, insnNodes);
+                                            shouldWrite.set(true);
+                                            finished.set(true);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                });
             }
             if (classNode.superName.equals(EVENT_CLASS)) {
                 classNode.interfaces.add("com/mega/endinglib/api/event/EventItf");
@@ -293,6 +331,30 @@ public class NormalCoremodProcessor implements IClassProcessor {
                 }
                 shouldWrite.set(true);
             }
+            classNode.methods.forEach(m -> {
+                m.instructions.forEach(n -> {
+                    if (n instanceof FieldInsnNode fin) {
+                        if (fin.getOpcode() == Opcodes.PUTFIELD) {
+                            if (fin.owner.equals("net/minecraft/world/entity/player/Inventory")) {
+                                if (MCMapping.Inventory$FIELD$selected.equalsFieldNode(fin)) {
+                                    InsnList insnNodes = new InsnList();
+                                    insnNodes.add(new InsnNode(Opcodes.DUP2));
+                                    insnNodes.add(new FieldInsnNode(fin.getOpcode(), fin.owner, fin.name, fin.desc));
+                                    insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "onInventorySelectedSet", "(Lnet/minecraft/world/entity/player/Inventory;I)V"));
+                                    m.instructions.insertBefore(fin, insnNodes);
+                                    m.instructions.remove(fin);
+                                    shouldWrite.set(true);
+                                }
+                            }
+                        }
+                    }
+                });
+            });
         }
+    }
+
+
+    static boolean isUnsupportModifyingClass(String name) {
+        return name.startsWith("com/mega/endinglib/util/");
     }
 }
