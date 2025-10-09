@@ -28,6 +28,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_INPUT;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_HOTBAR;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_TARGET;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_ANIMATE;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -89,6 +90,9 @@ public class ServerConfig {
         COMMAND_TARGET = BUILDER
                 .comment("/endinglib target命令的权限要求")
                 .defineInRange("TargetPermission", 2, 0, 6);
+        COMMAND_ANIMATE = BUILDER
+                .comment("/endinglib animate命令的权限要求")
+                .defineInRange("AnimatePermission", 2, 0, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

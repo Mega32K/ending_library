@@ -9,8 +9,11 @@ import com.mega.endinglib.client.screen.OtherPlayerInventoryScreen;
 import com.mega.endinglib.common.init.ModMenus;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
+import dev.kosmx.playerAnim.api.layered.ModifierLayer;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -23,10 +26,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientProxy implements ModProxy {
-
+    public static ResourceLocation PLAYER_ANIMATION = EndingLibrary.loc("animation");
     public static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor();
     public final Lock LOCK = new ReentrantLock();
-
     public ClientProxy() {
         LOCK.lock();
         try {
@@ -55,6 +57,7 @@ public class ClientProxy implements ModProxy {
     public void clientSetup(final FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
             MenuScreens.register(ModMenus.OTHER_PLAYER_INV_MENU.get(), OtherPlayerInventoryScreen::new);
+            PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(PLAYER_ANIMATION, 4936, p -> new ModifierLayer<>());
         });
     }
 }

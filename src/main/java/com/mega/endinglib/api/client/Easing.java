@@ -4,7 +4,8 @@ import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.util.Mth;
 
 public enum Easing {
-    NONE(x -> x),
+    LINEAR(x -> x),
+    CONSTANT(x -> 0),
     IN_SINE(x -> 1 - Mth.cos((float) ((x * Math.PI) / 2))),
     OUT_SINE(x -> Mth.sin((float) ((x * Math.PI) / 2))),
     IN_OUT_SINE(x -> -(Mth.cos((float) (Math.PI * x)) - 1) / 2),

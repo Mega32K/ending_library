@@ -1,6 +1,5 @@
 package com.mega.endinglib.common.command.argument;
 
-import com.mega.endinglib.common.command.CommandsEvent;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -13,7 +12,6 @@ import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;

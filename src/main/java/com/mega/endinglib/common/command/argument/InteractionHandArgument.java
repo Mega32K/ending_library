@@ -1,6 +1,5 @@
 package com.mega.endinglib.common.command.argument;
 
-import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.common.command.CommandsEvent;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;

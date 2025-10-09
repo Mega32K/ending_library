@@ -1,21 +1,33 @@
 package com.mega.endinglib.client;
 
 import com.mega.endinglib.api.capability.CapabilitySyncType;
+import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.client.screen.CameraModifyScreen;
 import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.mixin.accessor.AccessorOptions;
+import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
+import dev.kosmx.playerAnim.api.TransformType;
+import dev.kosmx.playerAnim.api.layered.IAnimation;
+import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
+import dev.kosmx.playerAnim.api.layered.ModifierLayer;
+import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
+import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
+import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientRegistryLayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
@@ -45,6 +57,7 @@ public class ClientWrapped {
                 if (player != null)
                     player.setForcedPose(null);
             }
+            case RELOAD_RESOURCES_PACK -> Minecraft.getInstance().execute(()->Minecraft.getInstance().reloadResourcePacks());
         }
     }
     public static void operateInputAction(InputOperations operations) {
@@ -117,6 +130,39 @@ public class ClientWrapped {
         } else return Minecraft.getInstance().getConnection().registryAccess();
     }
     public static void activeMouseControl() {
-
+    }
+    @SuppressWarnings("unchecked")
+    public static void playPlayerAnimation(ResourceLocation identifier) {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
+        if (animation != null) {
+            KeyframeAnimation animation1 = PlayerAnimationRegistry.getAnimation(identifier);
+            if (animation1 != null)
+                animation.setAnimation(new KeyframeAnimationPlayer(animation1));
+        }
+    }
+    @SuppressWarnings("unchecked")
+    public static void partialPlayPlayerAnimation(ResourceLocation identifier, int length, Easing easing) {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
+        if (animation != null) {
+            KeyframeAnimation animation1 = PlayerAnimationRegistry.getAnimation(identifier);
+            if (animation1 != null) {
+                animation.replaceAnimationWithFade(new AbstractFadeModifier(length) {
+                    @Override
+                    protected float getAlpha(String modelName, TransformType type, float progress) {
+                        return easing.calculate(progress);
+                    }
+                }, new KeyframeAnimationPlayer(animation1));
+            }
+        }
+    }
+    @SuppressWarnings("unchecked")
+    public static void stopPlayerAnimation() {
+        LocalPlayer localPlayer = Minecraft.getInstance().player;
+        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
+        if (animation != null) {
+            animation.setAnimation(null);
+        }
     }
 }

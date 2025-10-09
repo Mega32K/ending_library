@@ -42,6 +42,7 @@ public class CommandsEvent {
                         .then(InputCommand.register())
                         .then(HotbarCommand.register())
                         .then(TargetCommand.register())
+                        .then(AnimationCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )

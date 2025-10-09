@@ -37,6 +37,7 @@
   "commands.endinglib.message.action.mouse_grab": "§7隐藏鼠标",
   "commands.endinglib.message.action.mouse_release": "§7显示鼠标",
   "commands.endinglib.message.action.forced_pose_clear": "§7清除强制/锁定的玩家动作",
+  "commands.endinglib.message.action.reload_resources_pack": "§7重载资源包",
 
   "commands.endinglib.message.camera.camera_enable": "§7为%s§a启用§7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s§c关闭§7自定义相机模式",

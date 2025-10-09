@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 public class S2CMouseControlPacket {
 
-
     public static S2CMouseControlPacket decode(FriendlyByteBuf friendlyByteBuf) {
         return new S2CMouseControlPacket();
     }

@@ -63,6 +63,9 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CDisabledInputPermissionsPacket.class, S2CDisabledInputPermissionsPacket::encode, S2CDisabledInputPermissionsPacket::decode, S2CDisabledInputPermissionsPacket::handle);
         INSTANCE.registerMessage(id(), S2CInputOperationPacket.class, S2CInputOperationPacket::encode, S2CInputOperationPacket::decode, S2CInputOperationPacket::handle);
         INSTANCE.registerMessage(id(), S2CInputCooldownPacket.class, S2CInputCooldownPacket::encode, S2CInputCooldownPacket::decode, S2CInputCooldownPacket::handle);
+        INSTANCE.registerMessage(id(), S2CPlayerAnimationPacket.Play.class, S2CPlayerAnimationPacket.Play::encode, S2CPlayerAnimationPacket.Play::decode, S2CPlayerAnimationPacket.Play::handle);
+        INSTANCE.registerMessage(id(), S2CPlayerAnimationPacket.Stop.class, S2CPlayerAnimationPacket.Stop::encode, S2CPlayerAnimationPacket.Stop::decode, S2CPlayerAnimationPacket.Stop::handle);
+        INSTANCE.registerMessage(id(), S2CPlayerAnimationPacket.PartialPlay.class, S2CPlayerAnimationPacket.PartialPlay::encode, S2CPlayerAnimationPacket.PartialPlay::decode, S2CPlayerAnimationPacket.PartialPlay::handle);
 
     }
 

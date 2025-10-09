@@ -18,6 +18,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.command.EntitySelectorManager;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -68,6 +69,7 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(PoseArgument.class, ModCommandArgumentTypes.POSE.get());
             ArgumentTypeInfos.registerByClass(InteractionHandArgument.class, ModCommandArgumentTypes.HAND.get());
             ArgumentTypeInfos.registerByClass(InputOperationArgument.class, ModCommandArgumentTypes.INPUT_OPERATION.get());
+            ArgumentTypeInfos.registerByClass(PlayerAnimationArgument.class, ModCommandArgumentTypes.PLAYER_ANIMATION.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {
