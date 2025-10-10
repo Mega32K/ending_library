@@ -29,6 +29,7 @@ public class CapabilityDataSerializers {
     public static final CapabilityDataSerializer<Long> LONG = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarLong, FriendlyByteBuf::readVarLong, CompoundTag::putLong, CompoundTag::getLong);
     public static final CapabilityDataSerializer<Float> FLOAT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeFloat, FriendlyByteBuf::readFloat, CompoundTag::putFloat, CompoundTag::getFloat);
     public static final CapabilityDataSerializer<String> STRING = CapabilityDataSerializer.simple(FriendlyByteBuf::writeUtf, FriendlyByteBuf::readUtf, CompoundTag::putString, CompoundTag::getString);
+    public static final CapabilityDataSerializer<Optional<String>> OPTIONAL_STRING = CapabilityDataSerializer.optional(FriendlyByteBuf::writeUtf, FriendlyByteBuf::readUtf, CompoundTag::putString, CompoundTag::getString);
     public static final CapabilityDataSerializer<Component> COMPONENT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeComponent, FriendlyByteBuf::readComponent, CompoundTagUtils::putComponent, CompoundTagUtils::getComponent);
     public static final CapabilityDataSerializer<Optional<Component>> OPTIONAL_COMPONENT = CapabilityDataSerializer.optional(FriendlyByteBuf::writeComponent, FriendlyByteBuf::readComponent, CompoundTagUtils::putComponent, CompoundTagUtils::getComponent);
     public static final CapabilityDataSerializer<ItemStack> ITEM_STACK = new CapabilityDataSerializer<>() {
@@ -101,6 +102,7 @@ public class CapabilityDataSerializers {
         registerSerializer(LONG);
         registerSerializer(FLOAT);
         registerSerializer(STRING);
+        registerSerializer(OPTIONAL_STRING);
         registerSerializer(COMPONENT);
         registerSerializer(OPTIONAL_COMPONENT);
         registerSerializer(ITEM_STACK);

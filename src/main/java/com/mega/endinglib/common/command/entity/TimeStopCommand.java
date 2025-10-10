@@ -1,10 +1,12 @@
 package com.mega.endinglib.common.command.entity;
 
+import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -31,7 +33,6 @@ public class TimeStopCommand {
     }
 
     private static int execute(CommandSourceStack sender, float seconds) {
-        final boolean single = true;
         Entity target = sender.getEntity();
 
         if (target == null) throw new NullPointerException("Entity is null!");
@@ -41,10 +42,10 @@ public class TimeStopCommand {
         if (seconds <= 0.0F) {
             TimeStopEntityData.setTimeStopCount(living, 0);
             TimeStopUtils.useWithoutSoundEffect(false, (LivingEntity) target);
-            sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), 0), false);
+            sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), LoreHelper.number(0, ChatFormatting.GOLD)), false);
         } else {
             TimeStopUtils.use(true, living, false, (int) (seconds * 20), false);
-            sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), seconds), false);
+            sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), LoreHelper.number(seconds, ChatFormatting.GOLD)), false);
         }
         return (int) (seconds * 20);
     }
@@ -60,15 +61,15 @@ public class TimeStopCommand {
                 TimeStopEntityData.setTimeStopCount(living, 0);
                 TimeStopUtils.useWithoutSoundEffect(false, (LivingEntity) target);
                 if (single)
-                    sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), 0), false);
+                    sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), LoreHelper.number(0, ChatFormatting.GOLD)), false);
             } else {
                 TimeStopUtils.use(true, living, false, (int) (seconds * 20), false);
                 if (single)
-                    sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), seconds), false);
+                    sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set", living.getDisplayName(), LoreHelper.number(seconds, ChatFormatting.GOLD)), false);
             }
         }
         if (!single)
-            sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set.multi", entities.size(), seconds), false);
+            sender.sendSuccess(() -> Component.translatable("commands.endinglib.message.time_stop.set.multi", LoreHelper.number(entities.size(), ChatFormatting.LIGHT_PURPLE), LoreHelper.number(seconds, ChatFormatting.GOLD)), false);
         return (int) (seconds * 20);
     }
 }

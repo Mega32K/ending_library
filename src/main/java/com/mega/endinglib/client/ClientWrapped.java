@@ -2,9 +2,10 @@ package com.mega.endinglib.client;
 
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.client.screen.CameraModifyScreen;
-import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
+import com.mega.endinglib.common.network.s2c.S2CCompletelySoundPacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.mixin.accessor.AccessorOptions;
@@ -20,17 +21,25 @@ import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
 import net.minecraft.Util;
+import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientRegistryLayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -163,6 +172,28 @@ public class ClientWrapped {
         var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
         if (animation != null) {
             animation.setAnimation(null);
+        }
+    }
+    public static void setCameraRotation(float xrot, float yrot) {
+        CameraUtils.getInstance().setOriginXRot(xrot);
+        CameraUtils.getInstance().setOriginYRot(yrot);
+    }
+    public static void handlePlaySound(S2CCompletelySoundPacket.Static packet, NetworkEvent.Context context) {
+        Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(packet.getSound(), packet.getSoundSource(), packet.getVolume(), packet.getPitch(), RandomSource.create(packet.getSeed()), packet.isRepeat(), packet.getRepeatDelay(), SoundInstance.Attenuation.NONE, 0.0D, 0.0D, 0.0D, true));
+
+    }
+    public static void handlePlaySound(S2CCompletelySoundPacket.Stereo packet, NetworkEvent.Context context) {
+        Minecraft minecraft = Minecraft.getInstance();
+        Vec3 pos = packet.getBlockPos().getCenter();
+        boolean useDistance = packet.isUseDistance();
+        Vec3 origin = ClientWrapped.clientPlayer().position();
+        double distance = origin.distanceToSqr(pos);
+        SimpleSoundInstance soundInstance = new SimpleSoundInstance(packet.getSound(), packet.getSoundSource(), packet.getVolume(), packet.getPitch(), RandomSource.create(packet.getSeed()), packet.isRepeat(), packet.getRepeatDelay(), SoundInstance.Attenuation.LINEAR, pos.x, pos.y, pos.z, false);
+        if (useDistance && distance > 100.0D) {
+            double e = Math.sqrt(distance) / 40.0D;
+            minecraft.getSoundManager().playDelayed(soundInstance, (int)(e * 20.0D));
+        } else {
+            minecraft.getSoundManager().play(soundInstance);
         }
     }
 }

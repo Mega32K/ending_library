@@ -6,6 +6,8 @@ import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraOriginRotationPacket;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -17,13 +19,16 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.UuidArgument;
+import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -135,6 +140,7 @@ public class CameraCommand {
                         )
                         .then(Commands.literal("option")
                                 .then(Commands.literal("freezingOrigin")
+                                        .executes(context -> message(context.getSource(), IS_FREEZING_ORIGIN, EntityArgument.getPlayer(context, "player")))
                                         .then(Commands.literal("default")
                                                 .executes(DEFAULT_FREEZING_ORIGIN::execute)
                                         )
@@ -150,7 +156,11 @@ public class CameraCommand {
                                                 )
                                                 .executes(context -> message(context.getSource(), FREEZING_MODE_IS_FOLLOW_POSITION, EntityArgument.getPlayer(context, "player")))
                                         )
-                                        .executes(context -> message(context.getSource(), IS_FREEZING_ORIGIN, EntityArgument.getPlayer(context, "player")))
+                                        .then(Commands.literal("setOriginCameraRotation")
+                                                .then(Commands.argument("rotation", Vec2Argument.vec2(false))
+                                                        .executes(context -> freezeOrigin_setOriginCameraRotation(context.getSource(), EntityArgument.getPlayer(context, "player"), Vec2Argument.getVec2(context, "rotation")))
+                                                )
+                                        )
                                 )
                                 .then(Commands.literal("lockedCameraPerson")
                                         .then(Commands.literal("default")
@@ -271,7 +281,6 @@ public class CameraCommand {
     }
 
     private static int message(CommandSourceStack stack, byte mode, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         EndingLibraryPlayerCapability cap = CommonProxy.getCameraCap(player);
         switch (mode) {
             case IS_ENABLED -> {
@@ -322,22 +331,20 @@ public class CameraCommand {
     private static void sendAnimationMessage(CommandSourceStack stack, CameraKeyframeAnimation animation, MutableComponent base) {
         stack.sendSuccess(() -> base.append(animation.toComponent()), false);
     }
-
     private static void sendAnimationMessage(CommandSourceStack stack, CameraKeyframeAnimation animation) {
         sendAnimationMessage(stack, animation, Component.empty());
     }
-
     private static void sendModifierMessage(CommandSourceStack stack, CameraModifier modifier, MutableComponent base) {
         stack.sendSuccess(() -> base.append(modifier.toComponent()), false);
     }
-
     private static void sendModifierMessage(CommandSourceStack stack, CameraModifier modifier) {
         sendModifierMessage(stack, modifier, Component.empty());
     }
-
+    private static void sendFailedInvalidTarget(CommandSourceStack stack, Entity target) {
+        stack.sendFailure(Component.translatable("commands.endinglib.message.message.invalid_target", target.getDisplayName()));
+    }
     private static int enableCustomCameraMode(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        if (player.isDeadOrDying()) return 0;
-        CommonProxy.getCameraCap(player).setUsingCustomCamera(flag);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setUsingCustomCamera(flag));
         if (flag) {
             stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_enable", player.getDisplayName()), false);
         } else
@@ -346,63 +353,57 @@ public class CameraCommand {
     }
 
     private static int freezeOrigin(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        if (player.isDeadOrDying()) return 0;
-        CommonProxy.getCameraCap(player).setVanillaCameraFreezing(flag);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setVanillaCameraFreezing(flag));
         sendModifyMessage(stack, player);
         return 0;
     }
     private static int default_freezeOrigin(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setVanillaCameraFreezing(false);
         return 0;
     }
     private static int freezeOrigin_followPosition(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setFollowPosition(flag);
         sendModifyMessage(stack, player);
         return 0;
     }
     private static int default_freezeOrigin_followPosition(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setFollowPosition(false);
         return 0;
     }
+    private static int freezeOrigin_setOriginCameraRotation(CommandSourceStack stack, ServerPlayer player, Vec2 rotation) {
+        PacketHandler.sendToPlayer(new S2CSetCameraOriginRotationPacket(rotation.x, rotation.y), player);
+        sendModifyMessage(stack, player);
+        return 0;
+    }
     private static int lockedCameraPersion(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setLockedCameraPerson(flag);
         sendModifyMessage(stack, player);
         return 0;
     }
     private static int default_lockedCameraPersion(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setLockedCameraPerson(false);
         return 0;
     }
     private static int lockedFov(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setLockedFov(flag);
         sendModifyMessage(stack, player);
         return 0;
     }
     private static int default_lockedFov(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setLockedFov(false);
         return 0;
     }
     private static int availableCameraArea(CommandSourceStack stack, ServerPlayer player, Vec3 min, Vec3 max) {
-        if (player.isDeadOrDying()) return 0;
         AABB aabb = new AABB(min, max);
         CommonProxy.getCameraCap(player).setCameraAvailableArea(aabb);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.available_camera_area.set", player.getDisplayName(), LoreHelper.aabb(aabb)), false);
         return 0;
     }
     private static int default_availableCameraArea(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         CommonProxy.getCameraCap(player).setCameraAvailableArea(null);
         return 0;
     }
     private static int mouseControl(CommandSourceStack stack, ServerPlayer player, boolean value) {
-        if (player.isDeadOrDying()) return 0;
         EndingLibraryPlayerCapability capability = CommonProxy.getCameraCap(player);
         /*
 
@@ -418,13 +419,11 @@ public class CameraCommand {
         return 0;
     }
     private static int default_mouseControl(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         EndingLibraryPlayerCapability capability = CommonProxy.getCameraCap(player);
         capability.setMouseControlled(false);
         return 0;
     }
     private static int addModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, @Nullable UUID uuid, double amount, CameraModifier.Operation operation, boolean isPermanent) {
-        if (player.isDeadOrDying()) return 0;
         boolean uuidNull = false;
         if (uuid == null) {
             uuid = Mth.createInsecureUUID(RandomSource.createNewThreadLocalInstance());
@@ -441,7 +440,6 @@ public class CameraCommand {
     }
 
     private static int removeModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, UUID uuid) {
-        if (player.isDeadOrDying()) return 0;
         if (uuid != null) {
             CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
             CameraModifier modifier = cvi.getModifier(uuid);
@@ -454,7 +452,6 @@ public class CameraCommand {
     }
 
     private static int removeAllModifiers(CommandSourceStack stack, ServerPlayer player) {
-        if (player.isDeadOrDying()) return 0;
         int typeCount = 0;
         int count = 0;
         for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
@@ -471,7 +468,6 @@ public class CameraCommand {
     }
 
     private static int removeAllModifiers(CommandSourceStack stack, ServerPlayer player, ModifierType... modifierTypes) {
-        if (player.isDeadOrDying()) return 0;
         int typeCount = 0;
         int count = 0;
         for (ModifierType modifierType : modifierTypes) {
@@ -488,7 +484,6 @@ public class CameraCommand {
     }
 
     private static int getModifiers(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType) {
-        if (player.isDeadOrDying()) return 0;
         Set<CameraModifier> modifiers = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager()).getModifiers();
         stack.sendSuccess(() -> Component.literal(modifierType.name()).withStyle(ChatFormatting.GREEN), false);
         for (CameraModifier modifier : modifiers) {
@@ -497,7 +492,6 @@ public class CameraCommand {
         return 0;
     }
     private static int getCameraAnimations(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.get_anims", modifierType.name()), false);
         for (CameraKeyframeAnimation animation : cvi.getKeyframeAnimations()) {
@@ -507,7 +501,6 @@ public class CameraCommand {
     }
 
     private static int getCameraAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.get_anim", modifierType.name(), name), false);
         sendAnimationMessage(stack, cvi.getKeyframeAnimation(name));
@@ -515,7 +508,6 @@ public class CameraCommand {
     }
 
     private static int addCameraAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, CameraKeyframeAnimation.AnimType animType, float duration) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = new CameraKeyframeAnimation(name, animType, duration);
         cvi.addKeyframeAnimation(animation);
@@ -524,7 +516,6 @@ public class CameraCommand {
     }
 
     private static int removeCameraAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         sendAnimationMessage(stack, animation);
@@ -534,7 +525,6 @@ public class CameraCommand {
     }
 
     private static int addKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, Easing easing, float timestamp, float endPoint) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
@@ -546,7 +536,6 @@ public class CameraCommand {
     }
 
     private static int modifyKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, int index, Easing easing, float timestamp, float endPoint) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
@@ -558,7 +547,6 @@ public class CameraCommand {
     }
 
     private static int removeKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, int indexOfKeyframe) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
@@ -570,7 +558,6 @@ public class CameraCommand {
     }
 
     private static int insertBeforeKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, int index, Easing easing, float timestamp, float endPoint) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
@@ -582,7 +569,6 @@ public class CameraCommand {
     }
 
     private static int listAnimationKeyframes(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
@@ -598,7 +584,6 @@ public class CameraCommand {
     }
 
     private static int startAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
@@ -610,7 +595,6 @@ public class CameraCommand {
     }
 
     private static int stopAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        if (player.isDeadOrDying()) return 0;
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {

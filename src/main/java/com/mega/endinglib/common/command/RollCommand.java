@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class RollCommand {
-
     @SubscribeEvent
     public static void load(RegisterCommandsEvent event) {
         event.getDispatcher().register(

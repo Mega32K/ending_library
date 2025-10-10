@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.command.entity.player;
 
+import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.proxy.CommonProxy;
@@ -14,18 +15,20 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.server.level.ServerPlayer;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class PersonalRuleCommand {
     public static final BiFunction<PersonalRule<Boolean>, EndingLibraryPlayerCapability, Integer> BOOL_COMMAND_RESULT = (rule, cap) -> rule.getCapValue(cap) ? 1 : 0;
@@ -113,6 +116,26 @@ public class PersonalRuleCommand {
             BOOL_COMMAND_RESULT,
             false
     );
+    public static final PersonalRule<String> CUSTOM_SKIN = build("customSkin", (command, personalRule) ->
+                    command.then(Commands.argument("value", ResourceLocationArgument.id())
+                                    .executes(context -> set(context.getSource(), EntityArgument.getPlayer(context, "player"), personalRule, ResourceLocationArgument.getId(context, "value").toString()))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryPlayerCapability::setCustomSkin,
+            EndingLibraryPlayerCapability::getCustomSkin,
+            (a,b) -> 0,
+            ""
+    );
+    public static final PersonalRule<Optional<Component>> NAME = build("name", (command, personalRule) ->
+                    command.then(Commands.argument("value", ComponentArgument.textComponent())
+                                    .executes(context -> set(context.getSource(), EntityArgument.getPlayer(context, "player"), personalRule, Optional.of(ComponentArgument.getComponent(context, "value"))))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryPlayerCapability::setDisplayNameOpt,
+            EndingLibraryPlayerCapability::getDisplayNameOpt,
+            (a,b) -> 0,
+            Optional.empty()
+    );
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("personal")
@@ -120,29 +143,51 @@ public class PersonalRuleCommand {
                 .then(buildAllCommands(Commands.argument("player", EntityArgument.player())));
     }
 
-    private static void sendGetMessage(CommandSourceStack stack, ServerPlayer player, String rule, String valueToString) {
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.get", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), Component.literal(valueToString).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))), false);
+    private static void sendGetMessage(CommandSourceStack stack, ServerPlayer player, String rule, Object valueToString) {
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.get", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), Component.literal(valueToString.toString()).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))), false);
+    }
+    private static void sendGetMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.get", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);
+    }
+    private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player, String rule, Object valueToString) {
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.set", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), Component.literal(valueToString.toString()).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))), false);
     }
 
-    private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player, String rule, String valueToString) {
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.set", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), Component.literal(valueToString).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))), false);
+    private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.set", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);
     }
-
+    private static <T> int set2(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule, Object value) {
+        return set(stack, player, rule, (T) value);
+    }
     private static <T> int set(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule, T value) {
         rule.setCapValue(CommonProxy.getCameraCap(player), value);
-        sendModifyMessage(stack, player, rule.getName(), String.valueOf(value));
-        return 0;
-    }
-
-    private static <T> int set0(CommandSourceStack stack, ServerPlayer player, PersonalRule<?> rule, T value) {
-        rule.setCapValue(CommonProxy.getCameraCap(player), value);
-        sendModifyMessage(stack, player, rule.getName(), String.valueOf(value));
+        Object o = value;
+        if (value instanceof Optional<?> optional) {
+            if (optional.isEmpty()) {
+                sendModifyMessage(stack, player, rule.getName(), LoreHelper.empty());
+                return 0;
+            } else if (optional.get() instanceof Component c) {
+                sendModifyMessage(stack, player, rule.getName(), c);
+                return 0;
+            } else o = optional.get();
+        }
+        sendModifyMessage(stack, player, rule.getName(), o);
         return 0;
     }
     private static <T> int get(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule) {
         EndingLibraryPlayerCapability cap = CommonProxy.getCameraCap(player);
         T v = rule.getCapValue(cap);
-        sendGetMessage(stack, player, rule.getName(), String.valueOf(v));
+        Object o = v;
+        if (v instanceof Optional<?> optional) {
+            if (optional.isEmpty()) {
+                sendGetMessage(stack, player, rule.getName(), LoreHelper.empty());
+                return 0;
+            } else if (optional.get() instanceof Component c) {
+                sendGetMessage(stack, player, rule.getName(), c);
+                return 0;
+            } else o = optional.get();
+        }
+        sendGetMessage(stack, player, rule.getName(), o);
         return rule.getCommandResult(cap);
     }
 
@@ -155,11 +200,7 @@ public class PersonalRuleCommand {
             p.then(rule.command(Commands.literal(rule.getName())));
             p.then(Commands.literal(rule.getName())
                     .then(Commands.literal("default")
-                            .executes(context -> {
-                                ServerPlayer player = EntityArgument.getPlayer(context, "player");
-                                set0(context.getSource(), player, rule, rule.defaultValue);
-                                return 0;
-                            })
+                            .executes(context -> set2(context.getSource(), EntityArgument.getPlayer(context, "player"), rule, rule.defaultValue))
                     )
             );
         }

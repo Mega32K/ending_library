@@ -29,70 +29,80 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_HOTBAR;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_TARGET;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_ANIMATE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_TESTFOR;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_SOUND;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
         BUILDER.push("Command Permission");
+        BUILDER.comment("定义所有指令所需权限等级");
+        BUILDER.comment("若<0则表示禁用了此命令");
         COMMAND_PERMISSION = BUILDER
                 .comment("/endinglib命令的权限要求")
-                .defineInRange("RootCommandPermission", 0, 0, 6);
+                .defineInRange("RootCommandPermission", -1, 0, 6);
         COMMAND_PERMISSION_CAMERA = BUILDER
                 .comment("/endinglib camera命令的权限要求")
-                .defineInRange("CameraPermission", 2, 0, 6);
+                .defineInRange("CameraPermission", 2, -1, 6);
         COMMAND_PERMISSION_ENDERCHEST = BUILDER
                 .comment("/enderchest命令的权限要求")
-                .defineInRange("EnderChestPermission", 2, 0, 6);
+                .defineInRange("EnderChestPermission", 2, -1, 6);
         COMMAND_PERMISSION_ENDERCHEST_OTHER = BUILDER
                 .comment("/enderchest <选择器>命令的权限要求")
-                .defineInRange("EnderChestOtherPermission", 3, 0, 6);
+                .defineInRange("EnderChestOtherPermission", 3, -1, 6);
         COMMAND_PERMISSION_INV = BUILDER
                 .comment("/inv命令的权限要求")
-                .defineInRange("InventoryPermission", 3, 0, 6);
+                .defineInRange("InventoryPermission", 3, -1, 6);
         COMMAND_PERMISSION_PERSONAL_RULE = BUILDER
                 .comment("/endinglib personal命令的权限要求")
-                .defineInRange("PersonalRulePermission", 2, 0, 6);
+                .defineInRange("PersonalRulePermission", 2, -1, 6);
         COMMAND_PERMISSION_SCHEDULE = BUILDER
                 .comment("/endinglib schedule命令的权限要求")
-                .defineInRange("SchedulePermission", 2, 0, 6);
+                .defineInRange("SchedulePermission", 2, -1, 6);
         COMMAND_PERMISSION_TIMESTOP = BUILDER
                 .comment("/endinglib timestop命令的权限要求")
-                .defineInRange("TimestopPermission", 2, 0, 6);
+                .defineInRange("TimestopPermission", 2, -1, 6);
         COMMAND_PERMISSION_SET_FOV = BUILDER
                 .comment("/endinglib fov命令的权限要求")
-                .defineInRange("FovPermission", 2, 0, 6);
+                .defineInRange("FovPermission", 2, -1, 6);
         COMMAND_PERMISSION_CLIENT_ACTION = BUILDER
                 .comment("/endinglib action命令的权限要求")
-                .defineInRange("ActionPermission", 2, 0, 6);
+                .defineInRange("ActionPermission", 2, -1, 6);
         COMMAND_PERMISSION_SET_ROTATION = BUILDER
                 .comment("/endinglib rotate命令的权限要求")
-                .defineInRange("RotatePermission", 2, 0, 6);
+                .defineInRange("RotatePermission", 2, -1, 6);
         COMMAND_PERMISSION_MOTION = BUILDER
                 .comment("/endinglib motion命令的权限要求")
-                .defineInRange("MotionPermission", 2, 0, 6);
+                .defineInRange("MotionPermission", 2, -1, 6);
         COMMAND_PERMISSION_FILL_ENTITY = BUILDER
                 .comment("/endinglib fillEntity命令的权限要求")
-                .defineInRange("FillEntityPermission", 2, 0, 6);
+                .defineInRange("FillEntityPermission", 2, -1, 6);
         COMMAND_KICK = BUILDER
                 .comment("/endinglib kick命令的权限要求")
-                .defineInRange("KickPermission", 2, 0, 6);
+                .defineInRange("KickPermission", 2, -1, 6);
         COMMAND_POSE = BUILDER
                 .comment("/endinglib pose命令的权限要求")
-                .defineInRange("PosePermission", 2, 0, 6);
+                .defineInRange("PosePermission", 2, -1, 6);
         COMMAND_COOLDOWN = BUILDER
                 .comment("/endinglib cooldown命令的权限要求")
-                .defineInRange("CooldownPermission", 2, 0, 6);
+                .defineInRange("CooldownPermission", 2, -1, 6);
         COMMAND_INPUT = BUILDER
                 .comment("/endinglib input命令的权限要求")
-                .defineInRange("InputPermission", 2, 0, 6);
+                .defineInRange("InputPermission", 2, -1, 6);
         COMMAND_HOTBAR = BUILDER
                 .comment("/endinglib hotbar命令的权限要求")
-                .defineInRange("HotbarPermission", 2, 0, 6);
+                .defineInRange("HotbarPermission", 2, -1, 6);
         COMMAND_TARGET = BUILDER
                 .comment("/endinglib target命令的权限要求")
-                .defineInRange("TargetPermission", 2, 0, 6);
+                .defineInRange("TargetPermission", 2, -1, 6);
         COMMAND_ANIMATE = BUILDER
                 .comment("/endinglib animate命令的权限要求")
-                .defineInRange("AnimatePermission", 2, 0, 6);
+                .defineInRange("AnimatePermission", 2, -1, 6);
+        COMMAND_TESTFOR = BUILDER
+                .comment("/endinglib testfor命令的权限要求")
+                .defineInRange("TestforPermission", 2, -1, 6);
+        COMMAND_SOUND = BUILDER
+                .comment("/endinglib sound命令的权限要求")
+                .defineInRange("SoundPermission", 2, -1, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

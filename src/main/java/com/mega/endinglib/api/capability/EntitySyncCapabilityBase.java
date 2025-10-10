@@ -35,14 +35,14 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
      * @param type 同步类型
      * @param entity 能力持有实体
      */
-    public final void sync(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity) {
+    public final void sync(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity, Level level) {
         if (type == CapabilitySyncType.TICK)
             if (!canSyncWhenTick(entity, entity.level())) {
                 return;
             }
         this.syncData(toWrite, from, type, entity);
         if (from == Dist.DEDICATED_SERVER) {
-            if (entity.level() instanceof ServerLevel serverLevel) {
+            if (level instanceof ServerLevel serverLevel) {
                 PacketHandler.sendToSeen(
                         this.createPacket(this.getRegistryName().toString(), toWrite, from, type, entity.getId()),
                         entity,
@@ -54,7 +54,9 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
                     this.createPacket(this.getRegistryName().toString(), toWrite, from, type, entity.getId()));
         }
     }
-
+    public final void sync(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity) {
+       this.sync(toWrite, from, type, entity, entity.level());
+    }
     public abstract void readSyncData(CompoundTag toRead, Dist from, CapabilitySyncType type, Entity entity);
 
     public Object createPacket(String registryName, CompoundTag compoundTag, Dist originalDist, CapabilitySyncType type, int entityID) {

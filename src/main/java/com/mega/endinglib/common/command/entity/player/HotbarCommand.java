@@ -22,7 +22,7 @@ import java.util.Collection;
 public class HotbarCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("hotbar")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_KICK.get()))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_HOTBAR.get()))
                 .then(Commands.argument("targets", EntityArgument.players())
                         .then(Commands.argument("hotbar", IntegerArgumentType.integer(1, 9))
                                 .executes(context -> hotbar(EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "hotbar")))

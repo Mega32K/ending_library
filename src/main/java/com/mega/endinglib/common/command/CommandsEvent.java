@@ -1,10 +1,6 @@
 package com.mega.endinglib.common.command;
 
-import com.mega.endinglib.common.command.entity.FillEntityCommand;
-import com.mega.endinglib.common.command.entity.MotionCommand;
-import com.mega.endinglib.common.command.entity.TargetCommand;
-import com.mega.endinglib.common.command.entity.player.PoseCommand;
-import com.mega.endinglib.common.command.entity.TimeStopCommand;
+import com.mega.endinglib.common.command.entity.*;
 import com.mega.endinglib.common.command.entity.player.*;
 import com.mega.endinglib.common.command.test.DumpCommand;
 import com.mega.endinglib.common.config.ServerConfig;
@@ -43,11 +39,14 @@ public class CommandsEvent {
                         .then(HotbarCommand.register())
                         .then(TargetCommand.register())
                         .then(AnimationCommand.register())
+                        .then(TestforCommand.register(event.getDispatcher(), event.getBuildContext()))
+                        .then(SoundCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )
         );
     }
+
     public static void suggestFromExamples(Collection<String> examples, String translationKey, SuggestionsBuilder builder) {
         String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
         for (String ex : examples) {

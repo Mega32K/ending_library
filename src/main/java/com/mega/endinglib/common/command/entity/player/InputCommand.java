@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InputCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("input")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_KICK.get()))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_INPUT.get()))
                 .then(Commands.argument("target", EntityArgument.player())
                         .then(Commands.literal("permission")
                                 .then(Commands.argument("input", InputOperationArgument.operation())

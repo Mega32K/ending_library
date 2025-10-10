@@ -25,6 +25,7 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<InteractionHandArgument, ?>> HAND = REGISTRIES.register("hand", () -> SingletonArgumentInfo.contextFree(InteractionHandArgument::hand));
     public static final RegistryObject<ArgumentTypeInfo<InputOperationArgument, ?>> INPUT_OPERATION = REGISTRIES.register("input_operation", () -> SingletonArgumentInfo.contextFree(InputOperationArgument::operation));
     public static final RegistryObject<ArgumentTypeInfo<PlayerAnimationArgument, ?>> PLAYER_ANIMATION = REGISTRIES.register("player_animation", () -> SingletonArgumentInfo.contextFree(PlayerAnimationArgument::animation));
+    public static final RegistryObject<ArgumentTypeInfo<DirectionArgument, ?>> DIRECTION = REGISTRIES.register("block_direction", () -> SingletonArgumentInfo.contextFree(DirectionArgument::direction));
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);
     }

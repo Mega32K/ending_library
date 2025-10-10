@@ -13,7 +13,6 @@ import com.mega.endinglib.api.client.camera.ModifierType;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
-import com.mega.endinglib.common.command.entity.player.HotbarCommand;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
 import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
@@ -27,6 +26,7 @@ import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -58,6 +58,8 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Boolean> HIDE_SCOREBOARD_NUM = this.defineByPersonalRule(10, PersonalRuleCommand.HIDE_SCOREBOARD_NUMBERS, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Byte> LOCKED_HOTBAR = this.dataManager.define(11, "lockedHotbar", (byte)-1, CapabilityDataSerializers.BYTE);
+    public final CapabilityEntityData<String> CUSTOM_SKIN = this.defineByPersonalRule(12, PersonalRuleCommand.CUSTOM_SKIN, CapabilityDataSerializers.STRING);
+    public final CapabilityEntityData<Optional<Component>> DISPLAY_NAME = this.defineByPersonalRule(13, PersonalRuleCommand.NAME, CapabilityDataSerializers.OPTIONAL_COMPONENT);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
     public int poseLockingTime;
@@ -341,6 +343,18 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         if (i < 0 || i > 9)
             i = -1;
         this.dataManager.setValue(LOCKED_HOTBAR, (byte) (i));
+    }
+    public String getCustomSkin() {
+        return this.dataManager.getValue(CUSTOM_SKIN);
+    }
+    public void setCustomSkin(String skin) {
+        this.dataManager.setValue(CUSTOM_SKIN, skin);
+    }
+    public Optional<Component> getDisplayNameOpt() {
+        return this.dataManager.getValue(DISPLAY_NAME);
+    }
+    public void setDisplayNameOpt(Optional<Component> name) {
+        this.dataManager.setValue(DISPLAY_NAME, name);
     }
     protected void setFieldFromCapData() {
         int flags = this.getFlags();

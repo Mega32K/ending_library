@@ -1,10 +1,12 @@
 package com.mega.endinglib.util.mc.entity;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,5 +35,36 @@ public class RaycastHelper {
             }
         }
         return (closestEntity != null) ? new EntityHitResult(closestEntity, closestHitPos) : null;
+    }
+
+
+    public static HitResult findCrosshairTarget(Entity camera, double maxDistance) {
+        Vec3 start = camera.getEyePosition(1.0F);
+        Vec3 direction = camera.getLookAngle();
+        Vec3 end = start.add(direction.scale(maxDistance));
+        double e = Mth.square(maxDistance);
+        HitResult hitResult = camera.pick(maxDistance, 1.0F, false);
+        double f = hitResult.getLocation().distanceToSqr(start);
+        if (hitResult.getType() != HitResult.Type.MISS) {
+            e = f;
+            maxDistance = Math.sqrt(f);
+        }
+
+        AABB aabb = camera.getBoundingBox().expandTowards(direction.scale(maxDistance)).inflate(1.0, 1.0, 1.0);
+        EntityHitResult entityHitResult = ProjectileUtil.getEntityHitResult(camera, start, end, aabb, (entity) -> {
+            return !entity.isSpectator() && entity.isPickable();
+        }, e);
+        return entityHitResult != null && entityHitResult.getLocation().distanceToSqr(start) < f ? ensureTargetInRange(entityHitResult, start, maxDistance) : ensureTargetInRange(hitResult, start, maxDistance);
+    }
+
+    private static HitResult ensureTargetInRange(HitResult hitResult, Vec3 cameraPos, double interactionRange) {
+        Vec3 Vec3 = hitResult.getLocation();
+        if (!Vec3.closerThan(cameraPos, interactionRange)) {
+            Vec3 vec32 = hitResult.getLocation();
+            Direction direction = Direction.getNearest(vec32.x - cameraPos.x, vec32.y - cameraPos.y, vec32.z - cameraPos.z);
+            return BlockHitResult.miss(vec32, direction, BlockPos.containing(vec32));
+        } else {
+            return hitResult;
+        }
     }
 }

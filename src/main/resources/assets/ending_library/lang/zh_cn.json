@@ -13,6 +13,8 @@
   "commands.endinglib.fill_entity.failed": "No entities were filled",
   "commands.endinglib.fill_entity.toobig": "Too many entities in the specified area (maximum %s, specified %s)",
 
+  "commands.endinglib.message.message.invalid_target": "§7非法的目标 %s",
+
   "commands.endinglib.message.modifierType.translation_x": "§aX轴坐标偏移",
   "commands.endinglib.message.modifierType.translation_y": "§aY轴坐标偏移",
   "commands.endinglib.message.modifierType.translation_z": "§aZ轴坐标偏移",
@@ -26,8 +28,8 @@
   "commands.endinglib.message.modifierType.zoom": "§a额外Zoom值",
   "commands.endinglib.message.modifierType.raycast": "§a射线距离",
 
-  "commands.endinglib.message.time_stop.set": "§7已将%s的时停时间设置为%.2f秒",
-  "commands.endinglib.message.time_stop.set.multi": "§7已将%d个实体的时停时间设置为%.2f秒",
+  "commands.endinglib.message.time_stop.set": "§7已将%s§7的时停时间设置为%s§7秒",
+  "commands.endinglib.message.time_stop.set.multi": "§7已将%s§7个实体的时停时间设置为%s§7秒",
 
   "commands.endinglib.message.action.open_camera_bench_screen": "§7打开相机界面",
   "commands.endinglib.message.action.first_person_camera": "§7设置为§a第一人称",
@@ -75,6 +77,7 @@
   "commands.endinglib.message.personal_rule.hurtViewMultiplier": "玩家受伤视角Z轴摇晃乘数",
   "commands.endinglib.message.personal_rule.lockedGameMode": "游戏模式锁定",
   "commands.endinglib.message.personal_rule.hideScoreboardNum": "显示计分板数字",
+  "commands.endinglib.message.personal_rule.name": "显示名称",
 
   "commands.endinglib.message.roll": "%s§7随机获取到了:§6%s",
 
@@ -151,6 +154,12 @@
   "commands.endinglib.message.target.navigation.set": "§7已设置%s§7的导航目标为%s",
   "commands.endinglib.message.target.navigation.set.timeout": "§7已设置%s§7的导航目标为%s§7(时限为%s§7游戏刻)",
   "commands.endinglib.message.target.navigation.reset": "§7已重置%s§7的导航目标",
+
+  "commands.endinglib.message.testfor.failure": "§7测试失败",
+  "commands.endinglib.message.testfor.result": "§7结果返回: %s",
+
+  "commands.endinglib.message.sound.stereo": "§7已向玩家%s§7播放立体音效 %s",
+  "commands.endinglib.message.sound.static": "§7已向玩家%s§7播放静态音效 %s",
 
   "tooltip.endinglib.specialEffect": "§7特殊效果:",
   "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",

@@ -66,6 +66,9 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CPlayerAnimationPacket.Play.class, S2CPlayerAnimationPacket.Play::encode, S2CPlayerAnimationPacket.Play::decode, S2CPlayerAnimationPacket.Play::handle);
         INSTANCE.registerMessage(id(), S2CPlayerAnimationPacket.Stop.class, S2CPlayerAnimationPacket.Stop::encode, S2CPlayerAnimationPacket.Stop::decode, S2CPlayerAnimationPacket.Stop::handle);
         INSTANCE.registerMessage(id(), S2CPlayerAnimationPacket.PartialPlay.class, S2CPlayerAnimationPacket.PartialPlay::encode, S2CPlayerAnimationPacket.PartialPlay::decode, S2CPlayerAnimationPacket.PartialPlay::handle);
+        INSTANCE.registerMessage(id(), S2CSetCameraOriginRotationPacket.class, S2CSetCameraOriginRotationPacket::encode, S2CSetCameraOriginRotationPacket::decode, S2CSetCameraOriginRotationPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCompletelySoundPacket.Static.class, S2CCompletelySoundPacket.Static::encode, S2CCompletelySoundPacket.Static::decode, S2CCompletelySoundPacket.Static::handle);
+        INSTANCE.registerMessage(id(), S2CCompletelySoundPacket.Stereo.class, S2CCompletelySoundPacket.Stereo::encode, S2CCompletelySoundPacket.Stereo::decode, S2CCompletelySoundPacket.Stereo::handle);
 
     }
 

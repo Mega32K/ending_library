@@ -122,7 +122,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
                                 InsnList insnNodes = new InsnList();
                                 insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getEnchantmentValue", "(ILnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getEnchantmentValue", "(ILnet/minecraftforge/common/extensions/IForgeItemStack;)I", false));
                                 methodNode.instructions.insertBefore(node, insnNodes);
                                 shouldWrite.set(true);
                             }

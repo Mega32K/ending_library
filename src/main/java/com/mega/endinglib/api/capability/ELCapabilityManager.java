@@ -3,6 +3,7 @@ package com.mega.endinglib.api.capability;
 import com.mega.endinglib.EndingLibrary;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -78,8 +79,9 @@ public class ELCapabilityManager {
     public static void playerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
         Player player = event.getEntity();
         CAPABILITY_MAP.values().forEach(cap -> player.getCapability(cap).ifPresent((data) -> {
-            if (canUseSync(data, CapabilitySyncType.DIMENSION_CHANGE)) {
-                data.sync(new CompoundTag(), distFromLevel(player.level()), CapabilitySyncType.DIMENSION_CHANGE, player);
+            if (canUseSync(data, CapabilitySyncType.DIMENSION_CHANGE) && player.level() instanceof ServerLevel serverLevel) {
+                data.sync(new CompoundTag(), Dist.DEDICATED_SERVER, CapabilitySyncType.DIMENSION_CHANGE, player, serverLevel);
+                data.dataManager.dirtyAll();
             }
         }));
 
