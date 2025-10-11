@@ -7,6 +7,7 @@ import com.mega.endinglib.mixin.accessor.AccessorGameRenderer;
 import com.mega.endinglib.util.mc.entity.RaycastHelper;
 import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.blaze3d.platform.Window;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.Util;
@@ -101,6 +102,11 @@ public class ClientUtils {
         map.put(InputOperations.HOTBAR_9, ()-> mc.options.keyHotbarSlots[8]);
         return Collections.unmodifiableMap(map);
     });
+    public static final String[] UNIFORM_TYPE_TO_NAME = new String[] {
+            "int", "vec2i", "vec3i", "vec4i",
+            "float", "vec2", "vec3", "vec4",
+            "Matrix2x2", "Matrix3x3", "Matrix4x4", "UNDEFINED"
+    };
     public static void createMouseCursor(ResourceLocation icon, float scale, int xHot, int yHot, MouseHandler mouseHandler) {
         CURRENT_CURSOR_ICON = icon;
         mc.execute(()-> {

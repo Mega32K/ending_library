@@ -89,6 +89,7 @@
     "MinecraftMixin",
     "accessor.AccessorAbstractWidget",
     "accessor.AccessorClientLevel",
+    "accessor.AccessorEffectInstance",
     "accessor.AccessorFont",
     "accessor.AccessorFontManager",
     "accessor.AccessorGameRenderer",

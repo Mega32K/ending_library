@@ -13,6 +13,10 @@ import com.mega.endinglib.common.network.s2c.rotation.S2CListSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CMapSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CSetPlayerRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CSetRotationPacket;
+import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectCreatePacket;
+import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectRemovePacket;
+import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectStatusPacket;
+import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectUniformPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
@@ -69,6 +73,11 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CSetCameraOriginRotationPacket.class, S2CSetCameraOriginRotationPacket::encode, S2CSetCameraOriginRotationPacket::decode, S2CSetCameraOriginRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CCompletelySoundPacket.Static.class, S2CCompletelySoundPacket.Static::encode, S2CCompletelySoundPacket.Static::decode, S2CCompletelySoundPacket.Static::handle);
         INSTANCE.registerMessage(id(), S2CCompletelySoundPacket.Stereo.class, S2CCompletelySoundPacket.Stereo::encode, S2CCompletelySoundPacket.Stereo::decode, S2CCompletelySoundPacket.Stereo::handle);
+        INSTANCE.registerMessage(id(), S2CScreenEffectCreatePacket.class, S2CScreenEffectCreatePacket::encode, S2CScreenEffectCreatePacket::decode, S2CScreenEffectCreatePacket::handle);
+        INSTANCE.registerMessage(id(), S2CScreenEffectRemovePacket.class, S2CScreenEffectRemovePacket::encode, S2CScreenEffectRemovePacket::decode, S2CScreenEffectRemovePacket::handle);
+        INSTANCE.registerMessage(id(), S2CScreenEffectStatusPacket.class, S2CScreenEffectStatusPacket::encode, S2CScreenEffectStatusPacket::decode, S2CScreenEffectStatusPacket::handle);
+        INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.SinglePass.class, S2CScreenEffectUniformPacket.SinglePass::encode, S2CScreenEffectUniformPacket.SinglePass::decode, S2CScreenEffectUniformPacket.SinglePass::handle);
+        INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.AllPasses.class, S2CScreenEffectUniformPacket.AllPasses::encode, S2CScreenEffectUniformPacket.AllPasses::decode, S2CScreenEffectUniformPacket.AllPasses::handle);
 
     }
 

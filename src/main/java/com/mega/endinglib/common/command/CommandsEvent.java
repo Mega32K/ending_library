@@ -15,6 +15,8 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class CommandsEvent {
@@ -41,6 +43,7 @@ public class CommandsEvent {
                         .then(AnimationCommand.register())
                         .then(TestforCommand.register(event.getDispatcher(), event.getBuildContext()))
                         .then(SoundCommand.register())
+                        .then(ShaderCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )
@@ -62,6 +65,16 @@ public class CommandsEvent {
             String toLowerExample = ex.toLowerCase(Locale.ROOT);
             if (remaining.isEmpty() || toLowerExample.startsWith(remaining)) {
                 builder.suggest(ex);
+            }
+        }
+    }
+
+    public static <T> void suggestFromExamples(Map<String, T> examples, SuggestionsBuilder builder, Function<T, Component> function) {
+        String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+        for (var entry : examples.entrySet()) {
+            String toLowerExample = entry.getKey().toLowerCase(Locale.ROOT);
+            if (remaining.isEmpty() || toLowerExample.startsWith(remaining)) {
+                builder.suggest(entry.getKey(), function.apply(entry.getValue()));
             }
         }
     }

@@ -16,12 +16,10 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
-import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.commands.PlaySoundCommand;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 
@@ -41,7 +39,7 @@ public class SoundCommand {
     static ServerPlayer getPlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         return EntityArgument.getPlayer(context, "player");
     }
-    static ResourceLocation getSound(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    static ResourceLocation getSound(CommandContext<CommandSourceStack> context) {
         return ResourceLocationArgument.getId(context, "sound");
     }
     private static LiteralArgumentBuilder<CommandSourceStack> source(SoundSource source) {

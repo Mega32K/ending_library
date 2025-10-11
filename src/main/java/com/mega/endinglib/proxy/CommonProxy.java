@@ -71,6 +71,7 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(InputOperationArgument.class, ModCommandArgumentTypes.INPUT_OPERATION.get());
             ArgumentTypeInfos.registerByClass(PlayerAnimationArgument.class, ModCommandArgumentTypes.PLAYER_ANIMATION.get());
             ArgumentTypeInfos.registerByClass(DirectionArgument.class, ModCommandArgumentTypes.DIRECTION.get());
+            ArgumentTypeInfos.registerByClass(FloatArrayArgument.class, ModCommandArgumentTypes.FLOAT_ARRAY.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {

@@ -3,6 +3,7 @@ package com.mega.endinglib.api.client.shader.post;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -14,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
@@ -24,7 +27,7 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
     public static volatile boolean isReloading = false;
     private final Minecraft minecraft;
     private final Logger LOGGER = LogManager.getLogger();
-
+    private final Object2ObjectOpenHashMap<String, CustomScreenEffect> commandScreenEffects = new Object2ObjectOpenHashMap<>();
     public PostProcessingShaders(Minecraft minecraft) {
         this.minecraft = minecraft;
     }
@@ -40,6 +43,18 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
                         element.onRenderTick(partialTicks);
                         postChain.process(partialTicks);
                         this.minecraft.getMainRenderTarget().bindWrite(false);
+                    }
+                }
+            }
+            if (!commandScreenEffects.isEmpty()) {
+                for (CustomScreenEffect element : commandScreenEffects.values()) {
+                    if (SHOULD_PROCESS.test(element)) {
+                        PostChain postChain = postChains.get(element);
+                        if (postChain != null) {
+                            //element.onRenderTick(partialTicks);
+                            postChain.process(partialTicks);
+                            this.minecraft.getMainRenderTarget().bindWrite(false);
+                        }
                     }
                 }
             }
@@ -68,10 +83,28 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
                     LOGGER.warn("Failed to load shader: {}", effect.getShaderLocation(), var4);
                 }
             });
-        } catch (Throwable throwable) {
+            if (!commandScreenEffects.isEmpty()) {
+                commandScreenEffects.values().forEach(effect -> {
+                    try {
+                        Window window = minecraft.getWindow();
+                        PostChain postChain = new PostChain(this.minecraft.getTextureManager(), manager, this.minecraft.getMainRenderTarget(), effect.getShaderLocation());
+                        postChain.resize(window.getWidth(), window.getHeight());
+                        postChains.put(effect, postChain);
+                    } catch (JsonSyntaxException var3) {
+                        LOGGER.warn("Failed to parse shader: {}", effect.getShaderLocation(), var3);
+                    } catch (IOException var4) {
+                        LOGGER.warn("Failed to load shader: {}", effect.getShaderLocation(), var4);
+                    }
+                });
+            }
+        } catch (Throwable ignore) {
         }
         isReloading = false;
 
+    }
+
+    public Object2ObjectOpenHashMap<String, CustomScreenEffect> getCommandScreenEffects() {
+        return commandScreenEffects;
     }
 
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {

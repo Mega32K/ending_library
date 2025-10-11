@@ -162,6 +162,14 @@
   "commands.endinglib.message.sound.stereo": "§7已向玩家%s§7播放立体音效 %s",
   "commands.endinglib.message.sound.static": "§7已向玩家%s§7播放静态音效 %s",
 
+  "commands.endinglib.message.shader.invalid.name": "§7无效的后处理效果名 %s",
+  "commands.endinglib.message.shader.invalid.effect_location": "§7无效的着色器路径 %s",
+  "commands.endinglib.message.shader.create": "§7已为%s§7的客户端创建名为 %s §7的后处理效果",
+  "commands.endinglib.message.shader.remove": "§7已为%s§7的客户端删除名为 %s §7的后处理效果",
+  "commands.endinglib.message.shader.enable": "§7已为%s§7启用后处理效果 %s",
+  "commands.endinglib.message.shader.disable": "§7已为%s§7禁用后处理效果 %s",
+  "commands.endinglib.message.shader.uniform.set": "§7Uniform值已更新",
+
   "tooltip.endinglib.specialEffect": "§5Special Effect:",
   "tooltip.endinglib.holdShiftSetEffect": "§5Hold §6Shift§5 to see set effect details.",
   "tooltip.endinglib.holdShiftEffect": "§5Hold §6Shift§5 to see effect details.",

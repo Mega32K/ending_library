@@ -3,15 +3,27 @@ package com.mega.endinglib.client;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.api.client.camera.CameraUtils;
+import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
+import com.mega.endinglib.api.client.shader.post.DynamicScreenEffect;
+import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
+import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.screen.CameraModifyScreen;
+import com.mega.endinglib.common.command.CommandsEvent;
+import com.mega.endinglib.common.command.ShaderCommand;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.s2c.S2CCompletelySoundPacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
+import com.mega.endinglib.mixin.accessor.AccessorEffectInstance;
 import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.mixin.accessor.AccessorOptions;
+import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
+import com.mojang.blaze3d.shaders.Uniform;
+import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
@@ -20,20 +32,22 @@ import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationRegistry;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
-import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientRegistryLayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -41,6 +55,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class ClientWrapped {
@@ -195,5 +211,132 @@ public class ClientWrapped {
         } else {
             minecraft.getSoundManager().play(soundInstance);
         }
+    }
+    public static Set<String> keysOfCommandScreenEffects() {
+        return PostProcessingShaders.INSTANCE.getCommandScreenEffects().keySet();
+    }
+    public static void handleScreenEffectStatus(String name, boolean using) {
+        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(name)) {
+            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect)
+                screenEffect.setCanUse(using);
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+        }
+    }
+    public static void handleScreenEffectRemove(String name) {
+        boolean checked = false;
+        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(name)) {
+            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+                checked = true;
+            }
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+        }
+        if (checked) {
+            synchronized (PostProcessingShaders.INSTANCE.getCommandScreenEffects()) {
+                PostProcessingShaders.INSTANCE.getCommandScreenEffects().remove(name);
+            }
+        }
+    }
+    public static void handleScreenEffectCreate(String name, ResourceLocation location) {
+        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (!screenEffects.containsKey(name)) {
+            screenEffects.put(name, new DynamicScreenEffect(name, location, false));
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+        }
+    }
+
+    public static void handleSEUniforms(String name, String passName, String uniformName, float... values) {
+        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(name)) {
+            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+                try {
+                    if (values.length == 1) {
+                        PostEffectHandler.updateUniform_post(screenEffect, passName, uniformName, values[0]);
+                    } else {
+                        PostEffectHandler.updateUniform_post(screenEffect, passName, uniformName, values);
+                    }
+                } catch (Throwable throwable) {
+                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal(throwable.getLocalizedMessage()).withStyle(ChatFormatting.RED));
+                    throwable.printStackTrace();
+                }
+            }
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+        }
+    }
+
+    public static void handleSEUniforms(String name, String uniformName, float... values) {
+        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(name)) {
+            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+                try {
+                    if (values.length == 1) {
+                        PostEffectHandler.updateUniform_post(screenEffect, uniformName, values[0]);
+                    } else {
+                        PostEffectHandler.updateUniform_post(screenEffect, uniformName, values);
+                    }
+                } catch (Throwable throwable) {
+                    Minecraft.getInstance().gui.getChat().addMessage(Component.literal(throwable.getLocalizedMessage()).withStyle(ChatFormatting.RED));
+                    throwable.printStackTrace();
+                }
+            }
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+        }
+    }
+    public static CompletableFuture<Suggestions> suggestCurrentPasses(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        try {
+            String name = ShaderCommand.getEffectName(context);
+            Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+            if (screenEffects.containsKey(name)) {
+                if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+                    CommandsEvent.suggestFromExamples(((AccessorPostChain) screenEffect.current()).getPasses()
+                            .stream()
+                            .map(p -> "\"" + p.getName() + "\"")
+                            .toList(), builder);
+                }
+            }
+        } catch (Throwable ignore) {}
+        return builder.buildFuture();
+    }
+    public static CompletableFuture<Suggestions> suggestSinglePassUniforms(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        try {
+            String name = ShaderCommand.getEffectName(context);
+            String pass = ShaderCommand.getPassName(context);
+            Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+            if (screenEffects.containsKey(name)) {
+                if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+                    for (PostPass postPass : ((AccessorPostChain) screenEffect.current()).getPasses()) {
+                        if (postPass.getName().equals(pass)) {
+                            AccessorEffectInstance aei = (AccessorEffectInstance) postPass.getEffect();
+                            CommandsEvent.suggestFromExamples(aei.getUniformMap(), builder, uniform -> Component.literal(ClientUtils.UNIFORM_TYPE_TO_NAME[Math.min(uniform.getType(), 11)]).withStyle(ChatFormatting.GREEN));
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ignore) {}
+        return builder.buildFuture();
+    }
+
+    public static CompletableFuture<Suggestions> suggestAllUniforms(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+        try {
+            String name = ShaderCommand.getEffectName(context);
+            Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+            if (screenEffects.containsKey(name)) {
+                if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+                    ReferenceOpenHashSet<String> tempUniforms = new ReferenceOpenHashSet<>();
+                    for (PostPass postPass : ((AccessorPostChain) screenEffect.current()).getPasses()) {
+                        AccessorEffectInstance aei = (AccessorEffectInstance) postPass.getEffect();
+                        tempUniforms.addAll(aei.getUniformMap().keySet());
+                    }
+                    CommandsEvent.suggestFromExamples(tempUniforms, builder);
+                }
+            }
+        } catch (Throwable ignore) {}
+        return builder.buildFuture();
     }
 }

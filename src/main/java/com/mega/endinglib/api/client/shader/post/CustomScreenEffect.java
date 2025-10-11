@@ -3,8 +3,10 @@ package com.mega.endinglib.api.client.shader.post;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.function.Supplier;
+
 /**
- * 注册: {@link PostEffectHandler#registerEffect(CustomScreenEffect)}
+ * 注册: {@link PostEffectHandler#registerEffect(Supplier)}
  */
 public interface CustomScreenEffect {
     /**
@@ -32,7 +34,7 @@ public interface CustomScreenEffect {
     boolean canUse();
 
     /**
-     * @return 是否由默认Manager处理渲染
+     * @return 此后处理效果是否由 {@link PostProcessingShaders} 处理渲染
      */
     default boolean autoProcess() {
         return true;

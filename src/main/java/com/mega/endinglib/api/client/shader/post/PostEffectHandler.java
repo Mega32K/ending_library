@@ -37,7 +37,14 @@ public class PostEffectHandler {
             s.getEffect().safeGetUniform(name).set(value);
         }
     }
-
+    public static void updateUniform_post(CustomScreenEffect effect, String passName, String name, float value) {
+        if (effect == null || effect.current() == null)
+            return;
+        for (PostPass s : ((AccessorPostChain) effect.current()).getPasses()) {
+            if (s.getName().equals(passName))
+                s.getEffect().safeGetUniform(name).set(value);
+        }
+    }
     public static void updateUniform_post(PostChain chain, String name, float value) {
         if (chain == null)
             return;
@@ -45,23 +52,45 @@ public class PostEffectHandler {
             s.getEffect().safeGetUniform(name).set(value);
         }
     }
-
-    public static void updateUniform_post(PostChain chain, String name, float[] values) {
+    public static void updateUniform_post(PostChain chain, String passName, String name, float value) {
         if (chain == null)
             return;
         for (PostPass s : ((AccessorPostChain) chain).getPasses()) {
-            s.getEffect().safeGetUniform(name).set(values);
+            if (s.getName().equals(passName))
+                s.getEffect().safeGetUniform(name).set(value);
         }
     }
 
-    public static void updateUniform_post(CustomScreenEffect effect, String name, float[] values) {
+    public static void updateUniform_post(CustomScreenEffect effect, String name, float... values) {
         if (effect == null || effect.current() == null)
             return;
         for (PostPass s : ((AccessorPostChain) effect.current()).getPasses()) {
             s.getEffect().safeGetUniform(name).set(values);
         }
     }
-
+    public static void updateUniform_post(CustomScreenEffect effect, String passName, String name, float... values) {
+        if (effect == null || effect.current() == null)
+            return;
+        for (PostPass s : ((AccessorPostChain) effect.current()).getPasses()) {
+            if (s.getName().equals(passName))
+                s.getEffect().safeGetUniform(name).set(values);
+        }
+    }
+    public static void updateUniform_post(PostChain chain, String name, float... values) {
+        if (chain == null)
+            return;
+        for (PostPass s : ((AccessorPostChain) chain).getPasses()) {
+            s.getEffect().safeGetUniform(name).set(values);
+        }
+    }
+    public static void updateUniform_post(PostChain chain, String passName, String name, float... values) {
+        if (chain == null)
+            return;
+        for (PostPass s : ((AccessorPostChain) chain).getPasses()) {
+            if (s.getName().equals(passName))
+                s.getEffect().safeGetUniform(name).set(values);
+        }
+    }
     public static float getUniform_post(CustomScreenEffect effect, String name) {
         if (effect == null || effect.current() == null)
             return 0F;

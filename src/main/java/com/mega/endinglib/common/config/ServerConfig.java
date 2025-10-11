@@ -31,6 +31,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_ANIMATE;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_TESTFOR;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_SOUND;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_SHADER;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -103,6 +104,9 @@ public class ServerConfig {
         COMMAND_SOUND = BUILDER
                 .comment("/endinglib sound命令的权限要求")
                 .defineInRange("SoundPermission", 2, -1, 6);
+        COMMAND_SHADER = BUILDER
+                .comment("/endinglib shader命令的权限要求")
+                .defineInRange("ShaderPermission", 2, -1, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
