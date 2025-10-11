@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 @SuppressWarnings("JavadocReference")
 public class ItemComponentManager {
@@ -68,6 +68,11 @@ public class ItemComponentManager {
     }
     public static <T> boolean has(ItemStack stack, ItemComponentType<? extends T> type) {
         return ItemComponentManager.get(stack).components.get(type) != null;
+    }
+    public static <T> void ifPresent(ItemStack stack, ItemComponentType<? extends T> type, Consumer<T> consumer) {
+        T com = ItemComponentManager.get(stack).components.get(type);
+        if (com != null)
+            consumer.accept(com);
     }
     public static <T> ItemComponentType<T> register(ResourceLocation key, ItemComponentType<T> componentType) {
         ItemComponentType<?> codec1 = COMPONENTS.put(key, componentType);

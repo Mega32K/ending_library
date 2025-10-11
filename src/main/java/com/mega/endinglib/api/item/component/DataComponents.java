@@ -10,10 +10,12 @@ import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.level.block.entity.BannerPattern;
@@ -42,6 +44,9 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_TOOL = new ResourceLocation("tool");
     public static final ResourceLocation COM_USE_COOLDOWN = new ResourceLocation("use_cooldown");
     public static final ResourceLocation COM_USE_REMAINDER = new ResourceLocation("use_remainder");
+    public static final ResourceLocation COM_DAMAGE_TYPE = new ResourceLocation("damage_type");
+    public static final ResourceLocation COM_MINIMUM_ATTACK_CHARGE = new ResourceLocation("minimum_attack_charge");
+    public static final ResourceLocation COM_USE_EFFECTS = new ResourceLocation("use_effects");
     public static final ResourceLocation COM_ATTACK_EVENT = new ResourceLocation("command/attack_event");
     public static final ResourceLocation COM_USE_EVENT = new ResourceLocation("command/use_event");
     public static final ResourceLocation COM_RELEASE_USING = new ResourceLocation("command/release_event");
@@ -224,6 +229,28 @@ public class DataComponents extends ItemComponentManager {
             builder -> builder
                     .codec(ReleaseUsingComponent.CODEC)
                     .registryName(COM_RELEASE_USING)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<Holder<DamageType>> DAMAGE_TYPE = register(COM_DAMAGE_TYPE, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(RegistryFixedCodec.create(Registries.DAMAGE_TYPE))
+                    .registryName(COM_DAMAGE_TYPE)
+                    .rootTagType(TagEnum.STRING)
+                    .build()
+    ));
+    public static final ItemComponentType<Float> MINIMUM_ATTACK_CHARGE = register(COM_MINIMUM_ATTACK_CHARGE, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.O2ONE_FLOAT)
+                    .registryName(COM_MINIMUM_ATTACK_CHARGE)
+                    .rootTagType(TagEnum.FLOAT)
+                    .build()
+    ));
+
+    public static final ItemComponentType<UseEffectsComponent> USE_EFFECTS = register(COM_USE_EFFECTS, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(UseEffectsComponent.CODEC)
+                    .registryName(COM_USE_EFFECTS)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));
