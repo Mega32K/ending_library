@@ -37,8 +37,6 @@ import java.util.concurrent.CompletionException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ClientEventHandler {
-    private static final byte[] clientInput = new byte[]{0, 0};
-    private static boolean clientInputDirty;
 
     @SubscribeEvent
     public static void disableMouseEventWhenTimeStopping(ScreenEvent.MouseButtonPressed.Pre event) {

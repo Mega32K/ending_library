@@ -10,11 +10,17 @@ import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.mixin.accessor.AccessorDamageSource;
+import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.mc.entity.DamageSourceContext;
+import com.mega.endinglib.util.mixin.data_expand.ExtraDamageSource;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -41,9 +47,11 @@ public class CommonEventHandler {
     @SubscribeEvent
     public static void onPlayerPreTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            float extra = ModAttributes.getExhaustion(event.player);
-            if (extra > 0F)
-                event.player.causeFoodExhaustion(extra);
+            if (!event.player.level().isClientSide) {
+                float extra = ModAttributes.getExhaustion(event.player);
+                if (extra > 0F)
+                    event.player.causeFoodExhaustion(extra);
+            }
         }
     }
     @SubscribeEvent(priority = EventPriority.LOWEST)
@@ -57,6 +65,17 @@ public class CommonEventHandler {
                 if (!gameRules.getBoolean(EndingLibraryGameRules.PLAYER_DAMAGE_INVULNERABLE)) {
                     entity.invulnerableTime = 0;
                 }
+            }
+        }
+    }
+    @SubscribeEvent
+    public static void onHurtEvent(LivingHurtEvent event) {
+        DamageSource damageSource = event.getSource();
+        LivingEntity beHurt = event.getEntity();
+        if (event.getSource().getEntity() instanceof LivingEntity sourceEntity) {
+            if (sourceEntity.level() instanceof ServerLevel serverLevel) {
+                ItemStack mainHandItem = sourceEntity.getMainHandItem();
+                ItemComponentManager.ifPresent(mainHandItem, DataComponents.HURT_EVENT, component -> component.apply(serverLevel, beHurt, sourceEntity, damageSource));
             }
         }
     }

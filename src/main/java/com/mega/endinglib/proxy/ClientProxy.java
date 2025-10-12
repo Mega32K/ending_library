@@ -7,6 +7,7 @@ import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.client.screen.OtherPlayerInventoryScreen;
 import com.mega.endinglib.common.init.ModMenus;
+import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
@@ -26,7 +27,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientProxy implements ModProxy {
-    public static ResourceLocation PLAYER_ANIMATION = EndingLibrary.loc("animation");
+    public static ResourceLocation PLAYER_ANIMATION = SafeClass.loc("animation");
     public static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor();
     public final Lock LOCK = new ReentrantLock();
     public ClientProxy() {

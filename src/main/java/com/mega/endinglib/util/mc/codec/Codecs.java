@@ -7,6 +7,7 @@ import com.mega.endinglib.util.mixin.data_expand.ExtraMobEffectInstanceItf;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.*;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -161,8 +162,22 @@ public class Codecs {
                                 : DataResult.error(() -> (String)messageFactory.apply(value))
                 );
     }
-
-
+    public static <T> Codec<List<T>> fastUtilListCodec(Codec<List<T>> codec) {
+        return codec.xmap(ObjectArrayList::new, ObjectArrayList::new);
+    }
+    public static <E, T> Codec<List<E>> homogenousCanSerializeAsSingleList(Codec<E> codec, Function<E, T> typeGetter) {
+        Codec<List<E>> codec1 = validate(codec.listOf(), createEqualTypeChecker(typeGetter));
+        return Codec.either(codec1, codec).xmap(
+                either -> either.map(l -> l, List::of),
+                list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list)
+        );
+    }
+    public static <E, T> Codec<List<E>> canSerializeAsSingleList(Codec<E> codec) {
+        return Codec.either(codec.listOf(), codec).xmap(
+                either -> either.map(l -> l, List::of),
+                list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list)
+        );
+    }
     public static <E, L extends Collection<E>, T> Function<L, DataResult<L>> createEqualTypeChecker(Function<E, T> typeGetter) {
         return collection -> {
             Iterator<E> iterator = collection.iterator();

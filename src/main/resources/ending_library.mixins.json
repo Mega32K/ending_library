@@ -34,6 +34,7 @@
     "accessor.HoglinAiAccessor",
     "advanced.DisplayMixin",
     "advanced.data_command.EntityDataAccessorMixin",
+    "advanced.data_expand.DamageSourceMixin",
     "advanced.data_expand.LivingEntityMixin",
     "advanced.data_expand.MobEffectInstanceMixin",
     "advanced.data_expand.ServerPlayerMixin",

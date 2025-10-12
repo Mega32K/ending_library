@@ -1,7 +1,7 @@
 package com.mega.endinglib.client.renderer.shader.post;
 
-import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
+import com.mega.endinglib.util.SafeClass;
 import net.minecraft.resources.ResourceLocation;
 
 public class ModernGaussianBlurPostEffect implements CustomScreenEffect {
@@ -18,7 +18,7 @@ public class ModernGaussianBlurPostEffect implements CustomScreenEffect {
 
     @Override
     public ResourceLocation getShaderLocation() {
-        return EndingLibrary.loc("shaders/post/modern_gaussian_blur.json");
+        return SafeClass.loc("shaders/post/modern_gaussian_blur.json");
     }
 
     @Override

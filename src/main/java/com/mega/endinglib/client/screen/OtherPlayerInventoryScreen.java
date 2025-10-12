@@ -1,10 +1,10 @@
 package com.mega.endinglib.client.screen;
 
-import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.screen.widget.InfoImageWidget;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.common.menu.OtherPlayerInventoryMenu;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
+import com.mega.endinglib.util.SafeClass;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPlayerInventoryMenu> {
-    public static final ResourceLocation BG = EndingLibrary.loc("textures/ui/inv.png");
+    public static final ResourceLocation BG = SafeClass.loc("textures/ui/inv.png");
     protected final float maxRadius = 12F;
     private final int textureWidth = 176;
     private final int textureHeight = 204;

@@ -1,6 +1,6 @@
 package com.mega.endinglib.api.client.screen.widget;
 
-import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.util.SafeClass;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class SimpleModeWidget extends AbstractWidget {
     public static final ResourceLocation INFO_ICON_LOCATION = new ResourceLocation("mc", "textures/gui/info_icon.png");
-    public static final ResourceLocation ICON = EndingLibrary.loc("textures/ui/gui_icon.png");
+    public static final ResourceLocation ICON = SafeClass.loc("textures/ui/gui_icon.png");
 
     public SimpleModeWidget(int x, int y, int width, int height, Component message) {
         super(x, y, width, height, message);

@@ -3,8 +3,10 @@ package com.mega.endinglib.api.item.component;
 import com.mega.endinglib.api.data.TagEnum;
 import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.command.AttackEventComponent;
+import com.mega.endinglib.api.item.component.type.command.HurtEventComponent;
 import com.mega.endinglib.api.item.component.type.command.ReleaseUsingComponent;
 import com.mega.endinglib.api.item.component.type.command.UseEventComponent;
+import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Holder;
@@ -47,9 +49,11 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_DAMAGE_TYPE = new ResourceLocation("damage_type");
     public static final ResourceLocation COM_MINIMUM_ATTACK_CHARGE = new ResourceLocation("minimum_attack_charge");
     public static final ResourceLocation COM_USE_EFFECTS = new ResourceLocation("use_effects");
-    public static final ResourceLocation COM_ATTACK_EVENT = new ResourceLocation("command/attack_event");
-    public static final ResourceLocation COM_USE_EVENT = new ResourceLocation("command/use_event");
-    public static final ResourceLocation COM_RELEASE_USING = new ResourceLocation("command/release_event");
+
+    public static final ResourceLocation COM_ATTACK_EVENT = SafeClass.loc("function/attack_event");
+    public static final ResourceLocation COM_USE_EVENT = SafeClass.loc("function/use_event");
+    public static final ResourceLocation COM_RELEASE_USING = SafeClass.loc("function/release_event");
+    public static final ResourceLocation COM_HURT_EVENT = SafeClass.loc("function/hurt_event");
     public static final ItemComponentType<CompoundTag> CUSTOM_DATA = register(COM_CUSTOM_DATA, ComponentTypeBuilder.create(
             builder -> builder
                     .codec(CompoundTag.CODEC)
@@ -246,11 +250,17 @@ public class DataComponents extends ItemComponentManager {
                     .rootTagType(TagEnum.FLOAT)
                     .build()
     ));
-
     public static final ItemComponentType<UseEffectsComponent> USE_EFFECTS = register(COM_USE_EFFECTS, ComponentTypeBuilder.create(
             builder -> builder
                     .codec(UseEffectsComponent.CODEC)
                     .registryName(COM_USE_EFFECTS)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<HurtEventComponent> HURT_EVENT = register(COM_HURT_EVENT, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(HurtEventComponent.CODEC)
+                    .registryName(COM_HURT_EVENT)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));

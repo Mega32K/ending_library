@@ -1,6 +1,8 @@
 package com.mega.endinglib.util;
 
+import com.mega.endinglib.EndingLibrary;
 import net.irisshaders.iris.api.v0.IrisApi;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 
 import java.util.Date;
@@ -42,5 +44,9 @@ public class SafeClass {
         if (isIrisLoaded())
             return IrisApi.getInstance().isShaderPackInUse();
         else return false;
+    }
+
+    public static ResourceLocation loc(String s) {
+        return new ResourceLocation(EndingLibrary.MODID, s);
     }
 }

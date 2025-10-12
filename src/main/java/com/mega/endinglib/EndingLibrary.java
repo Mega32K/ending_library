@@ -12,8 +12,6 @@ import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.proxy.ModProxy;
 import com.mega.endinglib.proxy.ServerProxy;
-import com.mega.endinglib.test.ModConstructorRun;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -50,7 +48,4 @@ public class EndingLibrary {
         return FMLJavaModLoadingContext.get().getModEventBus();
     }
 
-    public static ResourceLocation loc(String s) {
-        return new ResourceLocation(MODID, s);
-    }
 }
