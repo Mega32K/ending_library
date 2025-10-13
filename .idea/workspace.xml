@@ -240,10 +240,14 @@
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/eventhandler/ClientEventHandler.java</url>
-          <line>115</line>
-          <option name="timeStamp" value="6" />
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/asm/EventUtil.java</url>
+          <line>128</line>
+          <properties class="com.mega.endinglib.util.asm.EventUtil" method="onSwingComponent">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

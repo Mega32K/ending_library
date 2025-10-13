@@ -138,7 +138,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 shouldWrite.set(true);
                             }
                         });
-                        case "onEntitySwing" -> methodNode.instructions.forEach(insnNode -> {
+                        case "onEntitySwing" -> {
                             InsnList insnNodes = new InsnList();
                             insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
                             insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
@@ -150,7 +150,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             insnNodes.add(elseNode);
                             methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
                             shouldWrite.set(true);
-                        });
+                        }
                     }
                 });
             } else if ("net/minecraftforge/common/extensions/IForgeItem".equals(classNode.name)) {

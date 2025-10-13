@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -25,7 +26,8 @@ public record SwingEventComponent(String command, float attackCooldownRequiremen
         return player.getAttackStrengthScale(0.5F) >= attackCooldownRequirement;
     }
     public boolean apply(ServerLevel serverLevel, LivingEntity livingEntity) {
-        if (!(livingEntity instanceof Player player) || this.canUse(player)) {
+        if (!(livingEntity instanceof ServerPlayer player) || this.canUse(player)) {
+            System.out.println(11);
             if (!command.isEmpty())
                 serverLevel.getServer().getCommands().performPrefixedCommand(livingEntity.createCommandSourceStack(), this.command);
             function.ifPresent(location -> this.apply(livingEntity, location, minimumPermission));
