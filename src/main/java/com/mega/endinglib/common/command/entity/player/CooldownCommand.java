@@ -21,6 +21,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;

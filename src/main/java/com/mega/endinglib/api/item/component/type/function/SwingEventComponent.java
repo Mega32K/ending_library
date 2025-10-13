@@ -27,7 +27,6 @@ public record SwingEventComponent(String command, float attackCooldownRequiremen
     }
     public boolean apply(ServerLevel serverLevel, LivingEntity livingEntity) {
         if (!(livingEntity instanceof ServerPlayer player) || this.canUse(player)) {
-            System.out.println(11);
             if (!command.isEmpty())
                 serverLevel.getServer().getCommands().performPrefixedCommand(livingEntity.createCommandSourceStack(), this.command);
             function.ifPresent(location -> this.apply(livingEntity, location, minimumPermission));

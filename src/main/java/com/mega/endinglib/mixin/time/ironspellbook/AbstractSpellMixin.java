@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.time.ironspellbook;
 
+import com.mega.endinglib.util.annotation.ModDependsMixin;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
@@ -15,10 +16,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = AbstractSpell.class, remap = false)
 //RevelationMixinPlugin检查
 //@NoModDependsMixin("fantasy_ending")
-//@ModDependsMixin("irons_spellbooks")
+@ModDependsMixin("irons_spellbooks")
 public abstract class AbstractSpellMixin {
-    @Unique
-    private boolean uom$clientOriginRarity;
     @Mutable
     @Shadow
     @Final

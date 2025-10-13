@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.command.entity.player;
+package com.mega.endinglib.common.command.entity;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.config.ServerConfig;

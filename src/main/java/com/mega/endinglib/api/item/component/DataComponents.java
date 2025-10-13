@@ -15,9 +15,12 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_CUSTOM_DATA = new ResourceLocation("custom_data");
@@ -47,11 +50,24 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_MINIMUM_ATTACK_CHARGE = new ResourceLocation("minimum_attack_charge");
     public static final ResourceLocation COM_USE_EFFECTS = new ResourceLocation("use_effects");
 
+    public static final ResourceLocation COM_BURN_TIME = SafeClass.loc("burn_time");
+    public static final ResourceLocation COM_CRAFT_REMAINING = SafeClass.loc("craft_remaining");
+    public static final ResourceLocation COM_LIFE_SPAN = SafeClass.loc("life_span");
+    public static final ResourceLocation COM_PIGLIN_CURRENCY = SafeClass.loc("piglin_currency");
+    public static final ResourceLocation COM_ENDER_MUSK = SafeClass.loc("ender_musk");
+    public static final ResourceLocation COM_CAN_WALK_ON_POWDERED_SNOW = SafeClass.loc("can_walk_on_powdered_snow");
+    public static final ResourceLocation COM_SWEEP_HITBOX_INFLATION = SafeClass.loc("sweep_hitbox_inflation");
+    public static final ResourceLocation COM_GRINDSTONE_REPAIRABLE = SafeClass.loc("grindstone_repairable");
+    /**
+     * {@link ItemStack#getBarWidth()}<br>{@link ItemStack#getBarColor()}<br>{@link ItemStack#isBarVisible()}<br>
+     */
+    public static final ResourceLocation COM_ITEM_BAR = SafeClass.loc("bar");
     public static final ResourceLocation COM_ATTACK_EVENT = SafeClass.loc("function/attack_event");
     public static final ResourceLocation COM_USE_EVENT = SafeClass.loc("function/use_event");
     public static final ResourceLocation COM_RELEASE_USING = SafeClass.loc("function/release_event");
     public static final ResourceLocation COM_HURT_EVENT = SafeClass.loc("function/hurt_event");
     public static final ResourceLocation COM_SWING_EVENT = SafeClass.loc("function/swing_event");
+    public static final ResourceLocation COM_DROP_ITEM_EVENT = SafeClass.loc("function/drop_item_event");
     public static final ItemComponentType<CompoundTag> CUSTOM_DATA = register(COM_CUSTOM_DATA, ComponentTypeBuilder.create(
             builder -> builder
                     .codec(CompoundTag.CODEC)
@@ -266,6 +282,62 @@ public class DataComponents extends ItemComponentManager {
             builder -> builder
                     .codec(SwingEventComponent.CODEC)
                     .registryName(COM_SWING_EVENT)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<Integer> BURN_TIME = register(COM_BURN_TIME, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.NON_NEGATIVE_INT)
+                    .registryName(COM_BURN_TIME)
+                    .rootTagType(TagEnum.INT)
+                    .build()
+    ));
+    public static final ItemComponentType<ItemStack> CRAFT_REMAINING = register(COM_CRAFT_REMAINING, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec( ItemComponentManager.ITEM_STACK_CODEC)
+                    .registryName(COM_CRAFT_REMAINING)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<Integer> LIFE_SPAN = register(COM_LIFE_SPAN, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.NON_NEGATIVE_INT)
+                    .registryName(COM_LIFE_SPAN)
+                    .rootTagType(TagEnum.INT)
+                    .build()
+    ));
+    public static final ItemComponentType<Unit> PIGLIN_CURRENCY = register(COM_PIGLIN_CURRENCY, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.UNIT_CODEC)
+                    .registryName(COM_PIGLIN_CURRENCY)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<Unit> ENDER_MUSK = register(COM_ENDER_MUSK, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.UNIT_CODEC)
+                    .registryName(COM_ENDER_MUSK)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<Unit> CAN_WALK_ON_POWDERED_SNOW = register(COM_CAN_WALK_ON_POWDERED_SNOW, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.UNIT_CODEC)
+                    .registryName(COM_CAN_WALK_ON_POWDERED_SNOW)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<Vec3> SWEEP_HITBOX_INFLATION = register(COM_SWEEP_HITBOX_INFLATION, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Vec3.CODEC)
+                    .registryName(COM_SWEEP_HITBOX_INFLATION)
+                    .rootTagType(TagEnum.LIST)
+                    .build()
+    ));
+    public static final ItemComponentType<Unit> GRINDSTONE_REPAIRABLE = register(COM_GRINDSTONE_REPAIRABLE, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.UNIT_CODEC)
+                    .registryName(COM_GRINDSTONE_REPAIRABLE)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));

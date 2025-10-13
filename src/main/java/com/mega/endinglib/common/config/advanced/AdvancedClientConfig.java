@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.config;
+package com.mega.endinglib.common.config.advanced;
 
 import com.mega.endinglib.EndingLibrary;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -7,14 +7,19 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = EndingLibrary.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientConfig {
+public class AdvancedClientConfig {
+
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.ConfigValue<Boolean> DISABLE_ENTITY_RENDERING;
     public static final ForgeConfigSpec SPEC;
-    private static final ForgeConfigSpec.ConfigValue<Integer> MAX_EDIT_LENGTH;
-    public static int max_edit_length;
+    public static boolean DisableEntityUpdate = false;
 
     static {
-        MAX_EDIT_LENGTH = BUILDER.comment("Set Edit box max length(for example in Chat Screen).").define("maxEditLength", 512);
+        BUILDER.comment("进阶性客户端配置");
+        DISABLE_ENTITY_RENDERING = BUILDER
+                .comment("ZH_CN:禁用所有实体渲染")
+                .comment("EN_US:Disable all entities rendering")
+                .define("DisableEntityRendering", false);
         SPEC = BUILDER.build();
     }
 
@@ -24,6 +29,8 @@ public class ClientConfig {
     }
 
     public static void update() {
-        max_edit_length = Math.min(MAX_EDIT_LENGTH.get(), 32767);
+        if (SPEC.isLoaded()) {
+            DisableEntityUpdate = DISABLE_ENTITY_RENDERING.get();
+        }
     }
 }

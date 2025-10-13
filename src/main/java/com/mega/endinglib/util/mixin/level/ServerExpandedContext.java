@@ -5,7 +5,9 @@ import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.data.TimeStopSavedData;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.players.PlayerList;
@@ -15,7 +17,7 @@ import java.util.*;
 
 public class ServerExpandedContext {
     public final MinecraftServer server;
-    public final Set<ResourceKey<Level>> timeStopDimensions = new HashSet<>();
+    public final Set<ResourceKey<Level>> timeStopDimensions = new ObjectOpenHashSet<>();
     private long escapedTime = 0L;
     public ServerExpandedContext(MinecraftServer server) {
         this.server = server;

@@ -12,9 +12,6 @@ import java.util.function.BooleanSupplier;
 
 public class ClientLevelExpandedContext extends LevelExpandedContext {
     public final ClientLevel clientLevel;
-    public float oRainLevel;
-    public float rainLevel;
-    public int tickCount = 0;
     //当前玩家所在的维度
     //如果时停 为非空，否则 null
     public ResourceKey<Level> currentTimeStopDimension = null;

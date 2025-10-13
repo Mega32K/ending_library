@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.command.entity.player;
+package com.mega.endinglib.common.command.entity;
 
 import com.google.common.collect.Lists;
 import com.mega.endinglib.common.command.argument.DirectionArgument;
@@ -28,6 +28,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -50,7 +51,7 @@ public class TestforCommand {
                                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                                             Entity executor = raycastEntity(context);
                                                                             if (executor == null) {
-                                                                                throw EntityArgument.NO_ENTITIES_FOUND.create();
+                                                                                return Collections.emptyList();
                                                                             } else {
                                                                                 return Collections.singleton(context.getSource().withEntity(executor));
                                                                             }
@@ -64,7 +65,7 @@ public class TestforCommand {
                                                                 .fork(dispatcher.getRoot(), (context) -> {
                                                                     Entity executor = raycastEntity(context);
                                                                     if (executor == null) {
-                                                                        throw EntityArgument.NO_ENTITIES_FOUND.create();
+                                                                        return Collections.emptyList();
                                                                     } else {
                                                                         return Collections.singleton(context.getSource().withPosition(executor.position()));
                                                                     }
@@ -75,7 +76,7 @@ public class TestforCommand {
                                                 .fork(dispatcher.getRoot(), (context) -> {
                                                     Entity executor = raycastEntity(context);
                                                     if (executor == null) {
-                                                        throw EntityArgument.NO_ENTITIES_FOUND.create();
+                                                        return Collections.emptyList();
                                                     } else {
                                                         return Collections.singleton(context.getSource());
                                                     }
@@ -88,8 +89,8 @@ public class TestforCommand {
                                                                 .then(Commands.literal("run")
                                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                                             BlockHitResult blockHitResult = raycastBlock(context);
-                                                                            if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-                                                                                throw (new SimpleCommandExceptionType(RAYCAST_FAILURE.get())).create();
+                                                                            if (!testResult(blockHitResult)) {
+                                                                                return Collections.emptyList();
                                                                             } else {
                                                                                 return Collections.singleton(context.getSource().withPosition(blockHitResult.getLocation()));
                                                                             }
@@ -99,8 +100,8 @@ public class TestforCommand {
                                                                 .then(Commands.literal("run")
                                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                                             BlockHitResult blockHitResult = raycastBlock(context);
-                                                                            if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-                                                                                throw (new SimpleCommandExceptionType(RAYCAST_FAILURE.get())).create();
+                                                                            if (!testResult(blockHitResult)) {
+                                                                                return Collections.emptyList();
                                                                             } else {
                                                                                 return Collections.singleton(context.getSource().withPosition(Vec3.atLowerCornerOf(blockHitResult.getBlockPos())));
                                                                             }
@@ -110,8 +111,8 @@ public class TestforCommand {
                                                 ).then(Commands.literal("run")
                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                             BlockHitResult blockHitResult = raycastBlock(context);
-                                                            if (blockHitResult.getType() != HitResult.Type.BLOCK) {
-                                                                throw (new SimpleCommandExceptionType(RAYCAST_FAILURE.get())).create();
+                                                            if (!testResult(blockHitResult)) {
+                                                                return Collections.emptyList();
                                                             } else {
                                                                 return Collections.singleton(context.getSource());
                                                             }
@@ -126,10 +127,10 @@ public class TestforCommand {
                                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                                             Entity executor = raycastEntity(context);
                                                                             BlockHitResult blockHitResult = raycastBlock(context);
-                                                                            if (executor == null && blockHitResult.getType() != HitResult.Type.BLOCK) {
+                                                                            if (executor == null && testResult(blockHitResult)) {
                                                                                 return Collections.singleton(context.getSource().withPosition(blockHitResult.getLocation()));
                                                                             } else {
-                                                                                throw (new SimpleCommandExceptionType(RAYCAST_FAILURE.get())).create();
+                                                                                return Collections.emptyList();
                                                                             }
                                                                         })
                                                                 )
@@ -139,10 +140,10 @@ public class TestforCommand {
                                                 .fork(dispatcher.getRoot(), (context) -> {
                                                     Entity executor = raycastEntity(context);
                                                     BlockHitResult blockHitResult = raycastBlock(context);
-                                                    if (executor == null && blockHitResult.getType() != HitResult.Type.BLOCK) {
+                                                    if (executor == null && testResult(blockHitResult)) {
                                                         return Collections.singleton(context.getSource());
                                                     } else {
-                                                        throw (new SimpleCommandExceptionType(RAYCAST_FAILURE.get())).create();
+                                                        return Collections.emptyList();
                                                     }
                                                 })
                                         )
@@ -189,19 +190,23 @@ public class TestforCommand {
                         )
                 );
     }
-
+    static boolean testResult(@Nullable BlockHitResult result) {
+        return result != null && result.getType() == HitResult.Type.BLOCK;
+    }
+    static boolean testResult(@Nullable EntityHitResult result) {
+        return result != null && result.getType() == HitResult.Type.ENTITY;
+    }
     private static Entity raycastEntity(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "entity");
         int maxDistance = IntegerArgumentType.getInteger(context, "MaxDistance");
         HitResult hitResult = RaycastHelper.findCrosshairTarget(entity, maxDistance);
-        EntityHitResult result = (EntityHitResult) hitResult;
-        return (hitResult instanceof EntityHitResult) ? result.getEntity() : null;
+        return (hitResult instanceof EntityHitResult entityHitResult) ? entityHitResult.getEntity() : null;
     }
 
     private static BlockHitResult raycastBlock(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "entity");
         int maxDistance = IntegerArgumentType.getInteger(context, "MaxDistance");
-        return (BlockHitResult) entity.pick(maxDistance, 1.0F, false);
+        return entity.pick(maxDistance, 1.0F, false) instanceof BlockHitResult blockHitResult ? blockHitResult : null;
     }
 
     private static int distance(CommandContext<CommandSourceStack> context, Vec3 pos) throws CommandSyntaxException {

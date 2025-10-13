@@ -1,4 +1,4 @@
-package com.mega.endinglib.common.config;
+package com.mega.endinglib.common.config.advanced;
 
 import com.mega.endinglib.EndingLibrary;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -7,14 +7,18 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Mod.EventBusSubscriber(modid = EndingLibrary.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class ClientConfig {
+public class AdvancedServerConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+    private static final ForgeConfigSpec.ConfigValue<Boolean> CANCEL_ENTITY_UPDATE;
     public static final ForgeConfigSpec SPEC;
-    private static final ForgeConfigSpec.ConfigValue<Integer> MAX_EDIT_LENGTH;
-    public static int max_edit_length;
+    public static boolean CancelEntityUpdate = false;
 
     static {
-        MAX_EDIT_LENGTH = BUILDER.comment("Set Edit box max length(for example in Chat Screen).").define("maxEditLength", 512);
+        BUILDER.comment("进阶性服务端配置");
+        CANCEL_ENTITY_UPDATE = BUILDER
+                .comment("ZH_CN:禁用所有非玩家实体/方块实体更新")
+                .comment("EN_US:Cancel all non-player/block-entities entities updating")
+                .define("DisableEntityUpdate", false);
         SPEC = BUILDER.build();
     }
 
@@ -24,6 +28,8 @@ public class ClientConfig {
     }
 
     public static void update() {
-        max_edit_length = Math.min(MAX_EDIT_LENGTH.get(), 32767);
+        if (SPEC.isLoaded()) {
+            CancelEntityUpdate = CANCEL_ENTITY_UPDATE.get();
+        }
     }
 }

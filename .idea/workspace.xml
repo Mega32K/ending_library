@@ -55,8 +55,8 @@
         <option value="package-info" />
         <option value="module-info" />
         <option value="Enum" />
-        <option value="Record" />
         <option value="Interface" />
+        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
@@ -124,11 +124,11 @@
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.config.advanced" />
       <recent name="com.mega.endinglib.mixin.advanced.data_expand.component" />
       <recent name="com.mega.endinglib.common.network.s2c.shader" />
       <recent name="com.mega.endinglib.common.config" />
       <recent name="com.mega.endinglib.common.command" />
-      <recent name="com.mega.endinglib.common.network.s2c.rot" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
@@ -236,21 +236,6 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/asm/EventUtil.java</url>
-          <line>128</line>
-          <properties class="com.mega.endinglib.util.asm.EventUtil" method="onSwingComponent">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

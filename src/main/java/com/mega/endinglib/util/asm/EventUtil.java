@@ -128,7 +128,6 @@ public class EventUtil {
     }
     public static boolean onSwingComponent(IForgeItemStack fis, LivingEntity livingEntity) {
         if (fis instanceof ItemStack itemStack) {
-            System.out.println(livingEntity.level().isClientSide);
             SwingEventComponent component = ItemComponentManager.get(itemStack, DataComponents.SWING_EVENT);
             if (component != null && !livingEntity.level().isClientSide && livingEntity.level() instanceof ServerLevel serverLevel) {
                 return component.apply(serverLevel, livingEntity);
