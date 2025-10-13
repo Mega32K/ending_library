@@ -1,4 +1,4 @@
-package com.mega.endinglib.api.item.component.type.command;
+package com.mega.endinglib.api.item.component.type.function;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;

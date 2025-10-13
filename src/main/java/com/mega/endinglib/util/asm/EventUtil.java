@@ -3,10 +3,13 @@ package com.mega.endinglib.util.asm;
 import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.*;
+import com.mega.endinglib.api.item.component.type.function.SwingEventComponent;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.time.TimeContext;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
@@ -122,5 +125,14 @@ public class EventUtil {
             if (i > 0) index = i-1;
         } catch (Throwable ignore) {}
         inventory.selected = index;
+    }
+    public static boolean onSwingComponent(IForgeItemStack fis, LivingEntity livingEntity) {
+        if (fis instanceof ItemStack itemStack) {
+            SwingEventComponent component = ItemComponentManager.get(itemStack, DataComponents.SWING_EVENT);
+            if (component != null && livingEntity.level() instanceof ServerLevel serverLevel) {
+                return component.apply(serverLevel, livingEntity);
+            }
+        }
+        return false;
     }
 }

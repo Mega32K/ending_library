@@ -22,8 +22,8 @@ import java.util.Optional;
 
 @Mixin(value = Player.class, priority = 900)
 public abstract class PlayerMixin extends LivingEntity {
-    @Shadow @Final private Collection<MutableComponent> prefixes;
-    @Shadow @Final private Collection<MutableComponent> suffixes;
+    @Shadow(remap = false) @Final private Collection<MutableComponent> prefixes;
+    @Shadow(remap = false) @Final private Collection<MutableComponent> suffixes;
 
     @Shadow protected abstract MutableComponent decorateDisplayNameComponent(MutableComponent p_36219_);
 

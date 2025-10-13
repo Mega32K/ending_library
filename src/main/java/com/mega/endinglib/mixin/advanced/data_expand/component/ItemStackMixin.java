@@ -1,6 +1,5 @@
 package com.mega.endinglib.mixin.advanced.data_expand.component;
 
-import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
@@ -10,9 +9,9 @@ import com.mega.endinglib.api.item.component.type.ConsumableComponent;
 import com.mega.endinglib.api.item.component.type.EquippableComponent;
 import com.mega.endinglib.api.item.component.type.ToolComponent;
 import com.mega.endinglib.api.item.component.type.WeaponComponent;
-import com.mega.endinglib.api.item.component.type.command.AttackEventComponent;
-import com.mega.endinglib.api.item.component.type.command.ReleaseUsingComponent;
-import com.mega.endinglib.api.item.component.type.command.UseEventComponent;
+import com.mega.endinglib.api.item.component.type.function.AttackEventComponent;
+import com.mega.endinglib.api.item.component.type.function.ReleaseUsingComponent;
+import com.mega.endinglib.api.item.component.type.function.UseEventComponent;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;

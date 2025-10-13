@@ -20,7 +20,7 @@ public class ChatFormattingMixin {
     private static ChatFormatting[] $VALUES;
 
     ChatFormattingMixin(String id, int ordinal, String name, char code, boolean isFormat) {
-        throw new AssertionError("LINEAR");
+        throw new AssertionError("Mixin Failed");
     }
 
     @Inject(

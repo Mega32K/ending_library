@@ -138,6 +138,19 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 shouldWrite.set(true);
                             }
                         });
+                        case "onEntitySwing" -> methodNode.instructions.forEach(insnNode -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "onSwingComponent", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;Lnet/minecraft/world/entity/LivingEntity;)Z", false));
+                            LabelNode elseNode = new LabelNode();
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
+                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                            insnNodes.add(elseNode);
+                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                            shouldWrite.set(true);
+                        });
                     }
                 });
             } else if ("net/minecraftforge/common/extensions/IForgeItem".equals(classNode.name)) {

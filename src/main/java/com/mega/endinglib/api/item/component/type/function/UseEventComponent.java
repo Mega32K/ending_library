@@ -1,4 +1,4 @@
-package com.mega.endinglib.api.item.component.type.command;
+package com.mega.endinglib.api.item.component.type.function;
 
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;

@@ -2,10 +2,7 @@ package com.mega.endinglib.api.item.component;
 
 import com.mega.endinglib.api.data.TagEnum;
 import com.mega.endinglib.api.item.component.type.*;
-import com.mega.endinglib.api.item.component.type.command.AttackEventComponent;
-import com.mega.endinglib.api.item.component.type.command.HurtEventComponent;
-import com.mega.endinglib.api.item.component.type.command.ReleaseUsingComponent;
-import com.mega.endinglib.api.item.component.type.command.UseEventComponent;
+import com.mega.endinglib.api.item.component.type.function.*;
 import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
@@ -54,6 +51,7 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_USE_EVENT = SafeClass.loc("function/use_event");
     public static final ResourceLocation COM_RELEASE_USING = SafeClass.loc("function/release_event");
     public static final ResourceLocation COM_HURT_EVENT = SafeClass.loc("function/hurt_event");
+    public static final ResourceLocation COM_SWING_EVENT = SafeClass.loc("function/swing_event");
     public static final ItemComponentType<CompoundTag> CUSTOM_DATA = register(COM_CUSTOM_DATA, ComponentTypeBuilder.create(
             builder -> builder
                     .codec(CompoundTag.CODEC)
@@ -261,6 +259,13 @@ public class DataComponents extends ItemComponentManager {
             builder -> builder
                     .codec(HurtEventComponent.CODEC)
                     .registryName(COM_HURT_EVENT)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<SwingEventComponent> SWING_EVENT = register(COM_SWING_EVENT, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(SwingEventComponent.CODEC)
+                    .registryName(COM_SWING_EVENT)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));

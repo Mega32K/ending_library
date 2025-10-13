@@ -88,7 +88,6 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor": "Run",
-    "JavaMethodFindUsagesOptions.isIncludeOverloadUsages": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "1.20.1",
