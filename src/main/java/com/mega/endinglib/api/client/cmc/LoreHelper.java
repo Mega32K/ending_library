@@ -74,6 +74,9 @@ public class LoreHelper {
     public static MutableComponent tag_list_snbt() {
         return identifierWrap(Component.literal("[SNBT List]").withStyle(ChatFormatting.LIGHT_PURPLE));
     }
+    public static MutableComponent tag_list() {
+        return identifierWrap(Component.literal("[List]").withStyle(ChatFormatting.LIGHT_PURPLE));
+    }
     public static int toInt(String s) {
         try {
             return Integer.parseInt(s.replaceAll("[^0-9]", ""));

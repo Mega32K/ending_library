@@ -51,7 +51,7 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
                     if (SHOULD_PROCESS.test(element)) {
                         PostChain postChain = postChains.get(element);
                         if (postChain != null) {
-                            //element.onRenderTick(partialTicks);
+                            element.onRenderTick(partialTicks);
                             postChain.process(partialTicks);
                             this.minecraft.getMainRenderTarget().bindWrite(false);
                         }

@@ -208,11 +208,11 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             copied.set(this.copy());
     }
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
-    private void componentFinishUsingItem(Level level, LivingEntity user, CallbackInfoReturnable<ItemStack> cir, @Share("copied")LocalRef<ItemStack> copied) {
+    private void componentFinishUsingItem(Level level, LivingEntity user, CallbackInfoReturnable<ItemStack> cir, @Share("copied") LocalRef<ItemStack> copied) {
         if (level instanceof ServerLevel serverLevel) {
             ReleaseUsingComponent component = this.componentManager.get(DataComponents.RELEASE_USING);
             if (component != null)
-                component.apply(serverLevel, user, true);
+                component.apply(serverLevel, user, true, cir.getReturnValue());
         }
         if (copied.get() != null) {
             ItemStack originResult = cir.getReturnValue();
@@ -231,7 +231,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         if (level instanceof ServerLevel serverLevel) {
             ReleaseUsingComponent component = this.componentManager.get(DataComponents.RELEASE_USING);
             if (component != null && timeLeft >= component.timeLeft())
-                component.apply(serverLevel, user, false);
+                component.apply(serverLevel, user, false, (ItemStack) (Object) this);
         }
         if (copied.get() != null) {
             ItemStack itemstack1 = this.componentManager.applyAfterUseComponentSideEffects(user, copied.get(), ItemComponentManager.ItemUseCondition.RELEASE);
@@ -245,5 +245,29 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         ToolComponent component = this.componentManager.get(DataComponents.TOOL);
         if (component != null)
             cir.setReturnValue(component.isCorrectForDrops(blockState));
+    }
+    @Inject(method = "isBarVisible", at = @At("HEAD"), cancellable = true)
+    private void isComponentBarVisible(CallbackInfoReturnable<Boolean> cir) {
+        this.componentManager.ifPresent(DataComponents.ITEM_BAR, component -> {
+            if (component.barVisible().isPresent()) {
+                cir.setReturnValue(component.barVisible().get());
+            }
+        });
+    }
+    @Inject(method = "getBarWidth", at = @At("HEAD"), cancellable = true)
+    private void getComponentBarWidth(CallbackInfoReturnable<Integer> cir) {
+        this.componentManager.ifPresent(DataComponents.ITEM_BAR, component -> {
+            if (component.barWidth().isPresent()) {
+                cir.setReturnValue(component.barWidth().get());
+            }
+        });
+    }
+    @Inject(method = "getBarColor", at = @At("HEAD"), cancellable = true)
+    private void getComponentBarColor(CallbackInfoReturnable<Integer> cir) {
+        this.componentManager.ifPresent(DataComponents.ITEM_BAR, component -> {
+            if (component.barColor().isPresent()) {
+                cir.setReturnValue(component.barColor().get().getValue());
+            }
+        });
     }
 }

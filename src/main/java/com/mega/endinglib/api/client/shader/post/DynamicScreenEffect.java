@@ -1,12 +1,14 @@
 package com.mega.endinglib.api.client.shader.post;
 
+import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import net.minecraft.resources.ResourceLocation;
 
 public class DynamicScreenEffect implements CustomScreenEffect {
     private final String name;
     private final ResourceLocation json;
     private boolean canUse;
-
+    private float lastStamp;
+    private float time;
     public void setCanUse(boolean canUse) {
         this.canUse = canUse;
     }
@@ -15,6 +17,7 @@ public class DynamicScreenEffect implements CustomScreenEffect {
         this.name = name;
         this.json = json;
         this.canUse = canUse;
+        this.time = this.lastStamp = 0F;
     }
 
     public ResourceLocation getJson() {
@@ -33,11 +36,23 @@ public class DynamicScreenEffect implements CustomScreenEffect {
 
     @Override
     public void onRenderTick(float partialTicks) {
-
+        if (partialTicks < this.lastStamp) {
+            this.time += 1.0F - this.lastStamp;
+            this.time += partialTicks;
+        } else {
+            this.time += partialTicks - this.lastStamp;
+        }
+        lastStamp = partialTicks;
+        ((AccessorPostChain) this.current()).getPasses().forEach(postPass -> {
+            postPass.getEffect().safeGetUniform("TotalTime").set(time);
+        });
     }
 
     @Override
     public boolean canUse() {
+        if (!this.canUse) {
+            time = lastStamp = 0F;
+        }
         return this.canUse;
     }
 }

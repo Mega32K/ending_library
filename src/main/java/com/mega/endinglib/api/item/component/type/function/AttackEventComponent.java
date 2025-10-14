@@ -9,13 +9,14 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Optional;
 
-public record AttackEventComponent(String command, float attackCooldownRequirement, Optional<ResourceLocation> function, int minimumPermission) implements FunctionComponent {
+public record AttackEventComponent(String command, float attackCooldownRequirement, Optional<ResourceLocation> function, int minimumPermission, int contactCooldownTicks) implements FunctionComponent {
     public static Codec<AttackEventComponent> CODEC = RecordCodecBuilder.create(
             com -> com.group(
                     Codec.STRING.optionalFieldOf("command", "").forGetter(AttackEventComponent::command),
                     Codecs.O2ONE_FLOAT.optionalFieldOf("attack_cooldown_requirement", 0F).forGetter(AttackEventComponent::attackCooldownRequirement),
                     ResourceLocation.CODEC.optionalFieldOf("function").forGetter(AttackEventComponent::function),
-                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(AttackEventComponent::minimumPermission)
+                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("contact_cooldown_ticks", 0).forGetter(AttackEventComponent::contactCooldownTicks),
+                    Codec.INT.optionalFieldOf("min_permission", 2).forGetter(AttackEventComponent::minimumPermission)
             ).apply(com, AttackEventComponent::new)
     );
     private boolean canUse(Player player) {
@@ -26,6 +27,8 @@ public record AttackEventComponent(String command, float attackCooldownRequireme
             if (!command.isEmpty())
                 serverLevel.getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), this.command);
             function.ifPresent(location -> this.apply(player, location, minimumPermission));
+            if (this.contactCooldownTicks != 0)
+                player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), contactCooldownTicks);
         }
     }
 }

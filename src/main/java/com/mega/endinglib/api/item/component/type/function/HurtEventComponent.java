@@ -10,16 +10,18 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.Optional;
 
-public record HurtEventComponent(List<HurtEvent> onDirectEvents, List<HurtEvent> onCausingEvents, List<HurtEvent> onTargetEvents) implements FunctionComponent {
+public record HurtEventComponent(List<HurtEvent> onDirectEvents, List<HurtEvent> onCausingEvents, List<HurtEvent> onTargetEvents, int cooldownTicks) implements FunctionComponent {
     public static Codec<HurtEventComponent> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Codecs.fastUtilListCodec(Codecs.canSerializeAsSingleList(HurtEvent.CODEC)).optionalFieldOf("on_direct_source", List.of()).forGetter(HurtEventComponent::onDirectEvents),
                     Codecs.fastUtilListCodec(Codecs.canSerializeAsSingleList(HurtEvent.CODEC)).optionalFieldOf("on_causing_source", List.of()).forGetter(HurtEventComponent::onCausingEvents),
-                    Codecs.fastUtilListCodec(Codecs.canSerializeAsSingleList(HurtEvent.CODEC)).optionalFieldOf("on_target_source", List.of()).forGetter(HurtEventComponent::onTargetEvents)
+                    Codecs.fastUtilListCodec(Codecs.canSerializeAsSingleList(HurtEvent.CODEC)).optionalFieldOf("on_target_source", List.of()).forGetter(HurtEventComponent::onTargetEvents),
+                    Codec.INT.optionalFieldOf("cooldown_ticks", 0).forGetter(HurtEventComponent::cooldownTicks)
             ).apply(instance, HurtEventComponent::new)
     );
 
@@ -39,6 +41,10 @@ public record HurtEventComponent(List<HurtEvent> onDirectEvents, List<HurtEvent>
         if (!this.onDirectEvents.isEmpty() && (direct = damageSource.getDirectEntity()) != null) {
             CommandSourceStack direct_css = direct.createCommandSourceStack();
             this.onDirectEvents.forEach(event -> event.apply(server, direct_css));
+        }
+        if (causingEntity instanceof Player player) {
+            if (this.cooldownTicks != 0)
+                player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), cooldownTicks);
         }
     }
 

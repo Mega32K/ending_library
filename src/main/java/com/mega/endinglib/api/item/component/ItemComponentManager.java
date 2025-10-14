@@ -69,6 +69,11 @@ public class ItemComponentManager {
     public static <T> boolean has(ItemStack stack, ItemComponentType<? extends T> type) {
         return ItemComponentManager.get(stack).components.get(type) != null;
     }
+    public <T> void ifPresent(ItemComponentType<? extends T> type, Consumer<T> consumer) {
+        T com = this.components.get(type);
+        if (com != null)
+            consumer.accept(com);
+    }
     public static <T> void ifPresent(ItemStack stack, ItemComponentType<? extends T> type, Consumer<T> consumer) {
         T com = ItemComponentManager.get(stack).components.get(type);
         if (com != null)

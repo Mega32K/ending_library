@@ -2,6 +2,7 @@ package com.mega.endinglib.util.asm;
 
 import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
+import com.mega.endinglib.api.item.component.MergedComponentMap;
 import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.function.SwingEventComponent;
 import com.mega.endinglib.proxy.CommonProxy;
@@ -16,6 +17,8 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BannerPatternItem;
 import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.common.extensions.IForgeItemStack;
@@ -132,6 +135,78 @@ public class EventUtil {
             if (component != null && !livingEntity.level().isClientSide && livingEntity.level() instanceof ServerLevel serverLevel) {
                 return component.apply(serverLevel, livingEntity);
             }
+        }
+        return false;
+    }
+    public static boolean hasComponentCraftingRemainingItem(boolean origin, IForgeItemStack fis) {
+        if (!origin) {
+            if (fis instanceof ItemStack itemStack) {
+                ItemStack remaining = ItemComponentManager.get(itemStack, DataComponents.CRAFT_REMAINING);
+                if (remaining != null)
+                    return true;
+            }
+        }
+        return origin;
+    }
+    public static ItemStack getComponentCraftingRemainingItem(ItemStack origin, IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            ItemStack remaining = ItemComponentManager.get(itemStack, DataComponents.CRAFT_REMAINING);
+            if (remaining != null)
+                return remaining;
+        }
+        return origin;
+    }
+    public static int getComponentBurnTime(int origin, IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            Integer time = ItemComponentManager.get(itemStack).getComponents().get(DataComponents.BURN_TIME);
+            if (time != null)
+                return time;
+        }
+        return origin;
+    }
+    public static int getComponentEntityLifespan(int origin, IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            Integer time = ItemComponentManager.get(itemStack).getComponents().get(DataComponents.LIFE_SPAN);
+            if (time != null)
+                return time;
+        }
+        return origin;
+    }
+    public static boolean isComponentPiglinCurrency(IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            return ItemComponentManager.has(itemStack, DataComponents.PIGLIN_CURRENCY);
+        }
+        return false;
+    }
+    public static boolean componentMakesPiglinsNeutral(IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            return ItemComponentManager.has(itemStack, DataComponents.PIGLIN_NEUTRAL);
+        }
+        return false;
+    }
+    public static boolean isComponentEnderMask(IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            return ItemComponentManager.has(itemStack, DataComponents.ENDER_MUSK);
+        }
+        return false;
+    }
+    public static boolean componentCanWalkOnPowderedSnow(IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            return ItemComponentManager.has(itemStack, DataComponents.CAN_WALK_ON_POWDERED_SNOW);
+        }
+        return false;
+    }
+    public static AABB getSweepHitBox(AABB originBox, IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            Vec3 inflation = ItemComponentManager.get(itemStack, DataComponents.SWEEP_HITBOX_INFLATION);
+            if (inflation != null)
+                return originBox.inflate(inflation.x, inflation.y, inflation.z);
+        }
+        return originBox;
+    }
+    public static boolean componentCanGrindstoneRepair(IForgeItemStack fis) {
+        if (fis instanceof ItemStack itemStack) {
+            return ItemComponentManager.has(itemStack, DataComponents.GRINDSTONE_REPAIRABLE);
         }
         return false;
     }

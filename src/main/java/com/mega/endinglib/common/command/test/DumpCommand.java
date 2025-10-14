@@ -33,7 +33,7 @@ public class DumpCommand {
                 Class<?> c = Class.forName(classname, false, ClassBytecodesGetter.transformLoader());
                 byte[] bytes = ClassBytecodesGetter.copyBytecodesFromClass(c, reason);
                 try {
-                    File file1 = new File(classname + ".class");
+                    File file1 = new File("endinglib/dump/classes/" +classname + ".class");
                     FileOutputStream stream = new FileOutputStream(file1);
                     stream.write(bytes);
                     stream.close();

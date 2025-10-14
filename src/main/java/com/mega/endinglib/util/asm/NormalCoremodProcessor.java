@@ -151,6 +151,111 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
                             shouldWrite.set(true);
                         }
+                        case "getCraftingRemainingItem" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.ARETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getComponentCraftingRemainingItem", "(Lnet/minecraft/world/item/ItemStack;Lnet/minecraftforge/common/extensions/IForgeItemStack;)Lnet/minecraft/world/item/ItemStack;", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                        case "hasCraftingRemainingItem" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "hasComponentCraftingRemainingItem", "(ZLnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                        case "getBurnTime" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getComponentBurnTime", "(ILnet/minecraftforge/common/extensions/IForgeItemStack;)I", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                        case "getEntityLifespan" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getComponentEntityLifespan", "(ILnet/minecraftforge/common/extensions/IForgeItemStack;)I", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                        case "isPiglinCurrency" -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "isComponentPiglinCurrency", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                            LabelNode elseNode = new LabelNode();
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
+                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                            insnNodes.add(elseNode);
+                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                            shouldWrite.set(true);
+                        }
+                        case "makesPiglinsNeutral" -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "componentMakesPiglinsNeutral", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                            LabelNode elseNode = new LabelNode();
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
+                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                            insnNodes.add(elseNode);
+                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                            shouldWrite.set(true);
+                        }
+                        case "isEnderMask" -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "isComponentEnderMask", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                            LabelNode elseNode = new LabelNode();
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
+                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                            insnNodes.add(elseNode);
+                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                            shouldWrite.set(true);
+                        }
+                        case "canWalkOnPowderedSnow" -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "componentCanWalkOnPowderedSnow", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                            LabelNode elseNode = new LabelNode();
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
+                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                            insnNodes.add(elseNode);
+                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                            shouldWrite.set(true);
+                        }
+                        case "getSweepHitBox" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.ARETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getSweepHitBox", "(Lnet/minecraft/world/phys/AABB;Lnet/minecraftforge/common/extensions/IForgeItemStack;)Lnet/minecraft/world/phys/AABB;", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
+                        case "canGrindstoneRepair" -> {
+                            InsnList insnNodes = new InsnList();
+                            insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
+                            insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "componentCanGrindstoneRepair", "(Lnet/minecraftforge/common/extensions/IForgeItemStack;)Z", false));
+                            LabelNode elseNode = new LabelNode();
+                            insnNodes.add(new JumpInsnNode(Opcodes.IFEQ, elseNode));
+                            insnNodes.add(new InsnNode(Opcodes.ICONST_1));
+                            insnNodes.add(new InsnNode(Opcodes.IRETURN));
+                            insnNodes.add(elseNode);
+                            methodNode.instructions.insertBefore(methodNode.instructions.getFirst(), insnNodes);
+                            shouldWrite.set(true);
+                        }
                     }
                 });
             } else if ("net/minecraftforge/common/extensions/IForgeItem".equals(classNode.name)) {

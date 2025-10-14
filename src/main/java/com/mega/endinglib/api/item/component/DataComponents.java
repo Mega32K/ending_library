@@ -54,6 +54,7 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_CRAFT_REMAINING = SafeClass.loc("craft_remaining");
     public static final ResourceLocation COM_LIFE_SPAN = SafeClass.loc("life_span");
     public static final ResourceLocation COM_PIGLIN_CURRENCY = SafeClass.loc("piglin_currency");
+    public static final ResourceLocation COM_PIGLIN_NEUTRAL = SafeClass.loc("piglin_neutral");
     public static final ResourceLocation COM_ENDER_MUSK = SafeClass.loc("ender_musk");
     public static final ResourceLocation COM_CAN_WALK_ON_POWDERED_SNOW = SafeClass.loc("can_walk_on_powdered_snow");
     public static final ResourceLocation COM_SWEEP_HITBOX_INFLATION = SafeClass.loc("sweep_hitbox_inflation");
@@ -313,6 +314,13 @@ public class DataComponents extends ItemComponentManager {
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));
+    public static final ItemComponentType<Unit> PIGLIN_NEUTRAL = register(COM_PIGLIN_NEUTRAL, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.UNIT_CODEC)
+                    .registryName(COM_PIGLIN_NEUTRAL)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
     public static final ItemComponentType<Unit> ENDER_MUSK = register(COM_ENDER_MUSK, ComponentTypeBuilder.create(
             builder -> builder
                     .codec(Codecs.UNIT_CODEC)
@@ -338,6 +346,13 @@ public class DataComponents extends ItemComponentManager {
             builder -> builder
                     .codec(Codecs.UNIT_CODEC)
                     .registryName(COM_GRINDSTONE_REPAIRABLE)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<ItemBarComponent> ITEM_BAR = register(COM_ITEM_BAR, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(ItemBarComponent.CODEC)
+                    .registryName(COM_ITEM_BAR)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));

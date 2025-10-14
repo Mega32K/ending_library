@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
@@ -30,10 +31,11 @@ import java.util.stream.Stream;
 
 public class Codecs {
     public static final Codec<Unit> UNIT_CODEC = Codec.unit(Unit.INSTANCE);
+    public static final Codec<TextColor> TEXT_COLOR = Codec.STRING.comapFlatMap(Codecs::parseColor, TextColor::serialize);
     public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
             .listOf()
             .comapFlatMap(
-                    list -> decodeFixedLengthList(list, 3).map(listx -> new Vector3f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2))),
+                    list -> decodeFixedLengthList(list, 3).map(listx -> new Vector3f(listx.get(0), listx.get(1), listx.get(2))),
                     vec3f -> List.of(vec3f.x(), vec3f.y(), vec3f.z())
             ); 
     public static final Codec<Integer> UNSIGNED_BYTE = Codec.BYTE
@@ -151,7 +153,7 @@ public class Codecs {
         return validate(Codec.FLOAT,
                         value -> value.compareTo(minInclusive) >= 0 && value.compareTo(maxInclusive) <= 0
                                 ? DataResult.success(value)
-                                : DataResult.error(() -> (String)messageFactory.apply(value))
+                                : DataResult.error(() -> messageFactory.apply(value))
                 );
     }
 
@@ -159,7 +161,7 @@ public class Codecs {
         return validate(Codec.FLOAT,
                         value -> value.compareTo(minExclusive) > 0 && value.compareTo(maxInclusive) <= 0
                                 ? DataResult.success(value)
-                                : DataResult.error(() -> (String)messageFactory.apply(value))
+                                : DataResult.error(() -> messageFactory.apply(value))
                 );
     }
     public static <T> Codec<List<T>> fastUtilListCodec(Codec<List<T>> codec) {
@@ -182,11 +184,11 @@ public class Codecs {
         return collection -> {
             Iterator<E> iterator = collection.iterator();
             if (iterator.hasNext()) {
-                T object = (T)typeGetter.apply(iterator.next());
+                T object = typeGetter.apply(iterator.next());
 
                 while (iterator.hasNext()) {
-                    E object2 = (E)iterator.next();
-                    T object3 = (T)typeGetter.apply(object2);
+                    E object2 = iterator.next();
+                    T object3 = typeGetter.apply(object2);
                     if (object3 != object) {
                         return DataResult.error(() -> "Mixed type list: element " + object2 + " had type " + object3 + ", but list is of type " + object);
                     }
@@ -206,10 +208,21 @@ public class Codecs {
     public static <A> Codec<A> lazyInitialized(final Supplier<Codec<A>> delegate) {
         return new RecursiveCodec<>(delegate.toString(), self -> delegate.get());
     }
-
-
     public static <E> Codec<List<E>> listOrSingle(Codec<E> entryCodec, Codec<List<E>> listCodec) {
         return Codec.either(listCodec, entryCodec)
                 .xmap(either -> either.map(list -> list, List::of), list -> list.size() == 1 ? Either.right(list.get(0)) : Either.left(list));
+    }
+    public static DataResult<TextColor> parseColor(String color) {
+        if (!color.startsWith("#")) {
+            TextColor textcolor = TextColor.parseColor(color);
+            return textcolor == null ? DataResult.error(() -> "Invalid color name: " + color) : DataResult.success(textcolor, Lifecycle.stable());
+        } else {
+            try {
+                int i = Integer.parseInt(color.substring(1), 16);
+                return i >= 0 && i <= 16777215 ? DataResult.success(TextColor.fromRgb(i), Lifecycle.stable()) : DataResult.error(() -> "Color value out of range: " + color);
+            } catch (NumberFormatException var2) {
+                return DataResult.error(() -> "Invalid color value: " + color);
+            }
+        }
     }
 }

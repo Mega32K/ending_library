@@ -20,7 +20,7 @@ public enum TagEnum {
     BYTE_ARRAY(LoreHelper::tag_byte_array, tag -> tag instanceof ByteArrayTag),
     STRING(LoreHelper::tag_string, tag -> tag instanceof StringTag),
     SNBT(LoreHelper::tag_snbt, tag -> tag instanceof CompoundTag),
-    LIST(LoreHelper::tag_list_snbt, tag -> tag instanceof ListTag),
+    LIST(LoreHelper::tag_list, tag -> tag instanceof ListTag),
     INT_ARRAY(LoreHelper::tag_int_array, tag -> tag instanceof IntArrayTag),
     LONG_ARRAY(LoreHelper::tag_long_array, tag -> tag instanceof LongArrayTag);
     private final Supplier<MutableComponent> toComponent;
