@@ -1,7 +1,7 @@
 package com.mega.endinglib.mixin.advanced.config;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
-import com.mega.endinglib.common.config.advanced.AdvancedServerConfig;
+import com.mega.endinglib.common.config.advanced.AdvancedCommonConfig;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -40,7 +39,7 @@ public abstract class ServerLevelMixin extends Level {
 
     @WrapWithCondition(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/entity/EntityTickList;forEach(Ljava/util/function/Consumer;)V"))
     private boolean cancelTickEntities(EntityTickList instance, Consumer<Entity> consumer) {
-        if (AdvancedServerConfig.CancelEntityUpdate) {
+        if (AdvancedCommonConfig.CancelEntityUpdate) {
             ProfilerFiller profilerfiller = this.getProfiler();
             this.entityTickList.forEach((e) -> {
                 if (e instanceof Player) {
@@ -77,6 +76,6 @@ public abstract class ServerLevelMixin extends Level {
     }
     @WrapWithCondition(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;tickBlockEntities()V"))
     private boolean cancelTickBlockEntities(ServerLevel serverLevel) {
-        return !AdvancedServerConfig.CancelEntityUpdate;
+        return !AdvancedCommonConfig.CancelEntityUpdate;
     }
 }

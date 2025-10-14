@@ -155,7 +155,6 @@ public class SynchedCapabilityData {
     }
 
     public List<CapabilityEntityData<?>> packData() {
-
         List<CapabilityEntityData<?>> list = new ObjectArrayList<>();
         if (this.anyOfDirty.get()) {
             this.lock.readLock().lock();

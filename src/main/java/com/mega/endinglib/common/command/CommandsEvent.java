@@ -44,6 +44,7 @@ public class CommandsEvent {
                         .then(TestforCommand.register(event.getDispatcher(), event.getBuildContext()))
                         .then(SoundCommand.register())
                         .then(ShaderCommand.register())
+                        .then(FreezeCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )

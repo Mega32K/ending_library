@@ -88,6 +88,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor": "Run",
+    "JavaMethodFindUsagesOptions.isIncludeOverloadUsages": "true",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "1.20.1",
@@ -236,6 +237,26 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/network/s2c/S2CCapabilitySetDataPacket.java</url>
+          <line>21</line>
+          <properties class="com.mega.endinglib.common.network.s2c.S2CCapabilitySetDataPacket" method="&lt;init&gt;">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/network/s2c/S2CCapabilitySetDataPacket.java</url>
+          <line>46</line>
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

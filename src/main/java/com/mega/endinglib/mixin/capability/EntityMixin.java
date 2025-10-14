@@ -27,16 +27,7 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         ELCapabilityManager.CAPABILITY_MAP.values().forEach(cap -> this.getCapability(cap).ifPresent((data) -> {
-            data.tick((Entity) (Object) this);
-            if (level instanceof ServerLevel serverLevel && !serverLevel.isClientSide()) {
-                if (data.getDataManager().isDirty()) {
-                    PacketHandler.sendToSeen(
-                            new S2CCapabilitySetDataPacket(this.getId(), data.getRegistryName().toString(), data.getDataManager().packData()),
-                            (Entity) (Object) this,
-                            serverLevel
-                    );
-                }
-            }
+            data.update((Entity) (Object) this);
         }));
     }
 }

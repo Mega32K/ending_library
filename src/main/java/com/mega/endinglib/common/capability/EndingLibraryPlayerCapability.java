@@ -14,7 +14,6 @@ import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
-import com.mega.endinglib.common.config.advanced.AdvancedServerConfig;
 import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
@@ -24,9 +23,6 @@ import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
-import com.mega.endinglib.util.time.TimeStopUtils;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -43,11 +39,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
-    public static final Set<ModifierType> MODIFIER_TYPES = Util.make(() -> {
-        ObjectOpenHashSet<ModifierType> set = new ObjectOpenHashSet<>();
-        set.addAll(Arrays.asList(ModifierType.values()));
-        return set;
-    });
+    public static final ModifierType[] MODIFIER_TYPES = ModifierType.values().clone();
     public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "ending_library_cap");
     public final CapabilityEntityData<Integer> USING_CAMERA_MODE = this.dataManager.define(0, "usingCameraMode", 0x00000000, CapabilityDataSerializers.INT);
     public final CapabilityEntityData<Boolean> OTHER_SPECTOR_RENDERING = this.defineByPersonalRule(1, PersonalRuleCommand.OTHER_SPECTOR_RENDERING, CapabilityDataSerializers.BOOLEAN);
@@ -159,7 +151,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     }
 
     @Override
-    public void tick(Entity entity) { 
+    public void tick(Entity entity) {
         if (entity instanceof Player player) {
             this.setFieldFromCapData();
             this.inputCooldowns.tick(player);

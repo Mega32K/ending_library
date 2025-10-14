@@ -1,9 +1,8 @@
 package com.mega.endinglib.mixin.advanced.config;
 
 import com.mega.endinglib.common.config.advanced.AdvancedClientConfig;
-import com.mega.endinglib.common.config.advanced.AdvancedServerConfig;
+import com.mega.endinglib.common.config.advanced.AdvancedCommonConfig;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectLists;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.Holder;
@@ -46,7 +45,7 @@ public abstract class ClientLevelMixin extends Level {
     }
     @Inject(method = "tickEntities", at = @At("HEAD"), cancellable = true)
     private void tickEntities(CallbackInfo ci) {
-        if (AdvancedServerConfig.CancelEntityUpdate) {
+        if (AdvancedCommonConfig.CancelEntityUpdate) {
             this.tickingEntities.forEach((e) -> {
                 if (e instanceof Player) {
                     if (!e.isRemoved() && !e.isPassenger()) {

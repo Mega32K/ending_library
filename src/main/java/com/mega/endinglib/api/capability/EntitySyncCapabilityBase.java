@@ -3,6 +3,8 @@ package com.mega.endinglib.api.capability;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
 import com.mega.endinglib.common.network.s2c.S2CCapabilityDataSyncPacket;
+import com.mega.endinglib.common.network.s2c.S2CCapabilitySetDataPacket;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +18,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Set;
 
 public abstract class EntitySyncCapabilityBase implements ICapabilitySerializable<CompoundTag> {
@@ -59,13 +62,17 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     }
     public abstract void readSyncData(CompoundTag toRead, Dist from, CapabilitySyncType type, Entity entity);
 
-    public Object createPacket(String registryName, CompoundTag compoundTag, Dist originalDist, CapabilitySyncType type, int entityID) {
-        switch (originalDist) {
+    public Object createPacket(String registryName, CompoundTag compoundTag, Dist from, CapabilitySyncType type, int entityID) {
+        switch (from) {
             case CLIENT -> {
                 return new C2SCapabilityDataSyncPacket(entityID, registryName, compoundTag, type);
             }
             case DEDICATED_SERVER -> {
-                return new S2CCapabilityDataSyncPacket(entityID, registryName, compoundTag, type, this.dataManager.packData());
+                List<CapabilityEntityData<?>> packData;
+                if (this.dataManager.isDirty())
+                    packData = this.dataManager.packData();
+                else packData = new ObjectArrayList<>();
+                return new S2CCapabilityDataSyncPacket(entityID, registryName, compoundTag, type, packData);
             }
             default -> throw new AssertionError("NULL");
         }
@@ -113,6 +120,18 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
 
     public abstract void customDeserializeNBT(CompoundTag nbt);
 
-    public void tick(Entity entity) {
+    protected void tick(Entity entity) {
+    }
+    public final void update(Entity entity) {
+        this.tick(entity);
+        if (entity.level() instanceof ServerLevel serverLevel && !serverLevel.isClientSide()) {
+            if (dataManager.isDirty()) {
+                PacketHandler.sendToSeen(
+                        new S2CCapabilitySetDataPacket(entity.getId(), this.getRegistryName().toString(), dataManager.packData()),
+                        entity,
+                        serverLevel
+                );
+            }
+        }
     }
 }

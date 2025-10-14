@@ -10,11 +10,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class CameraModifierArgument implements ArgumentType<String> {
-    public static final Collection<String> EXAMPLES = EndingLibraryPlayerCapability.MODIFIER_TYPES.stream().map(ModifierType::toString).toList();
+    public static final Collection<String> EXAMPLES = Arrays.stream(EndingLibraryPlayerCapability.MODIFIER_TYPES).map(ModifierType::toString).toList();
 
     public static CameraModifierArgument modifierType() {
         return new CameraModifierArgument();

@@ -77,6 +77,7 @@
   "commands.endinglib.message.personal_rule.hurtViewMultiplier": "玩家受伤视角Z轴摇晃乘数",
   "commands.endinglib.message.personal_rule.lockedGameMode": "游戏模式锁定",
   "commands.endinglib.message.personal_rule.hideScoreboardNum": "显示计分板数字",
+  "commands.endinglib.message.personal_rule.customSkin": "皮肤纹理路径",
   "commands.endinglib.message.personal_rule.name": "显示名称",
 
   "commands.endinglib.message.roll": "%s§7随机获取到了:§6%s",
@@ -168,6 +169,11 @@
   "commands.endinglib.message.shader.enable": "§7已为%s§7启用后处理效果 %s",
   "commands.endinglib.message.shader.disable": "§7已为%s§7禁用后处理效果 %s",
   "commands.endinglib.message.shader.uniform.set": "§7Uniform值已更新",
+
+  "commands.endinglib.message.freeze.multiple": "§7暂停了%s§7个实体",
+  "commands.endinglib.message.unfreeze.multiple": "§7解除了%s§7个实体的暂停状态",
+  "commands.endinglib.message.freeze.single": "§7暂停了%s§7",
+  "commands.endinglib.message.unfreeze.single": "§7解除了%s§7的暂停状态",
 
   "tooltip.endinglib.specialEffect": "§7特殊效果:",
   "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",
