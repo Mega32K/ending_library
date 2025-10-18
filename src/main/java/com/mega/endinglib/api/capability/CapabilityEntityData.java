@@ -3,13 +3,16 @@ package com.mega.endinglib.api.capability;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CapabilityEntityData<T> {
     private final int id;
     private final boolean shouldBeSerialized;
+    @NotNull
     private final CapabilityDataSerializer<T> serializer;
     private final String serializedName;
     /**
@@ -17,11 +20,13 @@ public class CapabilityEntityData<T> {
      */
     private final AtomicBoolean isDirty = new AtomicBoolean(false);
     private T value;
+    private final T initValue;
     @Nullable
     private volatile SynchedCapabilityData dataManager;
 
-    public CapabilityEntityData(T defaultValue, int id, CapabilityDataSerializer<T> serializer, String serializedName, boolean shouldBeSerialized) {
+    public CapabilityEntityData(T defaultValue, int id, @NotNull CapabilityDataSerializer<T> serializer, String serializedName, boolean shouldBeSerialized) {
         this.value = defaultValue;
+        this.initValue = value;
         this.id = id;
         this.serializer = serializer;
         this.serializedName = serializedName;
@@ -44,6 +49,12 @@ public class CapabilityEntityData<T> {
         return this.value;
     }
 
+    public T getInitValue() {
+        return initValue;
+    }
+    public boolean isInitValue() {
+        return Objects.equals(this.value, this.initValue);
+    }
     void setValue(T value) {
         this.value = value;
         this.isDirty.set(true);
@@ -51,7 +62,8 @@ public class CapabilityEntityData<T> {
 
     public void write(CompoundTag nbt) {
         if (!shouldBeSerialized) return;
-        serializer.write(nbt, serializedName, this.getValue());
+        if (!this.isInitValue())
+            serializer.write(nbt, serializedName, this.getValue());
     }
 
     public void read(CompoundTag nbt) {
@@ -83,5 +95,12 @@ public class CapabilityEntityData<T> {
 
     public CapabilityDataSerializer<T> getSerializer() {
         return serializer;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (super.equals(obj))
+            return true;
+        return obj instanceof CapabilityEntityData<?> data && data.id == this.id && Objects.equals(data.serializedName, this.serializedName) && Objects.equals(data.serializer, this.serializer);
     }
 }

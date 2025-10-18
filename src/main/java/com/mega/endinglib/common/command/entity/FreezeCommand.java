@@ -23,7 +23,7 @@ import java.util.function.Function;
 public class FreezeCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("freeze")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_MOTION.get()))
+                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_FREEZE.get()))
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .then(Commands.argument("bool", BoolArgumentType.bool())
                                 .executes(context -> setFreeze(context.getSource(), EntityArgument.getEntities(context, "targets"), BoolArgumentType.getBool(context, "bool")))
@@ -32,27 +32,22 @@ public class FreezeCommand {
     }
     private static int setFreeze(CommandSourceStack sourceStack, Collection<? extends Entity> entities, boolean flag) {
         if (entities.size() == 1) {
-            if (entities.iterator().next() instanceof LivingEntity living) {
-                CommonProxy.getLivingCapOptional(living).ifPresent(cap -> {
-                    cap.setFrozen(flag);
-                    if (flag) {
-                        sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.freeze.single", living.getDisplayName()), false);
-                    } else {
-                        sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.unfreeze.single", living.getDisplayName()), false);
-                    }
-                    cap.update(living);
-                });
-            }
+            Entity entity = entities.iterator().next();
+            CommonProxy.getEntityCapOptional(entity).ifPresent(cap -> {
+                cap.setFrozen(flag);
+                if (flag) {
+                    sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.freeze.single", entity.getDisplayName()), false);
+                } else {
+                    sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.unfreeze.single", entity.getDisplayName()), false);
+                } 
+            });
         } else {
             AtomicInteger count = new AtomicInteger(0);
             for (Entity entity : entities) {
-                if (entity instanceof LivingEntity living) {
-                    CommonProxy.getLivingCapOptional(living).ifPresent(cap -> {
-                        cap.setFrozen(flag);
-                        count.incrementAndGet();
-                        cap.update(living);
-                    });
-                }
+                CommonProxy.getEntityCapOptional(entity).ifPresent(cap -> {
+                    cap.setFrozen(flag);
+                    count.incrementAndGet();
+                });
             }
             if (flag) {
                 sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.freeze.multiple", LoreHelper.number(count.get(), ChatFormatting.GOLD)), false);

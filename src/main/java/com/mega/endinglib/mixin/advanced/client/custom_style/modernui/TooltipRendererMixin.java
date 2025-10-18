@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.client.custom_style.modernui;
+package com.mega.endinglib.mixin.advanced.client.custom_style.modernui;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.endinglib.util.annotation.ModDependsMixin;

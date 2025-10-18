@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public abstract class ApplyCheckMixinConfigPlugin implements IMixinConfigPlugin {
     static {
         System.out.println(EarlyConfig.class);
+        System.out.println(MCMapping.class);
     }
 
     @Override

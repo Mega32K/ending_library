@@ -42,7 +42,7 @@ public record ConsumableComponent(
                             Codecs.USE_ANIM_CODEC.optionalFieldOf("animation", UseAnim.EAT).forGetter(ConsumableComponent::useAnimation),
                             SoundEvent.CODEC.optionalFieldOf("sound", Holder.direct(SoundEvents.GENERIC_EAT)).forGetter(ConsumableComponent::sound),
                             Codec.BOOL.optionalFieldOf("has_consume_particles", true).forGetter(ConsumableComponent::hasConsumeParticles),
-                            ConsumeEffect.CODEC.listOf().optionalFieldOf("on_consume_effects", List.of()).forGetter(ConsumableComponent::onConsumeEffects)
+                            Codecs.canSerializeAsSingleList(ConsumeEffect.CODEC).optionalFieldOf("on_consume_effects", List.of()).forGetter(ConsumableComponent::onConsumeEffects)
                     )
                     .apply(instance, ConsumableComponent::new)
     );

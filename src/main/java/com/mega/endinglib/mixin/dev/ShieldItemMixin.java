@@ -1,6 +1,7 @@
 package com.mega.endinglib.mixin.dev;
 
 import com.mega.endinglib.api.client.text.TextColorUtils;
+import com.mega.endinglib.util.annotation.DeprecatedMixin;
 import com.mega.endinglib.util.annotation.DevEnvMixin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Mixin(ShieldItem.class)
 @DevEnvMixin
+@DeprecatedMixin
 public abstract class ShieldItemMixin extends Item {
     ShieldItemMixin(Properties p_41383_) {
         super(p_41383_);

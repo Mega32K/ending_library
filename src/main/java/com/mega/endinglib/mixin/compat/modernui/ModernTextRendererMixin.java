@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.modernui;
+package com.mega.endinglib.mixin.compat.modernui;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;

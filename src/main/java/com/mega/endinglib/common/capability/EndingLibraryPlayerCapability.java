@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.capability;
 
+import com.google.common.base.Suppliers;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
@@ -23,24 +24,31 @@ import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
+import com.mega.endinglib.mixin.capability.EntityMixin;
+import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public static final ModifierType[] MODIFIER_TYPES = ModifierType.values().clone();
-    public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "ending_library_cap");
+    public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "endinglib_player_cap");
+    private final Supplier<Set<CapabilitySyncType>> DEFAULT_ENABLED_SYNC_TYPES = Suppliers.memoize(()-> EnumSet.of(CapabilitySyncType.PLAYER_CLONE, CapabilitySyncType.PLAYER_RESPAWN, CapabilitySyncType.PLAYER_LOGGED_IN, CapabilitySyncType.PLAYER_LOGGED_OUT, CapabilitySyncType.DIMENSION_CHANGE));
     public final CapabilityEntityData<Integer> USING_CAMERA_MODE = this.dataManager.define(0, "usingCameraMode", 0x00000000, CapabilityDataSerializers.INT);
     public final CapabilityEntityData<Boolean> OTHER_SPECTOR_RENDERING = this.defineByPersonalRule(1, PersonalRuleCommand.OTHER_SPECTOR_RENDERING, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> OTHER_PLAYERS_RENDERING = this.defineByPersonalRule(2, PersonalRuleCommand.OTHER_PLAYERS_RENDERING, CapabilityDataSerializers.BOOLEAN);
@@ -78,6 +86,10 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         return Player.class;
     }
 
+    @Override
+    protected @NotNull Predicate<Entity> canAttach() {
+        return entity -> entity instanceof Player;
+    }
     @Override
     public void syncData(CompoundTag toWrite, Dist from, CapabilitySyncType type, Entity entity) {
         if (from == Dist.DEDICATED_SERVER) {
@@ -364,6 +376,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     }
     @Override
     public Set<CapabilitySyncType> getEnabledSyncTypes() {
-        return Set.of(CapabilitySyncType.PLAYER_CLONE, CapabilitySyncType.PLAYER_RESPAWN, CapabilitySyncType.PLAYER_LOGGED_IN, CapabilitySyncType.PLAYER_LOGGED_OUT, CapabilitySyncType.DIMENSION_CHANGE);
+        return DEFAULT_ENABLED_SYNC_TYPES.get();
     }
 }

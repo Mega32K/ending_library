@@ -13,13 +13,19 @@ public class SafeClass {
     private static int modernuiLoaded = -1;
     private static int irisLoaded = -1;
     private static int kubejs_loaded = -1;
+    private static int ibeeditor_loaded = -1;
     public static int yearDay() {
         if (yearDate == 0) {
             yearDate = Integer.parseInt(String.format("%s%s", date.getMonth() + 1, date.getDate()));
         }
         return yearDate;
     }
-
+    public static boolean isIBELoaded() {
+        if (ibeeditor_loaded == -1) {
+            ibeeditor_loaded = (EarlyConfig.modIds.contains("ibeeditor") || ModList.get().isLoaded("ibeeditor")) ? 1 : 2;
+        }
+        return ibeeditor_loaded == 1;
+    }
     public static boolean isKJSLoaded() {
         if (kubejs_loaded == -1) {
             kubejs_loaded = (EarlyConfig.modIds.contains("kubejs") || ModList.get().isLoaded("kubejs")) ? 1 : 2;

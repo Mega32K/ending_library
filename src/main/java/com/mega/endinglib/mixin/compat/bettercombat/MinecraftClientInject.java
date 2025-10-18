@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.bettercombat;
+package com.mega.endinglib.mixin.compat.bettercombat;
 
 
 import com.mega.endinglib.util.annotation.ModDependsMixin;

@@ -5,8 +5,11 @@ import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.syncher.SynchedEntityData;
 import org.apache.commons.lang3.ObjectUtils;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -18,7 +21,6 @@ public class SynchedCapabilityData {
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Int2ObjectOpenHashMap<CapabilityEntityData<?>> DEFINED_DATA = new Int2ObjectOpenHashMap<>();
     private final AtomicBoolean anyOfDirty = new AtomicBoolean(false);
-
     public SynchedCapabilityData(EntitySyncCapabilityBase capability) {
         this.capability = capability;
     }
@@ -121,7 +123,24 @@ public class SynchedCapabilityData {
             this.lock.writeLock().unlock();
         }
     }
+    @Nullable
+    public List<CapabilityEntityData<?>> getNonDefaultValues() {
+        List<CapabilityEntityData<?>> list = null;
+        this.lock.readLock().lock();
 
+        for(CapabilityEntityData<?> capabilityEntityData : this.DEFINED_DATA.values()) {
+            if (!capabilityEntityData.isInitValue()) {
+                if (list == null) {
+                    list = new ObjectArrayList<>();
+                }
+
+                list.add(capabilityEntityData);
+            }
+        }
+
+        this.lock.readLock().unlock();
+        return list;
+    }
     @SuppressWarnings("unchecked")
     public <T> void assignValue(CapabilityEntityData<T> c, Object value) {
         c.setValue((T) value);
@@ -143,12 +162,35 @@ public class SynchedCapabilityData {
         }
     }
 
+    @Deprecated
     public void dirtyAll() {
         this.anyOfDirty.set(true);
         this.lock.writeLock().lock();
         try {
             for (CapabilityEntityData<?> ced : DEFINED_DATA.values())
                 ced.setDirty(true);
+        } finally {
+            this.lock.writeLock().unlock();
+        }
+    }
+    public void dirtySingle(CapabilityEntityData<?> ced) {
+        if (!ced.isDirty()) {
+            this.anyOfDirty.set(true);
+            this.lock.writeLock().lock();
+            try {
+                ced.setDirty(true);
+            } finally {
+                this.lock.writeLock().unlock();
+            }
+        }
+    }
+    public void dirtyAllNotInitValue() {
+        this.anyOfDirty.set(true);
+        this.lock.writeLock().lock();
+        try {
+            for (CapabilityEntityData<?> ced : DEFINED_DATA.values())
+                if (!ced.isInitValue())
+                    ced.setDirty(true);
         } finally {
             this.lock.writeLock().unlock();
         }

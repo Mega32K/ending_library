@@ -17,6 +17,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Rarity;
@@ -31,6 +32,13 @@ import java.util.stream.Stream;
 
 public class Codecs {
     public static final Codec<Unit> UNIT_CODEC = Codec.unit(Unit.INSTANCE);
+    public static final Codec<EntityDimensions> ENTITY_DIMENSIONS_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    Codec.FLOAT.fieldOf("width").forGetter(ed -> ed.width),
+                    Codec.FLOAT.fieldOf("height").forGetter(ed -> ed.height),
+                    Codec.BOOL.optionalFieldOf("fixed", true).forGetter(ed -> ed.fixed)
+            ).apply(instance, EntityDimensions::new)
+    );
     public static final Codec<TextColor> TEXT_COLOR = Codec.STRING.comapFlatMap(Codecs::parseColor, TextColor::serialize);
     public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
             .listOf()

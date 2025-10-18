@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NormalCoremodProcessor implements IClassProcessor {
     public static final NormalCoremodProcessor INSTANCE = new NormalCoremodProcessor();
+    static final String LIVING_ENTITY_CLASS = "net/minecraft/world/entity/LivingEntity";
+    static final String ENTITY_CLASS = "net/minecraft/world/entity/Entity";
     static final String EVENT_UTIL_CLASS = "com/mega/endinglib/util/asm/EventUtil";
     static final String CLIENT_EVENT_UTIL_CLASS = "com/mega/endinglib/util/asm/ClientEventUtil";
     static final String EVENT_CLASS = "net/minecraftforge/eventbus/api/Event";
@@ -22,7 +24,6 @@ public class NormalCoremodProcessor implements IClassProcessor {
     public static final String EVENT_FIELD$el_isUnCancelable = "el_isUnCancelable";
     public static final String EVENT_FIELD$el_isUnCancelable$desc = "Z";
     public static final int SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND = 16;
-
     @Override
     public void processClass(ILaunchPluginService.Phase phase, ClassNode classNode, Type classType, AtomicBoolean shouldWrite) {
         if (phase == ILaunchPluginService.Phase.AFTER) {
@@ -470,7 +471,6 @@ public class NormalCoremodProcessor implements IClassProcessor {
             });
         }
     }
-
 
     static boolean isUnsupportModifyingClass(String name) {
         return name.startsWith("com/mega/endinglib/util/");

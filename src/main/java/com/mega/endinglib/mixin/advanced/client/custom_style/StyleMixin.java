@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.client.custom_style;
+package com.mega.endinglib.mixin.advanced.client.custom_style;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -11,6 +11,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -25,6 +26,16 @@ public class StyleMixin implements StyleItf {
     @Final
     @javax.annotation.Nullable
     TextColor color;
+    @Shadow @Final @javax.annotation.Nullable
+    Boolean bold;
+    @Shadow @Final @javax.annotation.Nullable
+    Boolean italic;
+    @Shadow @Final @javax.annotation.Nullable
+    Boolean strikethrough;
+    @Shadow @Final @javax.annotation.Nullable
+    Boolean underlined;
+    @Shadow @Final @javax.annotation.Nullable
+    Boolean obfuscated;
     @Unique
     @Nullable
     Boolean endingLibrary$isCentered = null;
@@ -40,69 +51,81 @@ public class StyleMixin implements StyleItf {
     }
 
     @WrapOperation(method = "applyFormat", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/TextColor;fromLegacyFormat(Lnet/minecraft/ChatFormatting;)Lnet/minecraft/network/chat/TextColor;"))
-    private TextColor applyFormat(ChatFormatting p_131271_, Operation<TextColor> original, @Share("shouldCentered") LocalBooleanRef shouldCentered) {
+    private TextColor saveOriginalColor(ChatFormatting p_131271_, Operation<TextColor> original) {
         if (p_131271_ == TextColorUtils.MIDDLE) {
-            shouldCentered.set(true);
-            return this.color;
-        } else return original.call(p_131271_);
-    }
-
-    @Inject(method = "applyFormat", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
-    private void applyFormatCentered(ChatFormatting p_131158_, CallbackInfoReturnable<Style> cir, @Share("shouldCentered") LocalBooleanRef shouldCentered) {
-        if (shouldCentered.get()) {
-            Style style = cir.getReturnValue();
-            ((StyleItf) style).endingLibrary$withCentered(true);
-            cir.setReturnValue(style);
-        }
-    }
-
-    @WrapOperation(method = "applyLegacyFormat", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/TextColor;fromLegacyFormat(Lnet/minecraft/ChatFormatting;)Lnet/minecraft/network/chat/TextColor;"))
-    private TextColor applyLegacyFormat(ChatFormatting p_131271_, Operation<TextColor> original, @Share("shouldCentered") LocalBooleanRef shouldCentered) {
-        if (p_131271_ == TextColorUtils.MIDDLE) {
-            shouldCentered.set(true);
             return this.color;
         }
         return original.call(p_131271_);
     }
 
+    @Inject(method = "applyFormat", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
+    private void applyFormatCentered(ChatFormatting p_131158_, CallbackInfoReturnable<Style> cir/*, @Share("shouldCentered") LocalBooleanRef shouldCentered*/) {
+        Boolean centered = this.endingLibrary$isCentered;
+        if (p_131158_ == TextColorUtils.MIDDLE)
+            centered = Boolean.TRUE;
+        Style style = cir.getReturnValue();
+        ((StyleItf) style).endingLibrary$withCentered(centered == null ? Boolean.FALSE : centered);
+        cir.setReturnValue(style);
+    }
+
+    @WrapOperation(method = "applyLegacyFormat", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/TextColor;fromLegacyFormat(Lnet/minecraft/ChatFormatting;)Lnet/minecraft/network/chat/TextColor;"))
+    private TextColor saveOriginalLegacyColor(ChatFormatting p_131271_, Operation<TextColor> original) {
+        if (p_131271_ == TextColorUtils.MIDDLE) {
+            return this.color;
+        }
+        return original.call(p_131271_);
+    }
+    @Inject(method = "applyLegacyFormat", at = @At(value = "FIELD", opcode = Opcodes.GETFIELD, target = "Lnet/minecraft/network/chat/Style;obfuscated:Ljava/lang/Boolean;", shift = At.Shift.AFTER))
+    private void applyLegacyFormat(ChatFormatting p_131158_, CallbackInfoReturnable<Style> cir, @Share("caughtMiddle") LocalBooleanRef caughtMiddle) {
+        if (p_131158_ == TextColorUtils.MIDDLE)
+            caughtMiddle.set(true);
+    }
     @Inject(method = "applyLegacyFormat", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
-    private void applyLegacyFormatCentered(ChatFormatting p_131158_, CallbackInfoReturnable<Style> cir, @Share("shouldCentered") LocalBooleanRef shouldCentered) {
-        if (shouldCentered.get()) {
+    private void applyLegacyFormatCentered(ChatFormatting p_131158_, CallbackInfoReturnable<Style> cir, @Share("caughtMiddle") LocalBooleanRef caughtMiddle) {
+        if (caughtMiddle.get()) {
             Style s = cir.getReturnValue();
+            s.withBold(this.bold);
+            s.withItalic(this.italic);
+            s.withStrikethrough(this.strikethrough);
+            s.withUnderlined(this.underlined);
+            s.withObfuscated(this.obfuscated);
             ((StyleItf) s).endingLibrary$withCentered(true);
+            cir.setReturnValue(s);
+        } else {
+            Style s = cir.getReturnValue();
+            ((StyleItf) s).endingLibrary$withCentered(this.endingLibrary$isCentered == null ? Boolean.FALSE : this.endingLibrary$isCentered);
             cir.setReturnValue(s);
         }
     }
 
     @Inject(method = "applyTo", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
-    private void applyTo(Style p_131147_, CallbackInfoReturnable<Style> cir) {
-        Style style = cir.getReturnValue();
-        if (style != null && style != Style.EMPTY) {
-            StyleItf to = (StyleItf) p_131147_;
-            ((StyleItf) style).endingLibrary$withCentered(to.endingLibrary$isCentered() || this.endingLibrary$isCentered());
-            cir.setReturnValue(style);
+    private void applyTo(Style other, CallbackInfoReturnable<Style> cir) {
+        Style returnValue = cir.getReturnValue();
+        if (returnValue != null && returnValue != Style.EMPTY) {
+            StyleItf otherItf = (StyleItf) other;
+            ((StyleItf) returnValue).endingLibrary$withCentered(this.endingLibrary$isCentered != null ? this.endingLibrary$isCentered : otherItf.endingLibrary$isCentered());
+            cir.setReturnValue(returnValue);
         }
     }
 
     @WrapOperation(method = "applyFormats", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/chat/TextColor;fromLegacyFormat(Lnet/minecraft/ChatFormatting;)Lnet/minecraft/network/chat/TextColor;"))
-    private TextColor whenStoreTextColor(ChatFormatting p_131271_, Operation<TextColor> original, @Share("shouldCentered") LocalBooleanRef shouldCentered, @Share("lastTextColor") LocalRef<TextColor> lastTextColor) {
+    private TextColor whenStoreTextColor(ChatFormatting p_131271_, Operation<TextColor> original, @Share("caughtMiddle") LocalBooleanRef caughtMiddle) {
         if (p_131271_ != TextColorUtils.MIDDLE) {
-            lastTextColor.set(original.call(p_131271_));
+            return original.call(p_131271_);
         } else {
-            shouldCentered.set(true);
-            if (lastTextColor.get() == null)
-                lastTextColor.set(this.color);
+            caughtMiddle.set(true);
+            return this.color;
         }
-        return lastTextColor.get();
     }
 
     @Inject(method = "applyFormats", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
-    private void applyFormats(ChatFormatting[] p_131153_, CallbackInfoReturnable<Style> cir, @Share("shouldCentered") LocalBooleanRef shouldCentered) {
+    private void applyFormats(ChatFormatting[] p_131153_, CallbackInfoReturnable<Style> cir, @Share("caughtMiddle") LocalBooleanRef caughtMiddle) {
+        Boolean centered = this.endingLibrary$isCentered;
+        if (caughtMiddle.get())
+            centered = Boolean.TRUE;
         Style style = cir.getReturnValue();
-        if (style != null && shouldCentered.get()) {
-            ((StyleItf) style).endingLibrary$withCentered(true);
-            cir.setReturnValue(style);
-        }
+        ((StyleItf) style).endingLibrary$withCentered(centered == null ? Boolean.FALSE : centered);
+        cir.setReturnValue(style);
     }
 
     @Inject(method = {"withColor(Lnet/minecraft/network/chat/TextColor;)Lnet/minecraft/network/chat/Style;", "withBold", "withItalic", "withUnderlined", "withStrikethrough", "withObfuscated", "withClickEvent", "withHoverEvent", "withInsertion", "withFont"}, at = @At("RETURN"))

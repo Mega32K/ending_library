@@ -13,7 +13,7 @@ public record ItemBarComponent(Optional<Boolean> barVisible, Optional<TextColor>
             instance -> instance.group(
                     Codec.BOOL.optionalFieldOf("visible").forGetter(ItemBarComponent::barVisible),
                     Codecs.TEXT_COLOR.optionalFieldOf("color").forGetter(ItemBarComponent::barColor),
-                    Codec.INT.optionalFieldOf("visible").forGetter(ItemBarComponent::barWidth)
+                    Codec.INT.optionalFieldOf("width").forGetter(ItemBarComponent::barWidth)
             ).apply(instance, ItemBarComponent::new)
     );
 }

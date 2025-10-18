@@ -4,13 +4,13 @@ import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.mc.CommandFunction;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,6 +22,7 @@ import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
@@ -142,52 +143,33 @@ public class PersonalRuleCommand {
                 .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_PERSONAL_RULE.get()))
                 .then(buildAllCommands(Commands.argument("player", EntityArgument.player())));
     }
-
-    private static void sendGetMessage(CommandSourceStack stack, ServerPlayer player, String rule, Object valueToString) {
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.get", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), Component.literal(valueToString.toString()).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))), false);
-    }
     private static void sendGetMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.get", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);
     }
-    private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player, String rule, Object valueToString) {
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.set", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), Component.literal(valueToString.toString()).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, valueToString.toString())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))), false);
+    private static void sendSetDefaultMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.default", player.getDisplayName(), rule, valueToString), false);
     }
-
     private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.set", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);
     }
-    private static <T> int set2(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule, Object value) {
-        return set(stack, player, rule, (T) value);
+    private static <T> int set(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule, Object value) {
+        return set(stack, player, rule, value, false);
     }
-    private static <T> int set(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule, T value) {
-        rule.setCapValue(CommonProxy.getCameraCap(player), value);
-        Object o = value;
-        if (value instanceof Optional<?> optional) {
-            if (optional.isEmpty()) {
-                sendModifyMessage(stack, player, rule.getName(), LoreHelper.empty());
-                return 0;
-            } else if (optional.get() instanceof Component c) {
-                sendModifyMessage(stack, player, rule.getName(), c);
-                return 0;
-            } else o = optional.get();
-        }
-        sendModifyMessage(stack, player, rule.getName(), o);
+    private static <T> int set(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule, Object value, boolean isSetToDefault) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            rule.setCapValue(capability, value);
+            if (isSetToDefault) {
+                sendSetDefaultMessage(stack, player, rule.getName(), rule.asComponent((T) value));
+            } else {
+                sendModifyMessage(stack, player, rule.getName(), rule.asComponent((T) value));
+            }
+        });
         return 0;
     }
     private static <T> int get(CommandSourceStack stack, ServerPlayer player, PersonalRule<T> rule) {
         EndingLibraryPlayerCapability cap = CommonProxy.getCameraCap(player);
-        T v = rule.getCapValue(cap);
-        Object o = v;
-        if (v instanceof Optional<?> optional) {
-            if (optional.isEmpty()) {
-                sendGetMessage(stack, player, rule.getName(), LoreHelper.empty());
-                return 0;
-            } else if (optional.get() instanceof Component c) {
-                sendGetMessage(stack, player, rule.getName(), c);
-                return 0;
-            } else o = optional.get();
-        }
-        sendGetMessage(stack, player, rule.getName(), o);
+        T capValue = rule.getCapValue(cap);
+        sendGetMessage(stack, player, rule.getName(), rule.asComponent(capValue));
         return rule.getCommandResult(cap);
     }
 
@@ -195,29 +177,19 @@ public class PersonalRuleCommand {
         return new PersonalRule<>(capValueSetter, capValueGetter, serializerName, commandBuilder, defaultValue, commandResult);
     }
 
+    static <T> PersonalRule<T> build(String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult, T defaultValue, Function<T, Component> asComponent) {
+        return new PersonalRule<>(capValueSetter, capValueGetter, serializerName, commandBuilder, defaultValue, commandResult, asComponent);
+    }
     public static RequiredArgumentBuilder<CommandSourceStack, EntitySelector> buildAllCommands(RequiredArgumentBuilder<CommandSourceStack, EntitySelector> p) {
         for (PersonalRule<?> rule : PersonalRule.RULES) {
             p.then(rule.command(Commands.literal(rule.getName())));
             p.then(Commands.literal(rule.getName())
                     .then(Commands.literal("default")
-                            .executes(context -> set2(context.getSource(), EntityArgument.getPlayer(context, "player"), rule, rule.defaultValue))
+                            .executes(context -> set(context.getSource(), EntityArgument.getPlayer(context, "player"), rule, rule.defaultValue, true))
                     )
             );
         }
         return p;
-    }
-
-    @FunctionalInterface
-    public interface CommandFunction<T, U, R> {
-
-        /**
-         * Applies this function to the given arguments.
-         *
-         * @param t the first function argument
-         * @param u the second function argument
-         * @return the function result
-         */
-        R apply(T t, U u) throws CommandSyntaxException;
     }
 
     public static class PersonalRule<T> {
@@ -228,16 +200,20 @@ public class PersonalRuleCommand {
         private final BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder;
         private final BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult;
         private final T defaultValue;
-        public PersonalRule(BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, T defaultValue, BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult) {
+        private final Function<T, Component> asComponent;
+        public PersonalRule(BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, T defaultValue, BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult, Function<T, Component> asComponent) {
             this.capValueSetter = capValueSetter;
             this.capValueGetter = capValueGetter;
             this.serializerName = serializerName;
             this.commandBuilder = commandBuilder;
             this.defaultValue = defaultValue;
             this.commandResult = commandResult;
+            this.asComponent = asComponent;
             RULES.add(this);
         }
-
+        public PersonalRule(BiConsumer<EndingLibraryPlayerCapability, T> capValueSetter, Function<EndingLibraryPlayerCapability, T> capValueGetter, String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, PersonalRule<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, T defaultValue, BiFunction<PersonalRule<T>, EndingLibraryPlayerCapability, Integer> commandResult) {
+            this(capValueSetter, capValueGetter, serializerName, commandBuilder, defaultValue, commandResult, null);
+        }
         @Override
         public int hashCode() {
             return serializerName.hashCode();
@@ -261,6 +237,31 @@ public class PersonalRuleCommand {
 
         public void setCapValue(EndingLibraryPlayerCapability cap, Object value) {
             capValueSetter.accept(cap, (T) value);
+        }
+
+        public Component asComponent(T value) {
+            if (this.asComponent != null)
+                return this.asComponent.apply(value);
+            else {
+                if (value instanceof Optional<?> optional) {
+                    return optionalAsComponent(optional, LoreHelper::optionalWrap);
+                } else {
+                    String result = value.toString();
+                    return Component.literal(result).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, result)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))));
+                }
+            }
+        }
+        private Component optionalAsComponent(Optional<?> optional, Function<Component, MutableComponent> function) {
+            if (optional.isEmpty()) {
+                return function.apply(LoreHelper.empty());
+            } else if (optional.get() instanceof Component c) {
+                return function.apply(c);
+            } else if (optional.get() instanceof Optional<?> o2)
+                return function.apply(optionalAsComponent(o2, LoreHelper::optionalWrap));
+            else {
+                String result = optional.get().toString();
+                return function.apply(Component.literal(result).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, result)).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))));
+            }
         }
         public int getCommandResult(EndingLibraryPlayerCapability cap) {
             return this.commandResult.apply(this, cap);

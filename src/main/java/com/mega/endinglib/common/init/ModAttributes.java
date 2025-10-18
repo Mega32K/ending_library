@@ -17,7 +17,6 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> EXTRA_EXHAUSTION_INCREASE = ATTRIBUTES.register("extra_exhaustion_increase", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".extra_exhaustion_increase", 0.0D, 0.0D, 20.0D).setSyncable(true));
     public static final RegistryObject<Attribute> MULTI_JUMP = ATTRIBUTES.register("multi_jump", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".multi_jump", 1.0D, 1.0D, 1024.0D).setSyncable(true));
     public static final RegistryObject<Attribute> NATURAL_REGENERATION_INCREASE = ATTRIBUTES.register("natural_regeneration_increase", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".natural_regeneration_increase", 1.0D, 0.0D, 1024.0D));
-
     public static void addAttributes(EntityAttributeModificationEvent e) {
         e.add(EntityType.PLAYER, EXTRA_EXHAUSTION_INCREASE.get());
         e.add(EntityType.PLAYER, MULTI_JUMP.get());

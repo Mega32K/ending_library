@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-public record ReleaseUsingComponent(String command, boolean isFinishedUsing, int timeLeft, Optional<ResourceLocation> function, int minimumPermission, int cooldownTicks) implements FunctionComponent {
+public record ReleaseUsingComponent(String command, boolean isFinishedUsing, int timeLeft, Optional<ResourceLocation> function, int cooldownTicks, int minimumPermission) implements FunctionComponent {
     public static Codec<ReleaseUsingComponent> CODEC = RecordCodecBuilder.create(
             com -> com.group(
                     Codec.STRING.optionalFieldOf("command", "").forGetter(ReleaseUsingComponent::command),

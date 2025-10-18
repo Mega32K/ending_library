@@ -1,7 +1,8 @@
-package com.mega.endinglib.mixin.client.custom_style;
+package com.mega.endinglib.mixin.compat.ibeeditor;
 
-import com.mega.endinglib.api.client.text.TextColorUtils;
-import net.minecraft.ChatFormatting;
+import com.github.franckyi.ibeeditor.client.util.texteditor.StyleType;
+import com.mega.endinglib.common.compat.ibeeditor.IBESafeClass;
+import com.mega.endinglib.util.annotation.ModDependsMixin;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -12,14 +13,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 
-@Mixin(ChatFormatting.class)
-public class ChatFormattingMixin {
+@Mixin(StyleType.class)
+@ModDependsMixin("ibeeditor")
+public class StyleTypeMixin {
     @Shadow(remap = false)
     @Final
     @Mutable
-    private static ChatFormatting[] $VALUES;
+    private static StyleType[] $VALUES;
 
-    ChatFormattingMixin(String id, int ordinal, String name, char code, boolean isFormat) {
+    StyleTypeMixin(String id, int ordinal) {
         throw new AssertionError("Mixin Failed");
     }
 
@@ -27,14 +29,14 @@ public class ChatFormattingMixin {
             at = {@At(
                     value = "FIELD",
                     shift = At.Shift.AFTER,
-                    target = "Lnet/minecraft/ChatFormatting;$VALUES:[Lnet/minecraft/ChatFormatting;"
+                    target = "Lcom/github/franckyi/ibeeditor/client/util/texteditor/StyleType;$VALUES:[Lcom/github/franckyi/ibeeditor/client/util/texteditor/StyleType;"
             )},
             method = {"<clinit>"}
     )
     private static void middleFormatting(CallbackInfo ci) {
         int ordinal = $VALUES.length;
         $VALUES = Arrays.copyOf($VALUES, ordinal + 1);
-        TextColorUtils.MIDDLE = (ChatFormatting) (Object) (new ChatFormattingMixin("MIDDLE", ordinal, "MIDDLE", '|', true));
-        $VALUES[ordinal] = TextColorUtils.MIDDLE;
+        IBESafeClass.CENTERED = (StyleType) (Object) (new StyleTypeMixin("MIDDLE", ordinal));
+        $VALUES[ordinal] = IBESafeClass.CENTERED;
     }
 }

@@ -2,8 +2,8 @@ package com.mega.endinglib.api.item.armor;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.mega.endinglib.api.client.cmc.ClientLoreHelper;
 import com.mega.endinglib.api.client.cmc.CuriosMutableComponent;
-import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.api.client.cmc.LoreStyle;
 import com.mega.endinglib.util.mc.entity.armor.ArmorModifiersBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -177,7 +177,7 @@ public abstract class ModifiableArmorItem extends ArmorItem {
 
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag tooltipFlag) {
-        boolean isShiftKeyDown = LoreHelper.hasShiftDown();
+        boolean isShiftKeyDown = ClientLoreHelper.hasShiftDown();
         if (hasSimpleDescription() || hasSetDescription()) {
             if (isShiftKeyDown) {
                 List<CuriosMutableComponent> cmcs = new ObjectArrayList<>();

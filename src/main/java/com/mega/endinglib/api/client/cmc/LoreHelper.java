@@ -1,23 +1,24 @@
 package com.mega.endinglib.api.client.cmc;
 
-import com.mega.endinglib.api.data.TagEnum;
-import com.mojang.blaze3d.platform.InputConstants;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
-import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class LoreHelper {
     public static final MutableComponent[] BRACKETS = new MutableComponent[]{
@@ -28,6 +29,9 @@ public class LoreHelper {
             Component.literal("<").withStyle(ChatFormatting.GRAY),
             Component.literal(">").withStyle(ChatFormatting.GRAY)
     };
+    public static final Function<Optional<EntityDimensions>, Component> OPT_ENTITY_DIMENSIONAL_COMPONENT_OPERATION = optED -> optionalOf(optED, LoreHelper::entityDimension);
+    public static final Function<Optional<AABB>, Component> OPT_AABB_COMPONENT_OPERATION = optAABB -> optionalOf(optAABB, LoreHelper::aabb);
+    public static final Function<Optional<Vector3f>, Component> OPT_VEC3F_OPERATION = optVec3f -> optionalOf(optVec3f, LoreHelper::vec3f);
     public static final Map<ChatFormatting, String> codeMap = new Object2ObjectOpenHashMap<>();
 
     static {
@@ -87,6 +91,9 @@ public class LoreHelper {
     public static String codeMode(ChatFormatting formatting) {
         return codeMap.getOrDefault(formatting, String.valueOf(ChatFormatting.PREFIX_CODE) + formatting.getChar());
     }
+    public static MutableComponent optionalWrap(Component component) {
+        return Component.literal("Optional").withStyle(ChatFormatting.GRAY).append(BRACKETS[0].copy().append(component).append(BRACKETS[1].copy()));
+    }
     public static MutableComponent wrap(Component component) {
         return BRACKETS[0].copy().append(component).append(BRACKETS[1].copy());
     }
@@ -94,7 +101,7 @@ public class LoreHelper {
         return IDENTIFIERS[0].copy().append(component).append(IDENTIFIERS[1].copy());
     }
     public static MutableComponent empty() {
-        return Component.translatable("tooltip.endinglib.optional_empty");
+        return Component.translatable("tooltip.endinglib.optional_empty").withStyle(ChatFormatting.GOLD);
     }
 
     public static MutableComponent bool(boolean z) {
@@ -112,6 +119,9 @@ public class LoreHelper {
     }
     public static Component number(Number number, ChatFormatting color) {
         return withCopy(Component.literal(String.valueOf(number)).withStyle(color), String.valueOf(number));
+    }
+    public static <T> Component optionalOf(Optional<T> optional, Function<T, Component> function) {
+        return optional.map(t -> LoreHelper.optionalWrap(function.apply(t))).orElseGet(() -> LoreHelper.optionalWrap(LoreHelper.empty()));
     }
     public static Component vec2(Vec2 vec2) {
         return Component.literal("[").withStyle(ChatFormatting.GREEN)
@@ -157,6 +167,9 @@ public class LoreHelper {
                                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
                 ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
     }
+    public static Component vec3f(Vector3f vec3) {
+        return vec3(new Vec3(vec3));
+    }
     public static Component vec3(Vec3 vec3) {
         return Component.literal("[").withStyle(ChatFormatting.GREEN)
                 .append(
@@ -180,6 +193,32 @@ public class LoreHelper {
                                 .withStyle(ChatFormatting.GOLD)
                                 .withStyle(style -> style
                                         .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec3.z)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
+    }
+    public static Component entityDimension(EntityDimensions dimensions) {
+        return Component.literal("[").withStyle(ChatFormatting.GREEN)
+                .append(
+                        Component.literal(String.format("%.3f", dimensions.width))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", dimensions.width)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.format("%.3f", dimensions.height))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", dimensions.height)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal("fixed=" + dimensions.fixed)
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(dimensions.fixed)))
                                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
                 ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
     }
@@ -240,35 +279,5 @@ public class LoreHelper {
                 pose.name()
         );
     }
-    public static boolean hasControlDown() {
-        if (Minecraft.ON_OSX) {
-            return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 343) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 347);
-        } else {
-            return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 341) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 345);
-        }
-    }
 
-    public static boolean hasShiftDown() {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 340) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 344);
-    }
-
-    public static boolean hasAltDown() {
-        return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 342) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 346);
-    }
-
-    public static boolean isCut(int p_96629_) {
-        return p_96629_ == 88 && hasControlDown() && !hasShiftDown() && !hasAltDown();
-    }
-
-    public static boolean isPaste(int p_96631_) {
-        return p_96631_ == 86 && hasControlDown() && !hasShiftDown() && !hasAltDown();
-    }
-
-    public static boolean isCopy(int p_96633_) {
-        return p_96633_ == 67 && hasControlDown() && !hasShiftDown() && !hasAltDown();
-    }
-
-    public static boolean isSelectAll(int p_96635_) {
-        return p_96635_ == 65 && hasControlDown() && !hasShiftDown() && !hasAltDown();
-    }
 }

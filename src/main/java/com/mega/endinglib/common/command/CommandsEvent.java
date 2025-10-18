@@ -45,6 +45,7 @@ public class CommandsEvent {
                         .then(SoundCommand.register())
                         .then(ShaderCommand.register())
                         .then(FreezeCommand.register())
+                        .then(DataCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                         )

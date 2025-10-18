@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.client.custom_style;
+package com.mega.endinglib.mixin.advanced.client.custom_style;
 
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;

@@ -1,19 +1,22 @@
 package com.mega.endinglib.api.data;
 
+import com.mega.endinglib.util.mc.codec.Codecs;
 import io.netty.handler.codec.DecoderException;
 import it.unimi.dsi.fastutil.bytes.ByteConsumer;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.List;
 import java.util.Optional;
@@ -77,17 +80,18 @@ public class CompoundTagUtils {
         CompoundTag tag = new CompoundTag();
         if (optional.isPresent()) {
             tag.putBoolean("Optional", true);
-            writer.accept(tag, "Value", optional.get());
+            writer.accept(tag, "Data", optional.get());
         } else {
             tag.putBoolean("Optional", false);
         }
+        nbt.put(key, tag);
     }
 
     public static <T> Optional<T> getOptional(CompoundTag nbt, String key, CompoundTagReader<T> reader) {
         if (!containsCompound(nbt, key)) return Optional.empty();
         CompoundTag tag = nbt.getCompound(key);
         if (tag.getBoolean("Optional")) {
-            return Optional.of(reader.apply(tag, "Value"));
+            return Optional.of(reader.apply(tag, "Data"));
         } else return Optional.empty();
     }
 
@@ -157,14 +161,42 @@ public class CompoundTagUtils {
         tag.putDouble("maxX", aabb.maxX);
         tag.putDouble("maxY", aabb.maxY);
         tag.putDouble("maxZ", aabb.maxZ);
-        nbt.put(key, nbt);
+        nbt.put(key, tag);
     }
 
     public static AABB getAABB(CompoundTag nbt, String key) {
         CompoundTag tag = nbt.getCompound(key);
         if (tag.isEmpty()) return new AABB(0, 0, 0, 0, 0, 0);
         return new AABB(tag.getDouble("minX"), tag.getDouble("minY"), tag.getDouble("minZ"), tag.getDouble("maxX"), tag.getDouble("maxY"), tag.getDouble("maxZ"));
-
+    }
+    public static void putEntityDimensions(CompoundTag nbt, String key, EntityDimensions entityDimensions) {
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("width", entityDimensions.width);
+        tag.putFloat("height", entityDimensions.height);
+        if (entityDimensions.fixed)
+            tag.putBoolean("fixed", true);
+        nbt.put(key, tag);
+    }
+    public static void putVector3f(CompoundTag nbt, String key, Vector3f v3) {
+        ListTag floats = new ListTag();
+        floats.add(FloatTag.valueOf(v3.x));
+        floats.add(FloatTag.valueOf(v3.y));
+        floats.add(FloatTag.valueOf(v3.z));
+        nbt.put(key, floats);
+    }
+    public static Vector3f getVector3f(CompoundTag nbt, String key) {
+        if (CompoundTagUtils.containsListTag(nbt, key)) {
+            ListTag floats = nbt.getList(key, Tag.TAG_FLOAT);
+            if (floats.size() == 3) {
+                return new Vector3f(floats.getFloat(0), floats.getFloat(1), floats.getFloat(2));
+            }
+        }
+        return new Vector3f(0F);
+    }
+    public static EntityDimensions getEntityDimensions(CompoundTag nbt, String key) {
+        CompoundTag tag = nbt.getCompound(key);
+        if (tag.isEmpty()) return EntityDimensions.scalable(0F, 0F);
+        return tag.getBoolean("fixed") ? EntityDimensions.fixed(tag.getFloat("width"), tag.getFloat("height")) : EntityDimensions.scalable(tag.getFloat("width"), tag.getFloat("height"));
     }
 
     public static boolean getIntFlag(int flagData, int mask) {

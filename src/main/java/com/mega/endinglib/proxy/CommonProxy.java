@@ -4,6 +4,7 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
+import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
@@ -12,6 +13,7 @@ import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.init.ModCommandArgumentTypes;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
@@ -25,10 +27,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber
-
 public class CommonProxy implements ModProxy {
     public static LazyOptional<Capability<EndingLibraryPlayerCapability>> PLAYER_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()));
     public static LazyOptional<Capability<EndingLibraryLivingCapability>> LIVING_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString()));
+    public static LazyOptional<Capability<EndingLibraryEntityCapability>> ENTITY_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryEntityCapability.NAME.toString()));
 
     public CommonProxy() {
         IEventBus modBus = EndingLibrary.getModEventBus();
@@ -39,13 +41,14 @@ public class CommonProxy implements ModProxy {
     public static EndingLibraryPlayerCapability getCameraCap(Player player) {
         return player.getCapability(PLAYER_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()))).orElseThrow(NullPointerException::new);
     }
-
     public static LazyOptional<EndingLibraryPlayerCapability> getCameraCapOptional(Player player) {
         return player.getCapability(PLAYER_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString())));
     }
-
     public static LazyOptional<EndingLibraryLivingCapability> getLivingCapOptional(LivingEntity livingEntity) {
         return livingEntity.getCapability(LIVING_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString())));
+    }
+    public static LazyOptional<EndingLibraryEntityCapability> getEntityCapOptional(Entity entity) {
+        return entity.getCapability(ENTITY_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryEntityCapability.NAME.toString())));
     }
     public void commonSetup(final FMLCommonSetupEvent event) {
         ItemComponentManager.init();
@@ -55,6 +58,8 @@ public class CommonProxy implements ModProxy {
             ELCapabilityManager.regsterCapability(EndingLibraryPlayerCapability::new, new CapabilityToken<EndingLibraryPlayerCapability>() {
             });
             ELCapabilityManager.regsterCapability(EndingLibraryLivingCapability::new, new CapabilityToken<EndingLibraryLivingCapability>() {
+            });
+            ELCapabilityManager.regsterCapability(EndingLibraryEntityCapability::new, new CapabilityToken<EndingLibraryEntityCapability>() {
             });
             ArgumentTypeInfos.registerByClass(CameraModifierArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER.get());
             ArgumentTypeInfos.registerByClass(CameraOperationArgument.class, ModCommandArgumentTypes.CAMERA_OPERATION.get());

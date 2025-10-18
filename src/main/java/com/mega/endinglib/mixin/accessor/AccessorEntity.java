@@ -2,6 +2,8 @@ package com.mega.endinglib.mixin.accessor;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -26,4 +28,10 @@ public interface AccessorEntity {
 
     @Accessor
     void setVehicle(Entity entity);
+    @Accessor
+    void setDimensions(EntityDimensions dimensions);
+    @Accessor
+    void setBb(AABB aabb);
+    @Invoker
+    AABB invokeMakeBoundingBox();
 }

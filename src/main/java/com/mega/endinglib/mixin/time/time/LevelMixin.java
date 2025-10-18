@@ -4,6 +4,8 @@ import com.mega.endinglib.api.entity.TimeStopEntity;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CCapabilitySetDataPacket;
 import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
+import com.mega.endinglib.util.mixin.data_expand.ExtraEntityData;
 import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.mixin.level.LevelExpandedContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
@@ -38,25 +40,8 @@ public abstract class LevelMixin implements LevelEC {
                 return;
             }
         }
-        if (entity instanceof LivingEntity living) {
-            CommonProxy.getLivingCapOptional(living).ifPresent(cap -> {
-                if (cap.isFrozen()) {
-                    if (living.level() instanceof ServerLevel serverLevel) {
-                        if (!serverLevel.players().isEmpty())
-                            if (cap.FROZEN.isDirty()) {
-                                for (ServerPlayer currentLevelPlayer : serverLevel.players()) {
-                                    PacketHandler.sendToPlayer(
-                                            new S2CCapabilitySetDataPacket(entity.getId(), cap.getRegistryName().toString(), List.of(cap.FROZEN)),
-                                            currentLevelPlayer
-                                    );
-                                }
-                                cap.FROZEN.setDirty(false);
-                            }
-                    }
-                    ci.cancel();
-                }
-            });
-        }
+        if (ExtraEntity.of(entity).endinglib$getExtraEntityData().isFrozen)
+            ci.cancel();
     }
 
     @Override

@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Optional;
 
-public record AttackEventComponent(String command, float attackCooldownRequirement, Optional<ResourceLocation> function, int minimumPermission, int contactCooldownTicks) implements FunctionComponent {
+public record AttackEventComponent(String command, float attackCooldownRequirement, Optional<ResourceLocation> function, int contactCooldownTicks, int minimumPermission) implements FunctionComponent {
     public static Codec<AttackEventComponent> CODEC = RecordCodecBuilder.create(
             com -> com.group(
                     Codec.STRING.optionalFieldOf("command", "").forGetter(AttackEventComponent::command),

@@ -1,7 +1,11 @@
 package com.mega.endinglib.api.capability;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
@@ -9,7 +13,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -26,28 +29,35 @@ import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = EndingLibrary.MODID)
 public class ELCapabilityManager {
-    public static final Object2ObjectOpenHashMap<String, Capability<EntitySyncCapabilityBase>> CAPABILITY_MAP = new Object2ObjectOpenHashMap<>();
-    public static final Object2ObjectOpenHashMap<String, Supplier<EntitySyncCapabilityBase>> CAPABILITY_SUPPLIER_MAP = new Object2ObjectOpenHashMap<>();
+    public static final ObjectSet<EntitySyncCapabilityBase> EMPTY_UNMODIFIABLE_CAPS = ObjectSets.unmodifiable(ObjectSets.emptySet());
+    public static final Object2ObjectOpenHashMap<String, Capability<? extends EntitySyncCapabilityBase>> CAPABILITY_MAP = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectOpenHashMap<String, Supplier<? extends EntitySyncCapabilityBase>> CAPABILITY_SUPPLIER_MAP = new Object2ObjectOpenHashMap<>();
 
     public static <T extends EntitySyncCapabilityBase> Capability<T> getCapability(String registryName) {
         return (Capability<T>) CAPABILITY_MAP.get(registryName);
     }
 
-    public static <T extends EntitySyncCapabilityBase> Capability<EntitySyncCapabilityBase> regsterCapability(Supplier<T> capability, CapabilityToken<T> token) {
+    public static <T extends EntitySyncCapabilityBase> Capability<T> regsterCapability(Supplier<T> capability, CapabilityToken<T> token) {
         String registryName = capability.get().getRegistryName().toString();
-        CAPABILITY_MAP.put(registryName, (Capability<EntitySyncCapabilityBase>) CapabilityManager.get(token));
-        CAPABILITY_SUPPLIER_MAP.put(registryName, (Supplier<EntitySyncCapabilityBase>) capability);
-        return CAPABILITY_MAP.get(registryName);
+        Capability<T> capability1 = CapabilityManager.get(token);
+        CAPABILITY_MAP.put(registryName, capability1);
+        CAPABILITY_SUPPLIER_MAP.put(registryName, capability);
+        return capability1;
     }
 
     @SubscribeEvent
     public static void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
+        ObjectOpenHashSet<EntitySyncCapabilityBase> endinglibCaps = null;
         for (String registryName : CAPABILITY_MAP.keySet()) {
+            if (endinglibCaps == null) endinglibCaps = new ObjectOpenHashSet<>();
             EntitySyncCapabilityBase defaultValue = CAPABILITY_SUPPLIER_MAP.get(registryName).get();
-            if (defaultValue.shouldAttachTo(entity))
+            if (defaultValue.shouldAttachTo(entity)) {
+                endinglibCaps.add(defaultValue);
                 event.addCapability(defaultValue.getRegistryName(), defaultValue);
+            }
         }
+        if (endinglibCaps != null) ExtraEntity.of(entity).makeEndinglibCaps(ObjectSets.unmodifiable(endinglibCaps));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -58,21 +68,15 @@ public class ELCapabilityManager {
         Player original = event.getOriginal();
         Player clone = event.getEntity();
         original.reviveCaps();
-        CAPABILITY_MAP.values().forEach(cap -> {
-            copyCapability(cap, original, clone);
-            CompoundTag tag = new CompoundTag();
-            clone.getCapability(cap).ifPresent(data -> {
-                if (canUseSync(data, syncType)) {
-                    data.sync(tag, distFromLevel(clone.level()), syncType, clone);
-                    data.dataManager.dirtyAll();
-                }
-            });
-        });
+        CAPABILITY_MAP.values().forEach(cap -> clone.getCapability(cap).ifPresent(data -> {
+            if (data.shouldAttachTo(original) && canUseSync(data, syncType)) {
+                copyCapability(cap, original, clone);
+                CompoundTag tag = new CompoundTag();
+                data.sync(tag, distFromLevel(clone.level()), syncType, clone);
+                data.dataManager.dirtyAllNotInitValue();
+            }
+        }));
         original.invalidateCaps();
-    }
-
-    @SubscribeEvent
-    public static void respawnEvent(PlayerEvent.PlayerRespawnEvent event) {
     }
 
     @SubscribeEvent
@@ -81,10 +85,9 @@ public class ELCapabilityManager {
         CAPABILITY_MAP.values().forEach(cap -> player.getCapability(cap).ifPresent((data) -> {
             if (canUseSync(data, CapabilitySyncType.DIMENSION_CHANGE) && player.level() instanceof ServerLevel serverLevel) {
                 data.sync(new CompoundTag(), Dist.DEDICATED_SERVER, CapabilitySyncType.DIMENSION_CHANGE, player, serverLevel);
-                data.dataManager.dirtyAll();
+                data.dataManager.dirtyAllNotInitValue();
             }
         }));
-
     }
 
     @SubscribeEvent
@@ -131,15 +134,13 @@ public class ELCapabilityManager {
         return level.isClientSide() ? Dist.CLIENT : Dist.DEDICATED_SERVER;
     }
 
-    private static void copyCapability(Capability<EntitySyncCapabilityBase> capability, ICapabilityProvider original, ICapabilityProvider clone) {
-        original.getCapability(capability).ifPresent((dataOriginal) -> {
-            clone.getCapability(capability).ifPresent((dataClone) -> {
-                dataClone.deserializeNBT(dataOriginal.serializeNBT());
-            });
-        });
+    private static void copyCapability(Capability<? extends EntitySyncCapabilityBase> capability, ICapabilityProvider original, ICapabilityProvider clone) {
+        original.getCapability(capability).ifPresent((dataOriginal) -> clone.getCapability(capability).ifPresent((dataClone) -> dataClone.deserializeNBT(dataOriginal.serializeNBT())));
     }
-
     public static boolean canUseSync(EntitySyncCapabilityBase cap, CapabilitySyncType type) {
         return cap.getEnabledSyncTypes().contains(type);
+    }
+    public static ObjectSet<EntitySyncCapabilityBase> getCaps(Entity entity) {
+        return ExtraEntity.of(entity).endinglib$Caps();
     }
 }

@@ -1,4 +1,4 @@
-package com.mega.endinglib.mixin.client.custom_style;
+package com.mega.endinglib.mixin.advanced.client.custom_style;
 
 import com.mega.endinglib.api.client.GuiGraphicsItf;
 import com.mega.endinglib.api.client.text.TextColorUtils;

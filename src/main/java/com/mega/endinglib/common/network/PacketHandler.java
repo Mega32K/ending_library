@@ -51,6 +51,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CCapabilityDataSyncPacket.class, S2CCapabilityDataSyncPacket::encode, S2CCapabilityDataSyncPacket::decode, S2CCapabilityDataSyncPacket::handle);
         INSTANCE.registerMessage(id(), C2SCapabilityDataSyncPacket.class, C2SCapabilityDataSyncPacket::encode, C2SCapabilityDataSyncPacket::decode, C2SCapabilityDataSyncPacket::handle);
         INSTANCE.registerMessage(id(), S2CCapabilitySetDataPacket.class, S2CCapabilitySetDataPacket::encode, S2CCapabilitySetDataPacket::decode, S2CCapabilitySetDataPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCapabilitySeenByDataPacket.class, S2CCapabilitySeenByDataPacket::encode, S2CCapabilitySeenByDataPacket::decode, S2CCapabilitySeenByDataPacket::handle);
         INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraModifierSetPacket.class, S2CCameraModifierSetPacket::encode, S2CCameraModifierSetPacket::decode, S2CCameraModifierSetPacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraModifierRemovePacket.class, S2CCameraModifierRemovePacket::encode, S2CCameraModifierRemovePacket::decode, S2CCameraModifierRemovePacket::handle);

@@ -8,12 +8,19 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * 注册数据序列化器
+ * <h2>一定要调用方法 {@link CapabilityDataSerializers#registerSerializer(CapabilityDataSerializer)}</h2>
+ */
 public class CapabilityDataSerializers {
     public static final FriendlyByteBuf.Writer<AABB> F_AABB_WRITER = (byteBuf, aabb) -> {
         byteBuf.writeDouble(aabb.minX);
@@ -24,6 +31,12 @@ public class CapabilityDataSerializers {
         byteBuf.writeDouble(aabb.maxZ);
     };
     public static final FriendlyByteBuf.Reader<AABB> F_AABB_READER = byteBuf -> new AABB(byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble(), byteBuf.readDouble());
+    public static final FriendlyByteBuf.Writer<EntityDimensions> F_ENTITY_DIMENSIONS_WRITER = (byteBuf, entityDimensions) -> {
+        byteBuf.writeFloat(entityDimensions.width);
+        byteBuf.writeFloat(entityDimensions.height);
+        byteBuf.writeBoolean(entityDimensions.fixed);
+    };
+    public static final FriendlyByteBuf.Reader<EntityDimensions> F_ENTITY_DIMENSIONS_READER = byteBuf -> new EntityDimensions(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readBoolean());
     public static final CapabilityDataSerializer<Byte> BYTE = CapabilityDataSerializer.simple((p_238118_, p_238119_) -> p_238118_.writeByte(p_238119_), FriendlyByteBuf::readByte, CompoundTag::putByte, CompoundTag::getByte);
     public static final CapabilityDataSerializer<Integer> INT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt, CompoundTag::putInt, CompoundTag::getInt);
     public static final CapabilityDataSerializer<Long> LONG = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarLong, FriendlyByteBuf::readVarLong, CompoundTag::putLong, CompoundTag::getLong);
@@ -93,7 +106,11 @@ public class CapabilityDataSerializers {
         }
     };
     public static final CapabilityDataSerializer<AABB> AABB = CapabilityDataSerializer.simple(F_AABB_WRITER, F_AABB_READER, CompoundTagUtils::putAABB, CompoundTagUtils::getAABB);
+    public static final CapabilityDataSerializer<EntityDimensions> ENTITY_DIMENSIONS = CapabilityDataSerializer.simple(F_ENTITY_DIMENSIONS_WRITER, F_ENTITY_DIMENSIONS_READER, CompoundTagUtils::putEntityDimensions, CompoundTagUtils::getEntityDimensions);
+    public static final CapabilityDataSerializer<Optional<EntityDimensions>> OPTIONAL_ENTITY_DIMENSIONS = CapabilityDataSerializer.optional(F_ENTITY_DIMENSIONS_WRITER, F_ENTITY_DIMENSIONS_READER, CompoundTagUtils::putEntityDimensions, CompoundTagUtils::getEntityDimensions);
     public static final CapabilityDataSerializer<Optional<AABB>> OPTIONAL_AABB = CapabilityDataSerializer.optional(F_AABB_WRITER, F_AABB_READER, CompoundTagUtils::putAABB, CompoundTagUtils::getAABB);
+    public static final CapabilityDataSerializer<Vector3f> VEC3F = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVector3f, FriendlyByteBuf::readVector3f, CompoundTagUtils::putVector3f, CompoundTagUtils::getVector3f);
+    public static final CapabilityDataSerializer<Optional<Vector3f>> OPTIONAL_VEC3F = CapabilityDataSerializer.optional(FriendlyByteBuf::writeVector3f, FriendlyByteBuf::readVector3f, CompoundTagUtils::putVector3f, CompoundTagUtils::getVector3f);
     private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
 
     static {
@@ -115,6 +132,10 @@ public class CapabilityDataSerializers {
         registerSerializer(COMPOUND_TAG);
         registerSerializer(AABB);
         registerSerializer(OPTIONAL_AABB);
+        registerSerializer(ENTITY_DIMENSIONS);
+        registerSerializer(OPTIONAL_ENTITY_DIMENSIONS);
+        registerSerializer(VEC3F);
+        registerSerializer(OPTIONAL_VEC3F);
     }
 
     public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {
@@ -123,7 +144,7 @@ public class CapabilityDataSerializers {
     }
 
     public static CapabilityDataSerializer<?> getByID(int id) {
-        return SERIALIZERS.byId(id);
+        return SERIALIZERS.byIdOrThrow(id);
     }
 
     public static int getID(CapabilityDataSerializer<?> serializer) {

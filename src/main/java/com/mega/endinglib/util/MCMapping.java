@@ -12,6 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
+    Entity$METHOD$getDimensions("getDimensions", "m_6972_", "(Lnet/minecraft/world/entity/Pose;)Lnet/minecraft/world/entity/EntityDimensions;"),
+    EntityDimensions$METHOD$scale("scale", "m_20388_", "(F)Lnet/minecraft/world/entity/EntityDimensions;"),
+    LivingEntity$METHOD$getScale("getScale", "m_6134_", "()F"),
     Inventory$FIELD$selected("selected", "f_35977_", "I"),
     KeyMapping$METHOD$consumeClick("consumeClick", "m_90859_", "()Z"),
     Options$FIELD$keyHotbarSlots("keyHotbarSlots", "f_92056_", "[Lnet/minecraft/client/KeyMapping;"),
