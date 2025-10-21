@@ -466,6 +466,18 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 }
                             }
                         }
+                    } else if (n instanceof MethodInsnNode min) {
+                        if (MCMapping.EntityRenderer$METHOD$getTextureLocation.equalsMethodNode(min)) {
+                            if (min.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new InsnNode(Opcodes.DUP2));
+                                insnNodes.add(new MethodInsnNode(min.getOpcode(), min.owner, min.name, min.desc, min.itf));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, CLIENT_EVENT_UTIL_CLASS, "wrapGetTextureLocations", "(Ljava/lang/Object;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/resources/ResourceLocation;)Lnet/minecraft/resources/ResourceLocation;"));
+                                m.instructions.insertBefore(min, insnNodes);
+                                m.instructions.remove(min);
+                                shouldWrite.set(true);
+                            }
+                        }
                     }
                 });
             });

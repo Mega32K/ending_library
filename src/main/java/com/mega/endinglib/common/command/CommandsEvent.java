@@ -54,10 +54,12 @@ public class CommandsEvent {
 
     public static void suggestFromExamples(Collection<String> examples, String translationKey, SuggestionsBuilder builder) {
         String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+        if (!translationKey.contains("%s"))
+            translationKey = translationKey + "%s";
         for (String ex : examples) {
             String toLowerExample = ex.toLowerCase(Locale.ROOT);
             if (remaining.isEmpty() || toLowerExample.startsWith(remaining)) {
-                builder.suggest(ex, Component.translatable(translationKey + toLowerExample));
+                builder.suggest(ex, Component.translatable(translationKey.formatted(toLowerExample)));
             }
         }
     }

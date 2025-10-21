@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
+    EntityRenderer$METHOD$getTextureLocation("getTextureLocation", "m_5478_", "(Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/resources/ResourceLocation;"),
     Entity$METHOD$getDimensions("getDimensions", "m_6972_", "(Lnet/minecraft/world/entity/Pose;)Lnet/minecraft/world/entity/EntityDimensions;"),
     EntityDimensions$METHOD$scale("scale", "m_20388_", "(F)Lnet/minecraft/world/entity/EntityDimensions;"),
     LivingEntity$METHOD$getScale("getScale", "m_6134_", "()F"),

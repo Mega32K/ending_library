@@ -2,6 +2,7 @@ package com.mega.endinglib.common.init;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.command.argument.*;
+import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -27,6 +28,7 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<PlayerAnimationArgument, ?>> PLAYER_ANIMATION = REGISTRIES.register("player_animation", () -> SingletonArgumentInfo.contextFree(PlayerAnimationArgument::animation));
     public static final RegistryObject<ArgumentTypeInfo<DirectionArgument, ?>> DIRECTION = REGISTRIES.register("block_direction", () -> SingletonArgumentInfo.contextFree(DirectionArgument::direction));
     public static final RegistryObject<ArgumentTypeInfo<FloatArrayArgument, ?>> FLOAT_ARRAY = REGISTRIES.register("float_array", FloatArrayArgument.FloatArrayArgumentInfo::new);
+    public static final RegistryObject<ArgumentTypeInfo<MobTypeArgument, ?>> MOB_TYPE = REGISTRIES.register("mob_type", () -> SingletonArgumentInfo.contextFree(MobTypeArgument::mobType));
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);
     }

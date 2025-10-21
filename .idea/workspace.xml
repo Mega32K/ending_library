@@ -85,28 +85,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "1.20.1",
-    "kotlin-language-version-configured": "true",
-    "last_directory_selection": "E:/CollapsingWorld/System-e/EndingLibrary/src/main/java/com/mega/endinglib/util/mc",
-    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/build/resources/main/assets/ending_library/lang",
-    "project.structure.last.edited": "模块",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.45287958",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;1.20.1&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;E:/CollapsingWorld/System-e/EndingLibrary/src/main/java/com/mega/endinglib/util/mc&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/CollapsingWorld/System-e/EndingLibrary/src/main/resources/assets/ending_library/textures/ui/loading&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;模块&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.45287958&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library\textures\ui\loading" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\lang" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\textures\ui" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
@@ -127,11 +127,11 @@
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.command.entity.selector" />
       <recent name="com.mega.endinglib.common.network.s2c" />
       <recent name="com.mega.endinglib.common.config.advanced" />
       <recent name="com.mega.endinglib.mixin.advanced.data_expand.component" />
       <recent name="com.mega.endinglib.common.network.s2c.shader" />
-      <recent name="com.mega.endinglib.common.config" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
@@ -239,6 +239,21 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>jar://$PROJECT_DIR$/../.gradle/caches/forge_gradle/deobf_dependencies/curse/maven/IBE-256822/4994072_mapped_official_1.20.1/IBE-256822-4994072_mapped_official_1.20.1.jar!/com/github/franckyi/ibeeditor/client/screen/controller/entry/TextEntryController.class</url>
+          <line>155</line>
+          <properties class="com.github.franckyi.ibeeditor.client.screen.controller.entry.TextEntryController" method="addStyleFormatting">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

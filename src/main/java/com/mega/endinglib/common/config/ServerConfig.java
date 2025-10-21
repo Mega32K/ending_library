@@ -34,6 +34,7 @@ public class ServerConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_SHADER;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_FREEZE;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_DATA;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_MOB_CONTROL;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -115,6 +116,9 @@ public class ServerConfig {
         COMMAND_DATA = BUILDER
                 .comment("/endinglib data命令的权限要求")
                 .defineInRange("DataPermission", 2, -1, 6);
+        COMMAND_MOB_CONTROL = BUILDER
+                .comment("/endinglib mobControl命令的权限要求")
+                .defineInRange("MobControlPermission", 2, -1, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

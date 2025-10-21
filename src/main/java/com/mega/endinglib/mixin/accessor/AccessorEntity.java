@@ -34,4 +34,6 @@ public interface AccessorEntity {
     void setBb(AABB aabb);
     @Invoker
     AABB invokeMakeBoundingBox();
+    @Accessor
+    EntityDimensions getDimensions();
 }

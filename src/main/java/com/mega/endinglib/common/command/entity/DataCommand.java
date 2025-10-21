@@ -3,7 +3,10 @@ package com.mega.endinglib.common.command.entity;
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.command.argument.FloatArrayArgument;
+import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
+import com.mega.endinglib.common.command.entity.mob.MobControlCommand;
 import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.mixin.accessor.AccessorEntity;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.CommandFunction;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -11,11 +14,15 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.core.BlockPos;
@@ -25,6 +32,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -41,37 +49,47 @@ public class DataCommand {
     public static final BiFunction<DataType<Boolean>, EndingLibraryEntityCapability, Integer> BOOL_COMMAND_RESULT = (type, cap) -> type.getCapValue(cap) ? 1 : 0;
     public static final BiFunction<DataType<Integer>, EndingLibraryEntityCapability, Integer> INT_COMMAND_RESULT = DataType::getCapValue;
     public static final BiFunction<DataType<Float>, EndingLibraryEntityCapability, Integer> FLOAT_COMMAND_RESULT = (type, cap) -> (int) (type.getCapValue(cap) * 100.0F);
-    public static final CommandFunction<CommandContext<CommandSourceStack>, DataType<?>, Integer> NORMAL_COMMAND_GET_RULE = (context, personalRule) -> get(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule);
+    public static <T> BiFunction<DataType<Optional<T>>, EndingLibraryEntityCapability, Integer> createOptionalUnitResult() {
+        return (type, cap) -> type.getCapValue(cap).isPresent() ? 1 : 0;
+    }
+    static Entity getTarget(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        return EntityArgument.getEntity(context, "target");
+    }
+    public static final CommandFunction<CommandContext<CommandSourceStack>, DataType<?>, Integer> NORMAL_COMMAND_GET_RULE = (context, personalRule) -> get(context.getSource(), getTarget(context), personalRule);
     public static final DataType<Optional<EntityDimensions>> DIMENSIONS = build("dimensions", (command, personalRule) ->
                     command.then(Commands.argument("width", FloatArgumentType.floatArg())
                                     .executes(context -> {
                                         float width = FloatArgumentType.getFloat(context, "width");
-                                        return set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(EntityDimensions.scalable(width, width)));
+                                        return set(context.getSource(), getTarget(context), personalRule, Optional.of(EntityDimensions.scalable(width, width)));
                                     })
                                     .then(Commands.literal("fixed")
                                             .executes(context -> {
                                                 float width = FloatArgumentType.getFloat(context, "width");
-                                                return set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(EntityDimensions.fixed(width, width)));
+                                                return set(context.getSource(), getTarget(context), personalRule, Optional.of(EntityDimensions.fixed(width, width)));
                                             })
                                     )
                                     .then(Commands.argument("height", FloatArgumentType.floatArg())
-                                            .executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(EntityDimensions.scalable(FloatArgumentType.getFloat(context, "width"), FloatArgumentType.getFloat(context, "height")))))
+                                            .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(EntityDimensions.scalable(FloatArgumentType.getFloat(context, "width"), FloatArgumentType.getFloat(context, "height")))))
                                             .then(Commands.literal("fixed")
-                                                    .executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(EntityDimensions.fixed(FloatArgumentType.getFloat(context, "width"), FloatArgumentType.getFloat(context, "height")))))
+                                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(EntityDimensions.fixed(FloatArgumentType.getFloat(context, "width"), FloatArgumentType.getFloat(context, "height")))))
                                             )
                                     )
                             )
                             .executes(context -> {
-                                Entity entity = EntityArgument.getEntity(context, "target");
-                                boolean[] normalSend = new boolean[] {true};
+                                Entity entity = getTarget(context);
+                                int[] returnValue = new int[] {-1};
                                 CommonProxy.getEntityCapOptional(entity).ifPresent(cap ->
                                         cap.getCustomEntityDimensions().ifPresent(ed -> {
                                             sendGetMessage(context.getSource(), entity, personalRule.getName(), personalRule.asComponent(Optional.of(ed)));
-                                            normalSend[0] = false;
+                                            returnValue[0] = (int) (new Vec2(ed.width, ed.height).length() * 100F);
                                         })
                                 );
-                                if (normalSend[0]) sendGetMessage(context.getSource(), entity, personalRule.getName(), personalRule.asComponent(Optional.of(entity.getType().getDimensions())));
-                                return 0;
+                                if (returnValue[0] == -1) {
+                                    EntityDimensions dimensions = ((AccessorEntity) entity).getDimensions();
+                                    returnValue[0] = (int) (new Vec2(dimensions.width, dimensions.height).length() * 100F);
+                                    sendGetMessage(context.getSource(), entity, personalRule.getName(), personalRule.asComponent(Optional.of(dimensions)));
+                                }
+                                return returnValue[0];
                             }),
             EndingLibraryEntityCapability::setCustomEntityDimensions,
             EndingLibraryEntityCapability::getCustomEntityDimensions,
@@ -86,10 +104,10 @@ public class DataCommand {
                     command.then(Commands.argument("start", Vec3Argument.vec3(false))
                                     .executes(context -> {
                                         Vec3 v = Vec3Argument.getVec3(context, "start");
-                                        return set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(new AABB(v,v)));
+                                        return set(context.getSource(), getTarget(context), personalRule, Optional.of(new AABB(v,v)));
                                     })
                                     .then(Commands.argument("end", Vec3Argument.vec3(false))
-                                            .executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(new AABB(Vec3Argument.getVec3(context, "start"), Vec3Argument.getVec3(context, "end")))))
+                                            .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(new AABB(Vec3Argument.getVec3(context, "start"), Vec3Argument.getVec3(context, "end")))))
                                     )
                             )
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
@@ -103,10 +121,10 @@ public class DataCommand {
                     command.then(Commands.argument("start", Vec3Argument.vec3(false))
                                     .executes(context -> {
                                         Vec3 v = Vec3Argument.getVec3(context, "start");
-                                        return set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(new AABB(v,v)));
+                                        return set(context.getSource(), getTarget(context), personalRule, Optional.of(new AABB(v,v)));
                                     })
                                     .then(Commands.argument("end", Vec3Argument.vec3(false))
-                                            .executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(new AABB(Vec3Argument.getVec3(context, "start"), Vec3Argument.getVec3(context, "end")))))
+                                            .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(new AABB(Vec3Argument.getVec3(context, "start"), Vec3Argument.getVec3(context, "end")))))
                                     )
                             )
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
@@ -118,7 +136,7 @@ public class DataCommand {
     );
     public static final DataType<Optional<Vector3f>> RENDER_SCALE = build("render_scale", (command, personalRule) ->
                     command.then(Commands.argument("scale", FloatArrayArgument.floats(3))
-                                    .executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), personalRule, Optional.of(new Vector3f(FloatArrayArgument.getFloats(context,"scale")))))
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(new Vector3f(FloatArrayArgument.getFloats(context,"scale")))))
                             )
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryEntityCapability::setRenderScale,
@@ -126,6 +144,46 @@ public class DataCommand {
             (type, cap) -> (int) (type.getCapValue(cap).orElse(new Vector3f()).length() * 100F),
             Optional.empty(),
             LoreHelper.OPT_VEC3F_OPERATION
+    );
+    public static final DataType<Optional<String>> CUSTOM_MOB_TYPE = build("mob_type", (command, personalRule) ->
+                    command.then(Commands.argument("mobType", MobTypeArgument.mobType())
+                                    .executes(context -> {
+                                        if (getTarget(context) instanceof Mob mob)
+                                            return set(context.getSource(), mob, personalRule, MobTypeArgument.getMobType(context, "mobType"));
+                                        throw MobControlCommand.NO_MOBS_FOUND.create();
+                                    })
+                            )
+                            .executes(context -> {
+                                if (getTarget(context) instanceof Mob entity) {
+                                    int[] returnValue = new int[] {0};
+                                    CommonProxy.getEntityCapOptional(entity).ifPresent(cap ->
+                                            cap.getMobType().ifPresent(str -> {
+                                                sendGetMessage(context.getSource(), entity, personalRule.getName(), personalRule.asComponent(Optional.of(str)));
+                                                returnValue[0] = 1;
+                                            })
+                                    );
+                                    if (returnValue[0] == 0) {
+                                        sendGetMessage(context.getSource(), entity, personalRule.getName(), personalRule.asComponent(Optional.of(MobTypeArgument.getName(entity.getMobType()))));
+                                    }
+                                    return returnValue[0];
+                                }
+                                throw MobControlCommand.NO_MOBS_FOUND.create();
+                            }),
+            EndingLibraryEntityCapability::setMobType,
+            EndingLibraryEntityCapability::getMobType,
+            createOptionalUnitResult(),
+            Optional.empty(),
+            LoreHelper.OPT_STRING_OPERATION
+    );
+    public static final DataType<String> CUSTOM_MODEL_TEXTURE = build("model_texture", (command, personalRule) ->
+                    command.then(Commands.argument("value", ResourceLocationArgument.id())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, ResourceLocationArgument.getId(context, "value").toString()))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryEntityCapability::setCustomModelTexture,
+            EndingLibraryEntityCapability::getCustomModelTexture,
+            (type, cap) -> type.getCapValue(cap).isEmpty() ? 0 : 1,
+            ""
     );
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("data")
@@ -143,21 +201,21 @@ public class DataCommand {
             p.then(rule.command(Commands.literal(rule.getName())));
             p.then(Commands.literal(rule.getName())
                     .then(Commands.literal("default")
-                            .executes(context -> set(context.getSource(), EntityArgument.getEntity(context, "target"), rule, rule.defaultValue, true))
+                            .executes(context -> set(context.getSource(), getTarget(context), rule, rule.defaultValue, true))
                     )
             );
         }
         return p;
     }
-    private static <T> void sendGetMessage(CommandSourceStack stack, Entity entity, String rule, Component component) {
+    private static void sendGetMessage(CommandSourceStack stack, Entity entity, String rule, Component component) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.data.get", entity.getDisplayName(), Component.translatable("commands.endinglib.message.data." + rule), component), false);
     }
 
-    private static <T> void sendSetDefaultMessage(CommandSourceStack stack, Entity entity, String rule, Component component) {
+    private static void sendSetDefaultMessage(CommandSourceStack stack, Entity entity, String rule, Component component) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.data.default", entity.getDisplayName(), Component.translatable("commands.endinglib.message.data." + rule), component), false);
     }
 
-    private static <T> void sendModifyMessage(CommandSourceStack stack, Entity entity, String rule, Component valueToString) {
+    private static void sendModifyMessage(CommandSourceStack stack, Entity entity, String rule, Component valueToString) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.data.set", entity.getDisplayName(), Component.translatable("commands.endinglib.message.data." + rule), valueToString), false);
     }
     private static <T> int set(CommandSourceStack stack, Entity entity, DataType<T> rule, T value) {

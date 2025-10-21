@@ -35,8 +35,7 @@ public record BlocksAttacksComponent(
             instance -> instance.group(
                             Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("block_delay_seconds", 0.0F).forGetter(BlocksAttacksComponent::blockDelaySeconds),
                             Codecs.NON_NEGATIVE_FLOAT.optionalFieldOf("disable_cooldown_scale", 1.0F).forGetter(BlocksAttacksComponent::disableCooldownScale),
-                            BlocksAttacksComponent.DamageReduction.CODEC
-                                    .listOf()
+                            Codecs.canSerializeAsSingleList(BlocksAttacksComponent.DamageReduction.CODEC)
                                     .optionalFieldOf("damage_reductions", List.of(new BlocksAttacksComponent.DamageReduction(90.0F, Optional.empty(), 0.0F, 1.0F)))
                                     .forGetter(BlocksAttacksComponent::damageReductions),
                             BlocksAttacksComponent.ItemDamage.CODEC

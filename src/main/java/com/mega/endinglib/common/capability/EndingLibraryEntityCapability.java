@@ -6,6 +6,7 @@ import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializer;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
+import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import com.mega.endinglib.common.command.entity.DataCommand;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
@@ -16,12 +17,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.Optional;
@@ -34,9 +37,13 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Optional<AABB>> HITBOX = this.defineByDataType(2, DataCommand.HITBOX, CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Optional<Vector3f>> RENDER_SCALE = this.defineByDataType(3, DataCommand.RENDER_SCALE, CapabilityDataSerializers.OPTIONAL_VEC3F);
     public final CapabilityEntityData<Boolean> FROZEN = this.dataManager.define(4, "frozen", false, CapabilityDataSerializers.BOOLEAN);
+    public final CapabilityEntityData<Optional<String>> CUSTOM_MOB_TYPE = this.defineByDataType(5, DataCommand.CUSTOM_MOB_TYPE, CapabilityDataSerializers.OPTIONAL_STRING);
+    public final CapabilityEntityData<String> CUSTOM_MODEL_TEXTURE = this.defineByDataType(6, DataCommand.CUSTOM_MODEL_TEXTURE, CapabilityDataSerializers.STRING);
     private <T> CapabilityEntityData<T> defineByDataType(int id, DataCommand.DataType<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
+    @NotNull
+    private MobType customMobType = MobType.UNDEFINED;
     @Override
     public ResourceLocation getRegistryName() {
         return NAME;
@@ -103,6 +110,18 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
                 ExtraEntityData extraEntityData = ExtraEntity.of(entity).endinglib$getExtraEntityData();
                 extraEntityData.isFrozen = this.isFrozen();
             }
+        } else if (data.equals(CUSTOM_MOB_TYPE)) {
+            this.customMobType = this.getMobType().map(s -> MobTypeArgument.get(s).orElse(MobType.UNDEFINED)).orElse(MobType.UNDEFINED);
+        } else if (data.equals(CUSTOM_MODEL_TEXTURE)) {
+            if (entity != null) {
+                ExtraEntityData extraEntityData = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+                extraEntityData.customModelTexture = null;
+                String str = this.getCustomModelTexture();
+                if (str != null && !str.isEmpty()) {
+                    if (!str.endsWith(".png")) str = str.substring(0, str.lastIndexOf(".")) + "png";
+                    extraEntityData.customModelTexture = new ResourceLocation(str);
+                }
+            }
         }
     }
 
@@ -115,6 +134,9 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public void customDeserializeNBT(CompoundTag nbt) {
         //触发一下自制逻辑
         this.getCustomEntityDimensions().ifPresent(this::setCustomEntityDimensions);
+        this.setFrozen(this.isFrozen());
+        this.getCustomHitbox().ifPresent(this::setCustomHitbox);
+        this.getMobType().ifPresent(type -> setMobType(Optional.of(type)));
     }
     public Optional<EntityDimensions> getCustomEntityDimensions() {
         return this.dataManager.getValue(DIMENSIONS);
@@ -182,7 +204,6 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public Optional<Vector3f> getRenderScale() {
         return this.dataManager.getValue(RENDER_SCALE);
     }
-
     public boolean isFrozen() {
         return this.dataManager.getValue(FROZEN);
     }
@@ -193,6 +214,23 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
             ExtraEntityData data = ExtraEntity.of(entity).endinglib$getExtraEntityData();
             data.isFrozen = flag;
         }
+    }
+    public void setMobType(Optional<String> type) {
+        this.dataManager.setValue(CUSTOM_MOB_TYPE, type);
+        this.customMobType = type.map(s -> MobTypeArgument.get(s).orElse(MobType.UNDEFINED)).orElse(MobType.UNDEFINED);
+    }
+    public Optional<String> getMobType() {
+        return this.dataManager.getValue(CUSTOM_MOB_TYPE);
+    }
+    @NotNull
+    public MobType getFieldMobType() {
+        return this.customMobType;
+    }
+    public String getCustomModelTexture() {
+        return this.dataManager.getValue(CUSTOM_MODEL_TEXTURE);
+    }
+    public void setCustomModelTexture(String skin) {
+        this.dataManager.setValue(CUSTOM_MODEL_TEXTURE, skin);
     }
     @Override
     protected void tick(Entity entity) {

@@ -8,6 +8,8 @@ import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
+import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
+import com.mega.endinglib.common.command.entity.selector.MobEntitySelector;
 import com.mega.endinglib.common.command.entity.selector.NearestEntitySelector;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
@@ -52,6 +54,7 @@ public class CommonProxy implements ModProxy {
     }
     public void commonSetup(final FMLCommonSetupEvent event) {
         ItemComponentManager.init();
+        EntitySelectorManager.register("m", new MobEntitySelector());
         EntitySelectorManager.register("n", new NearestEntitySelector());
         event.enqueueWork(() -> {
             EndingLibraryGameRules.init();
@@ -77,6 +80,7 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(PlayerAnimationArgument.class, ModCommandArgumentTypes.PLAYER_ANIMATION.get());
             ArgumentTypeInfos.registerByClass(DirectionArgument.class, ModCommandArgumentTypes.DIRECTION.get());
             ArgumentTypeInfos.registerByClass(FloatArrayArgument.class, ModCommandArgumentTypes.FLOAT_ARRAY.get());
+            ArgumentTypeInfos.registerByClass(MobTypeArgument.class, ModCommandArgumentTypes.MOB_TYPE.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {

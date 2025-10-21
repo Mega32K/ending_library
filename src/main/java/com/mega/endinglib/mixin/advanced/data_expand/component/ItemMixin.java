@@ -50,18 +50,6 @@ public abstract class ItemMixin implements IForgeItem {
         if (consumableComponent != null)
             cir.setReturnValue(consumableComponent.finishConsumption(world, user, itemStack));
     }
-    @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
-    private void componentUseAnimation(ItemStack itemStack, CallbackInfoReturnable<UseAnim> cir) {
-        ConsumableComponent consumableComponent = ItemComponentManager.get(itemStack, DataComponents.CONSUMABLE);
-        if (consumableComponent != null) {
-            cir.setReturnValue(consumableComponent.useAnimation());
-        } else {
-            BlocksAttacksComponent blocksAttacksComponent = ItemComponentManager.get(itemStack, DataComponents.BLOCKS_ATTACKS);
-            if (blocksAttacksComponent != null) {
-                cir.setReturnValue(UseAnim.BLOCK);
-            }
-        }
-    }
     @Inject(method = "getUseDuration", at = @At("HEAD"), cancellable = true)
     private void componentUseDuration(ItemStack itemStack, CallbackInfoReturnable<Integer> cir) {
         ConsumableComponent consumableComponent = ItemComponentManager.get(itemStack, DataComponents.CONSUMABLE);

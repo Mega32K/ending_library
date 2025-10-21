@@ -32,6 +32,7 @@ public class LoreHelper {
     public static final Function<Optional<EntityDimensions>, Component> OPT_ENTITY_DIMENSIONAL_COMPONENT_OPERATION = optED -> optionalOf(optED, LoreHelper::entityDimension);
     public static final Function<Optional<AABB>, Component> OPT_AABB_COMPONENT_OPERATION = optAABB -> optionalOf(optAABB, LoreHelper::aabb);
     public static final Function<Optional<Vector3f>, Component> OPT_VEC3F_OPERATION = optVec3f -> optionalOf(optVec3f, LoreHelper::vec3f);
+    public static final Function<Optional<String>, Component> OPT_STRING_OPERATION = optStr -> optionalOf(optStr, str -> LoreHelper.withCopy(Component.literal(str), str));
     public static final Map<ChatFormatting, String> codeMap = new Object2ObjectOpenHashMap<>();
 
     static {

@@ -5,10 +5,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.item.component.*;
-import com.mega.endinglib.api.item.component.type.ConsumableComponent;
-import com.mega.endinglib.api.item.component.type.EquippableComponent;
-import com.mega.endinglib.api.item.component.type.ToolComponent;
-import com.mega.endinglib.api.item.component.type.WeaponComponent;
+import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.function.AttackEventComponent;
 import com.mega.endinglib.api.item.component.type.function.ReleaseUsingComponent;
 import com.mega.endinglib.api.item.component.type.function.UseEventComponent;
@@ -269,5 +266,17 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                 cir.setReturnValue(component.barColor().get().getValue());
             }
         });
+    }
+    @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
+    private void componentUseAnimation(CallbackInfoReturnable<UseAnim> cir) {
+        ConsumableComponent consumableComponent = this.componentManager.get(DataComponents.CONSUMABLE);
+        if (consumableComponent != null) {
+            cir.setReturnValue(consumableComponent.useAnimation());
+        } else {
+            BlocksAttacksComponent blocksAttacksComponent = this.componentManager.get(DataComponents.BLOCKS_ATTACKS);
+            if (blocksAttacksComponent != null) {
+                cir.setReturnValue(UseAnim.BLOCK);
+            }
+        }
     }
 }

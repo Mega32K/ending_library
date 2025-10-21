@@ -81,7 +81,6 @@ public class TimeStopUtils {
         }
         if (source.level().isClientSide) throw new RuntimeException(("time stop should be called on server side."));
         if (!source.level().isClientSide) {
-            boolean lastState = isTimeStop;
 
             if (!z) {
                 for (LivingEntity living : source.level().getEntitiesOfClass(LivingEntity.class, new AABB(new BlockPos(0, 0, 0)).inflate(30000000))) {

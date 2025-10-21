@@ -17,11 +17,11 @@ import java.util.Optional;
 public record ToolComponent(List<Rule> rules, float defaultMiningSpeed, int damagePerBlock, boolean canDestroyBlocksInCreative, List<ToolAction> toolActions) {
     public static final Codec<ToolComponent> CODEC = RecordCodecBuilder.create(
             component -> component.group(
-                            Rule.CODEC.listOf().fieldOf("rules").forGetter(ToolComponent::rules),
+                            Codecs.canSerializeAsSingleList(Rule.CODEC).fieldOf("rules").forGetter(ToolComponent::rules),
                             Codec.FLOAT.optionalFieldOf("default_mining_speed", 1.0F).forGetter(ToolComponent::defaultMiningSpeed),
                             ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("damage_per_block", 1).forGetter(ToolComponent::damagePerBlock),
                             Codec.BOOL.optionalFieldOf("can_destroy_blocks_in_creative", true).forGetter(ToolComponent::canDestroyBlocksInCreative),
-                            Codecs.TOOL_ACTION_CODEC.listOf().optionalFieldOf("tool_actions", List.of()).forGetter(ToolComponent::toolActions)
+                            Codecs.canSerializeAsSingleList(Codecs.TOOL_ACTION_CODEC).optionalFieldOf("tool_actions", List.of()).forGetter(ToolComponent::toolActions)
                     )
                     .apply(component, ToolComponent::new)
     );

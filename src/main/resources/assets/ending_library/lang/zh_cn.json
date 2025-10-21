@@ -1,6 +1,15 @@
 {
+  "mobType.undefined.name" : "未定义",
+  "mobType.undead.name" : "亡灵生物",
+  "mobType.arthropod.name" : "节肢生物",
+  "mobType.illager.name" : "灾厄村民",
+  "mobType.water.name" : "水生生物",
+
   "item.components": "%s个(伪)组件",
   "component.minecraft.item_model" : "物品模型",
+
+  "gamerule.playerDamageInvulnerable" : "(终焉图书馆) 启用玩家无敌帧",
+  "gamerule.mobDamageInvulnerable" : "(终焉图书馆) 启用生物无敌帧",
 
   "attribute.name.ending_library.extra_exhaustion_increase" : "额外消耗度增值",
   "attribute.name.ending_library.extra_exhaustion_increase.description" : "玩家每tick多增加的消耗度。",
@@ -12,6 +21,7 @@
   "attribute.name.ending_library.scale.description" : "生物的模型与判定箱尺寸将缩放至该值指定的倍数。尺寸为1时生物为默认大小。",
 
   "commands.endinglib.argument.float_array.too_long" : "数组最大长度为 %s, 当前为 %s",
+  "commands.endinglib.argument.entity.notfound.mob" : "未找到生物",
 
   "commands.endinglib.fill_entity.success": "Successfully filled %s entities",
   "commands.endinglib.fill_entity.failed": "No entities were filled",
@@ -186,6 +196,8 @@
   "commands.endinglib.message.data.dimensions": "实体尺寸",
   "commands.endinglib.message.data.hitbox": "碰撞箱",
   "commands.endinglib.message.data.render_scale": "渲染缩放",
+  "commands.endinglib.message.data.mob_type": "生物类型",
+  "commands.endinglib.message.data.model_texture": "自定义模型纹理",
 
   "tooltip.endinglib.specialEffect": "§7特殊效果:",
   "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",
@@ -246,6 +258,7 @@
   "chat.endinglib.cannot_change_gamemode" : "你无法切换游戏模式!",
 
   "argument.entity.selector.nearestEntity" : "最近的实体",
+  "argument.entity.selector.allMobs" : "所有生物",
 
   "arguments.item.component.expected": "应为物品组件",
   "arguments.item.component.malformed": "错误的“%s”组件：“%s”",

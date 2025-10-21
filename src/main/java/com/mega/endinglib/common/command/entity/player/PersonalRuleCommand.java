@@ -124,7 +124,7 @@ public class PersonalRuleCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryPlayerCapability::setCustomSkin,
             EndingLibraryPlayerCapability::getCustomSkin,
-            (a,b) -> 0,
+            (a,b) -> a.getCapValue(b).isEmpty() ? 0 : 1,
             ""
     );
     public static final PersonalRule<Optional<Component>> NAME = build("name", (command, personalRule) ->

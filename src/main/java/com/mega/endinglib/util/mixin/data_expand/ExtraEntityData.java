@@ -2,6 +2,7 @@ package com.mega.endinglib.util.mixin.data_expand;
 
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.proxy.CommonProxy;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 
@@ -12,6 +13,7 @@ public class ExtraEntityData {
     private float scaleYOld;
     private float scaleZOld;
     public boolean hasCustomRenderScale;
+    public ResourceLocation customModelTexture = null;
     public ExtraEntityData(Entity entity) {
         this.entity = entity;
     }
