@@ -49,12 +49,14 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.network.NetworkEvent;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -196,7 +198,6 @@ public class ClientWrapped {
     }
     public static void handlePlaySound(S2CCompletelySoundPacket.Static packet, NetworkEvent.Context context) {
         Minecraft.getInstance().getSoundManager().play(new SimpleSoundInstance(packet.getSound(), packet.getSoundSource(), packet.getVolume(), packet.getPitch(), RandomSource.create(packet.getSeed()), packet.isRepeat(), packet.getRepeatDelay(), SoundInstance.Attenuation.NONE, 0.0D, 0.0D, 0.0D, true));
-
     }
     public static void handlePlaySound(S2CCompletelySoundPacket.Stereo packet, NetworkEvent.Context context) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -338,5 +339,8 @@ public class ClientWrapped {
             }
         } catch (Throwable ignore) {}
         return builder.buildFuture();
+    }
+    public static void setCameraEntity(@Nullable Entity entity) {
+        Minecraft.getInstance().setCameraEntity(entity == null ? ClientWrapped.clientPlayer() : entity);
     }
 }

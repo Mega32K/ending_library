@@ -7,6 +7,7 @@ import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraEntityPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraOriginRotationPacket;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mojang.brigadier.arguments.*;
@@ -15,6 +16,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -52,6 +54,7 @@ public class CameraCommand {
     public static final byte IS_FOV_LOCKED = 'e';
     public static final byte AVAILABLE_CAMERA_AREA = 'f';
     public static final byte IS_MOUSE_CONTROLLED = 'g';
+    public static final byte CAMERA_ENTITY = 'h';
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("camera")
@@ -200,6 +203,14 @@ public class CameraCommand {
                                         )
                                         .executes(context -> message(context.getSource(), IS_MOUSE_CONTROLLED, EntityArgument.getPlayer(context, "player")))
                                 )
+                                .then(Commands.literal("cameraEntity")
+                                        .then(Commands.literal("default")
+                                                .executes(context -> setCameraEntity(context.getSource(), EntityArgument.getPlayer(context, "player"), null))
+                                        )
+                                        .then(Commands.argument("value", EntityArgument.entity())
+                                                .executes(context -> setCameraEntity(context.getSource(), EntityArgument.getPlayer(context, "player"), EntityArgument.getEntity(context, "value")))
+                                        )
+                                )
                         )
                         .then(Commands.literal("animation")
                                 .then(Commands.argument("modifierType", CameraModifierArgument.modifierType())
@@ -321,7 +332,9 @@ public class CameraCommand {
         }
         return 0;
     }
-
+    private static void sendModifyVanillaMessage(CommandSourceStack stack, ServerPlayer player) {
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.modify", player.getDisplayName()), false);
+    }
     private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_mode_modify", player.getDisplayName()), false);
     }
@@ -421,6 +434,11 @@ public class CameraCommand {
     private static int default_mouseControl(CommandSourceStack stack, ServerPlayer player) {
         EndingLibraryPlayerCapability capability = CommonProxy.getCameraCap(player);
         capability.setMouseControlled(false);
+        return 0;
+    }
+    private static int setCameraEntity(CommandSourceStack stack, ServerPlayer player, @Nullable Entity target) {
+        PacketHandler.sendToPlayer(new S2CSetCameraEntityPacket(target == null ? -1 : target.getId()), player);
+        sendModifyVanillaMessage(stack, player);
         return 0;
     }
     private static int addModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, @Nullable UUID uuid, double amount, CameraModifier.Operation operation, boolean isPermanent) {

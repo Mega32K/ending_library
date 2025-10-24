@@ -79,6 +79,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CScreenEffectStatusPacket.class, S2CScreenEffectStatusPacket::encode, S2CScreenEffectStatusPacket::decode, S2CScreenEffectStatusPacket::handle);
         INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.SinglePass.class, S2CScreenEffectUniformPacket.SinglePass::encode, S2CScreenEffectUniformPacket.SinglePass::decode, S2CScreenEffectUniformPacket.SinglePass::handle);
         INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.AllPasses.class, S2CScreenEffectUniformPacket.AllPasses::encode, S2CScreenEffectUniformPacket.AllPasses::decode, S2CScreenEffectUniformPacket.AllPasses::handle);
+        INSTANCE.registerMessage(id(), S2CSetCameraEntityPacket.class, S2CSetCameraEntityPacket::encode, S2CSetCameraEntityPacket::decode, S2CSetCameraEntityPacket::handle);
 
     }
 

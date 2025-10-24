@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.time.time;
 
+import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.MusicManager;
@@ -18,7 +19,7 @@ public class MusicManagerMixin {
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void tick(CallbackInfo ci) {
-        if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension(minecraft.level))
+        if (RendererUtils.isTimeStop_andSameDimension)
             ci.cancel();
     }
 }

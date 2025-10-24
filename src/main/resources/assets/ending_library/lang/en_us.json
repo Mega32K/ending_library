@@ -58,6 +58,7 @@
   "commands.endinglib.message.camera.camera_enable": "§7为%s §a启用 §7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s §c关闭 §7自定义相机模式",
   "commands.endinglib.message.camera.camera_mode_modify": "§7已修改%s§7的自定义相机属性",
+  "commands.endinglib.message.camera.modify": "§7已修改%s§7的相机属性",
   "commands.endinglib.message.camera.camera_mode_default": "§7已修改%s§7的自定义相机属性为默认值",
   "commands.endinglib.message.camera.add_modifier": "§7为%s§7添加了相机修饰符 ",
   "commands.endinglib.message.camera.add_modifier_null_id": "§7为%s§7添加了相机修饰符(UUID随机生成) ",

@@ -28,7 +28,7 @@ public class LevelRendererMixin {
     @ModifyVariable(method = "renderEntity", at = @At("HEAD"), argsOnly = true)
     private float modifyEntityPartialTicks(float partialTicks, Entity p_109518_, double p_109519_, double p_109520_, double p_109521_, float p_109522_, PoseStack p_109523_, MultiBufferSource p_109524_) {
         if (TimeStopUtils.isTimeStop) {
-            if (TimeStopUtils.andSameDimension(p_109518_.level()))
+            if (RendererUtils.isTimeStop_andSameDimension)
                 if (TimeStopUtils.canMove(p_109518_)) {
                     partialTicks = TimeContext.Client.timer.partialTick;
                 }
