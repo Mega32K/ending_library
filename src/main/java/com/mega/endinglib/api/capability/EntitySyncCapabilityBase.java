@@ -91,7 +91,7 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     /**
      * 默认启用的同步操作Set
      */
-    private static final Supplier<Set<CapabilitySyncType>> DEFAULT_ENABLED_SYNC_TYPES = Suppliers.memoize(()-> EnumSet.of(CapabilitySyncType.PLAYER_CLONE, CapabilitySyncType.PLAYER_RESPAWN, CapabilitySyncType.PLAYER_LOGGED_IN));
+    private static final Supplier<Set<CapabilitySyncType>> DEFAULT_ENABLED_SYNC_TYPES = Suppliers.memoize(()-> EnumSet.of(CapabilitySyncType.PLAYER_CLONE, CapabilitySyncType.PLAYER_RESPAWN, CapabilitySyncType.PLAYER_LOGGED_IN, CapabilitySyncType.DIMENSION_CHANGE));
     /**
      * 默认的Holder
      */

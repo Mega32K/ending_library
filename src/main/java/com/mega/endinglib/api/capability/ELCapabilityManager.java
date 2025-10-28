@@ -18,6 +18,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -25,6 +26,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = EndingLibrary.MODID)
@@ -67,67 +69,86 @@ public class ELCapabilityManager {
         final CapabilitySyncType syncType = type;
         Player original = event.getOriginal();
         Player clone = event.getEntity();
-        original.reviveCaps();
-        CAPABILITY_MAP.values().forEach(cap -> clone.getCapability(cap).ifPresent(data -> {
-            if (data.shouldAttachTo(original) && canUseSync(data, syncType)) {
-                copyCapability(cap, original, clone);
-                CompoundTag tag = new CompoundTag();
-                data.sync(tag, distFromLevel(clone.level()), syncType, clone);
-                data.dataManager.dirtyAllNotInitValue();
-            }
-        }));
-        original.invalidateCaps();
+        Set<EntitySyncCapabilityBase> capabilityBases = getCaps(clone);
+        if (!capabilityBases.isEmpty()) {
+            original.reviveCaps();
+            capabilityBases.forEach(data -> {
+                if (data.shouldAttachTo(original) && canUseSync(data, syncType)) {
+                    copyCapability(getCapability(data.getRegistryName().toString()), original, clone);
+                    CompoundTag tag = new CompoundTag();
+                    data.sync(tag, distFromLevel(clone.level()), syncType, clone);
+                    data.dataManager.dirtyAllNotInitValue();
+                }
+            });
+            original.invalidateCaps();
+        }
     }
 
     @SubscribeEvent
-    public static void playerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        Player player = event.getEntity();
-        CAPABILITY_MAP.values().forEach(cap -> player.getCapability(cap).ifPresent((data) -> {
-            if (canUseSync(data, CapabilitySyncType.DIMENSION_CHANGE) && player.level() instanceof ServerLevel serverLevel) {
-                data.sync(new CompoundTag(), Dist.DEDICATED_SERVER, CapabilitySyncType.DIMENSION_CHANGE, player, serverLevel);
-                data.dataManager.dirtyAllNotInitValue();
-            }
-        }));
+    public static void entityChangeDimension(EntityTravelToDimensionEvent event) {
+        Entity entity = event.getEntity();
+        Set<EntitySyncCapabilityBase> capabilityBases = getCaps(entity);
+        if (!capabilityBases.isEmpty()) {
+            capabilityBases.forEach(data -> {
+                System.out.println(data.getRegistryName());
+                if (canUseSync(data, CapabilitySyncType.DIMENSION_CHANGE) && entity.level() instanceof ServerLevel serverLevel) {
+                    data.sync(new CompoundTag(), Dist.DEDICATED_SERVER, CapabilitySyncType.DIMENSION_CHANGE, entity, serverLevel);
+                    data.dataManager.dirtyAllNotInitValue();
+                }
+            });
+        }
     }
 
     @SubscribeEvent
     public static void playerLoggedInEvent(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
-        CAPABILITY_MAP.values().forEach(cap -> player.getCapability(cap).ifPresent((data) -> {
-            if (canUseSync(data, CapabilitySyncType.PLAYER_LOGGED_IN)) {
-                data.sync(new CompoundTag(), distFromLevel(player.level()), CapabilitySyncType.PLAYER_LOGGED_IN, player);
-            }
-        }));
+        Set<EntitySyncCapabilityBase> capabilityBases = getCaps(player);
+        if (!capabilityBases.isEmpty()) {
+            capabilityBases.forEach(data -> {
+                if (canUseSync(data, CapabilitySyncType.PLAYER_LOGGED_IN)) {
+                    data.sync(new CompoundTag(), distFromLevel(player.level()), CapabilitySyncType.PLAYER_LOGGED_IN, player);
+                }
+            });
+        }
     }
 
     @SubscribeEvent
     public static void playerLoggedOutEvent(PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
-        CAPABILITY_MAP.values().forEach(cap -> player.getCapability(cap).ifPresent((data) -> {
-            if (canUseSync(data, CapabilitySyncType.PLAYER_LOGGED_OUT)) {
-                data.sync(new CompoundTag(), distFromLevel(player.level()), CapabilitySyncType.PLAYER_LOGGED_OUT, player);
-            }
-        }));
+        Set<EntitySyncCapabilityBase> capabilityBases = getCaps(player);
+        if (!capabilityBases.isEmpty()) {
+            capabilityBases.forEach(data -> {
+                if (canUseSync(data, CapabilitySyncType.PLAYER_LOGGED_OUT)) {
+                    data.sync(new CompoundTag(), distFromLevel(player.level()), CapabilitySyncType.PLAYER_LOGGED_OUT, player);
+                }
+            });
+        }
     }
 
     @SubscribeEvent
     public static void entityDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
-        CAPABILITY_MAP.values().forEach(cap -> entity.getCapability(cap).ifPresent((data) -> {
-            if (canUseSync(data, CapabilitySyncType.DEATH)) {
-                data.sync(new CompoundTag(), distFromLevel(entity.level()), CapabilitySyncType.DEATH, entity);
-            }
-        }));
+        Set<EntitySyncCapabilityBase> capabilityBases = getCaps(entity);
+        if (!capabilityBases.isEmpty()) {
+            capabilityBases.forEach(data -> {
+                if (canUseSync(data, CapabilitySyncType.DEATH)) {
+                    data.sync(new CompoundTag(), distFromLevel(entity.level()), CapabilitySyncType.DEATH, entity);
+                }
+            });
+        }
     }
 
     @SubscribeEvent
     public static void onEntityTick(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
-        CAPABILITY_MAP.values().forEach(cap -> entity.getCapability(cap).ifPresent((data) -> {
-            if (canUseSync(data, CapabilitySyncType.TICK)) {
-                data.sync(new CompoundTag(), distFromLevel(entity.level()), CapabilitySyncType.TICK, entity);
-            }
-        }));
+        Set<EntitySyncCapabilityBase> capabilityBases = getCaps(entity);
+        if (!capabilityBases.isEmpty()) {
+            capabilityBases.forEach(data -> {
+                if (canUseSync(data, CapabilitySyncType.TICK)) {
+                    data.sync(new CompoundTag(), distFromLevel(entity.level()), CapabilitySyncType.TICK, entity);
+                }
+            });
+        }
     }
 
     public static Dist distFromLevel(Level level) {

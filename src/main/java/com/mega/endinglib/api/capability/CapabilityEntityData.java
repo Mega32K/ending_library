@@ -103,4 +103,12 @@ public class CapabilityEntityData<T> {
             return true;
         return obj instanceof CapabilityEntityData<?> data && data.id == this.id && Objects.equals(data.serializedName, this.serializedName) && Objects.equals(data.serializer, this.serializer);
     }
+
+    @Override
+    public String toString() {
+        return "CapabilityEntityData{" +
+                "id=" + id +
+                ", serializedName='" + serializedName + '\'' +
+                '}';
+    }
 }

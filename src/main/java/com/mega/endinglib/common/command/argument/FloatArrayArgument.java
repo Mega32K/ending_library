@@ -53,7 +53,6 @@ public class FloatArrayArgument implements ArgumentType<float[]> {
             stringreader.setCursor(builder.getStart());
             Parser parser = new Parser(stringreader, this.maxLength);
             try {
-                System.out.println(this.maxLength);
                 parser.parse();
             } catch (CommandSyntaxException ignore) {
 

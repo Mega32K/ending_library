@@ -100,7 +100,6 @@ public class CoremodInheritanceChain {
             readUnsignedShort(currentOffset);
             readClass(currentOffset + 2, charBuffer);
             String s = readClass(currentOffset + 4, charBuffer);
-            System.out.println(s);
             return s;
         }
     }

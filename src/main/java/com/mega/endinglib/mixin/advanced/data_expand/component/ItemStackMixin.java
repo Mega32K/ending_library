@@ -15,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -38,6 +39,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemStack {
@@ -278,5 +280,17 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                 cir.setReturnValue(UseAnim.BLOCK);
             }
         }
+    }
+    @Inject(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("HEAD"), cancellable = true)
+    private void componentTagsIs(TagKey<Item> p_204118_, CallbackInfoReturnable<Boolean> cir) {
+        List<TagKey<Item>> componentTags = this.componentManager.get(DataComponents.TAGS);
+        if (componentTags != null)
+            cir.setReturnValue(componentTags.contains(p_204118_));
+    }
+    @Inject(method = "getTags", at = @At("HEAD"), cancellable = true)
+    private void getComponentTags(CallbackInfoReturnable<Stream<TagKey<Item>>> cir) {
+        List<TagKey<Item>> componentTags = this.componentManager.get(DataComponents.TAGS);
+        if (componentTags != null)
+            cir.setReturnValue(componentTags.stream());
     }
 }

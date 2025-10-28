@@ -15,12 +15,16 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Unit;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.Tags;
 import org.joml.Vector3f;
+
+import java.util.List;
 
 public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_CUSTOM_DATA = new ResourceLocation("custom_data");
@@ -63,6 +67,7 @@ public class DataComponents extends ItemComponentManager {
      * {@link ItemStack#getBarWidth()}<br>{@link ItemStack#getBarColor()}<br>{@link ItemStack#isBarVisible()}<br>
      */
     public static final ResourceLocation COM_ITEM_BAR = SafeClass.loc("bar");
+    public static final ResourceLocation COM_TAGS = SafeClass.loc("tags");
     public static final ResourceLocation COM_ATTACK_EVENT = SafeClass.loc("function/attack_event");
     public static final ResourceLocation COM_USE_EVENT = SafeClass.loc("function/use_event");
     public static final ResourceLocation COM_RELEASE_USING = SafeClass.loc("function/release_event");
@@ -353,6 +358,13 @@ public class DataComponents extends ItemComponentManager {
             builder -> builder
                     .codec(ItemBarComponent.CODEC)
                     .registryName(COM_ITEM_BAR)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<List<TagKey<Item>>> TAGS = register(COM_TAGS, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(Codecs.fastUtilListCodec(Codecs.canSerializeAsSingleList(TagKey.hashedCodec(Registries.ITEM))))
+                    .registryName(COM_TAGS)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));

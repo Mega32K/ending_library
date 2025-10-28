@@ -18,16 +18,19 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.entity.PartEntity;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
@@ -70,7 +73,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     }
 
     @Override
-    public void onSyncedDataUpdated(CapabilityEntityData<?> data) { 
+    public void onSyncedDataUpdated(CapabilityEntityData<?> data) {
         Entity entity = this.getEntity();
         if (data.equals(DIMENSIONS)) { 
             if (entity != null) {

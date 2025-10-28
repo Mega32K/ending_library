@@ -185,12 +185,15 @@ public class SynchedCapabilityData {
         }
     }
     public void dirtyAllNotInitValue() {
-        this.anyOfDirty.set(true);
         this.lock.writeLock().lock();
         try {
-            for (CapabilityEntityData<?> ced : DEFINED_DATA.values())
-                if (!ced.isInitValue())
+            for (CapabilityEntityData<?> ced : DEFINED_DATA.values()) {
+                //System.out.printf("Init:%s, Current:%s%n", ced.getInitValue(), ced.getValue());
+                if (!ced.isInitValue()) {
+                    this.anyOfDirty.set(true);
                     ced.setDirty(true);
+                }
+            }
         } finally {
             this.lock.writeLock().unlock();
         }

@@ -134,7 +134,7 @@
       <recent name="com.mega.endinglib.common.config.advanced" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
     <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
       <module name="com.mega.CosmicLib.main" />
@@ -216,8 +216,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [build]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="应用程序.MinecraftInstHandler" />
       </list>
     </recent_temporary>
@@ -239,21 +239,6 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>jar://$PROJECT_DIR$/../.gradle/caches/forge_gradle/deobf_dependencies/curse/maven/IBE-256822/4994072_mapped_official_1.20.1/IBE-256822-4994072_mapped_official_1.20.1.jar!/com/github/franckyi/ibeeditor/client/screen/controller/entry/TextEntryController.class</url>
-          <line>155</line>
-          <properties class="com.github.franckyi.ibeeditor.client.screen.controller.entry.TextEntryController" method="addStyleFormatting">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

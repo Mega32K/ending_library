@@ -58,7 +58,6 @@ public class S2CCapabilityDataSyncPacket {
                     c.readSyncData(packet.nbt, Dist.DEDICATED_SERVER, packet.syncType, entity);
                     c.getDataManager().assignValues(packet.syncDataList);
                 });
-                packet.syncDataList.clear();
             }
         }
     }
