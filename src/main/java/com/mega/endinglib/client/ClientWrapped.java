@@ -289,7 +289,7 @@ public class ClientWrapped {
             Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
         }
     }
-    public static CompletableFuture<Suggestions> suggestCurrentPasses(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> suggestCurrentPasses(CommandContext<?> context, SuggestionsBuilder builder) {
         try {
             String name = ShaderCommand.getEffectName(context);
             Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
@@ -304,7 +304,7 @@ public class ClientWrapped {
         } catch (Throwable ignore) {}
         return builder.buildFuture();
     }
-    public static CompletableFuture<Suggestions> suggestSinglePassUniforms(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> suggestSinglePassUniforms(CommandContext<?> context, SuggestionsBuilder builder) {
         try {
             String name = ShaderCommand.getEffectName(context);
             String pass = ShaderCommand.getPassName(context);
@@ -323,7 +323,7 @@ public class ClientWrapped {
         return builder.buildFuture();
     }
 
-    public static CompletableFuture<Suggestions> suggestAllUniforms(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
+    public static CompletableFuture<Suggestions> suggestAllUniforms(CommandContext<?> context, SuggestionsBuilder builder) {
         try {
             String name = ShaderCommand.getEffectName(context);
             Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();

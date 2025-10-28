@@ -29,6 +29,9 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<DirectionArgument, ?>> DIRECTION = REGISTRIES.register("block_direction", () -> SingletonArgumentInfo.contextFree(DirectionArgument::direction));
     public static final RegistryObject<ArgumentTypeInfo<FloatArrayArgument, ?>> FLOAT_ARRAY = REGISTRIES.register("float_array", FloatArrayArgument.FloatArrayArgumentInfo::new);
     public static final RegistryObject<ArgumentTypeInfo<MobTypeArgument, ?>> MOB_TYPE = REGISTRIES.register("mob_type", () -> SingletonArgumentInfo.contextFree(MobTypeArgument::mobType));
+    public static final RegistryObject<ArgumentTypeInfo<PostEffectArgument, ?>> POST_EFFECT = REGISTRIES.register("post_effect", () -> SingletonArgumentInfo.contextFree(PostEffectArgument::postEffect));
+    public static final RegistryObject<ArgumentTypeInfo<PostEffectPassArgument, ?>> POST_EFFECT_PASS = REGISTRIES.register("post_effect_pass", () -> SingletonArgumentInfo.contextFree(PostEffectPassArgument::pass));
+    public static final RegistryObject<ArgumentTypeInfo<PostEffectUniformArgument, ?>> POST_EFFECT_UNIFORM = REGISTRIES.register("post_effect_uniform", PostEffectUniformArgument.PostEffectUniformArgumentInfo::new);
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);
     }

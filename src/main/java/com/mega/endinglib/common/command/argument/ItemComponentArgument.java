@@ -33,7 +33,7 @@ public class ItemComponentArgument implements ArgumentType<CompoundTag> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         S s = context.getSource();
-        if (s instanceof SharedSuggestionProvider sharedsuggestionprovider) {
+        if (s instanceof SharedSuggestionProvider) {
             StringReader stringreader = new StringReader(builder.getInput());
             stringreader.setCursor(builder.getStart());
             ItemComponentParser parser = new ItemComponentParser(stringreader);
