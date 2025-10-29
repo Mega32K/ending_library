@@ -224,19 +224,19 @@ public class CameraKeyframeAnimation {
             return result;
         }
     }
-    private float anim(List<CameraKeyframe> _keyframes, float partialTicks) {
-        if (_keyframes.isEmpty()) return 0f;
+    private float anim(List<CameraKeyframe> pKeyframes, float partialTicks) {
+        if (pKeyframes.isEmpty()) return 0f;
         float time = this.getAnimTime(partialTicks);
         int i = Math.max(0, Mth.binarySearch(
                 0,
-                keyframes.size(),
-                (index) -> time <= _keyframes.get(index).timestamp()) - 1
+                pKeyframes.size(),
+                (index) -> time <= pKeyframes.get(index).timestamp()) - 1
         );
 
 
-        int j = Math.min(keyframes.size() - 1, i + 1);
-        CameraKeyframe keyframe = _keyframes.get(i);
-        CameraKeyframe keyframe1 = _keyframes.get(j);
+        int j = Math.min(pKeyframes.size() - 1, i + 1);
+        CameraKeyframe keyframe = pKeyframes.get(i);
+        CameraKeyframe keyframe1 = pKeyframes.get(j);
         float f1 = time - keyframe.timestamp();
         float f2;
 

@@ -1,5 +1,6 @@
 package com.mega.endinglib.client.screen;
 
+import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.api.client.screen.widget.InfoImageWidget;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.common.menu.OtherPlayerInventoryMenu;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -52,8 +54,8 @@ public class OtherPlayerInventoryScreen extends AbstractContainerScreen<OtherPla
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2 - 1;
         if (this.menu.getToCheckPlayer() != null) {
-            this.addRenderableOnly(new InfoImageWidget(x - 18, y + 17, Component.translatable("screen.endinglib.other_player_inv.info_0", this.menu.getToCheckPlayer().getDisplayName())));
-            this.addRenderableOnly(new InfoImageWidget(x - 18, y + 17 + 72, Component.translatable("screen.endinglib.other_player_inv.info_1", this.menu.getToCheckPlayer().getDisplayName()), new PlayerEntityTooltipComponent(this.menu.getToCheckPlayer())));
+            this.addRenderableOnly(new InfoImageWidget(x - 18, y + 17, Component.translatable("screen.endinglib.other_player_inv.info_0", this.menu.getToCheckPlayer().getDisplayName()))).appearEasing(Easing.IN_OUT_CUBIC).appearDirection(new Vector3f(-1F, 0F, 0F)).appearAnimStartLength(6);
+            this.addRenderableOnly(new InfoImageWidget(x - 18, y + 17 + 72, Component.translatable("screen.endinglib.other_player_inv.info_1", this.menu.getToCheckPlayer().getDisplayName()), new PlayerEntityTooltipComponent(this.menu.getToCheckPlayer())).appearEasing(Easing.IN_OUT_CUBIC).appearDirection(new Vector3f(-1F, 0F, 0F)).appearAnimStartLength(6));
         }
     }
 
