@@ -2,9 +2,14 @@ package com.mega.endinglib.api.client.camera;
 
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -15,16 +20,18 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CameraKeyframeAnimation {
+    public static String DEFAULT_KEY = "default";
     public static final Function<CameraKeyframeAnimation, CompoundTag> WRITER = CameraKeyframeAnimation::serializeNBT;
     public static final FriendlyByteBuf.Reader<CameraKeyframeAnimation> READER_F = byteBuf -> {
         CameraKeyframeAnimation anim = new CameraKeyframeAnimation(byteBuf.readUtf(), byteBuf.readEnum(AnimType.class), byteBuf.readFloat());
         anim.tickCount = byteBuf.readInt();
         anim.stopped = byteBuf.readBoolean();
-        anim.keyframes.addAll(byteBuf.readList(CameraKeyframe.READER_F));
+        anim.keyframes.putAll(byteBuf.readMap(FriendlyByteBuf::readUtf, bb -> bb.readList(CameraKeyframe.READER_F)));
         return anim;
     };
     public static final FriendlyByteBuf.Writer<CameraKeyframeAnimation> WRITER_F = (byteBuf, keyframe) -> {
@@ -33,12 +40,16 @@ public class CameraKeyframeAnimation {
         byteBuf.writeFloat(keyframe.duration);
         byteBuf.writeInt(keyframe.tickCount);
         byteBuf.writeBoolean(keyframe.stopped);
-        byteBuf.writeCollection(keyframe.keyframes, CameraKeyframe.WRITER_F);
+        byteBuf.writeMap(keyframe.keyframes, FriendlyByteBuf::writeUtf, (bb, cameraKeyframes) -> bb.writeCollection(cameraKeyframes, CameraKeyframe.WRITER_F));
     };
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final Function<CompoundTag, CameraKeyframeAnimation> READER = CameraKeyframeAnimation::load;
     private final Supplier<String> nameGetter;
-    private final List<CameraKeyframe> keyframes = new ObjectArrayList<>();
+    private final Object2ObjectOpenHashMap<String, List<CameraKeyframe>> keyframes = Util.make(() -> {
+        Object2ObjectOpenHashMap<String, List<CameraKeyframe>> defaultMap = new Object2ObjectOpenHashMap<>(1);
+        defaultMap.put(DEFAULT_KEY, new ObjectArrayList<>());
+        return defaultMap;
+    });
     private int tickCountOld;
     private int tickCount;
     private float duration;
@@ -67,7 +78,13 @@ public class CameraKeyframeAnimation {
             anim.stopped = compoundTag.getBoolean("Stopped");
             anim.tickCountOld = anim.tickCount = compoundTag.getInt("Tick");
             anim.keyframes.clear();
-            anim.keyframes.addAll(CompoundTagUtils.getList(compoundTag, "Keyframes", CameraKeyframe.READER));
+            ListTag keyframesData = compoundTag.getList("KeyframesData", Tag.TAG_COMPOUND);
+            if (!keyframesData.isEmpty()) {
+                for (int i=0;i<keyframesData.size();i++) {
+                    CompoundTag entry = keyframesData.getCompound(i);
+                    anim.keyframes.put(entry.getString("Group"), CompoundTagUtils.getList(entry, "Keyframes", CameraKeyframe.READER));
+                }
+            }
             anim.setDirty();
             return anim;
         } catch (Exception exception) {
@@ -79,7 +96,16 @@ public class CameraKeyframeAnimation {
     public CompoundTag serializeNBT() {
         CompoundTag compoundtag = new CompoundTag();
         compoundtag.putString("Name", this.getName());
-        CompoundTagUtils.putList(compoundtag, "Keyframes", keyframes, CameraKeyframe.WRITER);
+        ListTag keyframesData = new ListTag();
+        {
+            for (var entry : keyframes.entrySet()) {
+                CompoundTag single = new CompoundTag();
+                single.putString("Group", entry.getKey());
+                CompoundTagUtils.putList(single, "Keyframes", entry.getValue(), CameraKeyframe.WRITER);
+                keyframesData.add(single);
+            }
+        }
+        compoundtag.put("KeyframesData", keyframesData);
         compoundtag.putShort("AnimType", (short) this.animType.ordinal());
         compoundtag.putFloat("Duration", this.duration);
         compoundtag.putInt("Tick", this.tickCount);
@@ -150,43 +176,67 @@ public class CameraKeyframeAnimation {
         return Mth.lerp(partialTicks, this.tickCountOld, this.tickCount) * 5F;
     }
 
-    public List<CameraKeyframe> getKeyframes() {
+    public Map<String, List<CameraKeyframe>> getKeyframes() {
         return keyframes;
     }
 
-    public void removeIndex(int index) {
-        this.getKeyframes().remove(index);
-        this.setDirty();
+    public boolean removeIndex(String group, int index) {
+        if (this.keyframes.containsKey(group)) {
+            this.keyframes.get(group).remove(index);
+            this.setDirty();
+            return true;
+        }
+        return false;
     }
 
-    public void replaceIndex(int index, CameraKeyframe keyframe) {
-        this.getKeyframes().set(index, keyframe);
-        this.setDirty();
+    public boolean replaceIndex(String group, int index, CameraKeyframe keyframe) {
+        if (this.keyframes.containsKey(group)) {
+            this.keyframes.get(group).set(index, keyframe);
+            this.setDirty();
+            return true;
+        }
+        return false;
     }
 
-    public void insertBefore(int index, CameraKeyframe keyframe) {
-        this.getKeyframes().add(index, keyframe);
-        this.setDirty();
+    public boolean insertBefore(String group, int index, CameraKeyframe keyframe) {
+        if (this.keyframes.containsKey(group)) {
+            this.getKeyframes().get(group).add(index, keyframe);
+            this.setDirty();
+            return true;
+        }
+        return false;
     }
 
-    public void addKeyframe(CameraKeyframe keyframe) {
-        this.keyframes.add(keyframe);
+    public void addKeyframe(String group, CameraKeyframe keyframe) {
+        if (!this.keyframes.containsKey(group))
+            this.keyframes.put(group, ObjectArrayList.of(keyframe));
+        this.keyframes.get(group).add(keyframe);
         this.setDirty();
     }
 
     public float anim(float partialTicks) {
         if (keyframes.isEmpty()) return 0f;
+        else if (keyframes.size() == 1) return anim(keyframes.get(DEFAULT_KEY), partialTicks);
+        else {
+            float result = 0F;
+            for (List<CameraKeyframe> cameraKeyframes : keyframes.values())
+                result += anim(cameraKeyframes, partialTicks);
+            return result;
+        }
+    }
+    private float anim(List<CameraKeyframe> _keyframes, float partialTicks) {
+        if (_keyframes.isEmpty()) return 0f;
         float time = this.getAnimTime(partialTicks);
         int i = Math.max(0, Mth.binarySearch(
                 0,
                 keyframes.size(),
-                (index) -> time <= keyframes.get(index).timestamp()) - 1
+                (index) -> time <= _keyframes.get(index).timestamp()) - 1
         );
 
 
         int j = Math.min(keyframes.size() - 1, i + 1);
-        CameraKeyframe keyframe = keyframes.get(i);
-        CameraKeyframe keyframe1 = keyframes.get(j);
+        CameraKeyframe keyframe = _keyframes.get(i);
+        CameraKeyframe keyframe1 = _keyframes.get(j);
         float f1 = time - keyframe.timestamp();
         float f2;
 
@@ -246,12 +296,40 @@ public class CameraKeyframeAnimation {
     }
 
     public Component getKeyframesComponent() {
+        ReferenceArrayList<MutableComponent> list = new ReferenceArrayList<>(keyframes.size());
+        for (var entry : keyframes.object2ObjectEntrySet()) {
+            MutableComponent keyframesComponent = Component.empty();
+            List<CameraKeyframe> cameraKeyframes = entry.getValue();
+            for (int i = 0; i < cameraKeyframes.size(); i++) {
+                CameraKeyframe keyframe = cameraKeyframes.get(i);
+                keyframesComponent.append(keyframe.toComponent());
+                if (i < keyframes.size() - 1)
+                    keyframesComponent.append(Component.literal(", "));
+            }
+            MutableComponent toAdd = Component.literal("")
+                    .append(Component.literal("{").withStyle(ChatFormatting.GREEN))
+                    .append(
+                            Component.literal("Group").withStyle(ChatFormatting.LIGHT_PURPLE)
+                                    .append(Component.literal(":\""))
+                                    .append(Component.literal(entry.getKey()).withStyle(ChatFormatting.GOLD).withStyle(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, entry.getKey())).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click")))))
+                                    .append(Component.literal("\","))
+                    )
+                    .append(
+                            Component.literal("Keyframes").withStyle(ChatFormatting.LIGHT_PURPLE)
+                                    .append(Component.literal(":["))
+                                    .append(keyframesComponent)
+                                    .append(Component.literal("],"))
+                    ).append(Component.literal("}").withStyle(ChatFormatting.GREEN));
+            list.add(toAdd);
+        }
+
         MutableComponent component = Component.empty();
-        for (int i = 0; i < keyframes.size(); i++) {
-            CameraKeyframe keyframe = this.keyframes.get(i);
-            component.append(keyframe.toComponent());
-            if (i < keyframes.size() - 1)
-                component.append(Component.literal(", "));
+        if (!list.isEmpty()) {
+            for (int i=0;i<list.size();i++) {
+                component.append(list.get(i));
+                if (i < list.size() - 1)
+                    component.append(Component.literal(", "));
+            }
         }
         return component;
     }

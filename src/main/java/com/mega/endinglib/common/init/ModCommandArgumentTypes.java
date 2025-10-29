@@ -17,6 +17,7 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<CameraActionArgument, ?>> CAMERA_ACTION = REGISTRIES.register("camera_action", () -> SingletonArgumentInfo.contextFree(CameraActionArgument::action));
     public static final RegistryObject<ArgumentTypeInfo<CameraModifierUUIDArgument, ?>> CAMERA_MODIFIER_ID = REGISTRIES.register("camera_modifier_id", () -> SingletonArgumentInfo.contextFree(CameraModifierUUIDArgument::uuid));
     public static final RegistryObject<ArgumentTypeInfo<CameraAnimationArgument, ?>> CAMERA_ANIMATION_ID = REGISTRIES.register("camera_animation_id", () -> SingletonArgumentInfo.contextFree(CameraAnimationArgument::name));
+    public static final RegistryObject<ArgumentTypeInfo<CameraAnimationGroupArgument, ?>> CAMERA_ANIMATION_GROUP = REGISTRIES.register("camera_animation_group", () -> SingletonArgumentInfo.contextFree(CameraAnimationGroupArgument::group));
     public static final RegistryObject<ArgumentTypeInfo<CameraAnimTypeArgument, ?>> CAMERA_ANIMATION_TYPE = REGISTRIES.register("camera_animation_type", () -> SingletonArgumentInfo.contextFree(CameraAnimTypeArgument::animType));
     public static final RegistryObject<ArgumentTypeInfo<EasingArgument, ?>> EASING = REGISTRIES.register("easing", () -> SingletonArgumentInfo.contextFree(EasingArgument::easing));
     public static final RegistryObject<ArgumentTypeInfo<CommandArgument, ?>> COMMAND = REGISTRIES.register("command", () -> SingletonArgumentInfo.contextFree(CommandArgument::command));

@@ -14,9 +14,10 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -41,6 +42,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 public class CameraCommand {
+    public static final DynamicCommandExceptionType KEYFRAME_GROUP_NOT_FOUND = new DynamicCommandExceptionType((a1) -> Component.translatable("commands.endinglib.argument.camera.keyframe.group_not_found", a1));
     static CameraModeDefault DEFAULT_FREEZING_ORIGIN = new CameraModeDefault(CameraCommand::default_freezeOrigin);
     static CameraModeDefault DEFAULT_FREEZING_ORIGIN_FOLLOW_POSITION = new CameraModeDefault(CameraCommand::default_freezeOrigin_followPosition);
     static CameraModeDefault DEFAULT_LOCKED_CAMERA_PERSON = new CameraModeDefault(CameraCommand::default_lockedCameraPersion);
@@ -228,31 +230,60 @@ public class CameraCommand {
                                                         )
                                                 )
                                         )
-                                        .then(Commands.literal("insertBefore")
-                                                .then(Commands.argument("index", IntegerArgumentType.integer())
-                                                        .then(Commands.argument("easing", EasingArgument.easing())
-                                                                .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
-                                                                        .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                        .then(Commands.literal("get")
+                                                .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
+                                                        .then(Commands.literal("group")
+                                                                .then(Commands.argument("animationGroup", CameraAnimationGroupArgument.group())
+                                                                        .then(Commands.literal("addKeyframe")
+                                                                                .then(Commands.argument("easing", EasingArgument.easing())
+                                                                                        .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
+                                                                                                .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
+                                                                                                        .executes(context -> addKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                        .then(Commands.literal("removeKeyframe")
+                                                                                .then(Commands.argument("index", IntegerArgumentType.integer())
+                                                                                        .executes(context -> removeKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
+                                                                                )
+                                                                        )
+                                                                        .then(Commands.literal("modifyKeyframe")
+                                                                                .then(Commands.argument("index", IntegerArgumentType.integer())
+                                                                                        .then(Commands.argument("easing", EasingArgument.easing())
+                                                                                                .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
+                                                                                                        .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
+                                                                                                                .executes(context -> modifyKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                        )
+                                                                                                )
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                        .then(Commands.literal("insertBefore")
+                                                                                .then(Commands.argument("index", IntegerArgumentType.integer())
+                                                                                        .then(Commands.argument("easing", EasingArgument.easing())
+                                                                                                .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
+                                                                                                        .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
+                                                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                        )
+                                                                                                )
+                                                                                        )
+                                                                                )
                                                                         )
                                                                 )
                                                         )
-                                                )
-                                        )
-                                        .then(Commands.literal("get")
-                                                .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
                                                         .then(Commands.literal("addKeyframe")
                                                                 .then(Commands.argument("easing", EasingArgument.easing())
                                                                         .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                 .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                        .executes(context -> addKeyframe(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                        .executes(context -> addKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                 )
                                                                         )
                                                                 )
                                                         )
                                                         .then(Commands.literal("removeKeyframe")
                                                                 .then(Commands.argument("index", IntegerArgumentType.integer())
-                                                                        .executes(context -> removeKeyframe(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
+                                                                        .executes(context -> removeKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
                                                                 )
                                                         )
                                                         .then(Commands.literal("modifyKeyframe")
@@ -260,7 +291,18 @@ public class CameraCommand {
                                                                         .then(Commands.argument("easing", EasingArgument.easing())
                                                                                 .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                         .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                                .executes(context -> modifyKeyframe(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                .executes(context -> modifyKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                        )
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
+                                                        .then(Commands.literal("insertBefore")
+                                                                .then(Commands.argument("index", IntegerArgumentType.integer())
+                                                                        .then(Commands.argument("easing", EasingArgument.easing())
+                                                                                .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
+                                                                                        .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
+                                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                         )
                                                                                 )
                                                                         )
@@ -272,7 +314,10 @@ public class CameraCommand {
                                         .then(Commands.literal("list")
                                                 .executes(context -> getCameraAnimations(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType")))
                                                 .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                                        .executes(context -> listAnimationKeyframes(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        .then(Commands.argument("animationGroup", CameraAnimationGroupArgument.group())
+                                                                .executes(context -> listAnimationKeyframes(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        )
+                                                        .executes(context -> listAnimationKeyframes(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                 )
                                         )
                                         .then(Commands.literal("start")
@@ -542,61 +587,67 @@ public class CameraCommand {
         return 0;
     }
 
-    private static int addKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, Easing easing, float timestamp, float endPoint) {
+    private static int addKeyframe(CommandSourceStack stack, String group, ServerPlayer player, ModifierType modifierType, String name, Easing easing, float timestamp, float endPoint) {
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
-            animation.addKeyframe(new CameraKeyframe(timestamp, endPoint, easing));
+            animation.addKeyframe(group, new CameraKeyframe(timestamp, endPoint, easing));
             cvi.setAnimDirty();
             sendModifyMessage(stack, player);
         }
         return 0;
     }
 
-    private static int modifyKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, int index, Easing easing, float timestamp, float endPoint) {
+    private static int modifyKeyframe(CommandSourceStack stack, String group, ServerPlayer player, ModifierType modifierType, String name, int index, Easing easing, float timestamp, float endPoint) throws CommandSyntaxException{
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
-            animation.replaceIndex(index, new CameraKeyframe(timestamp, endPoint, easing));
+            if (!animation.replaceIndex(group, index, new CameraKeyframe(timestamp, endPoint, easing)))
+                throw KEYFRAME_GROUP_NOT_FOUND.create(group);
             cvi.setAnimDirty();
             sendModifyMessage(stack, player);
         }
         return 0;
     }
 
-    private static int removeKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, int indexOfKeyframe) {
+    private static int removeKeyframe(CommandSourceStack stack, String group, ServerPlayer player, ModifierType modifierType, String name, int indexOfKeyframe) throws CommandSyntaxException{
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
-            animation.removeIndex(indexOfKeyframe);
+            if (!animation.removeIndex(group, indexOfKeyframe))
+                throw KEYFRAME_GROUP_NOT_FOUND.create(group);
             cvi.setAnimDirty();
             sendModifyMessage(stack, player);
         }
         return 0;
     }
 
-    private static int insertBeforeKeyframe(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, int index, Easing easing, float timestamp, float endPoint) {
+    private static int insertBeforeKeyframe(CommandSourceStack stack, String group, ServerPlayer player, ModifierType modifierType, String name, int index, Easing easing, float timestamp, float endPoint) throws CommandSyntaxException {
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
-            animation.insertBefore(index, new CameraKeyframe(timestamp, endPoint, easing));
+            if (!animation.insertBefore(group, index, new CameraKeyframe(timestamp, endPoint, easing)))
+                throw KEYFRAME_GROUP_NOT_FOUND.create(group);
             cvi.setAnimDirty();
             sendModifyMessage(stack, player);
         }
         return 0;
     }
 
-    private static int listAnimationKeyframes(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
+    private static int listAnimationKeyframes(CommandSourceStack stack, String group, ServerPlayer player, ModifierType modifierType, String name) throws CommandSyntaxException {
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
             stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.list_keyframes"), false);
-            for (int i = 0; i < animation.getKeyframes().size(); i++) {
-                CameraKeyframe keyframe = animation.getKeyframes().get(i);
-                int finalI = i;
-                stack.sendSuccess(() -> Component.literal(String.valueOf(finalI)).append(keyframe.toComponent()), false);
+            List<CameraKeyframe> cameraKeyframes = animation.getKeyframes().get(group);
+            if (cameraKeyframes == null) throw KEYFRAME_GROUP_NOT_FOUND.create(group);
+            if (!cameraKeyframes.isEmpty()) {
+                for (int i = 0; i < cameraKeyframes.size(); i++) {
+                    CameraKeyframe keyframe = cameraKeyframes.get(i);
+                    int finalI = i;
+                    stack.sendSuccess(() -> Component.literal(String.valueOf(finalI)).append(keyframe.toComponent()), false);
+                }
             }
-            sendModifyMessage(stack, player);
         }
         return 0;
     }

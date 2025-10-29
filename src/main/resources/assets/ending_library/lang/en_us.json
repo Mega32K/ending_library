@@ -22,6 +22,7 @@
 
   "commands.endinglib.argument.float_array.too_long" : "Array size out of maximum %s : %s",
   "commands.endinglib.argument.entity.notfound.mob" : "No mob was found",
+  "commands.endinglib.argument.camera.keyframe.group_not_found" : "No such group \"%s\" was found",
 
   "commands.endinglib.fill_entity.success": "Successfully filled %s entities",
   "commands.endinglib.fill_entity.failed": "No entities were filled",

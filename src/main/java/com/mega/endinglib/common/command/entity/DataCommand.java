@@ -113,7 +113,7 @@ public class DataCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryEntityCapability::setCustomCullingBox,
             EndingLibraryEntityCapability::getCustomCullingBox,
-            (type, cap) -> (int) (type.getCapValue(cap).orElse(new AABB(BlockPos.ZERO)).getSize() * 100F),
+            (type, cap) -> type.getCapValue(cap).map(AABB::hashCode).orElse(0),
             Optional.empty(),
             LoreHelper.OPT_AABB_COMPONENT_OPERATION
     );
@@ -130,7 +130,7 @@ public class DataCommand {
                             .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
             EndingLibraryEntityCapability::setCustomHitbox,
             EndingLibraryEntityCapability::getCustomHitbox,
-            (type, cap) -> (int) (type.getCapValue(cap).orElse(new AABB(BlockPos.ZERO)).getSize() * 100F),
+            (type, cap) -> type.getCapValue(cap).map(AABB::hashCode).orElse(0),
             Optional.empty(),
             LoreHelper.OPT_AABB_COMPONENT_OPERATION
     );

@@ -69,6 +69,7 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(CameraActionArgument.class, ModCommandArgumentTypes.CAMERA_ACTION.get());
             ArgumentTypeInfos.registerByClass(CameraModifierUUIDArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER_ID.get());
             ArgumentTypeInfos.registerByClass(CameraAnimationArgument.class, ModCommandArgumentTypes.CAMERA_ANIMATION_ID.get());
+            ArgumentTypeInfos.registerByClass(CameraAnimationGroupArgument.class, ModCommandArgumentTypes.CAMERA_ANIMATION_GROUP.get());
             ArgumentTypeInfos.registerByClass(CameraAnimTypeArgument.class, ModCommandArgumentTypes.CAMERA_ANIMATION_TYPE.get());
             ArgumentTypeInfos.registerByClass(EasingArgument.class, ModCommandArgumentTypes.EASING.get());
             ArgumentTypeInfos.registerByClass(CommandArgument.class, ModCommandArgumentTypes.COMMAND.get());
