@@ -21,6 +21,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.Optional;
 
 public class ELCameraManager implements ICameraManager {
+    public static final float DEFAULT_ORIGIN_ROT = 32768F;
     public final CameraValueInstance xOffset = new CameraValueInstance();
     public final CameraValueInstance yOffset = new CameraValueInstance();
     public final CameraValueInstance zOffset = new CameraValueInstance();
@@ -52,8 +53,11 @@ public class ELCameraManager implements ICameraManager {
     private double yRotOld;
     private double zRotOld;
     private double originXRot;
+    private float lockedOriginXRot = DEFAULT_ORIGIN_ROT;
     private double originYRot;
+    private float lockedOriginYRot = DEFAULT_ORIGIN_ROT;
     private double originZRot;
+    private float lockedOriginZRot = DEFAULT_ORIGIN_ROT;
     private double originFov;
     private double fovOffsetOld;
     private float originZoom;
@@ -154,7 +158,23 @@ public class ELCameraManager implements ICameraManager {
         }
         if (!capability.isMouseControlled()) {
             if (ClientUtils.customCursorHandle != -1L)
-                ClientUtils.resetCursor();
+                ClientUtils.onPlayerDisconnect();
+        }
+        {
+            Optional<Float> opt = capability.getLockedCameraOriginXRot();
+            if (opt.isPresent()) {
+                this.lockOriginXRot(opt.get());
+            } else {
+                this.unlockOriginXRot();
+            }
+        }
+        {
+            Optional<Float> opt = capability.getLockedCameraOriginYRot();
+            if (opt.isPresent()) {
+                this.lockOriginYRot(opt.get());
+            } else {
+                this.unlockOriginYRot();
+            }
         }
     }
 
@@ -421,6 +441,8 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public double getOriginXRot() {
+        if (Float.compare(this.lockedOriginXRot, DEFAULT_ORIGIN_ROT) != 0)
+            return this.lockedOriginXRot;
         return originXRot;
     }
 
@@ -428,7 +450,19 @@ public class ELCameraManager implements ICameraManager {
         this.originXRot = originXRot;
     }
 
+    @Override
+    public void lockOriginXRot(float originX) {
+        this.lockedOriginXRot = originX;
+    }
+
+    @Override
+    public void unlockOriginXRot() {
+        this.lockedOriginXRot = DEFAULT_ORIGIN_ROT;
+    }
+
     public double getOriginYRot() {
+        if (Float.compare(this.lockedOriginYRot, DEFAULT_ORIGIN_ROT) != 0)
+            return this.lockedOriginYRot;
         return originYRot;
     }
 
@@ -436,12 +470,34 @@ public class ELCameraManager implements ICameraManager {
         this.originYRot = originYRot;
     }
 
+    @Override
+    public void lockOriginYRot(float originY) {
+        this.lockedOriginYRot = originY;
+    }
+
+    @Override
+    public void unlockOriginYRot() {
+        this.lockedOriginYRot = DEFAULT_ORIGIN_ROT;
+    }
+
     public double getOriginZRot() {
+        if (Float.compare(this.lockedOriginZRot, DEFAULT_ORIGIN_ROT) != 0)
+            return this.lockedOriginZRot;
         return originZRot;
     }
 
     public void setOriginZRot(double originZRot) {
         this.originZRot = originZRot;
+    }
+
+    @Override
+    public void lockOriginZRot(float originZ) {
+        this.lockedOriginZRot = originZ;
+    }
+
+    @Override
+    public void unlockOriginZRot() {
+        this.lockedOriginZRot = DEFAULT_ORIGIN_ROT;
     }
 
     public float getOriginZoom() {
@@ -482,5 +538,8 @@ public class ELCameraManager implements ICameraManager {
             }
 
         }
+    }
+    public void close() {
+        MinecraftForge.EVENT_BUS.unregister(this);
     }
 }

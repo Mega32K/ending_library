@@ -1,7 +1,6 @@
 package com.mega.endinglib.common.capability;
 
 import com.google.common.base.Suppliers;
-import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
@@ -24,14 +23,12 @@ import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
-import com.mega.endinglib.mixin.capability.EntityMixin;
-import net.minecraft.client.Minecraft;
+import com.mega.endinglib.util.SafeClass;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -47,21 +44,23 @@ import java.util.function.Supplier;
 
 public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public static final ModifierType[] MODIFIER_TYPES = ModifierType.values().clone();
-    public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "endinglib_player_cap");
+    public static final ResourceLocation NAME = SafeClass.loc("endinglib_player_cap");
     private final Supplier<Set<CapabilitySyncType>> DEFAULT_ENABLED_SYNC_TYPES = Suppliers.memoize(()-> EnumSet.of(CapabilitySyncType.PLAYER_CLONE, CapabilitySyncType.PLAYER_RESPAWN, CapabilitySyncType.PLAYER_LOGGED_IN, CapabilitySyncType.PLAYER_LOGGED_OUT, CapabilitySyncType.DIMENSION_CHANGE));
     public final CapabilityEntityData<Integer> USING_CAMERA_MODE = this.dataManager.define(0, "usingCameraMode", 0x00000000, CapabilityDataSerializers.INT);
     public final CapabilityEntityData<Boolean> OTHER_SPECTOR_RENDERING = this.defineByPersonalRule(1, PersonalRuleCommand.OTHER_SPECTOR_RENDERING, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> OTHER_PLAYERS_RENDERING = this.defineByPersonalRule(2, PersonalRuleCommand.OTHER_PLAYERS_RENDERING, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Float> WALKING_VIEW_MULTIPLIER = this.defineByPersonalRule(3, PersonalRuleCommand.WALKING_VIEW_MULTIPLIER, CapabilityDataSerializers.FLOAT);
     public final CapabilityEntityData<Float> HURT_VIEW_MULTIPLIER = this.defineByPersonalRule(5, PersonalRuleCommand.HURT_VIEW_MULTIPLIER, CapabilityDataSerializers.FLOAT);
-    public final CapabilityEntityData<Boolean> OTHER_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(6, PersonalRuleCommand.OTHER_PLAYER_NAMES_RENDERER, CapabilityDataSerializers.BOOLEAN);
+    //public final CapabilityEntityData<Boolean> OTHER_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(6, PersonalRuleCommand.OTHER_PLAYER_NAMES_RENDERER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> LOCKED_GAME_MODE = this.defineByPersonalRule(7, PersonalRuleCommand.LOCKED_GAME_MODE, CapabilityDataSerializers.BOOLEAN);
-    public final CapabilityEntityData<Boolean> OTHER_TEAMS_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(8, PersonalRuleCommand.OTHER_TEAM_PLAYERS_NAMES_RENDER, CapabilityDataSerializers.BOOLEAN);
+    //public final CapabilityEntityData<Boolean> OTHER_TEAMS_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(8, PersonalRuleCommand.OTHER_TEAM_PLAYERS_NAMES_RENDER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Boolean> HIDE_SCOREBOARD_NUM = this.defineByPersonalRule(10, PersonalRuleCommand.HIDE_SCOREBOARD_NUMBERS, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Byte> LOCKED_HOTBAR = this.dataManager.define(11, "lockedHotbar", (byte)-1, CapabilityDataSerializers.BYTE);
     public final CapabilityEntityData<String> CUSTOM_SKIN = this.defineByPersonalRule(12, PersonalRuleCommand.CUSTOM_SKIN, CapabilityDataSerializers.STRING);
     public final CapabilityEntityData<Optional<Component>> DISPLAY_NAME = this.defineByPersonalRule(13, PersonalRuleCommand.NAME, CapabilityDataSerializers.OPTIONAL_COMPONENT);
+    public final CapabilityEntityData<Optional<Float>> LOCKED_CAMERA_ORIGIN_X_ROT = this.dataManager.define(14, "lockedCameraOriginXRot", Optional.empty(), CapabilityDataSerializers.OPTIONAL_FLOAT);
+    public final CapabilityEntityData<Optional<Float>> LOCKED_CAMERA_ORIGIN_Y_ROT = this.dataManager.define(15, "lockedCameraOriginYRot", Optional.empty(), CapabilityDataSerializers.OPTIONAL_FLOAT);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
     public int poseLockingTime;
@@ -160,12 +159,37 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                 throwable.printStackTrace();
             }
         }
+        if (!this.USING_CAMERA_MODE.isInitValue())
+            this.restoreCameraFlagsToFields();
+    }
+
+    @Override
+    public void onSyncedDataUpdated(CapabilityEntityData<?> data) {
+        if (data.equals(USING_CAMERA_MODE))
+            this.restoreCameraFlagsToFields();
+        else if (data.equals(LOCKED_CAMERA_ORIGIN_X_ROT)) {
+            Optional<Float> opt = this.getLockedCameraOriginXRot();
+            if (opt.isPresent()) {
+                CameraUtils.getInstance().lockOriginXRot(opt.get());
+            } else {
+                CameraUtils.getInstance().unlockOriginXRot();
+            }
+        } else if (data.equals(LOCKED_CAMERA_ORIGIN_Y_ROT)) {
+            Optional<Float> opt = this.getLockedCameraOriginYRot();
+            if (opt.isPresent()) {
+                CameraUtils.getInstance().lockOriginYRot(opt.get());
+            } else {
+                CameraUtils.getInstance().unlockOriginYRot();
+            }
+        }
     }
 
     @Override
     public void tick(Entity entity) {
         if (entity instanceof Player player) {
-            this.setFieldFromCapData();
+            if (entity.tickCount % player.getType().updateInterval() == 0 || this.dataManager.isDirty()) {
+                this.restoreCameraFlagsToFields();
+            }
             this.inputCooldowns.tick(player);
             if (entity.level().isClientSide) {
                 CameraUtils.getInstance().tick(this);
@@ -173,13 +197,11 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                 if (this.isUsingCustomCamera) {
                     {
                         Map<ModifierType, Set<CameraModifier>> map = cameraDataManager.createDirtyMap();
-                        if (!map.isEmpty())
-                            PacketHandler.sendToPlayer(new S2CCameraModifierSetPacket(map), sp);
+                        if (map != null) PacketHandler.sendToPlayer(new S2CCameraModifierSetPacket(map), sp);
                     }
                     {
                         Map<ModifierType, Collection<CameraKeyframeAnimation>> map = cameraDataManager.createDirtyAnimMap();
-                        if (!map.isEmpty())
-                            PacketHandler.sendToPlayer(new S2CCameraAnimationSetPacket(map), sp);
+                        if (map != null) PacketHandler.sendToPlayer(new S2CCameraAnimationSetPacket(map), sp);
                     }
                 }
                 if (this.poseLockingTime > 0) {
@@ -210,6 +232,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setUsingCustomCamera(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 1, flag);
+        this.restoreCameraFlagsToFields();
     }
 
     public boolean isVanillaCameraFreezing() {
@@ -218,6 +241,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setVanillaCameraFreezing(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 2, flag);
+        this.restoreCameraFlagsToFields();
     }
 
     public boolean isFollowPosition() {
@@ -226,6 +250,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setFollowPosition(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 4, flag);
+        this.restoreCameraFlagsToFields();
     }
 
     public boolean isCameraPersonLocked() {
@@ -234,6 +259,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setLockedCameraPerson(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 8, flag);
+        this.restoreCameraFlagsToFields();
     }
 
     public boolean isFovLocked() {
@@ -242,6 +268,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setLockedFov(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 16, flag);
+        this.restoreCameraFlagsToFields();
     }
 
     /**
@@ -253,6 +280,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setMouseControlled(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 32, flag);
+        this.restoreCameraFlagsToFields();
     }
     public boolean otherPlayerRendering() {
         return this.dataManager.getValue(OTHER_PLAYERS_RENDERING);
@@ -284,22 +312,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     public void setHurtViewMultiplier(float value) {
         this.dataManager.setValue(HURT_VIEW_MULTIPLIER, value);
-    }
-
-    public boolean otherPlayerRenderingName() {
-        return this.dataManager.getValue(OTHER_PLAYER_NAMES_RENDERER);
-    }
-
-    public void setOtherPlayerRenderingName(boolean value) {
-        this.dataManager.setValue(OTHER_PLAYER_NAMES_RENDERER, value);
-    }
-
-    public boolean otherTeamsPlayerRenderingName() {
-        return this.dataManager.getValue(OTHER_TEAMS_PLAYER_NAMES_RENDERER);
-    }
-
-    public void setOtherTeamsPlayerRenderingName(boolean value) {
-        this.dataManager.setValue(OTHER_TEAMS_PLAYER_NAMES_RENDERER, value);
     }
 
     public boolean isGameModeLocked() {
@@ -362,7 +374,25 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public void setDisplayNameOpt(Optional<Component> name) {
         this.dataManager.setValue(DISPLAY_NAME, name);
     }
-    protected void setFieldFromCapData() {
+    public void lockCameraOriginXRot(float xrot) {
+        this.dataManager.setValue(LOCKED_CAMERA_ORIGIN_X_ROT, Optional.of(xrot));
+    }
+    public void unlockCameraOriginXRot() {
+        this.dataManager.setValue(LOCKED_CAMERA_ORIGIN_X_ROT, Optional.empty());
+    }
+    public Optional<Float> getLockedCameraOriginXRot() {
+        return this.dataManager.getValue(LOCKED_CAMERA_ORIGIN_X_ROT);
+    }
+    public void lockCameraOriginYRot(float yrot) {
+        this.dataManager.setValue(LOCKED_CAMERA_ORIGIN_Y_ROT, Optional.of(yrot));
+    }
+    public void unlockCameraOriginYRot() {
+        this.dataManager.setValue(LOCKED_CAMERA_ORIGIN_Y_ROT, Optional.empty());
+    }
+    public Optional<Float> getLockedCameraOriginYRot() {
+        return this.dataManager.getValue(LOCKED_CAMERA_ORIGIN_Y_ROT);
+    }
+    protected void restoreCameraFlagsToFields() {
         int flags = this.getFlags();
         this.isUsingCustomCamera = CompoundTagUtils.getIntFlag(flags, 1);
         this.isVanillaCameraFreezing = CompoundTagUtils.getIntFlag(flags, 2);

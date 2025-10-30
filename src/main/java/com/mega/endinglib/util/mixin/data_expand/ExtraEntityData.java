@@ -13,6 +13,8 @@ public class ExtraEntityData {
     private float scaleYOld;
     private float scaleZOld;
     public boolean hasCustomRenderScale;
+    public boolean lockedYRot;
+    public boolean lockedXRot;
     public ResourceLocation customModelTexture = null;
     public ExtraEntityData(Entity entity) {
         this.entity = entity;

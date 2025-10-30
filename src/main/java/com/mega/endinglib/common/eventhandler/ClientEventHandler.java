@@ -9,7 +9,6 @@ import com.mega.endinglib.client.RendererUtils;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.common.data.InputOperations;
-import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.time.TimeContext;
@@ -19,10 +18,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -111,7 +108,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onDisconnected(ClientPlayerNetworkEvent.LoggingOut event) {
         if (ClientUtils.customCursorHandle != -1L) {
-            new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::resetCursor).onAddedToWorld();
+            new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::onPlayerDisconnect).onAddedToWorld();
         }
         ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
     }

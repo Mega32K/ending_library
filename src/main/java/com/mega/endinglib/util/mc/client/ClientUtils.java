@@ -1,13 +1,14 @@
 package com.mega.endinglib.util.mc.client;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.api.client.MinecraftExtra;
 import com.mega.endinglib.client.ClientWrapped;
+import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.mixin.accessor.AccessorGameRenderer;
 import com.mega.endinglib.util.mc.entity.RaycastHelper;
 import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.blaze3d.platform.Window;
-import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.Util;
@@ -125,7 +126,7 @@ public class ClientUtils {
             }
         });
     }
-    public static void resetCursor() {
+    public static void onPlayerDisconnect() {
         mc.execute(() -> {
             long window = mc.getWindow().getWindow();
             if (customCursorHandle != -1L) {
@@ -134,6 +135,7 @@ public class ClientUtils {
             }
             GLFW.glfwSetCursor(window, 0L);
             GLFW.glfwSetCursorPos(window, mc.mouseHandler.xpos(), mc.mouseHandler.ypos());
+            //MinecraftExtra.of(mc).setELCameraManager(new ELCameraManager(mc, mc.gameRenderer, mc.gameRenderer.getMainCamera()));
         });
     }
     /**

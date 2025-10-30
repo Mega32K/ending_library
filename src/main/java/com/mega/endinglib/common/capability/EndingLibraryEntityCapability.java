@@ -1,6 +1,5 @@
 package com.mega.endinglib.common.capability;
 
-import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
@@ -9,32 +8,26 @@ import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import com.mega.endinglib.common.command.entity.DataCommand;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
+import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntityData;
-import com.mega.endinglib.util.mixin.data_expand.ExtraLivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 
 public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
-    public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "endinglib_cap");
+    public static final ResourceLocation NAME = SafeClass.loc("endinglib_cap");
     public final CapabilityEntityData<Optional<EntityDimensions>> DIMENSIONS = this.defineByDataType(0, DataCommand.DIMENSIONS, CapabilityDataSerializers.OPTIONAL_ENTITY_DIMENSIONS);
     public final CapabilityEntityData<Optional<AABB>> CULLING_BOX = this.defineByDataType(1, DataCommand.CULLING_BOX, CapabilityDataSerializers.OPTIONAL_AABB);
     public final CapabilityEntityData<Optional<AABB>> HITBOX = this.defineByDataType(2, DataCommand.HITBOX, CapabilityDataSerializers.OPTIONAL_AABB);
@@ -42,6 +35,8 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Boolean> FROZEN = this.dataManager.define(4, "frozen", false, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Optional<String>> CUSTOM_MOB_TYPE = this.defineByDataType(5, DataCommand.CUSTOM_MOB_TYPE, CapabilityDataSerializers.OPTIONAL_STRING);
     public final CapabilityEntityData<String> CUSTOM_MODEL_TEXTURE = this.defineByDataType(6, DataCommand.CUSTOM_MODEL_TEXTURE, CapabilityDataSerializers.STRING);
+    public final CapabilityEntityData<Boolean> LOCKED_X_ROT = this.defineByDataType(7, DataCommand.LOCKED_X_ROT, CapabilityDataSerializers.BOOLEAN);
+    public final CapabilityEntityData<Boolean> LOCKED_Y_ROT = this.defineByDataType(8, DataCommand.LOCKED_Y_ROT, CapabilityDataSerializers.BOOLEAN);
     private <T> CapabilityEntityData<T> defineByDataType(int id, DataCommand.DataType<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
@@ -124,6 +119,16 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
                     if (!str.endsWith(".png")) str = str.substring(0, str.lastIndexOf(".")) + "png";
                     extraEntityData.customModelTexture = new ResourceLocation(str);
                 }
+            }
+        } else if (data.equals(LOCKED_X_ROT)) {
+            if (entity != null) {
+                ExtraEntityData extraEntityData = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+                extraEntityData.lockedXRot = this.isXRotLocked();
+            }
+        } else if (data.equals(LOCKED_Y_ROT)) {
+            if (entity != null) {
+                ExtraEntityData extraEntityData = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+                extraEntityData.lockedYRot = this.isYRotLocked();
             }
         }
     }
@@ -216,6 +221,28 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
         if (entity != null) {
             ExtraEntityData data = ExtraEntity.of(entity).endinglib$getExtraEntityData();
             data.isFrozen = flag;
+        }
+    }
+    public boolean isXRotLocked() {
+        return this.dataManager.getValue(LOCKED_X_ROT);
+    }
+    public void lockRotX(boolean flag) {
+        this.dataManager.setValue(LOCKED_X_ROT, flag);
+        Entity entity = this.getEntity();
+        if (entity != null) {
+            ExtraEntityData data = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+            data.lockedXRot = flag;
+        }
+    }
+    public boolean isYRotLocked() {
+        return this.dataManager.getValue(LOCKED_Y_ROT);
+    }
+    public void lockRotY(boolean flag) {
+        this.dataManager.setValue(LOCKED_Y_ROT, flag);
+        Entity entity = this.getEntity();
+        if (entity != null) {
+            ExtraEntityData data = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+            data.lockedYRot = flag;
         }
     }
     public void setMobType(Optional<String> type) {

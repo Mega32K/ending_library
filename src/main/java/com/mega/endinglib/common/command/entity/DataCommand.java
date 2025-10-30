@@ -9,6 +9,7 @@ import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.CommandFunction;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -184,6 +185,26 @@ public class DataCommand {
             EndingLibraryEntityCapability::getCustomModelTexture,
             (type, cap) -> type.getCapValue(cap).isEmpty() ? 0 : 1,
             ""
+    );
+    public static final DataType<Boolean> LOCKED_X_ROT = build("lockedXRot", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, BoolArgumentType.getBool(context, "value")))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryEntityCapability::lockRotX,
+            EndingLibraryEntityCapability::isXRotLocked,
+            BOOL_COMMAND_RESULT,
+            false
+    );
+    public static final DataType<Boolean> LOCKED_Y_ROT = build("lockedXRot", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, BoolArgumentType.getBool(context, "value")))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryEntityCapability::lockRotY,
+            EndingLibraryEntityCapability::isYRotLocked,
+            BOOL_COMMAND_RESULT,
+            false
     );
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("data")

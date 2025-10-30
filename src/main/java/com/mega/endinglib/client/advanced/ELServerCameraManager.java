@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Mth;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -335,12 +336,32 @@ public class ELServerCameraManager implements ICameraManager {
         this.originXRot = originXRot;
     }
 
+    @Override
+    public void lockOriginXRot(float originX) {
+
+    }
+
+    @Override
+    public void unlockOriginXRot() {
+
+    }
+
     public double getOriginYRot() {
         return originYRot;
     }
 
     public void setOriginYRot(double originYRot) {
         this.originYRot = originYRot;
+    }
+
+    @Override
+    public void lockOriginYRot(float originY) {
+
+    }
+
+    @Override
+    public void unlockOriginYRot() {
+
     }
 
     public double getOriginZRot() {
@@ -351,6 +372,16 @@ public class ELServerCameraManager implements ICameraManager {
         this.originZRot = originZRot;
     }
 
+    @Override
+    public void lockOriginZRot(float originZ) {
+
+    }
+
+    @Override
+    public void unlockOriginZRot() {
+
+    }
+
     public float getOriginZoom() {
         return originZoom;
     }
@@ -359,23 +390,27 @@ public class ELServerCameraManager implements ICameraManager {
         this.originZoom = originZoom;
     }
 
+    @Nullable
     public Map<ModifierType, Set<CameraModifier>> createDirtyMap() {
-        Object2ObjectOpenHashMap<ModifierType, Set<CameraModifier>> map = new Object2ObjectOpenHashMap<>();
+        Object2ObjectOpenHashMap<ModifierType, Set<CameraModifier>> map = null;
         for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
             CameraValueInstance cvi = modifierType.getFieldGetter().apply(this);
             if (cvi.isDirty()) {
+                if (map == null)
+                    map = new Object2ObjectOpenHashMap<>(1);
                 map.put(modifierType, cvi.getModifiers());
                 cvi.setDirty(false);
             }
         }
         return map;
     }
-
+    @Nullable
     public Map<ModifierType, Collection<CameraKeyframeAnimation>> createDirtyAnimMap() {
-        Object2ObjectOpenHashMap<ModifierType, Collection<CameraKeyframeAnimation>> map = new Object2ObjectOpenHashMap<>();
+        Object2ObjectOpenHashMap<ModifierType, Collection<CameraKeyframeAnimation>> map = null;
         for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
             CameraValueInstance cvi = modifierType.getFieldGetter().apply(this);
             if (cvi.isAnimDirty()) {
+                if (map == null) map = new Object2ObjectOpenHashMap<>();
                 map.put(modifierType, cvi.packData());
                 cvi.setAnimDirty(false);
             }

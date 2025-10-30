@@ -120,11 +120,8 @@ public interface ICameraManager {
     double getFovOffset(float partialTicks);
     double getZoomOffset(float partialTicks);
     double getRaycastOffset(float partialTicks);
-
     double getOriginX();
-
     void setOriginX(double originX);
-
     double getOriginY();
 
     void setOriginY(double originY);
@@ -136,14 +133,19 @@ public interface ICameraManager {
     double getOriginXRot();
 
     void setOriginXRot(double originXRot);
-
+    void lockOriginXRot(float originX);
+    void unlockOriginXRot();
     double getOriginYRot();
 
     void setOriginYRot(double originYRot);
+    void lockOriginYRot(float originY);
+    void unlockOriginYRot();
 
     double getOriginZRot();
 
     void setOriginZRot(double originZRot);
+    void lockOriginZRot(float originZ);
+    void unlockOriginZRot();
 
     float getOriginZoom();
 

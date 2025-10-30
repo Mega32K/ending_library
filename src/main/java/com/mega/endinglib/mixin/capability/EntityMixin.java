@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.capability;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -118,5 +120,13 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     private void makeCapCustomHitbox(CallbackInfoReturnable<AABB> cir) {
         if (this.endingLibrary$capHitbox != null)
             cir.setReturnValue(endingLibrary$capHitbox.move(this.position));
+    }
+    @WrapWithCondition(method = "setXRot", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;xRot:F", opcode = Opcodes.PUTFIELD))
+    private boolean lockedXRot(Entity entity, float xRot) {
+        return !this.endingLibrary$injectedExtraEntityData.lockedXRot;
+    }
+    @WrapWithCondition(method = "setYRot", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;yRot:F", opcode = Opcodes.PUTFIELD))
+    private boolean lockedYRot(Entity entity, float xRot) {
+        return !this.endingLibrary$injectedExtraEntityData.lockedYRot;
     }
 }

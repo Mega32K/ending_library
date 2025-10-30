@@ -7,6 +7,7 @@ import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.mixin.accessor.HoglinAiAccessor;
+import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.mixin.data_expand.ExtraLivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -30,7 +31,7 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
     public @Nullable UUID forcedTargetID;
     public @Nullable LivingEntity forcedTarget;
     public int navigationMaxTimeout = -1;
-    public static final ResourceLocation NAME = new ResourceLocation(EndingLibrary.MODID, "endinglib_living_cap");
+    public static final ResourceLocation NAME = SafeClass.loc("endinglib_living_cap");
     @Override
     public ResourceLocation getRegistryName() {
         return NAME;

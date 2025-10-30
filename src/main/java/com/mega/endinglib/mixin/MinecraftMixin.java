@@ -28,6 +28,14 @@ public abstract class MinecraftMixin implements MinecraftExtra {
         return this.endingLibrary$cameraManager;
     }
 
+    @Override
+    public void setELCameraManager(ELCameraManager cameraManager) {
+        if (cameraManager != this.endingLibrary$cameraManager) {
+            this.endingLibrary$cameraManager.close();
+        }
+        this.endingLibrary$cameraManager = cameraManager;
+    }
+
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(GameConfig p_91084_, CallbackInfo ci) {
         this.endingLibrary$cameraManager = new ELCameraManager((Minecraft) (Object) this, this.gameRenderer, this.gameRenderer.getMainCamera());

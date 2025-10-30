@@ -41,6 +41,7 @@ public class CapabilityDataSerializers {
     public static final CapabilityDataSerializer<Integer> INT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt, CompoundTag::putInt, CompoundTag::getInt);
     public static final CapabilityDataSerializer<Long> LONG = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarLong, FriendlyByteBuf::readVarLong, CompoundTag::putLong, CompoundTag::getLong);
     public static final CapabilityDataSerializer<Float> FLOAT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeFloat, FriendlyByteBuf::readFloat, CompoundTag::putFloat, CompoundTag::getFloat);
+    public static final CapabilityDataSerializer<Optional<Float>> OPTIONAL_FLOAT = CapabilityDataSerializer.optional(FriendlyByteBuf::writeFloat, FriendlyByteBuf::readFloat, CompoundTag::putFloat, CompoundTag::getFloat);
     public static final CapabilityDataSerializer<String> STRING = CapabilityDataSerializer.simple(FriendlyByteBuf::writeUtf, FriendlyByteBuf::readUtf, CompoundTag::putString, CompoundTag::getString);
     public static final CapabilityDataSerializer<Optional<String>> OPTIONAL_STRING = CapabilityDataSerializer.optional(FriendlyByteBuf::writeUtf, FriendlyByteBuf::readUtf, CompoundTag::putString, CompoundTag::getString);
     public static final CapabilityDataSerializer<Component> COMPONENT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeComponent, FriendlyByteBuf::readComponent, CompoundTagUtils::putComponent, CompoundTagUtils::getComponent);
@@ -118,6 +119,7 @@ public class CapabilityDataSerializers {
         registerSerializer(INT);
         registerSerializer(LONG);
         registerSerializer(FLOAT);
+        registerSerializer(OPTIONAL_FLOAT);
         registerSerializer(STRING);
         registerSerializer(OPTIONAL_STRING);
         registerSerializer(COMPONENT);

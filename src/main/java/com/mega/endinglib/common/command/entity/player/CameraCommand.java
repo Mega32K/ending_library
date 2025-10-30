@@ -14,7 +14,6 @@ import com.mojang.brigadier.arguments.*;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.ChatFormatting;
@@ -43,12 +42,14 @@ import java.util.function.BiFunction;
 
 public class CameraCommand {
     public static final DynamicCommandExceptionType KEYFRAME_GROUP_NOT_FOUND = new DynamicCommandExceptionType((a1) -> Component.translatable("commands.endinglib.argument.camera.keyframe.group_not_found", a1));
-    static CameraModeDefault DEFAULT_FREEZING_ORIGIN = new CameraModeDefault(CameraCommand::default_freezeOrigin);
-    static CameraModeDefault DEFAULT_FREEZING_ORIGIN_FOLLOW_POSITION = new CameraModeDefault(CameraCommand::default_freezeOrigin_followPosition);
-    static CameraModeDefault DEFAULT_LOCKED_CAMERA_PERSON = new CameraModeDefault(CameraCommand::default_lockedCameraPersion);
-    static CameraModeDefault DEFAULT_LOCKED_FOV = new CameraModeDefault(CameraCommand::default_lockedFov);
-    static CameraModeDefault DEFAULT_AVAILABLE_CAMERA_AREA = new CameraModeDefault(CameraCommand::default_availableCameraArea);
-    static CameraModeDefault DEFAULT_MOUSE_CONTROL = new CameraModeDefault(CameraCommand::default_mouseControl);
+    static CameraModeDefault DEFAULT_FREEZING_ORIGIN = new CameraModeDefault(CameraCommand::freezeOrigin_default);
+    static CameraModeDefault DEFAULT_FREEZING_ORIGIN_FOLLOW_POSITION = new CameraModeDefault(CameraCommand::freezeOrigin_followPosition_default);
+    static CameraModeDefault DEFAULT_LOCKED_CAMERA_PERSON = new CameraModeDefault(CameraCommand::lockedCameraPerson_default);
+    static CameraModeDefault DEFAULT_LOCKED_FOV = new CameraModeDefault(CameraCommand::lockedFov_default);
+    static CameraModeDefault DEFAULT_AVAILABLE_CAMERA_AREA = new CameraModeDefault(CameraCommand::availableCameraArea_default);
+    static CameraModeDefault DEFAULT_MOUSE_CONTROL = new CameraModeDefault(CameraCommand::mouseControl_default);
+    static CameraModeDefault DEFAULT_LOCKED_CAMERA_ORIGIN_X_ROT = new CameraModeDefault(CameraCommand::freezeOrigin_unlockOriginCameraRot_x);
+    static CameraModeDefault DEFAULT_LOCKED_CAMERA_ORIGIN_Y_ROT = new CameraModeDefault(CameraCommand::freezeOrigin_unlockOriginCameraRot_y);
     public static final byte IS_ENABLED = 'a';
     public static final byte IS_FREEZING_ORIGIN = 'b';
     public static final byte FREEZING_MODE_IS_FOLLOW_POSITION = 'c';
@@ -64,9 +65,9 @@ public class CameraCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("enable")
                                 .then(Commands.argument("value", BoolArgumentType.bool())
-                                        .executes(context -> enableCustomCameraMode(context.getSource(), EntityArgument.getPlayer(context, "player"), BoolArgumentType.getBool(context, "value")))
+                                        .executes(context -> enableCustomCameraMode(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "value")))
                                 )
-                                .executes(context -> message(context.getSource(), IS_ENABLED, EntityArgument.getPlayer(context, "player")))
+                                .executes(context -> message(context.getSource(), IS_ENABLED, getPlayer(context)))
                         )
                         .then(Commands.literal("modifier")
                                 .then(Commands.literal("addModifier")
@@ -78,7 +79,7 @@ public class CameraCommand {
                                                                                 .then(Commands.argument("isPermanent", BoolArgumentType.bool())
                                                                                         .executes(context -> addModifier(
                                                                                                 context.getSource(),
-                                                                                                EntityArgument.getPlayer(context, "player"),
+                                                                                                getPlayer(context),
                                                                                                 CameraModifierArgument.getModifierType(context, "modifierType"),
                                                                                                 StringArgumentType.getString(context, "name"),
                                                                                                 UuidArgument.getUuid(context, "uuid"),
@@ -94,7 +95,7 @@ public class CameraCommand {
                                                                         .then(Commands.argument("isPermanent", BoolArgumentType.bool())
                                                                                 .executes(context -> addModifier(
                                                                                         context.getSource(),
-                                                                                        EntityArgument.getPlayer(context, "player"),
+                                                                                        getPlayer(context),
                                                                                         CameraModifierArgument.getModifierType(context, "modifierType"),
                                                                                         StringArgumentType.getString(context, "name"),
                                                                                         null,
@@ -113,7 +114,7 @@ public class CameraCommand {
                                                 .then(Commands.argument("uuid", CameraModifierUUIDArgument.uuid())
                                                         .executes(context -> removeModifier(
                                                                 context.getSource(),
-                                                                EntityArgument.getPlayer(context, "player"),
+                                                                getPlayer(context),
                                                                 CameraModifierArgument.getModifierType(context, "modifierType"),
                                                                 UuidArgument.getUuid(context, "uuid")
                                                         ))
@@ -124,20 +125,20 @@ public class CameraCommand {
                                         .then(Commands.argument("modifierType", CameraModifierArgument.modifierType())
                                                 .executes(context -> removeAllModifiers(
                                                         context.getSource(),
-                                                        EntityArgument.getPlayer(context, "player"),
+                                                        getPlayer(context),
                                                         CameraModifierArgument.getModifierType(context, "modifierType")
                                                 ))
                                         )
                                         .executes(context -> removeAllModifiers(
                                                 context.getSource(),
-                                                EntityArgument.getPlayer(context, "player")
+                                                getPlayer(context)
                                         ))
                                 )
                                 .then(Commands.literal("getModifiers")
                                         .then(Commands.argument("modifierType", CameraModifierArgument.modifierType())
                                                 .executes(context -> getModifiers(
                                                         context.getSource(),
-                                                        EntityArgument.getPlayer(context, "player"),
+                                                        getPlayer(context),
                                                         CameraModifierArgument.getModifierType(context, "modifierType")
                                                 ))
                                         )
@@ -145,25 +146,43 @@ public class CameraCommand {
                         )
                         .then(Commands.literal("option")
                                 .then(Commands.literal("freezingOrigin")
-                                        .executes(context -> message(context.getSource(), IS_FREEZING_ORIGIN, EntityArgument.getPlayer(context, "player")))
+                                        .executes(context -> message(context.getSource(), IS_FREEZING_ORIGIN, getPlayer(context)))
                                         .then(Commands.literal("default")
                                                 .executes(DEFAULT_FREEZING_ORIGIN::execute)
                                         )
                                         .then(Commands.argument("value", BoolArgumentType.bool())
-                                                .executes(context -> freezeOrigin(context.getSource(), EntityArgument.getPlayer(context, "player"), BoolArgumentType.getBool(context, "value")))
+                                                .executes(context -> freezeOrigin(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "value")))
                                         )
                                         .then(Commands.literal("followPosition")
                                                 .then(Commands.literal("default")
                                                         .executes(DEFAULT_FREEZING_ORIGIN_FOLLOW_POSITION::execute)
                                                 )
                                                 .then(Commands.argument("follow", BoolArgumentType.bool())
-                                                        .executes(context -> freezeOrigin_followPosition(context.getSource(), EntityArgument.getPlayer(context, "player"), BoolArgumentType.getBool(context, "follow")))
+                                                        .executes(context -> freezeOrigin_followPosition(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "follow")))
                                                 )
-                                                .executes(context -> message(context.getSource(), FREEZING_MODE_IS_FOLLOW_POSITION, EntityArgument.getPlayer(context, "player")))
+                                                .executes(context -> message(context.getSource(), FREEZING_MODE_IS_FOLLOW_POSITION, getPlayer(context)))
                                         )
                                         .then(Commands.literal("setOriginCameraRotation")
                                                 .then(Commands.argument("rotation", Vec2Argument.vec2(false))
-                                                        .executes(context -> freezeOrigin_setOriginCameraRotation(context.getSource(), EntityArgument.getPlayer(context, "player"), Vec2Argument.getVec2(context, "rotation")))
+                                                        .executes(context -> freezeOrigin_setOriginCameraRotation(context.getSource(), getPlayer(context), Vec2Argument.getVec2(context, "rotation")))
+                                                )
+                                        )
+                                        .then(Commands.literal("lockOriginCameraRotation")
+                                                .then(Commands.literal("xRot")
+                                                        .then(Commands.argument("rotation", FloatArgumentType.floatArg())
+                                                                .executes(context -> freezeOrigin_lockOriginCameraRot_x(context.getSource(), getPlayer(context), FloatArgumentType.getFloat(context, "rotation")))
+                                                        )
+                                                        .then(Commands.literal("default")
+                                                                .executes(DEFAULT_LOCKED_CAMERA_ORIGIN_X_ROT::execute)
+                                                        )
+                                                )
+                                                .then(Commands.literal("yRot")
+                                                        .then(Commands.argument("rotation", FloatArgumentType.floatArg())
+                                                                .executes(context -> freezeOrigin_lockOriginCameraRot_y(context.getSource(), getPlayer(context), FloatArgumentType.getFloat(context, "rotation")))
+                                                        )
+                                                        .then(Commands.literal("default")
+                                                                .executes(DEFAULT_LOCKED_CAMERA_ORIGIN_Y_ROT::execute)
+                                                        )
                                                 )
                                         )
                                 )
@@ -172,18 +191,18 @@ public class CameraCommand {
                                                 .executes(DEFAULT_LOCKED_CAMERA_PERSON::execute)
                                         )
                                         .then(Commands.argument("value", BoolArgumentType.bool())
-                                                .executes(context -> lockedCameraPersion(context.getSource(), EntityArgument.getPlayer(context, "player"), BoolArgumentType.getBool(context, "value")))
+                                                .executes(context -> lockedCameraPerson(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "value")))
                                         )
-                                        .executes(context -> message(context.getSource(), IS_CAMERA_PERSON_LOCKED, EntityArgument.getPlayer(context, "player")))
+                                        .executes(context -> message(context.getSource(), IS_CAMERA_PERSON_LOCKED, getPlayer(context)))
                                 )
                                 .then(Commands.literal("lockedFov")
                                         .then(Commands.literal("default")
                                                 .executes(DEFAULT_LOCKED_FOV::execute)
                                         )
                                         .then(Commands.argument("value", BoolArgumentType.bool())
-                                                .executes(context -> lockedFov(context.getSource(), EntityArgument.getPlayer(context, "player"), BoolArgumentType.getBool(context, "value")))
+                                                .executes(context -> lockedFov(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "value")))
                                         )
-                                        .executes(context -> message(context.getSource(), IS_FOV_LOCKED, EntityArgument.getPlayer(context, "player")))
+                                        .executes(context -> message(context.getSource(), IS_FOV_LOCKED, getPlayer(context)))
                                 )
                                 .then(Commands.literal("availableCameraArea")
                                         .then(Commands.literal("default")
@@ -191,26 +210,26 @@ public class CameraCommand {
                                         )
                                         .then(Commands.argument("min", Vec3Argument.vec3(false))
                                                 .then(Commands.argument("max", Vec3Argument.vec3(false))
-                                                        .executes(context -> availableCameraArea(context.getSource(), EntityArgument.getPlayer(context, "player"), Vec3Argument.getVec3(context, "min"), Vec3Argument.getVec3(context, "max")))
+                                                        .executes(context -> availableCameraArea(context.getSource(), getPlayer(context), Vec3Argument.getVec3(context, "min"), Vec3Argument.getVec3(context, "max")))
                                                 )
                                         )
-                                        .executes(context -> message(context.getSource(), AVAILABLE_CAMERA_AREA, EntityArgument.getPlayer(context, "player")))
+                                        .executes(context -> message(context.getSource(), AVAILABLE_CAMERA_AREA, getPlayer(context)))
                                 )
                                 .then(Commands.literal("mouseControl")
                                         .then(Commands.literal("default")
                                                 .executes(DEFAULT_MOUSE_CONTROL::execute)
                                         )
                                         .then(Commands.argument("value", BoolArgumentType.bool())
-                                                .executes(context -> mouseControl(context.getSource(), EntityArgument.getPlayer(context, "player"), BoolArgumentType.getBool(context, "value")))
+                                                .executes(context -> mouseControl(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "value")))
                                         )
-                                        .executes(context -> message(context.getSource(), IS_MOUSE_CONTROLLED, EntityArgument.getPlayer(context, "player")))
+                                        .executes(context -> message(context.getSource(), IS_MOUSE_CONTROLLED, getPlayer(context)))
                                 )
                                 .then(Commands.literal("cameraEntity")
                                         .then(Commands.literal("default")
-                                                .executes(context -> setCameraEntity(context.getSource(), EntityArgument.getPlayer(context, "player"), null))
+                                                .executes(context -> setCameraEntity(context.getSource(), getPlayer(context), null))
                                         )
                                         .then(Commands.argument("value", EntityArgument.entity())
-                                                .executes(context -> setCameraEntity(context.getSource(), EntityArgument.getPlayer(context, "player"), EntityArgument.getEntity(context, "value")))
+                                                .executes(context -> setCameraEntity(context.getSource(), getPlayer(context), EntityArgument.getEntity(context, "value")))
                                         )
                                 )
                         )
@@ -218,14 +237,14 @@ public class CameraCommand {
                                 .then(Commands.argument("modifierType", CameraModifierArgument.modifierType())
                                         .then(Commands.literal("remove")
                                                 .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                                        .executes(context -> removeCameraAnimation(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        .executes(context -> removeCameraAnimation(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                 )
                                         )
                                         .then(Commands.literal("add")
                                                 .then(Commands.argument("name", StringArgumentType.word())
                                                         .then(Commands.argument("animType", CameraAnimTypeArgument.animType())
                                                                 .then(Commands.argument("duration", FloatArgumentType.floatArg(0))
-                                                                        .executes(context -> addCameraAnimation(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), StringArgumentType.getString(context, "name"), CameraAnimTypeArgument.getAnimType(context, "animType"), FloatArgumentType.getFloat(context, "duration")))
+                                                                        .executes(context -> addCameraAnimation(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), StringArgumentType.getString(context, "name"), CameraAnimTypeArgument.getAnimType(context, "animType"), FloatArgumentType.getFloat(context, "duration")))
                                                                 )
                                                         )
                                                 )
@@ -238,14 +257,14 @@ public class CameraCommand {
                                                                                 .then(Commands.argument("easing", EasingArgument.easing())
                                                                                         .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                                 .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                                        .executes(context -> addKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                        .executes(context -> addKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                                 )
                                                                                         )
                                                                                 )
                                                                         )
                                                                         .then(Commands.literal("removeKeyframe")
                                                                                 .then(Commands.argument("index", IntegerArgumentType.integer())
-                                                                                        .executes(context -> removeKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
+                                                                                        .executes(context -> removeKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
                                                                                 )
                                                                         )
                                                                         .then(Commands.literal("modifyKeyframe")
@@ -253,7 +272,7 @@ public class CameraCommand {
                                                                                         .then(Commands.argument("easing", EasingArgument.easing())
                                                                                                 .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                                         .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                                                .executes(context -> modifyKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                                .executes(context -> modifyKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                                         )
                                                                                                 )
                                                                                         )
@@ -264,7 +283,7 @@ public class CameraCommand {
                                                                                         .then(Commands.argument("easing", EasingArgument.easing())
                                                                                                 .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                                         .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                                         )
                                                                                                 )
                                                                                         )
@@ -276,14 +295,14 @@ public class CameraCommand {
                                                                 .then(Commands.argument("easing", EasingArgument.easing())
                                                                         .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                 .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                        .executes(context -> addKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                        .executes(context -> addKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                 )
                                                                         )
                                                                 )
                                                         )
                                                         .then(Commands.literal("removeKeyframe")
                                                                 .then(Commands.argument("index", IntegerArgumentType.integer())
-                                                                        .executes(context -> removeKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
+                                                                        .executes(context -> removeKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index")))
                                                                 )
                                                         )
                                                         .then(Commands.literal("modifyKeyframe")
@@ -291,7 +310,7 @@ public class CameraCommand {
                                                                         .then(Commands.argument("easing", EasingArgument.easing())
                                                                                 .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                         .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                                .executes(context -> modifyKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                .executes(context -> modifyKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                         )
                                                                                 )
                                                                         )
@@ -302,32 +321,32 @@ public class CameraCommand {
                                                                         .then(Commands.argument("easing", EasingArgument.easing())
                                                                                 .then(Commands.argument("timestamp", FloatArgumentType.floatArg(0F))
                                                                                         .then(Commands.argument("endPoint", FloatArgumentType.floatArg())
-                                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
+                                                                                                .executes(context -> insertBeforeKeyframe(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget"), IntegerArgumentType.getInteger(context, "index"), EasingArgument.getEasing(context, "easing"), FloatArgumentType.getFloat(context, "timestamp"), FloatArgumentType.getFloat(context, "endPoint")))
                                                                                         )
                                                                                 )
                                                                         )
                                                                 )
                                                         )
-                                                        .executes(context -> getCameraAnimation(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        .executes(context -> getCameraAnimation(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                 )
                                         )
                                         .then(Commands.literal("list")
-                                                .executes(context -> getCameraAnimations(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType")))
+                                                .executes(context -> getCameraAnimations(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType")))
                                                 .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
                                                         .then(Commands.argument("animationGroup", CameraAnimationGroupArgument.group())
-                                                                .executes(context -> listAnimationKeyframes(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                                .executes(context -> listAnimationKeyframes(context.getSource(), CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                         )
-                                                        .executes(context -> listAnimationKeyframes(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        .executes(context -> listAnimationKeyframes(context.getSource(), CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                 )
                                         )
                                         .then(Commands.literal("start")
                                                 .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                                        .executes(context -> startAnimation(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        .executes(context -> startAnimation(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                 )
                                         )
                                         .then(Commands.literal("stop")
                                                 .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                                        .executes(context -> stopAnimation(context.getSource(), EntityArgument.getPlayer(context, "player"), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                        .executes(context -> stopAnimation(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
                                                 )
                                         )
 
@@ -335,7 +354,9 @@ public class CameraCommand {
                         )
                 );
     }
-
+    static ServerPlayer getPlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        return EntityArgument.getPlayer(context, "player");
+    }
     private static int message(CommandSourceStack stack, byte mode, ServerPlayer player) {
         EndingLibraryPlayerCapability cap = CommonProxy.getCameraCap(player);
         switch (mode) {
@@ -415,17 +436,17 @@ public class CameraCommand {
         sendModifyMessage(stack, player);
         return 0;
     }
-    private static int default_freezeOrigin(CommandSourceStack stack, ServerPlayer player) {
-        CommonProxy.getCameraCap(player).setVanillaCameraFreezing(false);
+    private static int freezeOrigin_default(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setVanillaCameraFreezing(false));
         return 0;
     }
     private static int freezeOrigin_followPosition(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        CommonProxy.getCameraCap(player).setFollowPosition(flag);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setFollowPosition(flag));
         sendModifyMessage(stack, player);
         return 0;
     }
-    private static int default_freezeOrigin_followPosition(CommandSourceStack stack, ServerPlayer player) {
-        CommonProxy.getCameraCap(player).setFollowPosition(false);
+    private static int freezeOrigin_followPosition_default(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setFollowPosition(false));
         return 0;
     }
     private static int freezeOrigin_setOriginCameraRotation(CommandSourceStack stack, ServerPlayer player, Vec2 rotation) {
@@ -433,52 +454,69 @@ public class CameraCommand {
         sendModifyMessage(stack, player);
         return 0;
     }
-    private static int lockedCameraPersion(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        CommonProxy.getCameraCap(player).setLockedCameraPerson(flag);
+    private static int freezeOrigin_lockOriginCameraRot_x(CommandSourceStack stack, ServerPlayer player, float value) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            capability.lockCameraOriginXRot(value);
+            sendModifyMessage(stack, player);
+        });
+        return 0;
+    }
+    private static int freezeOrigin_unlockOriginCameraRot_x(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(EndingLibraryPlayerCapability::unlockCameraOriginXRot);
+        return 0;
+    }
+    private static int freezeOrigin_lockOriginCameraRot_y(CommandSourceStack stack, ServerPlayer player, float value) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            capability.lockCameraOriginYRot(value);
+            sendModifyMessage(stack, player);
+        });
+        return 0;
+    }
+    private static int freezeOrigin_unlockOriginCameraRot_y(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(EndingLibraryPlayerCapability::unlockCameraOriginYRot);
+        return 0;
+    }
+    private static int lockedCameraPerson(CommandSourceStack stack, ServerPlayer player, boolean flag) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setLockedCameraPerson(flag));
         sendModifyMessage(stack, player);
         return 0;
     }
-    private static int default_lockedCameraPersion(CommandSourceStack stack, ServerPlayer player) {
-        CommonProxy.getCameraCap(player).setLockedCameraPerson(false);
+    private static int lockedCameraPerson_default(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setLockedCameraPerson(false));
         return 0;
     }
     private static int lockedFov(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        CommonProxy.getCameraCap(player).setLockedFov(flag);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setLockedFov(flag));
         sendModifyMessage(stack, player);
         return 0;
     }
-    private static int default_lockedFov(CommandSourceStack stack, ServerPlayer player) {
-        CommonProxy.getCameraCap(player).setLockedFov(false);
+    private static int lockedFov_default(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setLockedFov(false));
         return 0;
     }
     private static int availableCameraArea(CommandSourceStack stack, ServerPlayer player, Vec3 min, Vec3 max) {
         AABB aabb = new AABB(min, max);
-        CommonProxy.getCameraCap(player).setCameraAvailableArea(aabb);
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.available_camera_area.set", player.getDisplayName(), LoreHelper.aabb(aabb)), false);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            capability.setCameraAvailableArea(aabb);
+            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.available_camera_area.set", player.getDisplayName(), LoreHelper.aabb(aabb)), false);
+        });
         return 0;
     }
-    private static int default_availableCameraArea(CommandSourceStack stack, ServerPlayer player) {
-        CommonProxy.getCameraCap(player).setCameraAvailableArea(null);
+    private static int availableCameraArea_default(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setCameraAvailableArea(null));
         return 0;
     }
     private static int mouseControl(CommandSourceStack stack, ServerPlayer player, boolean value) {
-        EndingLibraryPlayerCapability capability = CommonProxy.getCameraCap(player);
-        /*
-
-        if (value) {
-            if (!capability.isVanillaCameraFreezing()) {
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.mouse_control.failure.no_freezing_origin"), true);
-                return 0;
-            }
-        }
-         */
-        capability.setMouseControlled(value);
-        sendModifyMessage(stack, player);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            capability.setMouseControlled(value);
+            sendModifyMessage(stack, player);
+        });
         return 0;
     }
-    private static int default_mouseControl(CommandSourceStack stack, ServerPlayer player) {
-        EndingLibraryPlayerCapability capability = CommonProxy.getCameraCap(player);
-        capability.setMouseControlled(false);
+    private static int mouseControl_default(CommandSourceStack stack, ServerPlayer player) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            capability.setMouseControlled(false);
+        });
         return 0;
     }
     private static int setCameraEntity(CommandSourceStack stack, ServerPlayer player, @Nullable Entity target) {
@@ -486,115 +524,137 @@ public class CameraCommand {
         sendModifyVanillaMessage(stack, player);
         return 0;
     }
-    private static int addModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, @Nullable UUID uuid, double amount, CameraModifier.Operation operation, boolean isPermanent) {
-        boolean uuidNull = false;
-        if (uuid == null) {
-            uuid = Mth.createInsecureUUID(RandomSource.createNewThreadLocalInstance());
-            uuidNull = true;
-        }
-        CameraModifier modifier = new CameraModifier(uuid, name, amount, operation);
-        if (isPermanent) {
-            modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager()).addPermanentModifier(modifier);
-        } else {
-            modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager()).addTransientModifier(modifier);
-        }
-        sendModifierMessage(stack, modifier, Component.translatable(uuidNull ? "commands.endinglib.message.camera.add_modifier_null_id" : "commands.endinglib.message.camera.add_modifier", player.getDisplayName()).append(Component.literal(modifierType.name() + " : ").withStyle(ChatFormatting.GOLD)));
+    private static int addModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, final @Nullable UUID uuid, double amount, CameraModifier.Operation operation, boolean isPermanent) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            boolean uuidNull = false;
+            UUID id = uuid;
+            if (id == null) {
+                id = Mth.createInsecureUUID(RandomSource.createNewThreadLocalInstance());
+                uuidNull = true;
+            }
+            CameraModifier modifier = new CameraModifier(id, name, amount, operation);
+            if (isPermanent) {
+                modifierType.getFieldGetter().apply(capability.getCameraDataManager()).addPermanentModifier(modifier);
+            } else {
+                modifierType.getFieldGetter().apply(capability.getCameraDataManager()).addTransientModifier(modifier);
+            }
+            sendModifierMessage(stack, modifier, Component.translatable(uuidNull ? "commands.endinglib.message.camera.add_modifier_null_id" : "commands.endinglib.message.camera.add_modifier", player.getDisplayName()).append(Component.literal(modifierType.name() + " : ").withStyle(ChatFormatting.GOLD)));
+
+        });
         return 0;
     }
 
-    private static int removeModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, UUID uuid) {
+    private static int removeModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, final UUID uuid) {
         if (uuid != null) {
-            CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-            CameraModifier modifier = cvi.getModifier(uuid);
-            if (modifier != null) {
-                cvi.removeModifier(uuid);
-                sendModifierMessage(stack, modifier, Component.translatable("commands.endinglib.message.camera.remove_modifier", player.getDisplayName()).append(Component.literal(modifierType.name() + " : ").withStyle(ChatFormatting.GOLD)));
-            }
+            CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+                CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+                CameraModifier modifier = cvi.getModifier(uuid);
+                if (modifier != null) {
+                    cvi.removeModifier(uuid);
+                    sendModifierMessage(stack, modifier, Component.translatable("commands.endinglib.message.camera.remove_modifier", player.getDisplayName()).append(Component.literal(modifierType.name() + " : ").withStyle(ChatFormatting.GOLD)));
+                }
+            });
         }
         return 0;
     }
 
     private static int removeAllModifiers(CommandSourceStack stack, ServerPlayer player) {
-        int typeCount = 0;
-        int count = 0;
-        for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
-            CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-            int c = cvi.getModifiers().size();
-            if (c > 0) typeCount++;
-            count += c;
-            cvi.removeModifiers();
-        }
-        final int i0 = typeCount;
-        final int i1 = count;
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.remove_all_modifier", player.getDisplayName(), i0, i1), false);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            int typeCount = 0;
+            int count = 0;
+            for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
+                CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+                int c = cvi.getModifiers().size();
+                if (c > 0) typeCount++;
+                count += c;
+                cvi.removeModifiers();
+            }
+            final int i0 = typeCount;
+            final int i1 = count;
+            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.remove_all_modifier", player.getDisplayName(), i0, i1), false);
+        });
         return 0;
     }
 
     private static int removeAllModifiers(CommandSourceStack stack, ServerPlayer player, ModifierType... modifierTypes) {
-        int typeCount = 0;
-        int count = 0;
-        for (ModifierType modifierType : modifierTypes) {
-            CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-            int c = cvi.getModifiers().size();
-            if (c > 0) typeCount++;
-            count += c;
-            cvi.removeModifiers();
-        }
-        final int i0 = typeCount;
-        final int i1 = count;
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.remove_all_modifier", player.getDisplayName(), i0, i1), false);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            int typeCount = 0;
+            int count = 0;
+            for (ModifierType modifierType : modifierTypes) {
+                CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+                int c = cvi.getModifiers().size();
+                if (c > 0) typeCount++;
+                count += c;
+                cvi.removeModifiers();
+            }
+            final int i0 = typeCount;
+            final int i1 = count;
+            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.remove_all_modifier", player.getDisplayName(), i0, i1), false);
+        });
         return 0;
     }
 
     private static int getModifiers(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType) {
-        Set<CameraModifier> modifiers = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager()).getModifiers();
-        stack.sendSuccess(() -> Component.literal(modifierType.name()).withStyle(ChatFormatting.GREEN), false);
-        for (CameraModifier modifier : modifiers) {
-            sendModifierMessage(stack, modifier);
-        }
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            Set<CameraModifier> modifiers = modifierType.getFieldGetter().apply(capability.getCameraDataManager()).getModifiers();
+            stack.sendSuccess(() -> Component.literal(modifierType.name()).withStyle(ChatFormatting.GREEN), false);
+            for (CameraModifier modifier : modifiers) {
+                sendModifierMessage(stack, modifier);
+            }
+        });
         return 0;
     }
     private static int getCameraAnimations(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.get_anims", modifierType.name()), false);
-        for (CameraKeyframeAnimation animation : cvi.getKeyframeAnimations()) {
-            sendAnimationMessage(stack, animation);
-        }
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.get_anims", modifierType.name()), false);
+            for (CameraKeyframeAnimation animation : cvi.getKeyframeAnimations()) {
+                sendAnimationMessage(stack, animation);
+            }
+        });
         return 0;
     }
 
     private static int getCameraAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.get_anim", modifierType.name(), name), false);
-        sendAnimationMessage(stack, cvi.getKeyframeAnimation(name));
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.get_anim", modifierType.name(), name), false);
+            sendAnimationMessage(stack, cvi.getKeyframeAnimation(name));
+        });
         return 0;
     }
 
     private static int addCameraAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, CameraKeyframeAnimation.AnimType animType, float duration) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        CameraKeyframeAnimation animation = new CameraKeyframeAnimation(name, animType, duration);
-        cvi.addKeyframeAnimation(animation);
-        sendModifyMessage(stack, player);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            CameraKeyframeAnimation animation = new CameraKeyframeAnimation(name, animType, duration);
+            cvi.addKeyframeAnimation(animation);
+            sendModifyMessage(stack, player);
+        });
         return 0;
     }
 
     private static int removeCameraAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
-        sendAnimationMessage(stack, animation);
-        cvi.removeKeyframeAnimation(name);
-        sendModifyMessage(stack, player);
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            sendAnimationMessage(stack, animation);
+            cvi.removeKeyframeAnimation(name);
+            sendModifyMessage(stack, player);
+        });
         return 0;
     }
 
     private static int addKeyframe(CommandSourceStack stack, String group, ServerPlayer player, ModifierType modifierType, String name, Easing easing, float timestamp, float endPoint) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
-        if (animation != null) {
-            animation.addKeyframe(group, new CameraKeyframe(timestamp, endPoint, easing));
-            cvi.setAnimDirty();
-            sendModifyMessage(stack, player);
-        }
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            if (animation != null) {
+                animation.addKeyframe(group, new CameraKeyframe(timestamp, endPoint, easing));
+                cvi.setAnimDirty();
+                sendModifyMessage(stack, player);
+            }
+        });
         return 0;
     }
 
@@ -638,9 +698,9 @@ public class CameraCommand {
         CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
         CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
         if (animation != null) {
-            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.list_keyframes"), false);
             List<CameraKeyframe> cameraKeyframes = animation.getKeyframes().get(group);
             if (cameraKeyframes == null) throw KEYFRAME_GROUP_NOT_FOUND.create(group);
+            stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.camera_anim.list_keyframes"), false);
             if (!cameraKeyframes.isEmpty()) {
                 for (int i = 0; i < cameraKeyframes.size(); i++) {
                     CameraKeyframe keyframe = cameraKeyframes.get(i);
@@ -653,26 +713,30 @@ public class CameraCommand {
     }
 
     private static int startAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
-        if (animation != null) {
-            animation.setStopped(false);
-            cvi.setAnimDirty();
-            sendModifyMessage(stack, player);
-        }
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            if (animation != null) {
+                animation.setStopped(false);
+                cvi.setAnimDirty();
+                sendModifyMessage(stack, player);
+            }
+        });
         return 0;
     }
 
     private static int stopAnimation(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name) {
-        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CommonProxy.getCameraCap(player).getCameraDataManager());
-        CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
-        if (animation != null) {
-            animation.setStopped(true);
-            animation.reset();
-            cvi.setAnimDirty();
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            if (animation != null) {
+                animation.setStopped(true);
+                animation.reset();
+                cvi.setAnimDirty();
 
-            sendModifyMessage(stack, player);
-        }
+                sendModifyMessage(stack, player);
+            }
+        });
         return 0;
     }
     public static class CameraModeDefault {
