@@ -1,8 +1,15 @@
 package com.mega.endinglib.client;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.api.client.camera.CameraKeyframeAnimation;
 import com.mega.endinglib.api.client.camera.CameraUtils;
+import com.mega.endinglib.api.client.camera.CameraValueInstance;
+import com.mega.endinglib.api.client.camera.ModifierType;
+import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
 import com.mega.endinglib.api.client.shader.post.DynamicScreenEffect;
 import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
@@ -20,10 +27,11 @@ import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
-import com.mojang.blaze3d.shaders.Uniform;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
@@ -38,30 +46,46 @@ import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientRegistryLayer;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
-import java.util.Map;
-import java.util.Set;
+import javax.json.JsonWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class ClientWrapped {
+    public static final LevelResource CAMERA_ANIMATIONS = new LevelResource("endinglib_camera_animations");
     private static long lastRegistryAccessGetTime = Util.getMillis();
     private static LayeredRegistryAccess<ClientRegistryLayer> registryAccess = null;
     public static Player clientPlayer() {
@@ -250,7 +274,7 @@ public class ClientWrapped {
         }
     }
 
-    public static void handleSEUniforms(String name, String passName, String uniformName, float... values) {
+    public static void handleSEUniforms(String name, String passName, short ordinalOfPass, String uniformName, float... values) {
         Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
         if (screenEffects.containsKey(name)) {
             if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
@@ -342,5 +366,56 @@ public class ClientWrapped {
     }
     public static void setCameraEntity(@Nullable Entity entity) {
         Minecraft.getInstance().setCameraEntity(entity == null ? ClientWrapped.clientPlayer() : entity);
+    }
+    public static void onBuildCameraAnimation(final ModifierType modifierType) {
+        CompletableFuture.supplyAsync(() -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(CameraUtils.getInstance());
+            JsonOps ops = JsonOps.INSTANCE;
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null) return Set.of(new JsonObject());
+            Collection<CameraKeyframeAnimation> collection = cvi.getKeyframeAnimations();
+            player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.build.step.0", LoreHelper.number(collection.size(), ChatFormatting.GOLD)));
+            return collection.stream()
+                    .map(cka -> CameraKeyframeAnimation.JSON_CODEC.encodeStart(ops, cka))
+                    .filter(result -> {
+                        Optional<DataResult.PartialResult<JsonElement>> error = result.error();
+                        error.ifPresent(pr -> player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.build.step.1")
+                                .withStyle(ChatFormatting.RED)
+                                .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(pr.message()))))
+                        ));
+                        return error.isEmpty();
+                    })
+                    .map(DataResult::result)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toSet());
+        }, ClientUtils.CLIENT_TEST_POOL).thenAcceptAsync((jsonSet) -> {
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null) return;
+            player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.build.step.2"));
+            int succeedCount = 0;
+            int i=0;
+            int totalCount = jsonSet.size();
+            try {
+                Path path = FMLLoader.getGamePath().resolve("endinglib").resolve("camera_animations").resolve(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm_ss"))).resolve(modifierType.name());
+                Files.createDirectories(path);
+                for (JsonElement je : jsonSet) {
+                    if (je instanceof JsonObject jo) {
+                        i++;
+                        Files.writeString(path.resolve(GsonHelper.getAsString(jo, "name", "undefined_"+i) + ".json"), new GsonBuilder().setPrettyPrinting().create().toJson(jo));
+                        succeedCount++;
+                    }
+                }
+
+                player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.build.step.3", LoreHelper.number(succeedCount, ChatFormatting.GOLD), LoreHelper.number(totalCount, ChatFormatting.GOLD)).append(
+                        Component.literal(", "+ path.toAbsolutePath()).withStyle(ChatFormatting.WHITE, ChatFormatting.UNDERLINE).withStyle(
+                                style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toAbsolutePath().toString()))
+                        )
+                ));
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
+        }, ClientUtils.CLIENT_TEST_POOL);
+
     }
 }

@@ -5,8 +5,7 @@ import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.CameraValueInstance;
 import com.mega.endinglib.api.client.camera.ICameraManager;
 import com.mega.endinglib.client.ClientWrapped;
-import com.mega.endinglib.client.RendererUtils;
-import com.mega.endinglib.client.screen.CameraModifyScreen;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.Camera;
@@ -145,14 +144,14 @@ public class ELCameraManager implements ICameraManager {
                 if (ClientWrapped.clientPlayer() != null && minecraft.options.getCameraType() != CameraType.FIRST_PERSON)
                     minecraft.mouseHandler.releaseMouse();
                 if (ClientUtils.customCursorHandle == -1L)
-                    ClientUtils.createMouseCursor(RendererUtils.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), minecraft.mouseHandler);
+                    ClientUtils.createMouseCursor(ClientContext.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), minecraft.mouseHandler);
                 else {
                     if (minecraft.screen != null) {
-                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_NORMAL))
-                            ClientUtils.createMouseCursor(RendererUtils.CURSOR_NORMAL, 3.2F, (int) (8 * 3.2F),(int) (8 * 3.2F), minecraft.mouseHandler);
+                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(ClientContext.CURSOR_NORMAL))
+                            ClientUtils.createMouseCursor(ClientContext.CURSOR_NORMAL, 3.2F, (int) (8 * 3.2F),(int) (8 * 3.2F), minecraft.mouseHandler);
                     }
-                    else if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_1))
-                        ClientUtils.createMouseCursor(RendererUtils.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), minecraft.mouseHandler);
+                    else if (!ClientUtils.CURRENT_CURSOR_ICON.equals(ClientContext.CURSOR_1))
+                        ClientUtils.createMouseCursor(ClientContext.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), minecraft.mouseHandler);
                 }
             }
         }
@@ -369,27 +368,27 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public double getXRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue()) + CameraModifyScreen.RELATIVE_X + xRelative.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue()) + xRelative.getAnimationValue(partialTicks);
     }
 
     public double getYRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.yRelativeOld, this.yRelative.getValue()) + CameraModifyScreen.RELATIVE_Y + yRelative.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.yRelativeOld, this.yRelative.getValue()) + yRelative.getAnimationValue(partialTicks);
     }
 
     public double getZRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.zRelativeOld, this.zRelative.getValue()) + CameraModifyScreen.RELATIVE_Z + zRelative.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.zRelativeOld, this.zRelative.getValue()) + zRelative.getAnimationValue(partialTicks);
     }
 
     public double getXOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.xOffsetOld, this.xOffset.getValue()) + CameraModifyScreen.TRANSLATION_X + xOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.xOffsetOld, this.xOffset.getValue()) + xOffset.getAnimationValue(partialTicks);
     }
 
     public double getYOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.yOffsetOld, this.yOffset.getValue()) + CameraModifyScreen.TRANSLATION_Y + yOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.yOffsetOld, this.yOffset.getValue()) + yOffset.getAnimationValue(partialTicks);
     }
 
     public double getZOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.zOffsetOld, this.zOffset.getValue()) + CameraModifyScreen.TRANSLATION_Z + zOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.zOffsetOld, this.zOffset.getValue()) + zOffset.getAnimationValue(partialTicks);
     }
 
     public double getXRotation(float partialTicks) {
@@ -405,7 +404,7 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public double getFovOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.fovOffsetOld, this.fovOffset.getValue()) + CameraModifyScreen.FOV + fovOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.fovOffsetOld, this.fovOffset.getValue()) + fovOffset.getAnimationValue(partialTicks);
     }
 
     public double getZoomOffset(float partialTicks) {

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.nbt.CompoundTag;
@@ -17,8 +18,8 @@ import java.util.function.Consumer;
 
 public class CameraValueInstance {
     private final Map<CameraModifier.Operation, Set<CameraModifier>> modifiersByOperation = Maps.newEnumMap(CameraModifier.Operation.class);
-    private final Map<UUID, CameraModifier> modifierById = new Object2ObjectArrayMap<>();
-    private final Map<String, CameraKeyframeAnimation> animationByName = new Object2ObjectArrayMap<>();
+    private final Object2ObjectArrayMap<UUID, CameraModifier> modifierById = new Object2ObjectArrayMap<>();
+    private final Object2ObjectArrayMap<String, CameraKeyframeAnimation> animationByName = new Object2ObjectArrayMap<>();
     private final Set<CameraModifier> permanentModifiers = new ObjectArraySet<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Consumer<CameraValueInstance> onDirty;
@@ -95,6 +96,15 @@ public class CameraValueInstance {
             }
         } finally {
             lock.writeLock().unlock();
+        }
+    }
+
+    public Map<String, CameraKeyframeAnimation> animationMap() {
+        this.lock.readLock().lock();
+        try {
+            return Object2ObjectMaps.unmodifiable(animationByName);
+        } finally {
+            this.lock.readLock().unlock();
         }
     }
 

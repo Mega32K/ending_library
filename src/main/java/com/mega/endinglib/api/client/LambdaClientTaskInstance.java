@@ -13,7 +13,7 @@ public class LambdaClientTaskInstance extends ClientTaskInstance {
     private boolean removed;
 
     public LambdaClientTaskInstance(int maxTickCount, E1 e1, E2 e2, Runnable stop) {
-        this.maxTickCount = tickCount;
+        this.maxTickCount = maxTickCount;
         this.exe1 = e1;
         this.exe2 = e2;
         this.stop = stop;

@@ -1,7 +1,11 @@
 package com.mega.endinglib.api.client.camera;
 
 import com.mega.endinglib.api.data.CompoundTagUtils;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
@@ -26,7 +30,6 @@ import java.util.function.Supplier;
 
 public class CameraKeyframeAnimation {
     public static String DEFAULT_KEY = "default";
-    public static final Function<CameraKeyframeAnimation, CompoundTag> WRITER = CameraKeyframeAnimation::serializeNBT;
     public static final FriendlyByteBuf.Reader<CameraKeyframeAnimation> READER_F = byteBuf -> {
         CameraKeyframeAnimation anim = new CameraKeyframeAnimation(byteBuf.readUtf(), byteBuf.readEnum(AnimType.class), byteBuf.readFloat());
         anim.tickCount = byteBuf.readInt();
@@ -35,16 +38,24 @@ public class CameraKeyframeAnimation {
         return anim;
     };
     public static final FriendlyByteBuf.Writer<CameraKeyframeAnimation> WRITER_F = (byteBuf, keyframe) -> {
-        byteBuf.writeUtf(keyframe.nameGetter.get());
+        byteBuf.writeUtf(keyframe.name);
         byteBuf.writeEnum(keyframe.animType);
         byteBuf.writeFloat(keyframe.duration);
         byteBuf.writeInt(keyframe.tickCount);
         byteBuf.writeBoolean(keyframe.stopped);
         byteBuf.writeMap(keyframe.keyframes, FriendlyByteBuf::writeUtf, (bb, cameraKeyframes) -> bb.writeCollection(cameraKeyframes, CameraKeyframe.WRITER_F));
     };
+    public static Codec<CameraKeyframeAnimation> JSON_CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    Codec.STRING.fieldOf("name").forGetter(CameraKeyframeAnimation::getName),
+                    AnimType.CODEC.fieldOf("animType").forGetter(CameraKeyframeAnimation::getAnimType),
+                    Codec.FLOAT.optionalFieldOf("duration", -1F).forGetter(CameraKeyframeAnimation::getDuration),
+                    Codec.unboundedMap(Codec.STRING, CameraKeyframe.CODEC.listOf()).fieldOf("keyframes").forGetter(CameraKeyframeAnimation::getKeyframes)
+            ).apply(instance, CameraKeyframeAnimation::jsonConstruct)
+    );
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final Function<CompoundTag, CameraKeyframeAnimation> READER = CameraKeyframeAnimation::load;
-    private final Supplier<String> nameGetter;
+    private final String name;
     private final Object2ObjectOpenHashMap<String, List<CameraKeyframe>> keyframes = Util.make(() -> {
         Object2ObjectOpenHashMap<String, List<CameraKeyframe>> defaultMap = new Object2ObjectOpenHashMap<>(1);
         defaultMap.put(DEFAULT_KEY, new ObjectArrayList<>());
@@ -56,19 +67,21 @@ public class CameraKeyframeAnimation {
     private AnimType animType;
     private boolean stopped = true;
     private boolean dirty = true;
-
-    public CameraKeyframeAnimation(String name, AnimType animType, float duration) {
-        this(() -> name, animType, duration);
-    }
+    public boolean isDynamic = false;
 
     public CameraKeyframeAnimation(String name, AnimType animType) {
-        this(() -> name, animType, -1);
+        this(name, animType, -1);
     }
 
-    public CameraKeyframeAnimation(Supplier<String> nameGetter, AnimType animType, float duration) {
-        this.nameGetter = nameGetter;
+    public CameraKeyframeAnimation(String name, AnimType animType, float duration) {
+        this.name = name;
         this.duration = duration;
         this.animType = animType;
+    }
+    private static CameraKeyframeAnimation jsonConstruct(String name, AnimType animType, float duration, Map<String, List<CameraKeyframe>> keyframes) {
+        CameraKeyframeAnimation cka = new CameraKeyframeAnimation(name, animType, duration);
+        cka.keyframes.putAll(keyframes);
+        return cka;
     }
 
     @Nullable
@@ -146,7 +159,7 @@ public class CameraKeyframeAnimation {
     }
 
     public String getName() {
-        return this.nameGetter.get();
+        return this.name;
     }
 
     public boolean isStopped() {
@@ -254,7 +267,7 @@ public class CameraKeyframeAnimation {
 
     @Override
     public String toString() {
-        return "CameraKeyframeAnimation{duration=" + this.duration + ", stopped=" + this.stopped + ", name='" + this.nameGetter.get() + "}";
+        return "CameraKeyframeAnimation{duration=" + this.duration + ", stopped=" + this.stopped + ", name='" + this.name + "}";
     }
 
     public Component toComponent() {
@@ -335,6 +348,18 @@ public class CameraKeyframeAnimation {
     }
 
     public enum AnimType {
-        STOP, LOOP, FOREVER, STOP_BACK_TO_ZERO
+        STOP, LOOP, FOREVER, STOP_BACK_TO_ZERO;
+        public static final Codec<AnimType> CODEC = Codec.STRING.flatXmap(
+                string -> {
+                    AnimType type;
+                    try {
+                        type = AnimType.valueOf(string);
+                    } catch (Throwable throwable) {
+                        return DataResult.error(() -> "\"%s\" is not a AnimType".formatted(string));
+                    }
+                    return DataResult.success(type);
+                },
+                anim -> DataResult.success(anim.name())
+        );
     }
 }

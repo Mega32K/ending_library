@@ -2,9 +2,11 @@ package com.mega.endinglib.mixin.compat.ibeeditor;
 
 import com.github.franckyi.ibeeditor.client.util.texteditor.StyleFormatting;
 import com.github.franckyi.ibeeditor.client.util.texteditor.StyleType;
+import com.mega.endinglib.api.client.text.StyleItf;
 import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.endinglib.common.compat.ibeeditor.IBESafeClass;
 import com.mega.endinglib.util.annotation.ModDependsMixin;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.MutableComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,8 +21,9 @@ public abstract class StyleFormattingMixin {
 
     @Inject(method = "apply", remap = false, at = @At("HEAD"))
     private void applyCentered(MutableComponent text, CallbackInfo ci) {
-        if (this.target == IBESafeClass.CENTERED) {
+        if (this.target.ordinal() == IBESafeClass.CENTERED.ordinal()) {
             text.withStyle(TextColorUtils.MIDDLE);
+            text.setStyle(text.getStyle().applyFormat(TextColorUtils.MIDDLE));
         }
     }
 }

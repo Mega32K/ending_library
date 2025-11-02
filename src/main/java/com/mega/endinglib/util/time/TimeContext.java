@@ -1,6 +1,6 @@
 package com.mega.endinglib.util.time;
 
-import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.client.ClientContext;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Timer;
@@ -44,7 +44,7 @@ public class TimeContext {
         }
 
         public static long generateUniqueSeed() {
-            return (TimeStopUtils.isTimeStop && RendererUtils.isTimeStop_andSameDimension) ? (SEED_UNIQUIFIER.get() * 1181783497276652981L) ^ (Both.timeStopModifyMillis * 1000000L) : SEED_UNIQUIFIER.updateAndGet((p_224601_) -> p_224601_ * 1181783497276652981L) ^ (Both.timeStopModifyMillis * 1000000L);
+            return (TimeStopUtils.isTimeStop && ClientContext.isTimeStop_andSameDimension) ? (SEED_UNIQUIFIER.get() * 1181783497276652981L) ^ (Both.timeStopModifyMillis * 1000000L) : SEED_UNIQUIFIER.updateAndGet((p_224601_) -> p_224601_ * 1181783497276652981L) ^ (Both.timeStopModifyMillis * 1000000L);
         }
 
         public static float alwaysPartial() {

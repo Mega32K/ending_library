@@ -3,7 +3,7 @@ package com.mega.endinglib.proxy;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
-import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.client.screen.OtherPlayerInventoryScreen;
 import com.mega.endinglib.common.init.ModMenus;
@@ -39,7 +39,7 @@ public class ClientProxy implements ModProxy {
                 if (TimeContext.Client.timeStopGLFW == 0L)
                     TimeContext.Client.timeStopGLFW = (long) (GLFW.glfwGetTime() * 1000L);
 
-                if (!TimeStopUtils.isTimeStop || !RendererUtils.isTimeStop_andSameDimension) {
+                if (!TimeStopUtils.isTimeStop || !ClientContext.isTimeStop_andSameDimension) {
                     ++TimeContext.Both.timeStopModifyMillis;
                     if (!mc.isPaused()) TimeContext.Client.timeStopGLFW++;
                 }

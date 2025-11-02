@@ -1,6 +1,6 @@
 package com.mega.endinglib.mixin.time;
 
-import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.mixin.accessor.AccessorClientLevel;
 import com.mega.endinglib.mixin.accessor.AccessorMcTimer;
 import com.mega.endinglib.util.mixin.bettercombat.BetterCombatTicker;
@@ -116,7 +116,7 @@ public abstract class MinecraftMixin {
 
     @Inject(method = "getPartialTick", at = @At(value = "HEAD"), cancellable = true, remap = false)
     private void getPartialTick(CallbackInfoReturnable<Float> cir) {
-        if (TimeStopUtils.isTimeStop && RendererUtils.isTimeStop_andSameDimension)
+        if (TimeStopUtils.isTimeStop && ClientContext.isTimeStop_andSameDimension)
             cir.setReturnValue(timer.partialTick);
     }
 
@@ -125,11 +125,11 @@ public abstract class MinecraftMixin {
         if (!p_91384_) return;
         long l = TimeContext.Client.timer.advanceTime(Util.getMillis());
         if (level == null && TimeStopUtils.isTimeStop) {
-            RendererUtils.isTimeStop_andSameDimension = false;
+            ClientContext.isTimeStop_andSameDimension = false;
             TimeStopUtils.isTimeStop = false;
         }
         AccessorMcTimer accessorMcTimer = (AccessorMcTimer) this.timer;
-        uom$isTimeStop = TimeStopUtils.isTimeStop && RendererUtils.isTimeStop_andSameDimension;
+        uom$isTimeStop = TimeStopUtils.isTimeStop && ClientContext.isTimeStop_andSameDimension;
         if (TimeStopUtils.isTimeStop && gameMode != null && player != null) {
             if (uom$isTimeStop && !pause) {
                 accessorMcTimer.setMsPerTick(1.0e32F);

@@ -1,6 +1,6 @@
 package com.mega.endinglib.util.mixin.level;
 
-import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -35,10 +35,10 @@ public class ClientLevelExpandedContext extends LevelExpandedContext {
     @Override
     public void tickHead(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         if (TimeStopUtils.isTimeStop) {
-            RendererUtils.isTimeStop_andSameDimension = TimeStopUtils.andSameDimension(level);
-            if (RendererUtils.isTimeStop_andSameDimension) {
+            ClientContext.isTimeStop_andSameDimension = TimeStopUtils.andSameDimension(level);
+            if (ClientContext.isTimeStop_andSameDimension) {
                 ci.cancel();
             }
-        } else RendererUtils.isTimeStop_andSameDimension = false;
+        } else ClientContext.isTimeStop_andSameDimension = false;
     }
 }

@@ -1,6 +1,7 @@
 package com.mega.endinglib.util.time;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.common.config.CommonConfig;
 import com.mega.endinglib.common.data.TimeStopSavedData;
 import com.mega.endinglib.common.network.PacketHandler;
@@ -19,7 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 
 /**
- * 节省性能，在客户端判断{@link TimeStopUtils#andSameDimension(Level)}请直接调用预备好的boolean字段{@link com.mega.endinglib.client.RendererUtils#isTimeStop_andSameDimension}
+ * 节省性能，在客户端判断{@link TimeStopUtils#andSameDimension(Level)}请直接调用预备好的boolean字段{@link ClientContext#isTimeStop_andSameDimension}
  */
 public class TimeStopUtils {
     public static volatile boolean isTimeStop;

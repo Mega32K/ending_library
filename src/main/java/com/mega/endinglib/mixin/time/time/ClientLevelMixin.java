@@ -1,6 +1,6 @@
 package com.mega.endinglib.mixin.time.time;
 
-import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.mixin.level.LevelExpandedContext;
@@ -60,19 +60,19 @@ public abstract class ClientLevelMixin extends Level implements LevelEC {
     @Inject(method = "animateTick", at = @At("HEAD"), cancellable = true)
     private void animateTick(int p_104785_, int p_104786_, int p_104787_, CallbackInfo ci) {
         if (TimeStopUtils.isTimeStop
-                && RendererUtils.isTimeStop_andSameDimension) ci.cancel();
+                && ClientContext.isTimeStop_andSameDimension) ci.cancel();
     }
 
     @Inject(method = "tickTime", at = @At("HEAD"), cancellable = true)
     private void tickTime(CallbackInfo ci) {
         if (TimeStopUtils.isTimeStop
-                && RendererUtils.isTimeStop_andSameDimension) ci.cancel();
+                && ClientContext.isTimeStop_andSameDimension) ci.cancel();
     }
 
     @Inject(method = "setGameTime", at = @At("HEAD"), cancellable = true)
     private void setGameTime(long p_104638_, CallbackInfo ci) {
         if (TimeStopUtils.isTimeStop
-                && RendererUtils.isTimeStop_andSameDimension) {
+                && ClientContext.isTimeStop_andSameDimension) {
             if (p_104638_ - levelData.getGameTime() > 0) {
                 ci.cancel();
             }

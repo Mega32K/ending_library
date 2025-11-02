@@ -468,7 +468,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
                         }
                     } else if (n instanceof MethodInsnNode min) {
                         if (MCMapping.EntityRenderer$METHOD$getTextureLocation.equalsMethodNode(min)) {
-                            if (min.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                            if (min.getOpcode() == Opcodes.INVOKEVIRTUAL || min.getOpcode() == Opcodes.INVOKESPECIAL) {
                                 InsnList insnNodes = new InsnList();
                                 insnNodes.add(new InsnNode(Opcodes.DUP2));
                                 insnNodes.add(new MethodInsnNode(min.getOpcode(), min.owner, min.name, min.desc, min.itf));

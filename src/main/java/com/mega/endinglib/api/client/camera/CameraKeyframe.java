@@ -1,7 +1,10 @@
 package com.mega.endinglib.api.client.camera;
 
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,6 +17,13 @@ import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public record CameraKeyframe(float timestamp, float endPoint, Easing easing) {
+    public static Codec<CameraKeyframe> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    Codecs.NON_NEGATIVE_FLOAT.fieldOf("timestamp").forGetter(CameraKeyframe::timestamp),
+                    Codecs.NON_NEGATIVE_FLOAT.fieldOf("endPoint").forGetter(CameraKeyframe::endPoint),
+                    Codecs.EASING_CODEC.fieldOf("easing").forGetter(CameraKeyframe::easing)
+            ).apply(instance, CameraKeyframe::new)
+    );
     public static final Function<CameraKeyframe, CompoundTag> WRITER = CameraKeyframe::serialize;
     public static final FriendlyByteBuf.Reader<CameraKeyframe> READER_F = byteBuf -> new CameraKeyframe(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readEnum(Easing.class));
     public static final FriendlyByteBuf.Writer<CameraKeyframe> WRITER_F = (byteBuf, keyframe) ->

@@ -17,11 +17,10 @@
   "attribute.name.ending_library.multi_jump.description" : "让玩家可以多次跳跃。",
   "attribute.name.ending_library.natural_regeneration_increase" : "自然回血",
   "attribute.name.ending_library.natural_regeneration_increase.description" : "自然食物回血增幅。",
-  "attribute.name.ending_library.scale" : "尺寸",
-  "attribute.name.ending_library.scale.description" : "生物的模型与判定箱尺寸将缩放至该值指定的倍数。尺寸为1时生物为默认大小。",
 
   "commands.endinglib.argument.float_array.too_long" : "数组最大长度为 %s, 当前为 %s",
   "commands.endinglib.argument.entity.notfound.mob" : "未找到生物",
+  "commands.endinglib.argument.camera.keyframe.group_not_found" : "未找到名为\"%s\"的组",
 
   "commands.endinglib.fill_entity.success": "Successfully filled %s entities",
   "commands.endinglib.fill_entity.failed": "No entities were filled",
@@ -71,6 +70,10 @@
   "commands.endinglib.message.camera.camera_anim.get_anims": "§7已列出修饰符§6%s§7的所有动画:",
   "commands.endinglib.message.camera.camera_anim.get_anim": "§7已列出修饰符§6%s§7的名为§a%s§7的动画:",
   "commands.endinglib.message.camera.camera_anim.list_keyframes": "§7已列出所有关键帧:",
+  "commands.endinglib.message.camera.camera_anim.build.step.0": "§7[1/3]§7已发现%s§7个相机动画",
+  "commands.endinglib.message.camera.camera_anim.build.step.1": "动画出现了一个序列化错误",
+  "commands.endinglib.message.camera.camera_anim.build.step.2": "§7[2/3]序列化完成,开始保存文件",
+  "commands.endinglib.message.camera.camera_anim.build.step.3": "§7[3/3]保存完成(%s§7/%s§7)",
   "commands.endinglib.message.camera.option.enable": "§7自定义相机:",
   "commands.endinglib.message.camera.option.freezing_origin": "§7冻结原版相机:",
   "commands.endinglib.message.camera.option.freezing_origin.follow_position": "§7冻结原版相机-坐标跟随玩家:",

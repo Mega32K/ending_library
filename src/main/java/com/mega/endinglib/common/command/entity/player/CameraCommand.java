@@ -7,6 +7,7 @@ import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.config.ServerConfig;
 import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.camera.S2CBuildAnimationOperationPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraEntityPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraOriginRotationPacket;
 import com.mega.endinglib.proxy.CommonProxy;
@@ -29,15 +30,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.BiFunction;
 
 public class CameraCommand {
@@ -57,7 +56,6 @@ public class CameraCommand {
     public static final byte IS_FOV_LOCKED = 'e';
     public static final byte AVAILABLE_CAMERA_AREA = 'f';
     public static final byte IS_MOUSE_CONTROLLED = 'g';
-    public static final byte CAMERA_ENTITY = 'h';
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("camera")
@@ -235,6 +233,9 @@ public class CameraCommand {
                         )
                         .then(Commands.literal("animation")
                                 .then(Commands.argument("modifierType", CameraModifierArgument.modifierType())
+                                        .then(Commands.literal("buildJson")
+                                                .executes(context -> buildAnimationJson(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType")))
+                                        )
                                         .then(Commands.literal("remove")
                                                 .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
                                                         .executes(context -> removeCameraAnimation(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
@@ -600,6 +601,19 @@ public class CameraCommand {
             stack.sendSuccess(() -> Component.literal(modifierType.name()).withStyle(ChatFormatting.GREEN), false);
             for (CameraModifier modifier : modifiers) {
                 sendModifierMessage(stack, modifier);
+            }
+        });
+        return 0;
+    }
+    private static int buildAnimationJson(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            CameraValueInstance cvi = modifierType.getFieldGetter().apply(capability.getCameraDataManager());
+            Map<String, CameraKeyframeAnimation> map = cvi.animationMap();
+            if (map.isEmpty()) {
+                stack.sendFailure(Component.translatable("commands.endinglib.message.camera.camera_anim.build.empty", modifierType.name()));
+            } else {
+                PacketHandler.sendToPlayer(new S2CBuildAnimationOperationPacket(modifierType), player);
+                stack.sendSuccess(()-> Component.translatable("commands.endinglib.message.camera.camera_anim.build", modifierType.name()), false);
             }
         });
         return 0;

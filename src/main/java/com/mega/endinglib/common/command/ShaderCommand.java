@@ -11,6 +11,7 @@ import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectCreatePacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectRemovePacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectStatusPacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectUniformPacket;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -56,10 +57,19 @@ public class ShaderCommand {
                                 .then(Commands.argument("name", PostEffectArgument.postEffect())
                                         .then(Commands.literal("singlePass")
                                                 .then(Commands.argument("pass", PostEffectPassArgument.pass())
+                                                        .then(Commands.argument("ordinalOfPass", IntegerArgumentType.integer(0, Short.MAX_VALUE))
+                                                                .then(Commands.argument("uniform", PostEffectUniformArgument.singlePassUniforms())
+                                                                        .then(Commands.literal("set")
+                                                                                .then(Commands.argument("values", FloatArrayArgument.floats())
+                                                                                        .executes(context -> setUniforms(context.getSource(), getPlayer(context), getEffectName(context), getPassName(context), (short) IntegerArgumentType.getInteger(context, "ordinalOfPass"), getUniform(context), FloatArrayArgument.getFloats(context, "values")))
+                                                                                )
+                                                                        )
+                                                                )
+                                                        )
                                                         .then(Commands.argument("uniform", PostEffectUniformArgument.singlePassUniforms())
                                                                 .then(Commands.literal("set")
                                                                         .then(Commands.argument("values", FloatArrayArgument.floats())
-                                                                                .executes(context -> setUniforms(context.getSource(), getPlayer(context), getEffectName(context), getPassName(context), getUniform(context), FloatArrayArgument.getFloats(context, "values")))
+                                                                                .executes(context -> setUniforms(context.getSource(), getPlayer(context), getEffectName(context), getPassName(context), (short) 0, getUniform(context), FloatArrayArgument.getFloats(context, "values")))
                                                                         )
                                                                 )
                                                         )
@@ -108,9 +118,9 @@ public class ShaderCommand {
         sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.shader." + (using ? "enable" : "disable"), player.getDisplayName(), name), false);
         return 1;
     }
-    private static int setUniforms(CommandSourceStack sourceStack, ServerPlayer player, String name, String pass, String uniform, float... values) {
+    private static int setUniforms(CommandSourceStack sourceStack, ServerPlayer player, String name, String pass, short ordinalOfPass, String uniform, float... values) {
 
-        PacketHandler.sendToPlayer(new S2CScreenEffectUniformPacket.SinglePass(name, pass, uniform, (short) values.length, values), player);
+        PacketHandler.sendToPlayer(new S2CScreenEffectUniformPacket.SinglePass(name, pass, ordinalOfPass, uniform, (short) values.length, values), player);
         sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.shader.uniform.set"), false);
         return 1;
     }

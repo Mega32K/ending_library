@@ -4,6 +4,7 @@ import com.github.franckyi.guapi.api.node.builder.HBoxBuilder;
 import com.github.franckyi.guapi.api.node.builder.TexturedButtonBuilder;
 import com.github.franckyi.ibeeditor.client.ModTextures;
 import com.github.franckyi.ibeeditor.client.screen.view.StandardEditorView;
+import com.github.franckyi.ibeeditor.client.util.texteditor.StyleFormatting;
 import com.github.franckyi.ibeeditor.client.util.texteditor.StyleType;
 import com.github.franckyi.ibeeditor.common.ModTexts;
 import com.mega.endinglib.EndingLibrary;

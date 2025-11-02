@@ -126,7 +126,7 @@ public class PersonalRuleCommand {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.get", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);
     }
     private static void sendSetDefaultMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
-        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.default", player.getDisplayName(), rule, valueToString), false);
+        stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.default", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);
     }
     private static void sendModifyMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.personal.rule.set", player.getDisplayName(), Component.translatable("commands.endinglib.message.personal_rule." + rule), valueToString), false);

@@ -5,7 +5,7 @@ import com.mega.endinglib.api.client.LambdaClientTaskInstance;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
 import com.mega.endinglib.client.ClientWrapped;
-import com.mega.endinglib.client.RendererUtils;
+import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.common.data.InputOperations;
@@ -38,7 +38,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void disableMouseEventWhenTimeStopping(ScreenEvent.MouseButtonPressed.Pre event) {
         Minecraft mc = Minecraft.getInstance();
-        if (TimeStopUtils.isTimeStop && RendererUtils.isTimeStop_andSameDimension && (mc.player != null && (!TimeStopUtils.canMove(mc.player)))) {
+        if (TimeStopUtils.isTimeStop && ClientContext.isTimeStop_andSameDimension && (mc.player != null && (!TimeStopUtils.canMove(mc.player)))) {
             if (!(mc.screen instanceof DeathScreen))
                 event.setCanceled(true);
         }
@@ -119,8 +119,8 @@ public class ClientEventHandler {
             CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
                 if (capability.isUsingCustomCamera()) {
                     if (capability.isMouseControlled()) {
-                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_NORMAL))
-                            ClientUtils.createMouseCursor(RendererUtils.CURSOR_NORMAL, 3.2F, (int) (8 * 3.2F), (int) (8 * 3.2F), Minecraft.getInstance().mouseHandler);
+                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(ClientContext.CURSOR_NORMAL))
+                            ClientUtils.createMouseCursor(ClientContext.CURSOR_NORMAL, 3.2F, (int) (8 * 3.2F), (int) (8 * 3.2F), Minecraft.getInstance().mouseHandler);
                     }
                 }
             });
@@ -133,8 +133,8 @@ public class ClientEventHandler {
             CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
                 if (capability.isUsingCustomCamera()) {
                     if (capability.isMouseControlled()) {
-                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(RendererUtils.CURSOR_1))
-                            ClientUtils.createMouseCursor(RendererUtils.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), Minecraft.getInstance().mouseHandler);
+                        if (!ClientUtils.CURRENT_CURSOR_ICON.equals(ClientContext.CURSOR_1))
+                            ClientUtils.createMouseCursor(ClientContext.CURSOR_1, 2.4F, (int) (8 * 2.4F) ,(int) (8 * 2.4F), Minecraft.getInstance().mouseHandler);
                     }
                 }
             });

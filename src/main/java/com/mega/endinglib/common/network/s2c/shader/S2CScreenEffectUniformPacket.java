@@ -12,10 +12,15 @@ public class S2CScreenEffectUniformPacket {
         private final String passName;
         private final String uniformName;
         private final short valueCount;
+        private final short ordinalOfPass;
         private final float[] values;
         public SinglePass(String name, String passName, String uniformName, short valueCount, float... values) {
+            this(name, passName, (short) 0, uniformName, valueCount, values);
+        }
+        public SinglePass(String name, String passName, short ordinalOfPass, String uniformName, short valueCount, float... values) {
             this.name = name;
             this.passName = passName;
+            this.ordinalOfPass = ordinalOfPass;
             this.uniformName = uniformName;
             this.valueCount = valueCount;
             this.values = values;
@@ -24,6 +29,7 @@ public class S2CScreenEffectUniformPacket {
         public static SinglePass decode(FriendlyByteBuf friendlyByteBuf) {
             String name = friendlyByteBuf.readUtf();
             String passName = friendlyByteBuf.readUtf();
+            short ordinal = friendlyByteBuf.readShort();
             String uniformName = friendlyByteBuf.readUtf();
             short valueCount =  (friendlyByteBuf.readShort());
             float[] values = null;
@@ -33,12 +39,13 @@ public class S2CScreenEffectUniformPacket {
                     values[i] = friendlyByteBuf.readFloat();
                 }
             }
-            return new SinglePass(name, passName, uniformName, valueCount, values);
+            return new SinglePass(name, passName, ordinal, uniformName, valueCount, values);
         }
 
         public static void encode(SinglePass packet, FriendlyByteBuf byteBuf) {
             byteBuf.writeUtf(packet.name.replace("\"", ""));
             byteBuf.writeUtf(packet.passName);
+            byteBuf.writeShort(packet.ordinalOfPass);
             byteBuf.writeUtf(packet.uniformName);
             byteBuf.writeShort(packet.valueCount);
             if (packet.valueCount > 0 && packet.values != null) {
@@ -57,7 +64,7 @@ public class S2CScreenEffectUniformPacket {
 
         static void handle0(SinglePass packet, Supplier<NetworkEvent.Context> context) {
             if (packet.values != null && packet.values.length > 0) {
-                ClientWrapped.handleSEUniforms(packet.name, packet.passName, packet.uniformName, packet.values);
+                ClientWrapped.handleSEUniforms(packet.name, packet.passName, packet.ordinalOfPass, packet.uniformName, packet.values);
             }
         }
     }

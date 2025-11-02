@@ -4,9 +4,14 @@ import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffe
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMaps;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.client.renderer.PostPass;
@@ -27,17 +32,14 @@ public abstract class SimpleModeScreen extends Screen {
     protected boolean blurring;
     protected float radiusOld = 1F;
     protected float radius = 1F;
-
     public SimpleModeScreen(Component title) {
         super(title);
     }
 
-    public static void setXPosNearRight(AbstractWidget widget, int guiWidth) {
+    public static void setXPosByRightSide(AbstractWidget widget, int guiWidth) {
         widget.setX(guiWidth - 1 - widget.getWidth());
     }
-
     public abstract boolean isBlurBackground();
-
     @Override
     public void init() {
         super.init();
@@ -77,11 +79,9 @@ public abstract class SimpleModeScreen extends Screen {
         this.radiusOld = this.radius;
         this.radius = Math.min(this.maxRadius, this.radius + (hasBlurOneTime ? 0 : this.maxRadius * 0.15F));
     }
-
     public void renderTick(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
 
     }
-
     public void drawBlurScreenBackground(@Nonnull GuiGraphics gr, int x1, int y1, int x2, int y2) {
         VertexConsumer consumer = gr.bufferSource().getBuffer(RenderType.gui());
         Matrix4f pose = gr.pose().last().pose();
@@ -94,7 +94,7 @@ public abstract class SimpleModeScreen extends Screen {
             consumer.vertex(pose, (float) x2, (float) y2, (float) z).color(30, 31, 34, 255).endVertex();
         } else {
             float rad = getRadius(this.mc.getPartialTick());
-            if (this.blurring && pc != null) {
+            if (this.blurring && pc != null && rad > 1.0F) {
                 this.updateRadius(pc, rad);
                 RenderSystem.disableDepthTest();
                 pc.process(0.0F);
@@ -112,14 +112,12 @@ public abstract class SimpleModeScreen extends Screen {
 
         gr.flush();
     }
-
     private void updateRadius(@Nonnull PostChain effect, float radius) {
         List<PostPass> passes = ((AccessorPostChain) effect).getPasses();
         for (PostPass s : passes) {
             s.getEffect().safeGetUniform("Progress").set(radius);
         }
     }
-
     public float getRadius(float partialTicks) {
         return Mth.lerp(partialTicks, this.radiusOld, this.radius);
     }
