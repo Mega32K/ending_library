@@ -1,18 +1,23 @@
 package com.mega.endinglib.client.screen;
 
 import com.mega.endinglib.api.client.screen.SimpleModeScreen;
-import com.mojang.blaze3d.platform.Window;
+import com.mega.endinglib.api.client.screen.widget.ModuleBlockWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.client.gui.widget.ForgeSlider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CameraModifyScreen extends SimpleModeScreen {
     private boolean shouldPauseGame = false;
+    public static final float LEFT_MODULE_DEFAULT_WIDTH = 0.15F;
+    public static final float LEFT_MODULE_MAX_WIDTH = 0.4F;
+    public static final float RIGHT_MODULE_DEFAULT_WIDTH = 0.2F;
+    public static final float RIGHT_MODULE_MAX_WIDTH = 0.4F;
+    public static final float DOWN_MODULE_DEFAULT_HEIGHT = 0.15F;
+    private final ModuleBlockWidget UP_MODULE = new ModuleBlockWidget(0, 0, 0,0, Component.empty(), ModuleBlockWidget.ModuleDirection.UP);
+    private final ModuleBlockWidget LEFT_MODULE = new ModuleBlockWidget(0, 0, 0, 0, Component.empty(), ModuleBlockWidget.ModuleDirection.LEFT);
+    private final ModuleBlockWidget RIGHT_MODULE = new ModuleBlockWidget(0, 0, 0, 0, Component.empty(), ModuleBlockWidget.ModuleDirection.RIGHT);
+    private final ModuleBlockWidget DOWN_MODULE = new ModuleBlockWidget(0, 0, 0, 0, Component.empty(), ModuleBlockWidget.ModuleDirection.DOWN);
     public CameraModifyScreen() {
         super(Component.translatable("screen.endinglib.camera.title"));
     }
@@ -24,12 +29,81 @@ public class CameraModifyScreen extends SimpleModeScreen {
 
     @Override
     public void init() {
+        UP_MODULE.setWidth(this.width);
+        UP_MODULE.setHeight(Math.min(16, (int) (this.height * 0.05)));
+
+        LEFT_MODULE.setY(UP_MODULE.getHeight());
+        LEFT_MODULE.setWidth((int) (this.width * LEFT_MODULE_DEFAULT_WIDTH));
+        LEFT_MODULE.setHeight(this.height - UP_MODULE.getHeight());
+        LEFT_MODULE
+                .withMouseSelectedBorder(LEFT_MODULE.getWidth(), 0, 2, LEFT_MODULE.getHeight())
+                .withMaxSizeLimit((int) (width * LEFT_MODULE_MAX_WIDTH), Integer.MAX_VALUE);
+
+        RIGHT_MODULE.setX(this.width);
+        RIGHT_MODULE.setY(UP_MODULE.getHeight());
+        RIGHT_MODULE.setWidth((int) (this.width * RIGHT_MODULE_DEFAULT_WIDTH));
+        RIGHT_MODULE.setHeight(this.height - UP_MODULE.getHeight());
+        RIGHT_MODULE
+                .withMouseSelectedBorder(RIGHT_MODULE.getWidth(), 0, 2, RIGHT_MODULE.getHeight())
+                .withMaxSizeLimit((int) (width * RIGHT_MODULE_MAX_WIDTH), Integer.MAX_VALUE);
+
+        DOWN_MODULE.setY(this.height);
+        DOWN_MODULE.setWidth(this.width);
+        DOWN_MODULE.setHeight((int) (this.height * DOWN_MODULE_DEFAULT_HEIGHT));
+        DOWN_MODULE
+                .withMouseSelectedBorder(0, DOWN_MODULE.getHeight(), this.width, 2)
+                .withMinSizeLimit(4, 20);
+        this.addRenderableWidget(UP_MODULE);
+        this.addRenderableWidget(DOWN_MODULE);
+        this.addRenderableWidget(LEFT_MODULE);
+        this.addRenderableWidget(RIGHT_MODULE);
         super.init();
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void tick() {
+        UP_MODULE.tickByScreen();
+        LEFT_MODULE.tickByScreen();
+        RIGHT_MODULE.tickByScreen();
+        DOWN_MODULE.tickByScreen();
+        super.tick();
+    }
+
+    @Override
+    public void resize(@NotNull Minecraft minecraft, int width, int height) {
+        UP_MODULE.setWidth(width);
+        UP_MODULE.setHeight(Math.min(16, (int) (height * 0.05)));
+
+        LEFT_MODULE.setY(UP_MODULE.getHeight());
+        LEFT_MODULE.setWidth((int) (width * LEFT_MODULE_DEFAULT_WIDTH));
+        LEFT_MODULE.setHeight(height - UP_MODULE.getHeight());
+        LEFT_MODULE
+                .withMouseSelectedBorder(LEFT_MODULE.getWidth(), 0, 2, LEFT_MODULE.getHeight())
+                .withMaxSizeLimit((int) (width * LEFT_MODULE_MAX_WIDTH), Integer.MAX_VALUE);
+
+        RIGHT_MODULE.setX(width);
+        RIGHT_MODULE.setY(UP_MODULE.getHeight());
+        RIGHT_MODULE.setWidth((int) (width * RIGHT_MODULE_DEFAULT_WIDTH));
+        RIGHT_MODULE.setHeight(height - UP_MODULE.getHeight());
+        RIGHT_MODULE
+                .withMouseSelectedBorder(RIGHT_MODULE.getWidth(), 0, 2, RIGHT_MODULE.getHeight())
+                .withMaxSizeLimit((int) (width * RIGHT_MODULE_MAX_WIDTH), Integer.MAX_VALUE);
+
+        DOWN_MODULE.setY(height);
+        DOWN_MODULE.setWidth(width);
+        DOWN_MODULE.setHeight((int) (height * DOWN_MODULE_DEFAULT_HEIGHT));
+        DOWN_MODULE
+                .withMouseSelectedBorder(0, DOWN_MODULE.getHeight(), width, 2)
+                .withMinSizeLimit(Integer.MAX_VALUE, 20);
         super.resize(minecraft, width, height);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        LEFT_MODULE.callScreenMouseRelease(mouseX, mouseY, button);
+        RIGHT_MODULE.callScreenMouseRelease(mouseX, mouseY, button);
+        DOWN_MODULE.callScreenMouseRelease(mouseX, mouseY, button);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override

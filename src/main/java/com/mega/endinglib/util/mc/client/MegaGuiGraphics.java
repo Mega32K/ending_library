@@ -1,5 +1,7 @@
 package com.mega.endinglib.util.mc.client;
 
+import com.mega.endinglib.mixin.accessor.AccessorGuiGraphics;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,15 +11,21 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 @SuppressWarnings("deprecation")
 public class MegaGuiGraphics extends GuiGraphics {
+    public final AccessorGuiGraphics accessor = (AccessorGuiGraphics) this;
     public static int DEFAULT_MODERN_FONT_COLOR = 0xFFcacad4;
     public MegaGuiGraphics(Minecraft minecraft, MultiBufferSource.BufferSource bufferSource) {
         super(minecraft, bufferSource);
+    }
+    public MegaGuiGraphics(GuiGraphics graphics) {
+        super(Minecraft.getInstance(), graphics.bufferSource());
     }
 
     @Override
@@ -40,21 +48,18 @@ public class MegaGuiGraphics extends GuiGraphics {
     public void hLine(@NotNull RenderType renderType, int x, int endX, int y, int color) {
         super.hLine(renderType, x, endX, y, color);
     }
-    /**
-     * 从(x, y+1)，终点为(x+1, endY)绘制 宽1像素 长(高)endY-y-1的矩形
-     * @param x x起点
-     * @param y y起点
-     * @param endY y终点
-     * @param color 颜色
-     */
-    @Override
-    public void vLine(int x, int y, int endY, int color) {
-        super.vLine(x, y, endY, color);
-    }
 
-    @Override
-    public void vLine(@NotNull RenderType renderType, int x, int y, int endY, int color) {
-        super.vLine(renderType, x, y, endY, color);
+    public void vLine(float x, float y, float endY, int color) {
+        this.vLine(RenderType.gui(), x, y, endY, color);
+    }
+    public void vLine(@NotNull RenderType renderType, float x, float y, float endY, int color) {
+        if (endY < y) {
+            float i = y;
+            y = endY;
+            endY = i;
+        }
+
+        this.fill(renderType, x, y + 1, x + 1, endY, color);
     }
 
     @Override
@@ -66,26 +71,41 @@ public class MegaGuiGraphics extends GuiGraphics {
     public void setColor(float red, float green, float blue, float alpha) {
         super.setColor(red, green, blue, alpha);
     }
-
-    @Override
-    public void fill(int x, int y, int endX, int endY, int color) {
-        super.fill(x, y, endX, endY, color);
+    public void fill(float x, float y, float endX, float endY, int color) {
+        this.fill(x, y, endX, endY, 0, color);
     }
-
-    @Override
-    public void fill(int x, int y, int endX, int endY, int zDepth, int color) {
-        super.fill(x, y, endX, endY, zDepth, color);
+    public void fill(float x, float y, float endX, float endY, float zDepth, int color) {
+        this.fill(RenderType.gui(), x, y, endX, endY, zDepth, color);
     }
-
-    @Override
-    public void fill(@NotNull RenderType renderType, int x, int y, int endX, int endY, int color) {
-        super.fill(renderType, x, y, endX, endY, color);
+    public void fill(@NotNull RenderType renderType, float x, float y, float endX, float endY, int color) {
+        this.fill(renderType, x, y, endX, endY, 0, color);
     }
+    public void fill(@NotNull RenderType renderType, float x, float y, float endX, float endY, float zDepth, int color) {
+        Matrix4f matrix4f = this.pose().last().pose();
+        if (x < endX) {
+            float i = x;
+            x = endX;
+            endX = i;
+        }
 
-    @Override
-    public void fill(@NotNull RenderType renderType, int x, int y, int endX, int endY, int zDepth, int color) {
-        super.fill(renderType, x, y, endX, endY, zDepth, color);
+        if (y < endY) {
+            float j = y;
+            y = endY;
+            endY = j;
+        }
+
+        float f3 = (float) FastColor.ARGB32.alpha(color) / 255.0F;
+        float f = (float)FastColor.ARGB32.red(color) / 255.0F;
+        float f1 = (float)FastColor.ARGB32.green(color) / 255.0F;
+        float f2 = (float)FastColor.ARGB32.blue(color) / 255.0F;
+        VertexConsumer vertexconsumer = this.bufferSource().getBuffer(renderType);
+        vertexconsumer.vertex(matrix4f, x, y, zDepth).color(f, f1, f2, f3).endVertex();
+        vertexconsumer.vertex(matrix4f, x, endY, zDepth).color(f, f1, f2, f3).endVertex();
+        vertexconsumer.vertex(matrix4f, endX, endY, zDepth).color(f, f1, f2, f3).endVertex();
+        vertexconsumer.vertex(matrix4f, endX, y, zDepth).color(f, f1, f2, f3).endVertex();
+        accessor.callFlushIfUnmanaged();
     }
+    
 
     /**
      * 两色渐变填充

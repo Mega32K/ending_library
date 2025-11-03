@@ -16,7 +16,6 @@ public interface AccessorGuiGraphics {
 
     @Invoker
     void callFlushIfUnmanaged();
-
     @Invoker
     void invokeRenderTooltipInternal(Font font, List<ClientTooltipComponent> toRenderComponents, int x, int y, ClientTooltipPositioner positioner);
 }

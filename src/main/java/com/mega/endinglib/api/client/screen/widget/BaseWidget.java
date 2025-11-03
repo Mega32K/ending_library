@@ -4,8 +4,8 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 
 public abstract class BaseWidget extends AbstractWidget {
-    public static final int COLOR_LIGHT = 0x282c34;
-    public static final int COLOR_DARK = 0x21252b;
+    public static final int COLOR_LIGHT = 0xFF282c34;
+    public static final int COLOR_DARK = 0xFF21252b;
     public BaseWidget(int x, int y, int width, int height, Component message) {
         super(x, y, width, height, message);
     }

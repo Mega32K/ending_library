@@ -93,7 +93,7 @@
     "git-widget-placeholder": "1.20.1",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "E:/CollapsingWorld/System-e/EndingLibrary/src/main/java/com/mega/endinglib/util/mc",
-    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/src/main/resources/assets/ending_library/textures/ui/loading",
+    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/run/resourcepacks",
     "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.45287958",
@@ -102,11 +102,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\run\resourcepacks" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library\textures\ui\loading" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\lang" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main\assets\ending_library\textures\ui" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
@@ -134,7 +134,7 @@
       <recent name="com.mega.endinglib.common.network.s2c" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
     <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
       <module name="com.mega.CosmicLib.main" />
@@ -216,8 +216,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [runClient]" />
+        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="应用程序.MinecraftInstHandler" />
       </list>
     </recent_temporary>
@@ -239,6 +239,21 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="java-method">
+          <url>jar://$PROJECT_DIR$/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.12_mapped_official_1.20.1/forge-1.20.1-47.3.12_mapped_official_1.20.1-sources.jar!/net/minecraft/client/renderer/entity/MobRenderer.java</url>
+          <line>40</line>
+          <properties class="net.minecraft.client.renderer.entity.MobRenderer" method="render">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
