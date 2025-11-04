@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.client.screen.widget;
 
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.mc.client.RenderUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.Util;
@@ -16,16 +17,22 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Supplier;
+
 public class ModuleBlockWidget extends BaseWidget {
     public final ModuleDirection moduleDirection;
     protected int xOld;
     protected int yOld;
     protected int lastWidth;
     protected int lastHeight;
-    public int maxWidth = Integer.MAX_VALUE;
-    public int maxHeight = Integer.MAX_VALUE;
-    public int minWidth = 4;
-    public int minHeight = 4;
+    public Supplier<Integer> maxWidth = ()-> Integer.MAX_VALUE;
+    public Supplier<Integer> maxHeight = ()-> Integer.MAX_VALUE;
+    public Supplier<Integer> minWidth = ()-> 4;
+    public Supplier<Integer> minHeight = ()-> 4;
+    public Supplier<Integer> maxX = ()-> Integer.MAX_VALUE;
+    public Supplier<Integer> maxY = ()-> Integer.MAX_VALUE;
+    public Supplier<Integer> minX = ()-> Integer.MIN_VALUE;
+    public Supplier<Integer> minY = ()-> Integer.MIN_VALUE;
     @Nullable
     private MouseSelectedBorder selectedBorder;
     public ModuleBlockWidget(int x, int y, int width, int height, Component title, ModuleDirection moduleDirection) {
@@ -37,13 +44,45 @@ public class ModuleBlockWidget extends BaseWidget {
         return this;
     }
     public ModuleBlockWidget withMaxSizeLimit(int maxWidth, int maxHeight) {
+        this.maxWidth = ()-> maxWidth;
+        this.maxHeight = ()-> maxHeight;
+        return this;
+    }
+    public ModuleBlockWidget withMaxSizeLimit(Supplier<Integer> maxWidth, Supplier<Integer> maxHeight) {
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
         return this;
     }
     public ModuleBlockWidget withMinSizeLimit(int minWidth, int minHeight) {
+        this.minWidth = ()-> minWidth;
+        this.minHeight = ()-> minHeight;
+        return this;
+    }
+    public ModuleBlockWidget withMinSizeLimit(Supplier<Integer> minWidth, Supplier<Integer> minHeight) {
         this.minWidth = minWidth;
         this.minHeight = minHeight;
+        return this;
+    }
+    //
+
+    public ModuleBlockWidget withMaxPosLimit(int maxX, int maxY) {
+        this.maxX = ()-> maxX;
+        this.maxY = ()-> maxY;
+        return this;
+    }
+    public ModuleBlockWidget withMaxPosLimit(Supplier<Integer> maxX, Supplier<Integer> maxY) {
+        this.maxX = maxX;
+        this.maxY = maxY;
+        return this;
+    }
+    public ModuleBlockWidget withMinPosLimit(int minX, int minY) {
+        this.minX = ()-> minX;
+        this.minY = ()-> minY;
+        return this;
+    }
+    public ModuleBlockWidget withMinPosLimit(Supplier<Integer> minX, Supplier<Integer> minY) {
+        this.minX = minX;
+        this.minY = minY;
         return this;
     }
     public float getPartialX(float partialTicks) {
@@ -61,13 +100,24 @@ public class ModuleBlockWidget extends BaseWidget {
 
     @Override
     public void setWidth(int width) {
-        super.setWidth(Mth.clamp(width, this.minWidth, this.maxWidth));
+        super.setWidth(Mth.clamp(width, this.minWidth.get(), this.maxWidth.get()));
     }
 
     @Override
     public void setHeight(int height) {
-        super.setHeight(Mth.clamp(height, this.minHeight, this.maxHeight));
+        super.setHeight(Mth.clamp(height, this.minHeight.get(), this.maxHeight.get()));
     }
+
+    @Override
+    public void setX(int x) {
+        super.setX(Mth.clamp(x, this.minX.get(), this.maxX.get()));
+    }
+
+    @Override
+    public void setY(int y) {
+        super.setY(Mth.clamp(y, this.minY.get(), this.maxY.get()));
+    }
+
     @Override
     protected boolean clicked(double mouseX, double mouseY) {
         if (!this.active || !this.visible)
@@ -94,8 +144,10 @@ public class ModuleBlockWidget extends BaseWidget {
     }
     @Override
     protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.width = Mth.clamp(this.width, this.minWidth, this.maxWidth);
-        this.height = Mth.clamp(this.height, this.minHeight, this.maxHeight);
+        this.setWidth(this.width);
+        this.setHeight(this.height);
+        this.setX(this.getX());
+        this.setY(this.getY());
         partialTicks = Minecraft.getInstance().getFrameTime();
         RenderUtils renderUtils = RenderUtils.of(graphics);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
@@ -204,6 +256,11 @@ public class ModuleBlockWidget extends BaseWidget {
                     }
                 }
             }
+            if (this.selectedBorder.isMouseOvering()) {
+                if (moduleDirection == ModuleDirection.RIGHT || moduleDirection == ModuleDirection.LEFT)
+                    ClientUtils.changeCursor_GLFW_HRESIZE_CURSOR();
+                else ClientUtils.changeCursor_GLFW_VRESIZE_CURSOR();
+            }
         }
         super.onClick(mouseX, mouseY);
     }
@@ -219,6 +276,7 @@ public class ModuleBlockWidget extends BaseWidget {
         if (this.isValidClickButton(button)) {
             if (this.selectedBorder != null) {
                 this.selectedBorder.cancelDragging();
+                ClientUtils.resetCursor();
             }
         }
     }
@@ -282,6 +340,7 @@ public class ModuleBlockWidget extends BaseWidget {
         public long lastMouseNotOverTime = 0L;
         public long selectedTime = 0L;
         public boolean isDragging = false;
+        private boolean isMouseOvering;
         @Nullable
         public DragDataSaver dragDataSaver;
         public MouseSelectedBorder(int offsetX, int offsetY, int width, int height) {
@@ -301,7 +360,13 @@ public class ModuleBlockWidget extends BaseWidget {
             this.selectedTime = Util.getMillis();
             if (!isMouseOver)
                 lastMouseNotOverTime = this.selectedTime;
+            this.isMouseOvering = isMouseOver;
         }
+
+        public boolean isMouseOvering() {
+            return isMouseOvering;
+        }
+
         public float getSelectedEscapedTime() {
             return (this.selectedTime - this.lastMouseNotOverTime) / 1000.0F;
         }

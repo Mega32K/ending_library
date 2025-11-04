@@ -196,7 +196,7 @@ public class DataCommand {
             BOOL_COMMAND_RESULT,
             false
     );
-    public static final DataType<Boolean> LOCKED_Y_ROT = build("lockedXRot", (command, personalRule) ->
+    public static final DataType<Boolean> LOCKED_Y_ROT = build("lockedYRot", (command, personalRule) ->
                     command.then(Commands.argument("value", BoolArgumentType.bool())
                                     .executes(context -> set(context.getSource(), getTarget(context), personalRule, BoolArgumentType.getBool(context, "value")))
                             )

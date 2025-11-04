@@ -46,6 +46,8 @@ public class ClientUtils {
     public static Minecraft mc = Minecraft.getInstance();
     public static ResourceLocation CURRENT_CURSOR_ICON = null;
     public static long customCursorHandle = -1L;
+    public static long GLFW_HRESIZE_CURSOR = -1L;
+    public static long GLFW_VRESIZE_CURSOR = -1L;
     private static Vec3 MOUSE_CLIP_POS = Vec3.ZERO;
     private static final float[] MOUSE_POINT_TO_ROT = new float[] {0F, 0F};
     public static long lastRunAsync = 0L;
@@ -125,6 +127,23 @@ public class ClientUtils {
                 EndingLibrary.LOGGER.error("Failed to load cursor icon", e);
             }
         });
+    }
+    public static void changeCursor_GLFW_HRESIZE_CURSOR() {
+        mc.execute(()-> {
+            if (GLFW_HRESIZE_CURSOR < 0)
+                GLFW_HRESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
+            GLFW.glfwSetCursor(mc.getWindow().getWindow(), GLFW_HRESIZE_CURSOR);
+        });
+    }
+    public static void changeCursor_GLFW_VRESIZE_CURSOR() {
+        mc.execute(()-> {
+            if (GLFW_VRESIZE_CURSOR < 0)
+                GLFW_VRESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
+            GLFW.glfwSetCursor(mc.getWindow().getWindow(), GLFW_VRESIZE_CURSOR);
+        });
+    }
+    public static void resetCursor() {
+        mc.execute(()->GLFW.glfwSetCursor(mc.getWindow().getWindow(), 0));
     }
     public static void onPlayerDisconnect() {
         mc.execute(() -> {

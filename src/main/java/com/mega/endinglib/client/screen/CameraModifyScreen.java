@@ -2,6 +2,7 @@ package com.mega.endinglib.client.screen;
 
 import com.mega.endinglib.api.client.screen.SimpleModeScreen;
 import com.mega.endinglib.api.client.screen.widget.ModuleBlockWidget;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -28,49 +29,37 @@ public class CameraModifyScreen extends SimpleModeScreen {
     }
 
     @Override
+    public void onClose() {
+        ClientUtils.resetCursor();
+        super.onClose();
+    }
+
+    @Override
     public void init() {
-        UP_MODULE.setWidth(this.width);
-        UP_MODULE.setHeight(Math.min(16, (int) (this.height * 0.05)));
-
-        LEFT_MODULE.setY(UP_MODULE.getHeight());
-        LEFT_MODULE.setWidth((int) (this.width * LEFT_MODULE_DEFAULT_WIDTH));
-        LEFT_MODULE.setHeight(this.height - UP_MODULE.getHeight());
-        LEFT_MODULE
-                .withMouseSelectedBorder(LEFT_MODULE.getWidth(), 0, 2, LEFT_MODULE.getHeight())
-                .withMaxSizeLimit((int) (width * LEFT_MODULE_MAX_WIDTH), Integer.MAX_VALUE);
-
-        RIGHT_MODULE.setX(this.width);
-        RIGHT_MODULE.setY(UP_MODULE.getHeight());
-        RIGHT_MODULE.setWidth((int) (this.width * RIGHT_MODULE_DEFAULT_WIDTH));
-        RIGHT_MODULE.setHeight(this.height - UP_MODULE.getHeight());
-        RIGHT_MODULE
-                .withMouseSelectedBorder(RIGHT_MODULE.getWidth(), 0, 2, RIGHT_MODULE.getHeight())
-                .withMaxSizeLimit((int) (width * RIGHT_MODULE_MAX_WIDTH), Integer.MAX_VALUE);
-
-        DOWN_MODULE.setY(this.height);
-        DOWN_MODULE.setWidth(this.width);
-        DOWN_MODULE.setHeight((int) (this.height * DOWN_MODULE_DEFAULT_HEIGHT));
-        DOWN_MODULE
-                .withMouseSelectedBorder(0, DOWN_MODULE.getHeight(), this.width, 2)
-                .withMinSizeLimit(4, 20);
+        this.resizeModuleWidgets(this.width, this.height);
         this.addRenderableWidget(UP_MODULE);
         this.addRenderableWidget(DOWN_MODULE);
         this.addRenderableWidget(LEFT_MODULE);
         this.addRenderableWidget(RIGHT_MODULE);
         super.init();
+        ClientUtils.resetCursor();
     }
 
     @Override
     public void tick() {
         UP_MODULE.tickByScreen();
+        DOWN_MODULE.tickByScreen();
         LEFT_MODULE.tickByScreen();
         RIGHT_MODULE.tickByScreen();
-        DOWN_MODULE.tickByScreen();
         super.tick();
     }
 
     @Override
     public void resize(@NotNull Minecraft minecraft, int width, int height) {
+        this.resizeModuleWidgets(width, height);
+        super.resize(minecraft, width, height);
+    }
+    private void resizeModuleWidgets(int width, int height) {
         UP_MODULE.setWidth(width);
         UP_MODULE.setHeight(Math.min(16, (int) (height * 0.05)));
 
@@ -94,8 +83,10 @@ public class CameraModifyScreen extends SimpleModeScreen {
         DOWN_MODULE.setHeight((int) (height * DOWN_MODULE_DEFAULT_HEIGHT));
         DOWN_MODULE
                 .withMouseSelectedBorder(0, DOWN_MODULE.getHeight(), width, 2)
-                .withMinSizeLimit(Integer.MAX_VALUE, 20);
-        super.resize(minecraft, width, height);
+                .withMinPosLimit(LEFT_MODULE::getWidth, DOWN_MODULE.minY)
+                .withMaxPosLimit(LEFT_MODULE::getWidth, DOWN_MODULE.maxY)
+                .withMaxSizeLimit(()-> width - LEFT_MODULE.getWidth() - RIGHT_MODULE.getWidth(), ()-> height - UP_MODULE.getHeight() - 2)
+                .withMinSizeLimit(DOWN_MODULE.maxWidth, DOWN_MODULE.minHeight);
     }
 
     @Override
@@ -113,7 +104,11 @@ public class CameraModifyScreen extends SimpleModeScreen {
 
     @Override
     public boolean isBlurBackground() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public void renderBackground(@NotNull GuiGraphics guiGraphics) {
     }
 
     @Override
