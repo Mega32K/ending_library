@@ -3,9 +3,12 @@ package com.mega.endinglib.client.screen;
 import com.mega.endinglib.api.client.screen.SimpleModeScreen;
 import com.mega.endinglib.api.client.screen.widget.ModuleBlockWidget;
 import com.mega.endinglib.util.mc.client.ClientUtils;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.entity.LevelEntityGetter;
 import org.jetbrains.annotations.NotNull;
 
 public class CameraModifyScreen extends SimpleModeScreen {
@@ -26,6 +29,7 @@ public class CameraModifyScreen extends SimpleModeScreen {
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         super.render(graphics, mouseX, mouseY, partialTicks);
+
     }
 
     @Override
@@ -87,6 +91,7 @@ public class CameraModifyScreen extends SimpleModeScreen {
                 .withMaxPosLimit(LEFT_MODULE::getWidth, DOWN_MODULE.maxY)
                 .withMaxSizeLimit(()-> width - LEFT_MODULE.getWidth() - RIGHT_MODULE.getWidth(), ()-> height - UP_MODULE.getHeight() - 2)
                 .withMinSizeLimit(DOWN_MODULE.maxWidth, DOWN_MODULE.minHeight);
+
     }
 
     @Override
