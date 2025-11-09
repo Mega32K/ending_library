@@ -4,11 +4,13 @@ import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.ToolComponent;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
+import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
+import com.mega.endinglib.common.network.s2c.shader.S2CDynamicEffectReadPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.mixin.accessor.AccessorDamageSource;
 import com.mega.endinglib.proxy.CommonProxy;
@@ -41,6 +43,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.EnumSet;
+import java.util.List;
 
 @Mod.EventBusSubscriber
 public class CommonEventHandler {
@@ -96,6 +99,10 @@ public class CommonEventHandler {
             EnumSet<InputOperations> permissions = data.getOrPutPlayerDisabledPermissions(serverPlayer);
             if (!permissions.isEmpty())
                 PacketHandler.sendToPlayer(new S2CDisabledInputPermissionsPacket(permissions), serverPlayer);
+            List<DynamicEffectData> dynamicEffectData = data.getPlayerEnabledDynamicShaders(serverPlayer);
+            if (dynamicEffectData != null && !dynamicEffectData.isEmpty()) {
+                PacketHandler.sendToPlayer(new S2CDynamicEffectReadPacket(dynamicEffectData), serverPlayer);
+            }
         }
     }
 

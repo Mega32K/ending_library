@@ -6,7 +6,9 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.ICameraManager;
+import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.BlockGetter;
@@ -46,7 +48,13 @@ public abstract class CameraMixin {
     @WrapWithCondition(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
     private boolean replaceWhenCustomMode(Camera camera, double x, double y, double z, @Share("partialTicks") LocalFloatRef partialTicks) {
         try {
-            if (CameraUtils.isUsingCustomCamera()) {
+            if (CameraModifyScreen.isOpening) {
+                if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
+                    double[] pos = cms.translationPos(partialTicks.get());
+                    this.setPosition(x + pos[0], y + pos[1], z + pos[2]);
+                }
+                return false;
+            } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
                 if (CameraUtils.isVanillaCameraFreezing() && !CameraUtils.isFollowPosition()) {
                     x = manager.getOriginX();
@@ -89,7 +97,12 @@ public abstract class CameraMixin {
     @WrapWithCondition(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V"))
     private boolean replaceRotationWithCondition(Camera camera, float y, float x, @Share("partialTicks") LocalFloatRef partialTicks) {
         try {
-            if (CameraUtils.isUsingCustomCamera()) {
+            if (CameraModifyScreen.isOpening) {
+                if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
+                    this.setRotation(cms.getYRot(partialTicks.get()), cms.getXRot(partialTicks.get()));
+                }
+                return false;
+            } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
                 if (CameraUtils.isVanillaCameraFreezing()) {
                     x = (float) manager.getOriginXRot();
@@ -112,7 +125,11 @@ public abstract class CameraMixin {
     @ModifyExpressionValue(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(D)D"))
     private double replaceMaxZoomRaycast(double original, @Share("partialTicks") LocalFloatRef partialTicks) {
         try {
-            if (CameraUtils.isUsingCustomCamera()) {
+            if (CameraModifyScreen.isOpening) {
+                if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
+                    return original + cms.getRaycast(partialTicks.get()) - 1F;
+                }
+            } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
                 return this.getMaxZoom(manager.getRaycastOffset(partialTicks.get()) + 4.0D);
             }

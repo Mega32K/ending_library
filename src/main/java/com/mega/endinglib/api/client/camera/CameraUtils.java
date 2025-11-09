@@ -18,7 +18,6 @@ public class CameraUtils {
     public static ICameraManager getInstance() {
         return ((MinecraftExtra) Minecraft.getInstance()).getELCameraManager();
     }
-
     public static boolean isUsingCustomCamera() {
         return isUsingCustomCamera;
     }

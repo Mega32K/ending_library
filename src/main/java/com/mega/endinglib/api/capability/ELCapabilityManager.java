@@ -90,7 +90,6 @@ public class ELCapabilityManager {
         Set<EntitySyncCapabilityBase> capabilityBases = getCaps(entity);
         if (!capabilityBases.isEmpty()) {
             capabilityBases.forEach(data -> {
-                System.out.println(data.getRegistryName());
                 if (canUseSync(data, CapabilitySyncType.DIMENSION_CHANGE) && entity.level() instanceof ServerLevel serverLevel) {
                     data.sync(new CompoundTag(), Dist.DEDICATED_SERVER, CapabilitySyncType.DIMENSION_CHANGE, entity, serverLevel);
                     data.dataManager.dirtyAllNotInitValue();

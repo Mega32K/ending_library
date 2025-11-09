@@ -8,6 +8,7 @@ import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
+import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
@@ -107,10 +108,11 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onDisconnected(ClientPlayerNetworkEvent.LoggingOut event) {
-        if (ClientUtils.customCursorHandle != -1L) {
+        //说明只是退出游戏
+        if (event.getMultiPlayerGameMode() != null) {
             new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::onPlayerDisconnect).onAddedToWorld();
+            ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
         }
-        ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
     }
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {
@@ -138,6 +140,8 @@ public class ClientEventHandler {
                     }
                 }
             });
+            if (event.getScreen() instanceof CameraModifyScreen)
+                CameraModifyScreen.isOpening = false;
         }
     }
     public static byte setByteFlags(byte flagData, int mask, boolean value) {

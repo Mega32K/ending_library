@@ -2,14 +2,14 @@ package com.mega.endinglib.api.client.screen.widget;
 
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.mc.client.RenderUtils;
+import com.mega.endinglib.util.time.TimeContext;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FastColor;
@@ -19,12 +19,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-public class ModuleBlockWidget extends BaseWidget {
+public class ModuleBlockWidget<T extends Screen> extends BaseModernWidget<T> {
     public final ModuleDirection moduleDirection;
-    protected int xOld;
-    protected int yOld;
-    protected int lastWidth;
-    protected int lastHeight;
     public Supplier<Integer> maxWidth = ()-> Integer.MAX_VALUE;
     public Supplier<Integer> maxHeight = ()-> Integer.MAX_VALUE;
     public Supplier<Integer> minWidth = ()-> 4;
@@ -34,68 +30,56 @@ public class ModuleBlockWidget extends BaseWidget {
     public Supplier<Integer> minX = ()-> Integer.MIN_VALUE;
     public Supplier<Integer> minY = ()-> Integer.MIN_VALUE;
     @Nullable
-    private MouseSelectedBorder selectedBorder;
-    public ModuleBlockWidget(int x, int y, int width, int height, Component title, ModuleDirection moduleDirection) {
-        super(x, y, width, height, title);
+    protected MouseSelectedBorder selectedBorder;
+    public ModuleBlockWidget(T screen, int x, int y, int width, int height, Component title, ModuleDirection moduleDirection) {
+        super(screen, x, y, width, height, title);
         this.moduleDirection = moduleDirection;
     }
-    public ModuleBlockWidget withMouseSelectedBorder(int offsetX, int offsetY, int width, int height) {
+    public ModuleBlockWidget<T> withMouseSelectedBorder(int offsetX, int offsetY, int width, int height) {
         this.selectedBorder = new MouseSelectedBorder(offsetX, offsetY, width, height);
         return this;
     }
-    public ModuleBlockWidget withMaxSizeLimit(int maxWidth, int maxHeight) {
+    public ModuleBlockWidget<T> withMaxSizeLimit(int maxWidth, int maxHeight) {
         this.maxWidth = ()-> maxWidth;
         this.maxHeight = ()-> maxHeight;
         return this;
     }
-    public ModuleBlockWidget withMaxSizeLimit(Supplier<Integer> maxWidth, Supplier<Integer> maxHeight) {
+    public ModuleBlockWidget<T> withMaxSizeLimit(Supplier<Integer> maxWidth, Supplier<Integer> maxHeight) {
         this.maxWidth = maxWidth;
         this.maxHeight = maxHeight;
         return this;
     }
-    public ModuleBlockWidget withMinSizeLimit(int minWidth, int minHeight) {
+    public ModuleBlockWidget<T> withMinSizeLimit(int minWidth, int minHeight) {
         this.minWidth = ()-> minWidth;
         this.minHeight = ()-> minHeight;
         return this;
     }
-    public ModuleBlockWidget withMinSizeLimit(Supplier<Integer> minWidth, Supplier<Integer> minHeight) {
+    public ModuleBlockWidget<T> withMinSizeLimit(Supplier<Integer> minWidth, Supplier<Integer> minHeight) {
         this.minWidth = minWidth;
         this.minHeight = minHeight;
         return this;
     }
     //
 
-    public ModuleBlockWidget withMaxPosLimit(int maxX, int maxY) {
+    public ModuleBlockWidget<T> withMaxPosLimit(int maxX, int maxY) {
         this.maxX = ()-> maxX;
         this.maxY = ()-> maxY;
         return this;
     }
-    public ModuleBlockWidget withMaxPosLimit(Supplier<Integer> maxX, Supplier<Integer> maxY) {
+    public ModuleBlockWidget<T> withMaxPosLimit(Supplier<Integer> maxX, Supplier<Integer> maxY) {
         this.maxX = maxX;
         this.maxY = maxY;
         return this;
     }
-    public ModuleBlockWidget withMinPosLimit(int minX, int minY) {
+    public ModuleBlockWidget<T> withMinPosLimit(int minX, int minY) {
         this.minX = ()-> minX;
         this.minY = ()-> minY;
         return this;
     }
-    public ModuleBlockWidget withMinPosLimit(Supplier<Integer> minX, Supplier<Integer> minY) {
+    public ModuleBlockWidget<T> withMinPosLimit(Supplier<Integer> minX, Supplier<Integer> minY) {
         this.minX = minX;
         this.minY = minY;
         return this;
-    }
-    public float getPartialX(float partialTicks) {
-        return Mth.lerp(partialTicks, xOld, (float) this.getX());
-    }
-    public float getPartialY(float partialTicks) {
-        return Mth.lerp(partialTicks, yOld, (float) this.getY());
-    }
-    public float getPartialWidth(float partialTicks) {
-        return Mth.lerp(partialTicks, lastWidth, this.width);
-    }
-    public float getPartialHeight(float partialTicks) {
-        return Mth.lerp(partialTicks, lastHeight, this.height);
     }
 
     @Override
@@ -107,17 +91,17 @@ public class ModuleBlockWidget extends BaseWidget {
     public void setHeight(int height) {
         super.setHeight(Mth.clamp(height, this.minHeight.get(), this.maxHeight.get()));
     }
-
     @Override
     public void setX(int x) {
         super.setX(Mth.clamp(x, this.minX.get(), this.maxX.get()));
     }
-
     @Override
     public void setY(int y) {
         super.setY(Mth.clamp(y, this.minY.get(), this.maxY.get()));
     }
+    public void init() {
 
+    }
     @Override
     protected boolean clicked(double mouseX, double mouseY) {
         if (!this.active || !this.visible)
@@ -148,17 +132,18 @@ public class ModuleBlockWidget extends BaseWidget {
         this.setHeight(this.height);
         this.setX(this.getX());
         this.setY(this.getY());
-        partialTicks = Minecraft.getInstance().getFrameTime();
+        float renderX = this.getPartialX(partialTicks);
+        float renderY = this.getPartialY(partialTicks);
+        partialTicks = TimeContext.Client.alwaysPartial();
+
         RenderUtils renderUtils = RenderUtils.of(graphics);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
-        float renderX = this.getPartialX(partialTicks);
-        float renderY = this.getPartialY(partialTicks);
         switch (moduleDirection) {
             case RIGHT -> {
                 this.isHovered = mouseX < this.getX() && mouseY >= this.getY() && mouseX >= this.getX() - this.width && mouseY < this.getY() + this.height;
-                renderUtils.graphics.fill(renderX - this.getPartialWidth(partialTicks), renderY, renderX, renderY + this.getPartialHeight(partialTicks), BaseWidget.COLOR_LIGHT);
+                renderUtils.graphics.fill(renderX - this.getPartialWidth(partialTicks), renderY, renderX, renderY + this.getPartialHeight(partialTicks), BaseModernWidget.COLOR_LIGHT);
                 if (this.selectedBorder != null) {
                     MouseSelectedBorder msb = this.selectedBorder;
                     float left = renderX - msb.getOffsetX(partialTicks);
@@ -175,7 +160,7 @@ public class ModuleBlockWidget extends BaseWidget {
             }
             case DOWN -> {
                 this.isHovered = mouseX >= this.getX() && mouseY < this.getY() && mouseX < this.getX() + this.width && mouseY >= this.getY() - this.height;
-                renderUtils.graphics.fill(renderX, renderY - this.getPartialHeight(partialTicks), renderX + this.getPartialWidth(partialTicks), renderY, BaseWidget.COLOR_LIGHT);
+                renderUtils.graphics.fill(renderX, renderY - this.getPartialHeight(partialTicks), renderX + this.getPartialWidth(partialTicks), renderY, BaseModernWidget.COLOR_LIGHT);
                 if (this.selectedBorder != null) {
                     MouseSelectedBorder msb = this.selectedBorder;
                     float left = renderX + msb.getOffsetX(partialTicks);
@@ -191,7 +176,7 @@ public class ModuleBlockWidget extends BaseWidget {
                 }
             }
             default -> {
-                renderUtils.graphics.fill(renderX, renderY, renderX + this.getPartialWidth(partialTicks), renderY + this.getPartialHeight(partialTicks), BaseWidget.COLOR_LIGHT);
+                renderUtils.graphics.fill(renderX, renderY, renderX + this.getPartialWidth(partialTicks), renderY + this.getPartialHeight(partialTicks), BaseModernWidget.COLOR_LIGHT);
                 if (this.selectedBorder != null) {
                     MouseSelectedBorder msb = this.selectedBorder;
                     float left = renderX + msb.getOffsetX(partialTicks);
@@ -280,11 +265,8 @@ public class ModuleBlockWidget extends BaseWidget {
             }
         }
     }
-    public void tickByScreen() {
-        xOld = this.getX();
-        yOld = this.getY();
-        lastWidth = this.getWidth();
-        lastHeight = this.getHeight();
+    public void tick() {
+        super.tick();
         Minecraft mc = Minecraft.getInstance();
         MouseHandler mouseHandler = mc.mouseHandler;
         double mouseX = mouseHandler.xpos() * (double)mc.getWindow().getGuiScaledWidth() / (double)mc.getWindow().getScreenWidth();

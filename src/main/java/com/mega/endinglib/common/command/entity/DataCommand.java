@@ -33,6 +33,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
@@ -149,13 +150,13 @@ public class DataCommand {
     public static final DataType<Optional<String>> CUSTOM_MOB_TYPE = build("mob_type", (command, personalRule) ->
                     command.then(Commands.argument("mobType", MobTypeArgument.mobType())
                                     .executes(context -> {
-                                        if (getTarget(context) instanceof Mob mob)
+                                        if (getTarget(context) instanceof LivingEntity mob)
                                             return set(context.getSource(), mob, personalRule, MobTypeArgument.getMobType(context, "mobType"));
                                         throw MobControlCommand.NO_MOBS_FOUND.create();
                                     })
                             )
                             .executes(context -> {
-                                if (getTarget(context) instanceof Mob entity) {
+                                if (getTarget(context) instanceof LivingEntity entity) {
                                     int[] returnValue = new int[] {0};
                                     CommonProxy.getEntityCapOptional(entity).ifPresent(cap ->
                                             cap.getMobType().ifPresent(str -> {

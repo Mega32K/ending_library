@@ -4,6 +4,8 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
 import com.mega.endinglib.common.network.c2s.C2SItemToggleModePacket;
 import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
+import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectChangePacket;
+import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
@@ -13,10 +15,7 @@ import com.mega.endinglib.common.network.s2c.rotation.S2CListSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CMapSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CSetPlayerRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CSetRotationPacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectCreatePacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectRemovePacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectStatusPacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectUniformPacket;
+import com.mega.endinglib.common.network.s2c.shader.*;
 import com.mega.endinglib.common.network.s2c.timestop.TSDimensionSynchedPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
@@ -45,20 +44,22 @@ public class PacketHandler {
 
     public static void registerPackets() {
         INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(EndingLibrary.MODID, "ending_library_packet"), () -> PROTOCOL_VERSION, s -> true, s -> true);
+        INSTANCE.registerMessage(id(), C2SCapabilityDataSyncPacket.class, C2SCapabilityDataSyncPacket::encode, C2SCapabilityDataSyncPacket::decode, C2SCapabilityDataSyncPacket::handle);
+        INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
+        INSTANCE.registerMessage(id(), C2SUserInputPacket.class, C2SUserInputPacket::encode, C2SUserInputPacket::decode, C2SUserInputPacket::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicEffectChangePacket.class, C2SDynamicEffectChangePacket::encode, C2SDynamicEffectChangePacket::decode, C2SDynamicEffectChangePacket::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicEffectDataPacket.class, C2SDynamicEffectDataPacket::encode, C2SDynamicEffectDataPacket::decode, C2SDynamicEffectDataPacket::handle);
         INSTANCE.registerMessage(id(), TimeStopSkillPacket.class, TimeStopSkillPacket::encode, TimeStopSkillPacket::decode, TimeStopSkillPacket::handle);
         INSTANCE.registerMessage(id(), TimeStopClientEffectPacket.class, TimeStopClientEffectPacket::encode, TimeStopClientEffectPacket::decode, TimeStopClientEffectPacket::handle);
         INSTANCE.registerMessage(id(), TSDimensionSynchedPacket.class, TSDimensionSynchedPacket::encode, TSDimensionSynchedPacket::decode, TSDimensionSynchedPacket::handle);
         INSTANCE.registerMessage(id(), S2CCapabilityDataSyncPacket.class, S2CCapabilityDataSyncPacket::encode, S2CCapabilityDataSyncPacket::decode, S2CCapabilityDataSyncPacket::handle);
-        INSTANCE.registerMessage(id(), C2SCapabilityDataSyncPacket.class, C2SCapabilityDataSyncPacket::encode, C2SCapabilityDataSyncPacket::decode, C2SCapabilityDataSyncPacket::handle);
         INSTANCE.registerMessage(id(), S2CCapabilitySetDataPacket.class, S2CCapabilitySetDataPacket::encode, S2CCapabilitySetDataPacket::decode, S2CCapabilitySetDataPacket::handle);
         INSTANCE.registerMessage(id(), S2CCapabilitySeenByDataPacket.class, S2CCapabilitySeenByDataPacket::encode, S2CCapabilitySeenByDataPacket::decode, S2CCapabilitySeenByDataPacket::handle);
-        INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraModifierSetPacket.class, S2CCameraModifierSetPacket::encode, S2CCameraModifierSetPacket::decode, S2CCameraModifierSetPacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraModifierRemovePacket.class, S2CCameraModifierRemovePacket::encode, S2CCameraModifierRemovePacket::decode, S2CCameraModifierRemovePacket::handle);
         INSTANCE.registerMessage(id(), S2CClientActionPacket.class, S2CClientActionPacket::encode, S2CClientActionPacket::decode, S2CClientActionPacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraAnimationSetPacket.class, S2CCameraAnimationSetPacket::encode, S2CCameraAnimationSetPacket::decode, S2CCameraAnimationSetPacket::handle);
         INSTANCE.registerMessage(id(), S2CSetFovPacket.class, S2CSetFovPacket::encode, S2CSetFovPacket::decode, S2CSetFovPacket::handle);
-        INSTANCE.registerMessage(id(), C2SUserInputPacket.class, C2SUserInputPacket::encode, C2SUserInputPacket::decode, C2SUserInputPacket::handle);
         INSTANCE.registerMessage(id(), S2CSetPlayerRotationPacket.class, S2CSetPlayerRotationPacket::encode, S2CSetPlayerRotationPacket::decode, S2CSetPlayerRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CSetRotationPacket.class, S2CSetRotationPacket::encode, S2CSetRotationPacket::decode, S2CSetRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CListSetRotationPacket.class, S2CListSetRotationPacket::encode, S2CListSetRotationPacket::decode, S2CListSetRotationPacket::handle);
@@ -81,6 +82,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.AllPasses.class, S2CScreenEffectUniformPacket.AllPasses::encode, S2CScreenEffectUniformPacket.AllPasses::decode, S2CScreenEffectUniformPacket.AllPasses::handle);
         INSTANCE.registerMessage(id(), S2CSetCameraEntityPacket.class, S2CSetCameraEntityPacket::encode, S2CSetCameraEntityPacket::decode, S2CSetCameraEntityPacket::handle);
         INSTANCE.registerMessage(id(), S2CBuildAnimationOperationPacket.class, S2CBuildAnimationOperationPacket::encode, S2CBuildAnimationOperationPacket::decode, S2CBuildAnimationOperationPacket::handle);
+        INSTANCE.registerMessage(id(), S2CDynamicEffectReadPacket.class, S2CDynamicEffectReadPacket::encode, S2CDynamicEffectReadPacket::decode, S2CDynamicEffectReadPacket::handle);
 
     }
 

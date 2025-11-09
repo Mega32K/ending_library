@@ -4,6 +4,7 @@ import com.mega.endinglib.api.client.camera.CameraModifier;
 import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.CameraValueInstance;
 import com.mega.endinglib.api.client.camera.ICameraManager;
+import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
@@ -16,6 +17,7 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
 
@@ -156,8 +158,17 @@ public class ELCameraManager implements ICameraManager {
             }
         }
         if (!capability.isMouseControlled()) {
-            if (ClientUtils.customCursorHandle != -1L)
-                ClientUtils.onPlayerDisconnect();
+            if (ClientUtils.customCursorHandle != -1L) {
+                minecraft.execute(() -> {
+                    long window = minecraft.getWindow().getWindow();
+                    if (ClientUtils.customCursorHandle != -1L) {
+                        GLFW.glfwDestroyCursor(ClientUtils.customCursorHandle);
+                        ClientUtils.customCursorHandle = -1L;
+                    }
+                    GLFW.glfwSetCursor(window, 0L);
+                    GLFW.glfwSetCursorPos(window, minecraft.mouseHandler.xpos(), minecraft.mouseHandler.ypos());
+                });
+            }
         }
         {
             Optional<Float> opt = capability.getLockedCameraOriginXRot();

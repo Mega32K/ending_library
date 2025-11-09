@@ -6,7 +6,9 @@ import com.mega.endinglib.common.command.argument.PostEffectArgument;
 import com.mega.endinglib.common.command.argument.PostEffectPassArgument;
 import com.mega.endinglib.common.command.argument.PostEffectUniformArgument;
 import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectChangePacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectCreatePacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectRemovePacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectStatusPacket;
@@ -115,6 +117,12 @@ public class ShaderCommand {
     }
     private static int status(CommandSourceStack sourceStack, ServerPlayer player, String name, boolean using) {
         PacketHandler.sendToPlayer(new S2CScreenEffectStatusPacket(name, using), player);
+        EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(sourceStack.getServer());
+        if (using) {
+            savedData.enableDynamicEffect(player, name);
+        } else {
+            savedData.disableDynamicEffect(player, name);
+        }
         sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.shader." + (using ? "enable" : "disable"), player.getDisplayName(), name), false);
         return 1;
     }

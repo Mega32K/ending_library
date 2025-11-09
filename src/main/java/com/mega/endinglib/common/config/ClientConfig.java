@@ -24,6 +24,6 @@ public class ClientConfig {
     }
 
     public static void update() {
-        max_edit_length = Math.min(MAX_EDIT_LENGTH.get(), 32767);
+        max_edit_length = MAX_EDIT_LENGTH.get();
     }
 }

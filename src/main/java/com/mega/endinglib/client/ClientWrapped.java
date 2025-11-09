@@ -14,10 +14,14 @@ import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
 import com.mega.endinglib.api.client.shader.post.DynamicScreenEffect;
 import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
-import com.mega.endinglib.client.screen.CameraModifyScreen;
+import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.command.CommandsEvent;
 import com.mega.endinglib.common.command.ShaderCommand;
+import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.data.InputOperations;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectChangePacket;
+import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.S2CCompletelySoundPacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mega.endinglib.mixin.accessor.AccessorEffectInstance;
@@ -46,7 +50,6 @@ import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientRegistryLayer;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -70,14 +73,8 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
-import javax.json.JsonWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -250,27 +247,24 @@ public class ClientWrapped {
         }
     }
     public static void handleScreenEffectRemove(String name) {
-        boolean checked = false;
         Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
         if (screenEffects.containsKey(name)) {
             if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
-                checked = true;
+                PostProcessingShaders.INSTANCE.removeDynamicScreenEffect(screenEffect);
+                PacketHandler.sendToServer(new C2SDynamicEffectDataPacket(false, name, screenEffect.getShaderLocation()));
             }
         } else {
             Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
-        }
-        if (checked) {
-            synchronized (PostProcessingShaders.INSTANCE.getCommandScreenEffects()) {
-                PostProcessingShaders.INSTANCE.getCommandScreenEffects().remove(name);
-            }
         }
     }
     public static void handleScreenEffectCreate(String name, ResourceLocation location) {
         Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
         if (!screenEffects.containsKey(name)) {
-            screenEffects.put(name, new DynamicScreenEffect(name, location, false));
-        } else {
-            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+            DynamicScreenEffect effect = new DynamicScreenEffect(name, location, false);
+            screenEffects.put(name, effect);
+            if (PostProcessingShaders.INSTANCE.createDynamicEffectFromCommand(effect)) {
+                PacketHandler.sendToServer(new C2SDynamicEffectDataPacket(true, name, location));
+            }
         }
     }
 
@@ -280,9 +274,9 @@ public class ClientWrapped {
             if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
                 try {
                     if (values.length == 1) {
-                        PostEffectHandler.updateUniform_post(screenEffect, passName, uniformName, values[0]);
+                        PostEffectHandler.updateUniform_post(screenEffect, passName, ordinalOfPass, uniformName, values[0]);
                     } else {
-                        PostEffectHandler.updateUniform_post(screenEffect, passName, uniformName, values);
+                        PostEffectHandler.updateUniform_post(screenEffect, passName, ordinalOfPass, uniformName, values);
                     }
                 } catch (Throwable throwable) {
                     Minecraft.getInstance().gui.getChat().addMessage(Component.literal(throwable.getLocalizedMessage()).withStyle(ChatFormatting.RED));
@@ -417,5 +411,8 @@ public class ClientWrapped {
             }
         }, ClientUtils.CLIENT_TEST_POOL);
 
+    }
+    public static void handleDynamicEffectRead(List<DynamicEffectData> data) {
+        PostProcessingShaders.INSTANCE.createDynamicEffectFromCommand(data.stream().map(DynamicEffectData::asEffect).toList());
     }
 }

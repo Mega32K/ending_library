@@ -44,7 +44,7 @@ public class DynamicScreenEffect implements CustomScreenEffect {
         }
         lastStamp = partialTicks;
         ((AccessorPostChain) this.current()).getPasses().forEach(postPass -> {
-            postPass.getEffect().safeGetUniform("TotalTime").set(time);
+            postPass.getEffect().safeGetUniform("TotalTime").set(time * 0.05F);
         });
     }
 

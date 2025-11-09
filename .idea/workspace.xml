@@ -88,7 +88,6 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor&quot;: &quot;Run&quot;,
-    &quot;JavaMethodFindUsagesOptions.isIncludeOverloadUsages&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;1.20.1&quot;,
@@ -128,11 +127,11 @@
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.network.c2s.shader" />
+      <recent name="com.mega.endinglib.client.screen.camera" />
       <recent name="com.mega.endinglib.common.network.s2c.camera" />
       <recent name="com.mega.endinglib.common.command.argument" />
       <recent name="com.mega.endinglib.common.command.argument.scehdule" />
-      <recent name="com.mega.endinglib.common.command.entity.selector" />
-      <recent name="com.mega.endinglib.common.network.s2c" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
@@ -240,21 +239,6 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint type="java-method">
-          <url>jar://$PROJECT_DIR$/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.12_mapped_official_1.20.1/forge-1.20.1-47.3.12_mapped_official_1.20.1-sources.jar!/net/minecraft/client/renderer/entity/MobRenderer.java</url>
-          <line>40</line>
-          <properties class="net.minecraft.client.renderer.entity.MobRenderer" method="render">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

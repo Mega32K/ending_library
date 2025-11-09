@@ -5,10 +5,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 
 public class RotationUtils {
-    public static float rotateTowards(float p_24957_, float p_24958_, float limit) {
-        float f = Mth.degreesDifference(p_24957_, p_24958_);
+    public static float rotateTowards(float prevRot, float wantedRot, float limit) {
+        float f = Mth.degreesDifference(prevRot, wantedRot);
         float f1 = Mth.clamp(f, -limit, limit);
-        return p_24957_ + f1;
+        return prevRot + f1;
     }
 
     public static void rotateAtoB(Entity a, Vec3 targetPos) {

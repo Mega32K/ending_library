@@ -2,6 +2,7 @@ package com.mega.endinglib.util.mc.client;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.MinecraftExtra;
+import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.common.data.InputOperations;
@@ -41,7 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class ClientUtils {
-    public static final ExecutorService CLIENT_TEST_POOL = Executors.newFixedThreadPool(3);
+    public static final ExecutorService CLIENT_TEST_POOL = Executors.newFixedThreadPool(4);
     public static Set<InputOperations> disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
     public static Minecraft mc = Minecraft.getInstance();
     public static ResourceLocation CURRENT_CURSOR_ICON = null;
@@ -154,6 +155,7 @@ public class ClientUtils {
             }
             GLFW.glfwSetCursor(window, 0L);
             GLFW.glfwSetCursorPos(window, mc.mouseHandler.xpos(), mc.mouseHandler.ypos());
+            PostProcessingShaders.INSTANCE.clearCommandScreenEffects();
             //MinecraftExtra.of(mc).setELCameraManager(new ELCameraManager(mc, mc.gameRenderer, mc.gameRenderer.getMainCamera()));
         });
     }

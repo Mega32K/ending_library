@@ -87,6 +87,17 @@ public class PostEffectHandler {
                 s.getEffect().safeGetUniform(name).set(values);
         }
     }
+    public static void updateUniform_post(CustomScreenEffect effect, String passName, short ordinalOfPass, String name, float... values) {
+        if (effect == null || effect.current() == null)
+            return;
+        short ordinal = 0;
+        for (PostPass s : ((AccessorPostChain) effect.current()).getPasses()) {
+            if (s.getName().equals(passName) && ordinal == ordinalOfPass) {
+                s.getEffect().safeGetUniform(name).set(values);
+                ordinal++;
+            }
+        }
+    }
     public static void updateUniform_post(PostChain chain, String name, float... values) {
         if (chain == null)
             return;

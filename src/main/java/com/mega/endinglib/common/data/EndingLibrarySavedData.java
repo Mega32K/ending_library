@@ -3,8 +3,10 @@ package com.mega.endinglib.common.data;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.api.server.CommandTask;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -17,6 +19,10 @@ public class EndingLibrarySavedData extends SavedData {
     public List<CommandTask> commandTasks = Collections.synchronizedList(new ObjectArrayList<>());
     private final Object2ObjectOpenHashMap<UUID, EnumSet<InputOperations>> playersDisabledInputPermissions = new Object2ObjectOpenHashMap<>();
     private final ObjectOpenHashSet<UUID> dirtyPlayerIDs = new ObjectOpenHashSet<>();
+    /**
+     * Dynamic后处理效果"玩家->效果"映射
+     */
+    private final Object2ObjectOpenHashMap<UUID, List<DynamicEffectData>> playerEnabledDynamicShaders = new Object2ObjectOpenHashMap<>();
     private MinecraftServer server;
     public static EndingLibrarySavedData readOrCreate(MinecraftServer server) {
         EndingLibrarySavedData data = server.overworld().getDataStorage().computeIfAbsent(tag-> load(tag,server), EndingLibrarySavedData::new, "endinglib_saved_data");
@@ -68,6 +74,32 @@ public class EndingLibrarySavedData extends SavedData {
                 }
             }
         }
+        if (CompoundTagUtils.containsListTag(tag, "DynamicPostEffects")) {
+            ListTag listTag = tag.getList("DynamicPostEffects", Tag.TAG_COMPOUND);
+            if (!listTag.isEmpty()) {
+                for (int i = 0; i < listTag.size(); i++) {
+                    CompoundTag entry = listTag.getCompound(i);
+                    if (entry.hasUUID("id")) {
+                        UUID playerUUID = entry.getUUID("id");
+                        List<DynamicEffectData> effectNames = null;
+                        if (CompoundTagUtils.containsListTag(entry, "DynamicEffects")) {
+                            effectNames = new ObjectArrayList<>();
+                            ListTag dynamicEffects = entry.getList("DynamicEffects", Tag.TAG_COMPOUND);
+                            if (!dynamicEffects.isEmpty()) {
+                                for (int j = 0;j < dynamicEffects.size();j++) {
+                                    try {
+                                        CompoundTag entry_2 = dynamicEffects.getCompound(j);
+                                        effectNames.add(new DynamicEffectData(entry_2.getString("Name"), new ResourceLocation(entry_2.getString("Location")), entry_2.getBoolean("CanUse")));
+                                    } catch (Throwable ignore) {}
+                                }
+                            }
+                        }
+                        if (effectNames != null)
+                            data.playerEnabledDynamicShaders.put(playerUUID, effectNames);
+                    }
+                }
+            }
+        }
         return data;
     }
 
@@ -97,6 +129,26 @@ public class EndingLibrarySavedData extends SavedData {
             }
             compoundTag.put("PlayersDisabledInputPermissions", listTag);
         }
+
+        if (!this.playerEnabledDynamicShaders.isEmpty()) {
+            ListTag listTag = new ListTag();
+            for (var entry : this.playerEnabledDynamicShaders.object2ObjectEntrySet()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.putUUID("id", entry.getKey());
+                ListTag dynamicEffects = new ListTag();
+                for (DynamicEffectData singleData : entry.getValue()) {
+                    CompoundTag entry_2 = new CompoundTag();
+                    entry_2.putString("Name", singleData.name());
+                    entry_2.putString("Location", singleData.location().toString());
+                    if (singleData.canUse())
+                        entry_2.putBoolean("CanUse", true);
+                    dynamicEffects.add(entry_2);
+                }
+                entryTag.put("DynamicEffects", dynamicEffects);
+                listTag.add(entryTag);
+            }
+            compoundTag.put("DynamicPostEffects", listTag);
+        }
         return compoundTag;
     }
     public void addCommandTask(CommandTask task) {
@@ -108,6 +160,76 @@ public class EndingLibrarySavedData extends SavedData {
         commandTasks.remove(task);
         setDirty();
     }
+    public void createDynamicEffect(Player player, String name, ResourceLocation rLocation) {
+        UUID uuid = player.getUUID();
+        List<DynamicEffectData> names = null;
+        if (this.playerEnabledDynamicShaders.containsKey(uuid))
+            names = this.playerEnabledDynamicShaders.get(uuid);
+        else {
+            names = new ObjectArrayList<>();
+            this.playerEnabledDynamicShaders.put(uuid, names);
+        }
+        DynamicEffectData newData = new DynamicEffectData(name, rLocation, false);
+        names.remove(newData);
+        names.add(newData);
+        this.setDirty();
+    }
+    public void removeDynamicEffect(Player player, String name) {
+        UUID uuid = player.getUUID();
+        List<DynamicEffectData> names = null;
+        if (this.playerEnabledDynamicShaders.containsKey(uuid)) {
+            names = this.playerEnabledDynamicShaders.get(uuid);
+            names.remove(new DynamicEffectData(name, new ResourceLocation(""),false));
+            this.setDirty();
+        }
+    }
+    public void enableDynamicEffect(Player player, String name) {
+        UUID uuid = player.getUUID();
+        if (this.playerEnabledDynamicShaders.containsKey(uuid)) {
+            List<DynamicEffectData> list = this.playerEnabledDynamicShaders.get(uuid);
+            Iterator<DynamicEffectData> dataIterator = list.iterator();
+            DynamicEffectData newValue = null;
+            while (dataIterator.hasNext()) {
+                DynamicEffectData data = dataIterator.next();
+                if (data.name().equals(name)) {
+                    newValue = new DynamicEffectData(name, data.location(), true);
+                    dataIterator.remove();
+                    this.setDirty();
+                    break;
+                }
+            }
+            if (newValue != null) {
+                list.add(newValue);
+                this.setDirty();
+            }
+        }
+    }
+    public void disableDynamicEffect(Player player, String name) {
+        UUID uuid = player.getUUID();
+        if (this.playerEnabledDynamicShaders.containsKey(uuid)) {
+            List<DynamicEffectData> list = this.playerEnabledDynamicShaders.get(uuid);
+            Iterator<DynamicEffectData> dataIterator = list.iterator();
+            DynamicEffectData newValue = null;
+            while (dataIterator.hasNext()) {
+                DynamicEffectData data = dataIterator.next();
+                if (data.name().equals(name)) {
+                    newValue = new DynamicEffectData(name, data.location(), false);
+                    dataIterator.remove();
+                    this.setDirty();
+                    break;
+                }
+            }
+            if (newValue != null) {
+                list.add(newValue);
+                this.setDirty();
+            }
+        }
+    }
+    @Nullable
+    public List<DynamicEffectData> getPlayerEnabledDynamicShaders(Player player) {
+        return playerEnabledDynamicShaders.get(player.getUUID());
+    }
+
     public EnumSet<InputOperations> getOrPutPlayerDisabledPermissions(Player player) {
         return this.getOrPutPlayerDisabledPermissions(player.getUUID());
     }
