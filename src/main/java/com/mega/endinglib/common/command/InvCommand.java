@@ -39,8 +39,7 @@ public class InvCommand {
                         ((id, openerInventory, opener) -> new OtherPlayerInventoryMenu(id, openerInventory, opener, targetPlayer)),
                         byteBuf -> byteBuf.writeUUID(targetPlayer.getUUID())
                 );
-            }
-            Minecraft mc = Minecraft.getInstance();
+            } 
         }
         return targetPlayer.getId();
     }
