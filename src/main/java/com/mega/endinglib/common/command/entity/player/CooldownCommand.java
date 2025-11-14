@@ -197,6 +197,7 @@ public class CooldownCommand {
             ItemCooldowns cooldowns = player.getCooldowns();
             AccessorItemCooldowns aic = (AccessorItemCooldowns) cooldowns;
             AccessorCooldownsInstance cooldownsInstance = (AccessorCooldownsInstance) aic.getCooldowns().get(itemStack.getItem());
+            if (cooldownsInstance == null) return 0;
             return Math.max(0, cooldownsInstance.getEndTime() - aic.getTickCount());
         }
         return 0;
@@ -207,6 +208,7 @@ public class CooldownCommand {
         ItemCooldowns cooldowns = player.getCooldowns();
         AccessorItemCooldowns aic = (AccessorItemCooldowns) cooldowns;
         AccessorCooldownsInstance cooldownsInstance = (AccessorCooldownsInstance) aic.getCooldowns().get(item1);
+        if (cooldownsInstance == null) return 0;
         return Math.max(0, cooldownsInstance.getEndTime() - aic.getTickCount());
     }
 }
