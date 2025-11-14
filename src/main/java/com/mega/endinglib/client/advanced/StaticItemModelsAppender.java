@@ -9,6 +9,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -22,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Set;
 
-@Mod.EventBusSubscriber(Dist.CLIENT)
+@Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class StaticItemModelsAppender {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     private static final Logger LOGGER = LogManager.getLogger();
@@ -40,7 +41,7 @@ public class StaticItemModelsAppender {
                         Set<ResourceLocation> set = new ObjectOpenHashSet<>(values.size());
                         for (JsonElement element : values) {
                             if (element instanceof JsonPrimitive jp && jp.isString()) {
-                                set.add(new ResourceLocation(jp.getAsString()));
+                                set.add(new ModelResourceLocation(new ResourceLocation(jp.getAsString()), "inventory"));
                             }
                         }
                         additional.put(rl, set);
@@ -49,14 +50,14 @@ public class StaticItemModelsAppender {
                         if (existModels != null) {
                             for (JsonElement element : values) {
                                 if (element instanceof JsonPrimitive jp && jp.isString()) {
-                                    existModels.add(new ResourceLocation(jp.getAsString()));
+                                    existModels.add(new ModelResourceLocation(new ResourceLocation(jp.getAsString()), "inventory"));
                                 }
                             }
                         } else {
                             Set<ResourceLocation> set = new ObjectOpenHashSet<>(values.size());
                             for (JsonElement element : values) {
                                 if (element instanceof JsonPrimitive jp && jp.isString()) {
-                                    set.add(new ResourceLocation(jp.getAsString()));
+                                    set.add(new ModelResourceLocation(new ResourceLocation(jp.getAsString()), "inventory"));
                                 }
                             }
                             additional.put(rl, set);
@@ -67,8 +68,6 @@ public class StaticItemModelsAppender {
                 }
             }
         });
-        for (Set<ResourceLocation> s : additional.values()) {
-            s.forEach(event::register);
-        }
+        additional.values().forEach(s -> s.forEach(event::register));
     }
 }
