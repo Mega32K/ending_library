@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.config;
 
 import com.mega.endinglib.EndingLibrary;
+import net.minecraft.advancements.critereon.PlayerPredicate;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +17,7 @@ public class ClientConfig {
     static {
         MAX_EDIT_LENGTH = BUILDER.comment("Set Edit box max length(for example in Chat Screen).").define("maxEditLength", 512);
         SPEC = BUILDER.build();
+
     }
 
     @SubscribeEvent

@@ -53,6 +53,7 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_DAMAGE_TYPE = new ResourceLocation("damage_type");
     public static final ResourceLocation COM_MINIMUM_ATTACK_CHARGE = new ResourceLocation("minimum_attack_charge");
     public static final ResourceLocation COM_USE_EFFECTS = new ResourceLocation("use_effects");
+    public static final ResourceLocation COM_LORE = new ResourceLocation("lore");
 
     public static final ResourceLocation COM_BURN_TIME = SafeClass.loc("burn_time");
     public static final ResourceLocation COM_CRAFT_REMAINING = SafeClass.loc("craft_remaining");
@@ -366,6 +367,13 @@ public class DataComponents extends ItemComponentManager {
                     .codec(Codecs.fastUtilListCodec(Codecs.canSerializeAsSingleList(TagKey.hashedCodec(Registries.ITEM))))
                     .registryName(COM_TAGS)
                     .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<LoreComponent> LORE = register(COM_LORE, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(LoreComponent.CODEC)
+                    .registryName(COM_LORE)
+                    .rootTagType(TagEnum.LIST)
                     .build()
     ));
 }
