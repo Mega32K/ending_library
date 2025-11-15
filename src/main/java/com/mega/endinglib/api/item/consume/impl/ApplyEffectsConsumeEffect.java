@@ -15,7 +15,7 @@ import java.util.List;
 public record ApplyEffectsConsumeEffect(List<MobEffectInstance> effects, float probability) implements ConsumeEffect {
     public static final MapCodec<ApplyEffectsConsumeEffect> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
-                            Codecs.MOB_EFFECT_INSTANCE_CODEC.listOf().fieldOf("effects").forGetter(ApplyEffectsConsumeEffect::effects),
+                            Codecs.canSerializeAsSingleList(Codecs.MOB_EFFECT_INSTANCE_CODEC).fieldOf("effects").forGetter(ApplyEffectsConsumeEffect::effects),
                             Codec.floatRange(0.0F, 1.0F).optionalFieldOf("probability", 1.0F).forGetter(ApplyEffectsConsumeEffect::probability)
                     )
                     .apply(instance, ApplyEffectsConsumeEffect::new)

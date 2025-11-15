@@ -88,15 +88,6 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 shouldWrite.set(true);
                             }
                         });
-                        case "getFoodProperties" -> methodNode.instructions.forEach(insnNode -> {
-                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.ARETURN) {
-                                InsnList insnNodes = new InsnList();
-                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
-                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getFoodProperties", "(Lnet/minecraft/world/food/FoodProperties;Lnet/minecraftforge/common/extensions/IForgeItemStack;)Lnet/minecraft/world/food/FoodProperties;", false));
-                                methodNode.instructions.insertBefore(node, insnNodes);
-                                shouldWrite.set(true);
-                            }
-                        });
                         case "canPerformAction" -> {
                             InsnList insnNodes = new InsnList();
                             insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));
@@ -262,6 +253,15 @@ public class NormalCoremodProcessor implements IClassProcessor {
             } else if ("net/minecraftforge/common/extensions/IForgeItem".equals(classNode.name)) {
                 classNode.methods.forEach(methodNode -> {
                     switch (methodNode.name) {
+                        case "getFoodProperties" -> methodNode.instructions.forEach(insnNode -> {
+                            if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.ARETURN) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getFoodProperties", "getFoodProperties(Lnet/minecraft/world/food/FoodProperties;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/food/FoodProperties;", false));
+                                methodNode.instructions.insertBefore(node, insnNodes);
+                                shouldWrite.set(true);
+                            }
+                        });
                         case "getMaxStackSize" -> methodNode.instructions.forEach(insnNode -> {
                             if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.IRETURN) {
                                 InsnList insnNodes = new InsnList();

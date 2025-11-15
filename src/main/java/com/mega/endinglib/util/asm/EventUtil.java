@@ -34,15 +34,13 @@ public class EventUtil {
         }
         return false;
     }
-    public static FoodProperties getFoodProperties(FoodProperties properties, IForgeItemStack fis) {
-        if (fis instanceof ItemStack itemStack) {
-            FoodComponent component = ItemComponentManager.get(itemStack, DataComponents.FOOD);
-            if (component != null) {
-                FoodProperties.Builder builder = new FoodProperties.Builder().nutrition(component.nutrition()).saturationMod(component.saturation());
-                if (component.canAlwaysEat())
-                    builder.alwaysEat();
-                return builder.build();
-            }
+    public static FoodProperties getFoodProperties(FoodProperties properties, ItemStack itemStack) {
+        FoodComponent component = ItemComponentManager.get(itemStack, DataComponents.FOOD);
+        if (component != null) {
+            FoodProperties.Builder builder = new FoodProperties.Builder().nutrition(component.nutrition()).saturationMod(component.saturation());
+            if (component.canAlwaysEat())
+                builder.alwaysEat();
+            return builder.build();
         }
         return properties;
     }

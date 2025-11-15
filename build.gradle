@@ -184,6 +184,7 @@ dependencies {
     implementation fg.deobf("curse.maven:ClothConfig-348521:5729105")
     implementation fg.deobf("curse.maven:BetterCombat-639842:5625757")
     implementation fg.deobf("curse.maven:curios-309927:5367944")
+    implementation fg.deobf("curse.maven:appleskin-248787:4770828")
     //implementation fg.deobf("curse.maven:ModernUI-352491:6199942")
     implementation fileTree("libs")
 
