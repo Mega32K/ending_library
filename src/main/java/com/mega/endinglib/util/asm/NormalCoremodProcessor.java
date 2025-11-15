@@ -257,7 +257,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             if (insnNode instanceof InsnNode node && node.getOpcode() == Opcodes.ARETURN) {
                                 InsnList insnNodes = new InsnList();
                                 insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 1));
-                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getFoodProperties", "getFoodProperties(Lnet/minecraft/world/food/FoodProperties;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/food/FoodProperties;", false));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "getFoodProperties", "(Lnet/minecraft/world/food/FoodProperties;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/food/FoodProperties;", false));
                                 methodNode.instructions.insertBefore(node, insnNodes);
                                 shouldWrite.set(true);
                             }
