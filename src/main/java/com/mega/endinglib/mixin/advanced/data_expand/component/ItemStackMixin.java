@@ -9,6 +9,7 @@ import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.function.AttackEventComponent;
 import com.mega.endinglib.api.item.component.type.function.ReleaseUsingComponent;
 import com.mega.endinglib.api.item.component.type.function.UseEventComponent;
+import com.mega.endinglib.common.WaitingRegistryAccessTask;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;
@@ -43,6 +44,8 @@ import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemStack {
+    @Unique
+    private boolean decodeFailed;
     @Shadow @Nullable private CompoundTag tag;
 
     @Shadow public abstract <T extends LivingEntity> void hurtAndBreak(int p_41623_, T p_41624_, Consumer<T> p_41625_);
@@ -59,6 +62,14 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     public ItemComponentManager endingLibrary$getComponentManager() {
         return componentManager;
     }
+    @Override
+    public void setDecodeFailed(boolean decodeFailed) {
+        this.decodeFailed = decodeFailed;
+    }
+    @Override
+    public boolean isDecodedFailed() {
+        return decodeFailed;
+    }
 
     @Override
     public void endingLibrary$setComponentManager(ItemComponentManager manager) {
@@ -70,10 +81,16 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         if (this.tag != null) {
             CompoundTag component = this.tag.getCompound(ItemComponentManager.HEAD);
             if (!component.isEmpty()) {
-                MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component).result().ifPresent(map -> {
+                DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
+                dr.result().ifPresent(map -> {
                     ComponentChanges.Builder builder = ComponentChanges.builder();
                     map.forEach(builder::add);
                     this.componentManager.getComponents().setChanges(builder.build());
+                });
+                dr.error().ifPresent(err -> {
+                    this.decodeFailed = true;
+                    EndingLibrary.LOGGER.warn("ItemComponent decode error : {}", err.message());
+                    WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
                 });
             }
         }
@@ -81,11 +98,13 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "copy", at = @At("RETURN"))
     private void copy(CallbackInfoReturnable<ItemStack> cir) {
         ItemStack stack = cir.getReturnValue();
-        if (!stack.isEmpty() && stack.getTag() != null) {
-            CompoundTag component = stack.getTag().getCompound(ItemComponentManager.HEAD);
-            if (!component.isEmpty()) {
-                ItemComponentManager.setComponentManager(stack, new ItemComponentManager(stack, this.componentManager.getComponents().copy()));
+        if (!stack.isEmpty()) {
+            if (this.decodeFailed) {
+                ExtraItemStackItf.of(stack).setDecodeFailed(true);
+                WaitingRegistryAccessTask.toAddItemStacks.add(stack);
             }
+            if (!this.componentManager.getComponents().isEmpty())
+                ItemComponentManager.setComponentManager(stack, new ItemComponentManager(stack, this.componentManager.getComponents().copy()));
         }
     }
     @Inject(method = "setTag", at = @At("HEAD"))
@@ -104,6 +123,10 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                         ComponentChanges.Builder builder = ComponentChanges.builder();
                         map.forEach(builder::add);
                         this.componentManager.getComponents().setChanges(builder.build());
+                    });
+                    mapDataResult.error().ifPresent(err -> {
+                        this.decodeFailed = true;
+                        WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
                     });
                 }
             }

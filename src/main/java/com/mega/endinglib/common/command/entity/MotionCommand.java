@@ -1,7 +1,7 @@
 package com.mega.endinglib.common.command.entity;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -19,7 +19,7 @@ import org.joml.Vector3f;
 public class MotionCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("motion")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_MOTION.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_MOTION.get()))
                 .then(Commands.argument("target", EntityArgument.entity())
                         .then(Commands.literal("set")
                                 .then(Commands.argument("motion", Vec3Argument.vec3(false))

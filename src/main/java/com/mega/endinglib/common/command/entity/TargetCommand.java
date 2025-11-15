@@ -2,7 +2,7 @@ package com.mega.endinglib.common.command.entity;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -23,7 +23,7 @@ import net.minecraft.world.level.pathfinder.Path;
 public class TargetCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("target")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_TARGET.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_TARGET.get()))
                 .then(Commands.literal("as")
                         .then(Commands.argument("executor", EntityArgument.entity())
                                 .then(Commands.literal("entity")

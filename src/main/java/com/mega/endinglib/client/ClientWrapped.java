@@ -56,6 +56,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -166,16 +167,27 @@ public class ClientWrapped {
         }
         ((AccessorOptions)Minecraft.getInstance().options).endinglib$setCameraType(CameraType.class.getEnumConstants()[cameraType]);
     }
+    public static LayeredRegistryAccess<ClientRegistryLayer> createRegistryAccess() {
+        RegistryAccess.Frozen f = RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY);
+        return new LayeredRegistryAccess<>(List.of(ClientRegistryLayer.STATIC, ClientRegistryLayer.REMOTE)).replaceFrom(ClientRegistryLayer.STATIC, f);
+    }
+    public static void reloadRegistryAccess() {
+        lastRegistryAccessGetTime = -1;
+        ClientWrapped.registryAccess();
+    }
+    public static void serRegistryAccess(LayeredRegistryAccess<ClientRegistryLayer> l) {
+        registryAccess = l;
+    }
     public static RegistryAccess registryAccess() {
-        if (Minecraft.getInstance().getConnection() == null) {
-            if (registryAccess == null)
-                registryAccess = ClientRegistryLayer.createRegistryAccess();
-            if (Util.getMillis() - lastRegistryAccessGetTime > 60000) {
-                lastRegistryAccessGetTime = Util.getMillis();
-                CompletableFuture.runAsync(() -> registryAccess = ClientRegistryLayer.createRegistryAccess(), ClientUtils.CLIENT_TEST_POOL);
-            }
-            return registryAccess.compositeAccess();
-        } else return Minecraft.getInstance().getConnection().registryAccess();
+        if (Minecraft.getInstance().level != null)
+            return Minecraft.getInstance().level.registryAccess();
+        if (registryAccess == null)
+            registryAccess = createRegistryAccess();
+        if (Util.getMillis() - lastRegistryAccessGetTime > 60000) {
+            lastRegistryAccessGetTime = Util.getMillis();
+            CompletableFuture.runAsync(() -> registryAccess = createRegistryAccess(), ClientUtils.CLIENT_TEST_POOL);
+        }
+        return registryAccess.compositeAccess();
     }
     public static void activeMouseControl() {
     }

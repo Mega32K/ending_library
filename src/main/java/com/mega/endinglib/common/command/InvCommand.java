@@ -1,10 +1,9 @@
 package com.mega.endinglib.common.command;
 
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.menu.OtherPlayerInventoryMenu;
 import com.mega.endinglib.util.mc.menu.AdvancedOpenMenuHelper;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -21,7 +20,7 @@ public class InvCommand {
     public static void load(RegisterCommandsEvent event) {
         event.getDispatcher().register(
                 LiteralArgumentBuilder.<CommandSourceStack>literal("inv")
-                        .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_INV.get()))
+                        .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_INV.get()))
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(context -> openPlayerInv(context.getSource(), EntityArgument.getPlayer(context, "player")))
                         )

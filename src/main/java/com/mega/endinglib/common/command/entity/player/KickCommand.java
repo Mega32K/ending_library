@@ -1,6 +1,6 @@
 package com.mega.endinglib.common.command.entity.player;
 
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -15,7 +15,7 @@ import java.util.Collection;
 public class KickCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("kick")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_KICK.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_KICK.get()))
                 .then(Commands.argument("targets", EntityArgument.players())
                         .executes(context -> kick(context.getSource(), EntityArgument.getPlayers(context, "targets"), Component.translatable("multiplayer.disconnect.kicked")))
                         .then(Commands.argument("reason", ComponentArgument.textComponent())

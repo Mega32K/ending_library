@@ -2,7 +2,7 @@ package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.CommandFunction;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -119,7 +119,7 @@ public class PersonalRuleCommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("personal")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_PERSONAL_RULE.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_PERSONAL_RULE.get()))
                 .then(buildAllCommands(Commands.argument("player", EntityArgument.player())));
     }
     private static void sendGetMessage(CommandSourceStack stack, ServerPlayer player, String rule, Component valueToString) {

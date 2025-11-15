@@ -1,6 +1,6 @@
 package com.mega.endinglib.common.command.entity;
 
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CCompletelySoundPacket;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -31,7 +31,7 @@ public class SoundCommand {
             requiredargumentbuilder.then(source(soundsource));
         }
         return LiteralArgumentBuilder.<CommandSourceStack>literal("sound")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_SOUND.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_SOUND.get()))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(requiredargumentbuilder)
                 );

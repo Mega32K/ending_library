@@ -1,6 +1,6 @@
 package com.mega.endinglib.common.command.entity;
 
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
@@ -23,9 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.Vec3;
 
 public class FillEntityCommand {
     private static final Dynamic2CommandExceptionType ERROR_AREA_TOO_LARGE = new Dynamic2CommandExceptionType((p_137392_, p_137393_) -> Component.translatable("commands.endinglib.fill_entity.toobig", p_137392_, p_137393_));
@@ -34,7 +32,7 @@ public class FillEntityCommand {
     private static final SimpleCommandExceptionType INVALID_POSITION = new SimpleCommandExceptionType(Component.translatable("commands.summon.invalidPosition"));
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandBuildContext buildContext) {
         return Commands.literal("fillEntity")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_FILL_ENTITY.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_FILL_ENTITY.get()))
                 .then(Commands.argument("from", BlockPosArgument.blockPos())
                         .then(Commands.argument("to", BlockPosArgument.blockPos())
                                 .then(Commands.literal("copy")

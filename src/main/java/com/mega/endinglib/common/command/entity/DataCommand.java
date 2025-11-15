@@ -5,7 +5,7 @@ import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.command.argument.FloatArrayArgument;
 import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import com.mega.endinglib.common.command.entity.mob.MobControlCommand;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.CommandFunction;
@@ -18,15 +18,12 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -34,7 +31,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -209,7 +205,7 @@ public class DataCommand {
     );
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("data")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_DATA.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_DATA.get()))
                 .then(buildAllCommands(Commands.argument("target", EntityArgument.entity())));
     }
     static <T> DataType<T> build(String serializerName, BiFunction<LiteralArgumentBuilder<CommandSourceStack>, DataType<T>, LiteralArgumentBuilder<CommandSourceStack>> commandBuilder, BiConsumer<EndingLibraryEntityCapability, T> capValueSetter, Function<EndingLibraryEntityCapability, T> capValueGetter, BiFunction<DataType<T>, EndingLibraryEntityCapability, Integer> commandResult, T defaultValue) {

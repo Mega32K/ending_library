@@ -1,7 +1,7 @@
 package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
@@ -22,7 +22,7 @@ import java.util.Collection;
 public class HotbarCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("hotbar")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_HOTBAR.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_HOTBAR.get()))
                 .then(Commands.argument("targets", EntityArgument.players())
                         .then(Commands.argument("hotbar", IntegerArgumentType.integer(1, 9))
                                 .executes(context -> hotbar(EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "hotbar")))

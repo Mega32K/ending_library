@@ -19,6 +19,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
@@ -113,6 +114,7 @@ public class ClientEventHandler {
             new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::onPlayerDisconnect).onAddedToWorld();
             ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
         }
+        ClientWrapped.reloadRegistryAccess();
     }
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {

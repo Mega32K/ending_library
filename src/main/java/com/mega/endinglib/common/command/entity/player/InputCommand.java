@@ -2,7 +2,7 @@ package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.command.argument.InputOperationArgument;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
@@ -18,16 +18,14 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 
 import java.util.EnumSet;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InputCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("input")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_INPUT.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_INPUT.get()))
                 .then(Commands.argument("target", EntityArgument.player())
                         .then(Commands.literal("permission")
                                 .then(Commands.argument("input", InputOperationArgument.operation())

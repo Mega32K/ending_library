@@ -1,12 +1,11 @@
 package com.mega.endinglib.common.command.entity.mob;
 
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.mixin.accessor.AccessorMob;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -19,7 +18,7 @@ public class MobControlCommand {
     public static final SimpleCommandExceptionType NO_MOBS_FOUND = new SimpleCommandExceptionType(Component.translatable("commands.endinglib.argument.entity.notfound.mob"));
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("mobControl")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_MOB_CONTROL.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_MOB_CONTROL.get()))
                 .then(Commands.argument("mob", EntityArgument.player())
                         .then(Commands.literal("lookControl")
                         )

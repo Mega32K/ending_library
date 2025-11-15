@@ -1,7 +1,7 @@
 package com.mega.endinglib.common.command.entity;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -19,7 +19,7 @@ import java.util.Collection;
 public class TimeStopCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("timestop")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_TIMESTOP.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_TIMESTOP.get()))
                 .then(Commands.argument("seconds", FloatArgumentType.floatArg(0F))
                         .executes(context -> execute(context.getSource(), FloatArgumentType.getFloat(context, "seconds")))
                 )

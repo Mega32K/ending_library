@@ -1,7 +1,7 @@
 package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.common.command.argument.CameraActionArgument;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
@@ -19,7 +19,7 @@ import java.util.Locale;
 public class ClientActionCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("action")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_CLIENT_ACTION.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_CLIENT_ACTION.get()))
                 .then(Commands.argument("player", EntityArgument.player())
                     .then(Commands.argument("actionType", CameraActionArgument.action())
                             .then(Commands.argument("sendMessage", BoolArgumentType.bool())

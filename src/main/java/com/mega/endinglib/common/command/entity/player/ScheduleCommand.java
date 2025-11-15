@@ -6,7 +6,7 @@ import com.mega.endinglib.common.command.argument.CommandArgument;
 import com.mega.endinglib.common.command.argument.CommandBlockArgument;
 import com.mega.endinglib.common.command.argument.scehdule.CommandScheduleEntry;
 import com.mega.endinglib.common.command.argument.scehdule.WrappedCSSBuilder;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.server.ServerTaskManager;
 import com.mojang.brigadier.CommandDispatcher;
@@ -23,13 +23,12 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class ScheduleCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher) {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("schedule")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_SCHEDULE.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_SCHEDULE.get()))
                 .then(Commands.literal("create")
                         .then(Commands.argument("name", ResourceLocationArgument.id())
                                 .then(Commands.argument("wait", IntegerArgumentType.integer(0))

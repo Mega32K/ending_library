@@ -2,33 +2,26 @@ package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.command.argument.PoseArgument;
-import com.mega.endinglib.common.config.ServerConfig;
-import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.S2CSetPlayerForcedPosePacket;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mojang.brigadier.arguments.FloatArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.ComponentArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.commands.KillCommand;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.List;
 
 public class PoseCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("pose")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_POSE.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_POSE.get()))
                 .then(Commands.literal("lock")
                         .then(Commands.argument("pose", PoseArgument.pose())
                                 .then(Commands.argument("targets", EntityArgument.players())

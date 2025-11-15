@@ -2,7 +2,7 @@ package com.mega.endinglib.common.command.entity;
 
 import com.google.common.collect.Lists;
 import com.mega.endinglib.common.command.argument.DirectionArgument;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.util.mc.CollisionHelper;
 import com.mega.endinglib.util.mc.entity.RaycastHelper;
 import com.mojang.brigadier.CommandDispatcher;
@@ -11,7 +11,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -40,7 +39,7 @@ public class TestforCommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("testfor")
-                .requires((source) -> source.hasPermission(ServerConfig.COMMAND_TESTFOR.get()))
+                .requires((source) -> source.hasPermission(CommandConfig.COMMAND_TESTFOR.get()))
                 .then(Commands.literal("raycast")
                         .then(Commands.argument("entity", EntityArgument.entity())
                                 .then(Commands.literal("entity")

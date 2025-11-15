@@ -5,7 +5,7 @@ import com.mega.endinglib.api.client.camera.*;
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.camera.S2CBuildAnimationOperationPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraEntityPacket;
@@ -30,7 +30,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -59,7 +58,7 @@ public class CameraCommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("camera")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_CAMERA.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_CAMERA.get()))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("enable")
                                 .then(Commands.argument("value", BoolArgumentType.bool())

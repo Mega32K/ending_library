@@ -2,7 +2,7 @@ package com.mega.endinglib;
 
 import com.mega.endinglib.common.config.ClientConfig;
 import com.mega.endinglib.common.config.CommonConfig;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.config.advanced.AdvancedClientConfig;
 import com.mega.endinglib.common.config.advanced.AdvancedCommonConfig;
 import com.mega.endinglib.common.init.ModAttributes;
@@ -34,7 +34,7 @@ public class EndingLibrary {
     public EndingLibrary() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommonConfig.SPEC, "endinglib/endinglib-common.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC, "endinglib/endinglib-client.toml");
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.SPEC, "endinglib/endinglib-server.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, CommandConfig.SPEC, "endinglib/endinglib-command.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, AdvancedClientConfig.SPEC, "endinglib/advanced/endinglib-client.toml");
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, AdvancedCommonConfig.SPEC, "endinglib/advanced/endinglib-common.toml");
         IEventBus bus = getModEventBus();

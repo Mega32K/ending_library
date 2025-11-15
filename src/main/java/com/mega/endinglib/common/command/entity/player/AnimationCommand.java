@@ -3,7 +3,7 @@ package com.mega.endinglib.common.command.entity.player;
 import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.common.command.argument.EasingArgument;
 import com.mega.endinglib.common.command.argument.PlayerAnimationArgument;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CPlayerAnimationPacket;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -21,7 +21,7 @@ import java.util.Collection;
 public class AnimationCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("animate")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_ANIMATE.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_ANIMATE.get()))
                 .then(Commands.argument("players", EntityArgument.players())
                         .then(Commands.literal("partialPlay")
                                 .then(Commands.argument("animation", PlayerAnimationArgument.animation())

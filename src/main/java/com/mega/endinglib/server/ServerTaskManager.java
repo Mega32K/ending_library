@@ -4,12 +4,14 @@ import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.Queues;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.server.ServerTask;
+import com.mega.endinglib.common.WaitingRegistryAccessTask;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 
 @Mod.EventBusSubscriber(modid = EndingLibrary.MODID)
 public class ServerTaskManager {
@@ -36,6 +38,8 @@ public class ServerTaskManager {
                     queue.add(serverTask);
                 }
             }
+            if (!WaitingRegistryAccessTask.toAddItemStacks.isEmpty() || !WaitingRegistryAccessTask.itemStacks.isEmpty())
+                CompletableFuture.runAsync(() -> WaitingRegistryAccessTask.tick(event.getServer().overworld()));
         }
     }
 }

@@ -1,8 +1,7 @@
 package com.mega.endinglib.common.command;
 
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -10,7 +9,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.PlayerEnderChestContainer;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -23,10 +21,10 @@ public class EnderchestCommand {
     public static void load(RegisterCommandsEvent event) {
         event.getDispatcher().register(
                 LiteralArgumentBuilder.<CommandSourceStack>literal("enderchest")
-                        .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_ENDERCHEST.get()))
+                        .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_ENDERCHEST.get()))
                         .executes(context -> openPlayerEnderchest(context.getSource(), context.getSource().getPlayer()))
                         .then(Commands.argument("player", EntityArgument.player())
-                                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION_ENDERCHEST_OTHER.get()))
+                                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION_ENDERCHEST_OTHER.get()))
                                 .executes(context -> openPlayerEnderchest(context.getSource(), EntityArgument.getPlayer(context, "player")))
                         )
 

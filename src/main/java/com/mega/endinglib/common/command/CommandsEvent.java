@@ -3,7 +3,7 @@ package com.mega.endinglib.common.command;
 import com.mega.endinglib.common.command.entity.*;
 import com.mega.endinglib.common.command.entity.player.*;
 import com.mega.endinglib.common.command.test.DumpCommand;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
@@ -24,7 +24,7 @@ public class CommandsEvent {
     public static void load(RegisterCommandsEvent event) {
         event.getDispatcher().register(
                 LiteralArgumentBuilder.<CommandSourceStack>literal("endinglib")
-                        .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_PERMISSION.get()))
+                        .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_PERMISSION.get()))
                         .then(TimeStopCommand.register())
                         .then(FillEntityCommand.register(event.getBuildContext()))
                         .then(CameraCommand.register())

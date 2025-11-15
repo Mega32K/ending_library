@@ -1,6 +1,7 @@
 package com.mega.endinglib.proxy;
 
 import com.mega.endinglib.client.ClientWrapped;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;

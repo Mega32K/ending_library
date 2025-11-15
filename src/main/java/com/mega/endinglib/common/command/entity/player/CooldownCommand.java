@@ -2,7 +2,7 @@ package com.mega.endinglib.common.command.entity.player;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.command.argument.InteractionHandArgument;
-import com.mega.endinglib.common.config.ServerConfig;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.mixin.accessor.AccessorCooldownsInstance;
 import com.mega.endinglib.mixin.accessor.AccessorItemCooldowns;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -21,7 +21,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemCooldowns;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.Objects;
@@ -29,7 +28,7 @@ import java.util.Objects;
 public class CooldownCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandBuildContext buildContext) {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("cooldown")
-                .requires(stack -> stack.hasPermission(ServerConfig.COMMAND_COOLDOWN.get()))
+                .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_COOLDOWN.get()))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("increase")
                                 .then(Commands.literal("hand")
