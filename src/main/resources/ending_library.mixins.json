@@ -68,6 +68,7 @@
     "advanced.data_expand.component.TieredItemMixin",
     "advanced.data_expand.component.TrimMaterialsMixin",
     "advanced.data_expand.component.WanderingTraderMixin",
+    "advanced.data_expand.component.custom_data.ArrowMixin",
     "advanced.data_expand.component.loom_menu.LoomMenu4Mixin",
     "advanced.data_expand.component.loom_menu.LoomMenuMixin",
     "advanced.data_expand.component.tool.DiggerItemMixin",
