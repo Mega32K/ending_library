@@ -13,6 +13,7 @@ import net.minecraft.resources.RegistryFixedCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.item.Item;
@@ -41,6 +42,7 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_DAMAGE_RESISTANT = new ResourceLocation("damage_resistant");
     public static final ResourceLocation COM_ENCHANTABLE = new ResourceLocation("enchantable");
     public static final ResourceLocation COM_ENCHANTMENT_GLINT_OVERRIDE = new ResourceLocation("enchantment_glint_override");
+    public static final ResourceLocation COM_ENTITY_DATA = new ResourceLocation("entity_data");
     public static final ResourceLocation COM_EQUIPPABLE = new ResourceLocation("equippable");
     public static final ResourceLocation COM_INTANGIBLE_PROJECTILE = new ResourceLocation("intangible_projectile");
     public static final ResourceLocation COM_PROVIDES_BANNER_PATTERNS = new ResourceLocation("provides_banner_patterns");
@@ -374,6 +376,13 @@ public class DataComponents extends ItemComponentManager {
                     .codec(LoreComponent.CODEC)
                     .registryName(COM_LORE)
                     .rootTagType(TagEnum.LIST)
+                    .build()
+    ));
+    public static final ItemComponentType<CompoundTag> ENTITY_DATA = register(COM_ENTITY_DATA, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(CompoundTag.CODEC)
+                    .registryName(COM_ENTITY_DATA)
+                    .rootTagType(TagEnum.SNBT)
                     .build()
     ));
 }
