@@ -8,6 +8,12 @@
   "item.components": "%s fake component(s)",
   "component.minecraft.item_model" : "Item Model",
 
+  "commands.function.error.argument_not_compound": "Invalid argument type: %s, expected Compound",
+  "commands.function.error.missing_argument": "Missing argument %2$s to function %1$s",
+  "commands.function.error.missing_arguments": "Missing arguments to function %s",
+  "commands.function.error.parse": "While instantiating macro %s: Command '%s' caused error: %s",
+  "commands.function.instantiationFailure": "Failed to instantiate function %s: %s",
+
   "gamerule.playerDamageInvulnerable" : "(终焉图书馆) 启用玩家无敌帧",
   "gamerule.mobDamageInvulnerable" : "(终焉图书馆) 启用生物无敌帧",
 

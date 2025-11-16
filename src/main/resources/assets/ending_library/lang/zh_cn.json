@@ -8,6 +8,12 @@
   "item.components": "%s个(伪)组件",
   "component.minecraft.item_model" : "物品模型",
 
+  "commands.function.error.argument_not_compound": "无效的参数类型：%s。应为Compound类型",
+  "commands.function.error.missing_argument": "函数%1$s缺少传入参数%2$s",
+  "commands.function.error.missing_arguments": "函数%s缺少传入参数",
+  "commands.function.error.parse": "实例化宏%s时：命令“%s”发生错误：%s",
+  "commands.function.instantiationFailure": "无法实例化函数%s：%s",
+
   "gamerule.playerDamageInvulnerable" : "(终焉图书馆) 启用玩家无敌帧",
   "gamerule.mobDamageInvulnerable" : "(终焉图书馆) 启用生物无敌帧",
 
