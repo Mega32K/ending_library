@@ -90,15 +90,15 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
             }
         } else if (data.equals(HITBOX)) {
             Optional<AABB> hitboxOptional = this.getCustomHitbox();
-            hitboxOptional.ifPresent(aabb -> { 
-                if (entity != null) {
+
+            if (entity != null) {
+                hitboxOptional.ifPresent(aabb -> {
                     ExtraEntity.of(entity).endingLibrary$setCapHitbox(aabb);
-                }
-            });
-            if (hitboxOptional.isEmpty()) {
-                if (entity != null) {
+                });
+                if (hitboxOptional.isEmpty()) {
                     ExtraEntity.of(entity).endingLibrary$setCapHitbox(null);
                 }
+                entity.setBoundingBox(((AccessorEntity) entity).invokeMakeBoundingBox());
             }
         } else if (data.equals(RENDER_SCALE)) {
             if (entity != null)
