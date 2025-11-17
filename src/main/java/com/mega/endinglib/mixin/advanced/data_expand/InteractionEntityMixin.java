@@ -1,6 +1,8 @@
 package com.mega.endinglib.mixin.advanced.data_expand;
 
 import com.mega.endinglib.api.data.CompoundTagUtils;
+import com.mega.endinglib.mixin.capability.EntityMixin;
+import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import net.minecraft.commands.CommandSigningContext;
 import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -93,5 +96,11 @@ public abstract class InteractionEntityMixin extends Entity {
         return new CommandSourceStack(p_81302_, p_81303_, p_81304_, p_81305_, p_81306_, p_81307_, p_81308_, p_81309_, p_81310_, true, (p_81361_, p_81362_, p_81363_) -> {
         }, EntityAnchorArgument.Anchor.FEET, CommandSigningContext.ANONYMOUS, TaskChainer.immediate(p_81309_), (p_280930_) -> {
         });
+    }
+    @Inject(method = "makeBoundingBox", at = @At("HEAD"), cancellable = true)
+    private void capabilityBoundingBox(CallbackInfoReturnable<AABB> cir) {
+        ExtraEntity extraEntity = ExtraEntity.of(this);
+        if (extraEntity.endingLibrary$getCapCullingBox() != null)
+            cir.setReturnValue(extraEntity.endingLibrary$getCapCullingBox().move(this.position()));
     }
 }
