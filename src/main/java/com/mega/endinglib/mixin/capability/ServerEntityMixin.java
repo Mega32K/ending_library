@@ -68,15 +68,17 @@ public abstract class ServerEntityMixin {
         if (sizeOfCaps > 0) {
             Map<String, List<CapabilityEntityData<?>>> dirtyValues = new Object2ObjectOpenHashMap<>(sizeOfCaps);
             caps.forEach(capability -> {
-                SynchedCapabilityData sca = capability.getDataManager();
-                if (sca.isDirty()) {
-                    List<CapabilityEntityData<?>> l = sca.packData();
-                    if (!l.isEmpty()) {
-                        String name = capability.getRegistryName().toString();
-                        dirtyValues.put(name, l);
-                        if (endinglib$trackedCapDataValues == null)
-                            endinglib$trackedCapDataValues = new Object2ObjectOpenHashMap<>(sizeOfCaps);
-                        endinglib$trackedCapDataValues.put(name, l);
+                if (capability.getEntity() != null && !capability.getEntity().isRemoved()) {
+                    SynchedCapabilityData sca = capability.getDataManager();
+                    if (sca.isDirty()) {
+                        List<CapabilityEntityData<?>> l = sca.packData();
+                        if (!l.isEmpty()) {
+                            String name = capability.getRegistryName().toString();
+                            dirtyValues.put(name, l);
+                            if (endinglib$trackedCapDataValues == null)
+                                endinglib$trackedCapDataValues = new Object2ObjectOpenHashMap<>(sizeOfCaps);
+                            endinglib$trackedCapDataValues.put(name, l);
+                        }
                     }
                 }
             });
