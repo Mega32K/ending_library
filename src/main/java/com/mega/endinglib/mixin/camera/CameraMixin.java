@@ -131,7 +131,7 @@ public abstract class CameraMixin {
                 }
             } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
-                return this.getMaxZoom(manager.getRaycastOffset(partialTicks.get()) + 4.0D);
+                return original - manager.getRaycastOffset(partialTicks.get());
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
