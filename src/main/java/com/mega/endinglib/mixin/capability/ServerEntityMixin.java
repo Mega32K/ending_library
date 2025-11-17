@@ -8,6 +8,7 @@ import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CCapabilitySeenByDataPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerEntity;
@@ -66,7 +67,7 @@ public abstract class ServerEntityMixin {
         ObjectSet<EntitySyncCapabilityBase> caps = ELCapabilityManager.getCaps(entity);
         int sizeOfCaps = caps.size();
         if (sizeOfCaps > 0) {
-            Map<String, List<CapabilityEntityData<?>>> dirtyValues = new Object2ObjectOpenHashMap<>(sizeOfCaps);
+            Map<String, List<CapabilityEntityData<?>>> dirtyValues = new Reference2ReferenceArrayMap<>(sizeOfCaps);
             caps.forEach(capability -> {
                 if (capability.getEntity() != null && !capability.getEntity().isRemoved()) {
                     SynchedCapabilityData sca = capability.getDataManager();
