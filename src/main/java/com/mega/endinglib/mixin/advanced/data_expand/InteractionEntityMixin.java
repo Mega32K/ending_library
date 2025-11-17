@@ -22,6 +22,8 @@ public abstract class InteractionEntityMixin extends Entity {
     @Unique
     private String interactionCommand;
     @Unique
+    private String attackCommand;
+    @Unique
     private String tickingCommand;
 
     InteractionEntityMixin(EntityType<?> p_19870_, Level p_19871_) {
@@ -33,6 +35,9 @@ public abstract class InteractionEntityMixin extends Entity {
         if (this.interactionCommand != null && !this.interactionCommand.isEmpty()) {
             tag.putString("InteractionCommand", this.interactionCommand);
         }
+        if (this.attackCommand != null && !this.attackCommand.isEmpty()) {
+            tag.putString("AttackCommand", this.attackCommand);
+        }
         if (this.tickingCommand != null && !this.tickingCommand.isEmpty()) {
             tag.putString("TickingCommand", this.tickingCommand);
         }
@@ -41,6 +46,8 @@ public abstract class InteractionEntityMixin extends Entity {
     private void readExtraAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
         if (CompoundTagUtils.containsString(tag, "InteractionCommand"))
             this.interactionCommand = tag.getString("InteractionCommand");
+        if (CompoundTagUtils.containsString(tag, "AttackCommand"))
+            this.attackCommand = tag.getString("AttackCommand");
         if (CompoundTagUtils.containsString(tag, "TickingCommand"))
             this.tickingCommand = tag.getString("TickingCommand");
     }
@@ -50,6 +57,12 @@ public abstract class InteractionEntityMixin extends Entity {
             if (this.interactionCommand != null && !this.interactionCommand.isEmpty())
                 sl.getServer().getCommands().performPrefixedCommand(this.createCommandSourceStack().withMaximumPermission(2), this.interactionCommand);
         }
+    }
+    @Inject(method = "skipAttackInteraction", at = @At(value = "RETURN", ordinal = 0, shift = At.Shift.BEFORE))
+    private void attackCommand(Entity entity, CallbackInfoReturnable<Boolean> cir) {if (this.level() instanceof ServerLevel sl) {
+        if (this.attackCommand != null && !this.attackCommand.isEmpty())
+            sl.getServer().getCommands().performPrefixedCommand(this.createCommandSourceStack().withMaximumPermission(2), this.attackCommand);
+    }
     }
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickCommand(CallbackInfo ci) {
