@@ -477,6 +477,16 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 m.instructions.remove(min);
                                 shouldWrite.set(true);
                             }
+                        } else if (MCMapping.Entity$METHOD$makeBoundingBox.equalsMethodNode(min)) {
+                            if (min.getOpcode() == Opcodes.INVOKEVIRTUAL || min.getOpcode() == Opcodes.INVOKESPECIAL) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new InsnNode(Opcodes.DUP));
+                                insnNodes.add(new MethodInsnNode(min.getOpcode(), min.owner, min.name, min.desc, min.itf));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "wrapMakeBoundingBox", "(Ljava/lang/Object;Lnet/minecraft/world/phys/AABB;)Lnet/minecraft/world/phys/AABB;"));
+                                m.instructions.insertBefore(min, insnNodes);
+                                m.instructions.remove(min);
+                                shouldWrite.set(true);
+                            }
                         }
                     }
                 });

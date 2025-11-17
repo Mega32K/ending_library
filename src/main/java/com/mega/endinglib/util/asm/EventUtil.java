@@ -2,15 +2,16 @@ package com.mega.endinglib.util.asm;
 
 import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
-import com.mega.endinglib.api.item.component.MergedComponentMap;
 import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.function.SwingEventComponent;
-import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.mixin.data_expand.ExtraEntityDimensions;
+import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.time.TimeContext;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.Interaction;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
@@ -207,5 +208,13 @@ public class EventUtil {
             return ItemComponentManager.has(itemStack, DataComponents.GRINDSTONE_REPAIRABLE);
         }
         return false;
+    }
+    public static AABB wrapMakeBoundingBox(Object caller, AABB original) {
+        if (caller instanceof Entity entity) {
+            ExtraEntity ee = ExtraEntity.of(entity);
+            if (ee.endingLibrary$getCapHitbox() != null)
+                return ee.endingLibrary$getCapHitbox().move(entity.position());
+        }
+        return original;
     }
 }

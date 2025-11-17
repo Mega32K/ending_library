@@ -115,12 +115,7 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
                 cir.setReturnValue(this.endingLibrary$capCullingBox.move(this.position));
             }
         }
-    }
-    @Inject(method = "makeBoundingBox", at = @At("HEAD"), cancellable = true)
-    private void makeCapCustomHitbox(CallbackInfoReturnable<AABB> cir) {
-        if (this.endingLibrary$capHitbox != null)
-            cir.setReturnValue(endingLibrary$capHitbox.move(this.position));
-    }
+    } 
     @WrapWithCondition(method = "setXRot", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;xRot:F", opcode = Opcodes.PUTFIELD))
     private boolean lockedXRot(Entity entity, float xRot) {
         return !this.endingLibrary$injectedExtraEntityData.lockedXRot;

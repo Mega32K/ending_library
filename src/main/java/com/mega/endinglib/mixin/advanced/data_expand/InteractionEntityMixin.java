@@ -97,10 +97,4 @@ public abstract class InteractionEntityMixin extends Entity {
         }, EntityAnchorArgument.Anchor.FEET, CommandSigningContext.ANONYMOUS, TaskChainer.immediate(p_81309_), (p_280930_) -> {
         });
     }
-    @Inject(method = "makeBoundingBox", at = @At("HEAD"), cancellable = true)
-    private void capabilityBoundingBox(CallbackInfoReturnable<AABB> cir) {
-        ExtraEntity extraEntity = ExtraEntity.of(this);
-        if (extraEntity.endingLibrary$getCapCullingBox() != null)
-            cir.setReturnValue(extraEntity.endingLibrary$getCapCullingBox().move(this.position()));
-    }
 }
