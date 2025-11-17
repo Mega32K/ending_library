@@ -2,6 +2,7 @@ package com.mega.endinglib.common.init;
 
 import com.mega.endinglib.EndingLibrary;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -17,21 +18,29 @@ public class ModAttributes {
     public static final RegistryObject<Attribute> EXTRA_EXHAUSTION_INCREASE = ATTRIBUTES.register("extra_exhaustion_increase", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".extra_exhaustion_increase", 0.0D, 0.0D, 20.0D).setSyncable(true));
     public static final RegistryObject<Attribute> MULTI_JUMP = ATTRIBUTES.register("multi_jump", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".multi_jump", 1.0D, 1.0D, 1024.0D).setSyncable(true));
     public static final RegistryObject<Attribute> NATURAL_REGENERATION_INCREASE = ATTRIBUTES.register("natural_regeneration_increase", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".natural_regeneration_increase", 1.0D, 0.0D, 1024.0D));
+    public static final RegistryObject<Attribute> CAMERA_DISTANCE = ATTRIBUTES.register("camera_distance", () -> new RangedAttribute("attribute.name." + EndingLibrary.MODID + ".camera_distance", 4.0D, 0.0D, 1024.0D).setSyncable(true));
     public static void addAttributes(EntityAttributeModificationEvent e) {
         e.add(EntityType.PLAYER, EXTRA_EXHAUSTION_INCREASE.get());
         e.add(EntityType.PLAYER, MULTI_JUMP.get());
         e.add(EntityType.PLAYER, NATURAL_REGENERATION_INCREASE.get());
+        for (EntityType<? extends LivingEntity> entityType : e.getTypes()) {
+            e.add(entityType, CAMERA_DISTANCE.get());
+        }
+        e.add(EntityType.ENDER_DRAGON, CAMERA_DISTANCE.get(), 16.0F);
+        e.add(EntityType.GIANT, CAMERA_DISTANCE.get(), 16.0F);
+        e.add(EntityType.GHAST, CAMERA_DISTANCE.get(), 8.0F);
     }
 
     public static int getMultiJump(LivingEntity entity) {
         return entity instanceof Player player ? Mth.floor(player.getAttributeValue(MULTI_JUMP.get())) : 1;
     }
-
     public static float getExhaustion(LivingEntity entity) {
         return entity instanceof Player player ? (float) player.getAttributeValue(EXTRA_EXHAUSTION_INCREASE.get()) : 0;
     }
-
     public static float getNaturalRegenerationIncrease(LivingEntity entity) {
         return entity instanceof Player player ? (float) player.getAttributeValue(NATURAL_REGENERATION_INCREASE.get()) : 0;
+    }
+    public static double getCameraDistance(LivingEntity entity) {
+        return entity.getAttributeValue(CAMERA_DISTANCE.get());
     }
 }

@@ -7,10 +7,13 @@ import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.ICameraManager;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
+import com.mega.endinglib.common.init.ModAttributes;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -39,6 +42,8 @@ public abstract class CameraMixin {
     protected abstract void move(double p_90569_, double p_90570_, double p_90571_);
 
     @Shadow protected abstract double getMaxZoom(double p_90567_);
+
+    @Shadow private Entity entity;
 
     @Inject(method = "setup", at = @At("HEAD"))
     private void argExtra(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci, @Share("partialTicks") LocalFloatRef partialTicks) {
@@ -124,6 +129,8 @@ public abstract class CameraMixin {
     }
     @ModifyExpressionValue(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(D)D"))
     private double replaceMaxZoomRaycast(double original, @Share("partialTicks") LocalFloatRef partialTicks) {
+        if (entity instanceof LivingEntity living)
+            original = this.getMaxZoom(ModAttributes.getCameraDistance(living));
         try {
             if (CameraModifyScreen.isOpening) {
                 if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
@@ -131,7 +138,7 @@ public abstract class CameraMixin {
                 }
             } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
-                return original - manager.getRaycastOffset(partialTicks.get());
+                return original + manager.getRaycastOffset(partialTicks.get());
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
