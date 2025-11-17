@@ -23,6 +23,8 @@
   "attribute.name.ending_library.multi_jump.description" : "让玩家可以多次跳跃。",
   "attribute.name.ending_library.natural_regeneration_increase" : "Natural Regeneration Increase",
   "attribute.name.ending_library.natural_regeneration_increase.description" : "自然食物回血增幅。",
+  "attribute.name.ending_library.camera_distance" : "Camera Distance",
+  "attribute.name.ending_library.camera_distance.description" : "玩家非第一人称摄像机与自身或所旁观的生物间的距离。",
 
   "commands.endinglib.argument.float_array.too_long" : "Array size out of maximum %s : %s",
   "commands.endinglib.argument.entity.notfound.mob" : "No mob was found",

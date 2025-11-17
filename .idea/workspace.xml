@@ -135,7 +135,7 @@
       <recent name="com.mega.endinglib.common.command.argument.scehdule" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
     <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
       <module name="com.mega.CosmicLib.main" />
@@ -217,8 +217,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [build]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="应用程序.MinecraftInstHandler" />
       </list>
     </recent_temporary>
