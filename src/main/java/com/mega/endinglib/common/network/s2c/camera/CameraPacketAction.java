@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.network.s2c.camera;
 
 import com.mega.endinglib.client.ClientWrapped;
+import net.minecraftforge.common.IExtensibleEnum;
 
 public enum CameraPacketAction {
     OPEN_CAMERA_BENCH_SCREEN,

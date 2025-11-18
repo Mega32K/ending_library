@@ -61,6 +61,9 @@
   "commands.endinglib.message.action.mouse_release": "§7显示鼠标",
   "commands.endinglib.message.action.forced_pose_clear": "§7清除强制/锁定的玩家动作",
   "commands.endinglib.message.action.reload_resources_pack": "§7重载资源包",
+  "commands.endinglib.message.action.enable_shader": "§7启用光影",
+  "commands.endinglib.message.action.disable_shader": "§7禁用光影",
+  "commands.endinglib.message.action.toggle_shader": "§7开/关光影",
 
   "commands.endinglib.message.camera.camera_enable": "§7为%s§a启用§7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s§c关闭§7自定义相机模式",
