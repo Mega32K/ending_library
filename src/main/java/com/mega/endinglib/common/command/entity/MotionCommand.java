@@ -10,6 +10,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -41,7 +42,7 @@ public class MotionCommand {
     private static int motion(CommandSourceStack stack, Entity entity, Vec3 vec3, boolean relative) {
         entity.hurtMarked = true;
         if (relative) {
-            vec3 = relative(entity, vec3);
+            vec3 = relative(stack.getRotation().x, stack.getRotation().y, vec3);
             vec3 = new Vec3(-vec3.z, vec3.y, vec3.x);
         }
         Vec3 motion = vec3;
@@ -53,7 +54,7 @@ public class MotionCommand {
     private static int push(CommandSourceStack stack, Entity entity, Vec3 vec3, boolean relative) {
         entity.hurtMarked = true;
         if (relative) {
-            vec3 = relative(entity, vec3);
+            vec3 = relative(stack.getRotation().x, stack.getRotation().y, vec3);
             vec3 = new Vec3(-vec3.z, vec3.y, vec3.x);
         }
         Vec3 motion = vec3;
@@ -62,12 +63,12 @@ public class MotionCommand {
         return (int) (motion.length() * 100);
     }
 
-    private static Vec3 relative(Entity entity, Vec3 origin) {
+    private static Vec3 relative(float xRot, float yRot, Vec3 origin) {
         double x = origin.x;
         double y = origin.y;
         double z = origin.z;
         Quaternionf rotation = new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F);
-        rotation.rotationYXZ(-entity.getYRot() * Mth.DEG_TO_RAD, entity.getXRot() * Mth.DEG_TO_RAD, 0.0F);
+        rotation.rotationYXZ(-xRot * Mth.DEG_TO_RAD, yRot * Mth.DEG_TO_RAD, 0.0F);
         Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
         Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
         Vector3f left = new Vector3f(1.0F, 0.0F, 0.0F);
