@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.capability;
 
+import com.google.common.collect.Queues;
 import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
@@ -7,6 +8,7 @@ import com.mega.endinglib.api.capability.SynchedCapabilityData;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CCapabilitySeenByDataPacket;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceArrayMap;
 import net.minecraft.network.protocol.Packet;
@@ -26,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.function.Consumer;
 
 /**
@@ -42,6 +45,12 @@ public abstract class ServerEntityMixin {
     @Unique
     @Nullable
     private Map<String, List<CapabilityEntityData<?>>> endinglib$trackedCapDataValues;
+
+    /**
+     * 收集的自定义发包集合
+     */
+    @Unique
+    private final Queue<S2CCapabilitySeenByDataPacket> seenByQueue = Queues.newArrayDeque();
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(ServerLevel p_8528_, Entity entity, int p_8530_, boolean p_8531_, Consumer<Packet<?>> p_8532_, CallbackInfo ci) {
         ObjectSet<EntitySyncCapabilityBase> caps = ELCapabilityManager.getCaps(entity);
@@ -60,30 +69,38 @@ public abstract class ServerEntityMixin {
     @Inject(method = "sendPairingData", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V", shift = At.Shift.AFTER, ordinal = 0))
     private void sendPairingData(ServerPlayer p_289562_, Consumer<Packet<ClientGamePacketListener>> p_289563_, CallbackInfo ci) {
         if (this.endinglib$trackedCapDataValues != null)
-            PacketHandler.sendToPlayer(new S2CCapabilitySeenByDataPacket(this.entity.getId(), this.endinglib$trackedCapDataValues), p_289562_);
+            seenByQueue.add(new S2CCapabilitySeenByDataPacket(this.entity.getId(), this.endinglib$trackedCapDataValues));
+    }
+    @Inject(method = "addPairing", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerGamePacketListenerImpl;send(Lnet/minecraft/network/protocol/Packet;)V",shift = At.Shift.AFTER))
+    private void addPairing(ServerPlayer p_8542_, CallbackInfo ci) {
+        S2CCapabilitySeenByDataPacket dataPacket;
+        while ((dataPacket = seenByQueue.poll()) != null)
+            PacketHandler.sendToPlayer(dataPacket, p_8542_);
     }
     @Inject(method = "sendChanges", at = @At("HEAD"))
     private void tickCheckCapData(CallbackInfo ci) {
         ObjectSet<EntitySyncCapabilityBase> caps = ELCapabilityManager.getCaps(entity);
         int sizeOfCaps = caps.size();
         if (sizeOfCaps > 0) {
-            Map<String, List<CapabilityEntityData<?>>> dirtyValues = new Reference2ReferenceArrayMap<>(sizeOfCaps);
-            caps.forEach(capability -> {
+            Map<String, List<CapabilityEntityData<?>>> dirtyValues = null;
+            for (EntitySyncCapabilityBase capability : caps) {
                 if (capability.getEntity() != null && !capability.getEntity().isRemoved()) {
                     SynchedCapabilityData sca = capability.getDataManager();
                     if (sca.isDirty()) {
+                        if (dirtyValues == null)
+                            dirtyValues = new Reference2ReferenceArrayMap<>(sizeOfCaps);
                         List<CapabilityEntityData<?>> l = sca.packData();
                         if (!l.isEmpty()) {
                             String name = capability.getRegistryName().toString();
                             dirtyValues.put(name, l);
                             if (endinglib$trackedCapDataValues == null)
                                 endinglib$trackedCapDataValues = new Object2ObjectOpenHashMap<>(sizeOfCaps);
-                            endinglib$trackedCapDataValues.put(name, l);
+                            endinglib$trackedCapDataValues.put(name, sca.getNonDefaultValues());
                         }
                     }
                 }
-            });
-            if (!dirtyValues.isEmpty())
+            }
+            if (dirtyValues != null && !dirtyValues.isEmpty())
                 PacketHandler.sendToSeen(new S2CCapabilitySeenByDataPacket(this.entity.getId(), dirtyValues), entity, this.level);
         }
     }

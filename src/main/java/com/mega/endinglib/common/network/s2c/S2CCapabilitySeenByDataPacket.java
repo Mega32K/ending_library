@@ -5,9 +5,13 @@ import com.mega.endinglib.api.capability.ELCapabilityManager;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.SynchedCapabilityData;
 import com.mega.endinglib.client.ClientWrapped;
+import it.unimi.dsi.fastutil.Pair;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.network.NetworkEvent;
 
