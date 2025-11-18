@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-@Mixin(Iris.class)
+@Mixin(value = Iris.class, remap = false)
 @ModDependsMixin("oculus")
 public interface AccessorIris {
     @Accessor

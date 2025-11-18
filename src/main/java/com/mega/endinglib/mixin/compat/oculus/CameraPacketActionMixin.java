@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 
-@Mixin(CameraPacketAction.class)
+@Mixin(value = CameraPacketAction.class, remap = false)
 @ModDependsMixin("oculus")
 public class CameraPacketActionMixin {
     @Shadow(remap = false)

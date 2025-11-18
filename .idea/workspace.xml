@@ -264,30 +264,6 @@
     </task>
     <servers />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/network/s2c/S2CCapabilitySeenByDataPacket.java</url>
-          <line>25</line>
-          <properties class="com.mega.endinglib.common.network.s2c.S2CCapabilitySeenByDataPacket" method="&lt;init&gt;">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/network/s2c/S2CCapabilitySeenByDataPacket.java</url>
-          <line>47</line>
-          <properties class="com.mega.endinglib.common.network.s2c.S2CCapabilitySeenByDataPacket" method="handle0">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
