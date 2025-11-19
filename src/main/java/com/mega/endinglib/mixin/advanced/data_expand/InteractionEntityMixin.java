@@ -39,6 +39,8 @@ public abstract class InteractionEntityMixin extends Entity {
     private String attackCommand;
     @Unique
     private String tickingCommand;
+    @Unique
+    private short delay = 1;
 
     InteractionEntityMixin(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -55,6 +57,8 @@ public abstract class InteractionEntityMixin extends Entity {
         if (this.tickingCommand != null && !this.tickingCommand.isEmpty()) {
             tag.putString("TickingCommand", this.tickingCommand);
         }
+        if (delay > 1)
+            tag.putShort("delay", delay);
     }
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
     private void readExtraAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
@@ -64,6 +68,8 @@ public abstract class InteractionEntityMixin extends Entity {
             this.attackCommand = tag.getString("AttackCommand");
         if (CompoundTagUtils.containsString(tag, "TickingCommand"))
             this.tickingCommand = tag.getString("TickingCommand");
+        if (CompoundTagUtils.containsShort(tag, "delay"))
+            this.delay = tag.getShort("delay");
     }
     @Inject(method = "interact", at = @At(value = "RETURN", ordinal = 1, shift = At.Shift.BEFORE))
     private void onInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
@@ -83,8 +89,11 @@ public abstract class InteractionEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"))
     private void tickCommand(CallbackInfo ci) {
         if (this.level() instanceof ServerLevel sl) {
-            if (this.tickingCommand != null && !this.tickingCommand.isEmpty())
-                sl.getServer().getCommands().performPrefixedCommand(endingLibrary$customCSS(sl), this.tickingCommand);
+            if (this.delay <= 1 || this.tickCount % this.delay == 0) {
+                if (this.tickingCommand != null && !this.tickingCommand.isEmpty()) {
+                    sl.getServer().getCommands().performPrefixedCommand(endingLibrary$customCSS(sl), this.tickingCommand);
+                }
+            }
         }
     }
     @Unique
