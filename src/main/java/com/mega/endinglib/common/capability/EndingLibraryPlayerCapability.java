@@ -24,6 +24,8 @@ import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
 import com.mega.endinglib.util.SafeClass;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

@@ -154,6 +154,7 @@
     "camera.OptionsMixin",
     "capability.EntityRenderDispatcherMixin",
     "compat.bettercombat.MinecraftClientInject",
+    "compat.ibeeditor.LevelRendererMixin",
     "personal_rule.AbstractClientPlayerMixin",
     "personal_rule.EntityRendererDispatcherMixin",
     "personal_rule.GameRendererMixin",
