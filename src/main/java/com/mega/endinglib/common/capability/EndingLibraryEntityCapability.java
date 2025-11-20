@@ -22,6 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -37,6 +38,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<String> CUSTOM_MODEL_TEXTURE = this.defineByDataType(6, DataCommand.CUSTOM_MODEL_TEXTURE, CapabilityDataSerializers.STRING);
     public final CapabilityEntityData<Boolean> LOCKED_X_ROT = this.defineByDataType(7, DataCommand.LOCKED_X_ROT, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> LOCKED_Y_ROT = this.defineByDataType(8, DataCommand.LOCKED_Y_ROT, CapabilityDataSerializers.BOOLEAN);
+    //public final CapabilityEntityData<Optional<Vector4f>> CUSTOM_SHADER_COLOR = this.defineByDataType(9, DataCommand.CUSTOM_SHADER_COLOR, CapabilityDataSerializers.OPTIONAL_VEC4F);
     private <T> CapabilityEntityData<T> defineByDataType(int id, DataCommand.DataType<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
@@ -131,6 +133,12 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
                 extraEntityData.lockedYRot = this.isYRotLocked();
             }
         }
+        /*else if (data.equals(CUSTOM_SHADER_COLOR)) {
+            if (entity != null)
+                ExtraEntity.of(entity).endinglib$getExtraEntityData().customShaderColor = this.getShaderColor().orElse(null);
+        }
+
+         */
     }
 
     @Override
@@ -262,8 +270,12 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public void setCustomModelTexture(String skin) {
         this.dataManager.setValue(CUSTOM_MODEL_TEXTURE, skin);
     }
-    @Override
-    protected void tick(Entity entity) {
-        super.tick(entity);
+    /*
+    public void setShaderColor(Optional<Vector4f> vector4f) {
+        this.dataManager.setValue(CUSTOM_SHADER_COLOR, vector4f);
     }
+    public Optional<Vector4f> getShaderColor() {
+        return this.dataManager.getValue(CUSTOM_SHADER_COLOR);
+    }
+     */
 }

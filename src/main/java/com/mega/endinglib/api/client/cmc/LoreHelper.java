@@ -13,6 +13,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Locale;
 import java.util.Map;
@@ -33,6 +34,7 @@ public class LoreHelper {
     public static final Function<Optional<AABB>, Component> OPT_AABB_COMPONENT_OPERATION = optAABB -> optionalOf(optAABB, LoreHelper::aabb);
     public static final Function<Optional<Vector3f>, Component> OPT_VEC3F_OPERATION = optVec3f -> optionalOf(optVec3f, LoreHelper::vec3f);
     public static final Function<Optional<String>, Component> OPT_STRING_OPERATION = optStr -> optionalOf(optStr, str -> LoreHelper.withCopy(Component.literal(str), str));
+    public static final Function<Optional<Vector4f>, Component> OPT_VEC4F_OPERATION = optVec3f -> optionalOf(optVec3f, LoreHelper::vec4f);
     public static final Map<ChatFormatting, String> codeMap = new Object2ObjectOpenHashMap<>();
 
     static {
@@ -165,6 +167,38 @@ public class LoreHelper {
                                 .withStyle(ChatFormatting.GOLD)
                                 .withStyle(style -> style
                                         .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(blockPos.getZ())))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
+    }
+    public static Component vec4f(Vector4f vec4) {
+        return Component.literal("[").withStyle(ChatFormatting.GREEN)
+                .append(
+                        Component.literal(String.format("%.3f", vec4.x))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec4.x)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.format("%.3f", vec4.y))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec4.y)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
+                )
+                .append(
+                        Component.literal(String.format("%.3f", vec4.z))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec4.z)))
+                                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                ).append(
+                        Component.literal(String.format("%.3f", vec4.w))
+                                .withStyle(ChatFormatting.GOLD)
+                                .withStyle(style -> style
+                                        .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec4.w)))
                                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
                 ).append(Component.literal("]").withStyle(ChatFormatting.GREEN));
     }

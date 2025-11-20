@@ -13,6 +13,12 @@
   "commands.function.error.missing_arguments": "函数%s缺少传入参数",
   "commands.function.error.parse": "实例化宏%s时：命令“%s”发生错误：%s",
   "commands.function.instantiationFailure": "无法实例化函数%s：%s",
+  "commands.random.error.range_too_large": "随机值的范围最大为2147483646",
+  "commands.random.error.range_too_small": "随机值的范围最小为2",
+  "commands.random.reset.all.success": "已重置%s个随机序列",
+  "commands.random.reset.success": "已重置随机序列%s",
+  "commands.random.roll": "%s掷出了%s（从%s到%s）",
+  "commands.random.sample.success": "随机值：%s",
 
   "gamerule.playerDamageInvulnerable" : "(终焉图书馆) 启用玩家无敌帧",
   "gamerule.mobDamageInvulnerable" : "(终焉图书馆) 启用生物无敌帧",
@@ -217,6 +223,7 @@
   "commands.endinglib.message.data.model_texture": "自定义模型纹理",
   "commands.endinglib.message.data.lockedXRot": "锁定实体x轴角度",
   "commands.endinglib.message.data.lockedYRot": "锁定实体y轴角度",
+  "commands.endinglib.message.data.custom_shader_color": "自定义着色",
 
   "tooltip.endinglib.specialEffect": "§7特殊效果:",
   "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",

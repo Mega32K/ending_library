@@ -193,6 +193,23 @@ public class CompoundTagUtils {
         }
         return new Vector3f(0F);
     }
+    public static void putVector4f(CompoundTag nbt, String key, Vector4f v4) {
+        ListTag floats = new ListTag();
+        floats.add(FloatTag.valueOf(v4.x));
+        floats.add(FloatTag.valueOf(v4.y));
+        floats.add(FloatTag.valueOf(v4.z));
+        floats.add(FloatTag.valueOf(v4.w));
+        nbt.put(key, floats);
+    }
+    public static Vector4f getVector4f(CompoundTag nbt, String key) {
+        if (CompoundTagUtils.containsListTag(nbt, key)) {
+            ListTag floats = nbt.getList(key, Tag.TAG_FLOAT);
+            if (floats.size() == 4) {
+                return new Vector4f(floats.getFloat(0), floats.getFloat(1), floats.getFloat(2), floats.getFloat(3));
+            }
+        }
+        return new Vector4f(0F);
+    }
     public static EntityDimensions getEntityDimensions(CompoundTag nbt, String key) {
         CompoundTag tag = nbt.getCompound(key);
         if (tag.isEmpty()) return EntityDimensions.scalable(0F, 0F);

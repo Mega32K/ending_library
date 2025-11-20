@@ -5,6 +5,8 @@ import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4f;
 
 public class ExtraEntityData {
     private final Entity entity;
@@ -16,6 +18,8 @@ public class ExtraEntityData {
     public boolean lockedYRot;
     public boolean lockedXRot;
     public ResourceLocation customModelTexture = null;
+    //@Nullable
+    //public Vector4f customShaderColor = null;
     public ExtraEntityData(Entity entity) {
         this.entity = entity;
     }

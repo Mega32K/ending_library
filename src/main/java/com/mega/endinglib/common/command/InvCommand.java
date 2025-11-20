@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class InvCommand {
-
     @SubscribeEvent
     public static void load(RegisterCommandsEvent event) {
         event.getDispatcher().register(
@@ -27,7 +26,6 @@ public class InvCommand {
 
         );
     }
-
     private static int openPlayerInv(CommandSourceStack stack, ServerPlayer targetPlayer) {
         if (stack.getPlayer() != null) {
             ServerPlayer player = stack.getPlayer();

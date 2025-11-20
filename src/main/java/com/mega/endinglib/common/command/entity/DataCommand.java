@@ -35,6 +35,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Optional;
 import java.util.Set;
@@ -203,6 +204,22 @@ public class DataCommand {
             BOOL_COMMAND_RESULT,
             false
     );
+    /*
+    public static final DataType<Optional<Vector4f>> CUSTOM_SHADER_COLOR = build("custom_shader_color", (command, personalRule) ->
+                    command.then(Commands.argument("value", FloatArrayArgument.floats(4))
+                                    .executes(context -> {
+                                        float[] value = FloatArrayArgument.getFloats(context, "value");
+                                        return set(context.getSource(), getTarget(context), personalRule, Optional.of(new Vector4f(value[0], value[1], value[2], value[3])));
+                                    })
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryEntityCapability::setShaderColor,
+            EndingLibraryEntityCapability::getShaderColor,
+            createOptionalUnitResult(),
+            Optional.empty(),
+            LoreHelper.OPT_VEC4F_OPERATION
+    );
+     */
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("data")
                 .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_DATA.get()))

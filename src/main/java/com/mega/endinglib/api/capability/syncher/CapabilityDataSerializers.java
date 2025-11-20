@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +37,13 @@ public class CapabilityDataSerializers {
         byteBuf.writeFloat(entityDimensions.height);
         byteBuf.writeBoolean(entityDimensions.fixed);
     };
-    public static final FriendlyByteBuf.Reader<EntityDimensions> F_ENTITY_DIMENSIONS_READER = byteBuf -> new EntityDimensions(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readBoolean());
+    public static final FriendlyByteBuf.Reader<Vector4f> F_VEC4F_READER = byteBuf -> new Vector4f(byteBuf.readFloat(), byteBuf.readFloat() ,byteBuf.readFloat(), byteBuf.readFloat());
+    public static final FriendlyByteBuf.Writer<Vector4f> F_VEC4F_WRITER = (byteBuf, vector4f) -> {
+        byteBuf.writeFloat(vector4f.x);
+        byteBuf.writeFloat(vector4f.y);
+        byteBuf.writeFloat(vector4f.z);
+        byteBuf.writeFloat(vector4f.w);
+    };public static final FriendlyByteBuf.Reader<EntityDimensions> F_ENTITY_DIMENSIONS_READER = byteBuf -> new EntityDimensions(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readBoolean());
     public static final CapabilityDataSerializer<Byte> BYTE = CapabilityDataSerializer.simple((p_238118_, p_238119_) -> p_238118_.writeByte(p_238119_), FriendlyByteBuf::readByte, CompoundTag::putByte, CompoundTag::getByte);
     public static final CapabilityDataSerializer<Integer> INT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt, CompoundTag::putInt, CompoundTag::getInt);
     public static final CapabilityDataSerializer<Long> LONG = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarLong, FriendlyByteBuf::readVarLong, CompoundTag::putLong, CompoundTag::getLong);
@@ -112,6 +119,8 @@ public class CapabilityDataSerializers {
     public static final CapabilityDataSerializer<Optional<AABB>> OPTIONAL_AABB = CapabilityDataSerializer.optional(F_AABB_WRITER, F_AABB_READER, CompoundTagUtils::putAABB, CompoundTagUtils::getAABB);
     public static final CapabilityDataSerializer<Vector3f> VEC3F = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVector3f, FriendlyByteBuf::readVector3f, CompoundTagUtils::putVector3f, CompoundTagUtils::getVector3f);
     public static final CapabilityDataSerializer<Optional<Vector3f>> OPTIONAL_VEC3F = CapabilityDataSerializer.optional(FriendlyByteBuf::writeVector3f, FriendlyByteBuf::readVector3f, CompoundTagUtils::putVector3f, CompoundTagUtils::getVector3f);
+    public static final CapabilityDataSerializer<Vector4f> VEC4F = CapabilityDataSerializer.simple(F_VEC4F_WRITER, F_VEC4F_READER, CompoundTagUtils::putVector4f, CompoundTagUtils::getVector4f);
+    public static final CapabilityDataSerializer<Optional<Vector4f>> OPTIONAL_VEC4F = CapabilityDataSerializer.optional(F_VEC4F_WRITER, F_VEC4F_READER, CompoundTagUtils::putVector4f, CompoundTagUtils::getVector4f);
     private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
 
     static {
@@ -138,6 +147,8 @@ public class CapabilityDataSerializers {
         registerSerializer(OPTIONAL_ENTITY_DIMENSIONS);
         registerSerializer(VEC3F);
         registerSerializer(OPTIONAL_VEC3F);
+        registerSerializer(VEC4F);
+        registerSerializer(OPTIONAL_VEC4F);
     }
 
     public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {
