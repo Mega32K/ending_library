@@ -47,7 +47,6 @@ public class PostProcessingShaders {
                 CustomScreenEffect element = entry.getKey();
                 //System.out.printf("%s, %s%n", element, SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer);
                 if (SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer) {
-                    System.out.println(element.getTransformLayer());
                     PostChain postChain = entry.getValue();
                     if (postChain != null) {
                         element.onRenderTick(partialTicks);
@@ -131,7 +130,6 @@ public class PostProcessingShaders {
             if (!allStaticData.isEmpty()) {
                 for (DynamicEffectData dynamicEffectData : allStaticData) {
                     DynamicScreenEffect effect = dynamicEffectData.asEffect().withBuilt(true);
-                    System.out.println(dynamicEffectData);
                     try {
                         Window window = minecraft.getWindow();
                         PostChain postChain = new PostChain(this.minecraft.getTextureManager(), minecraft.getResourceManager(), this.minecraft.getMainRenderTarget(), effect.getShaderLocation());
