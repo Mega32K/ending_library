@@ -14,6 +14,10 @@ public abstract class GameRendererMixin {
     public void renderLevelTail(float partialTicks, long l, PoseStack stack, CallbackInfo ci) {
         PostProcessingShaders.INSTANCE.levelEffect(partialTicks);
     }
+    @Inject(method = "render", at = @At("TAIL"))
+    public void renderTail(float partialTicks, long p_109095_, boolean p_109096_, CallbackInfo ci) {
+        PostProcessingShaders.INSTANCE.gameEffect(partialTicks);
+    }
 
     @Inject(method = {"resize"}, at = {@At("HEAD")})
     public void resize(int p_109098_, int p_109099_, CallbackInfo callbackInfo) {

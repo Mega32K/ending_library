@@ -4,7 +4,6 @@ import com.google.gson.JsonSyntaxException;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.ChatFormatting;
@@ -12,12 +11,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -37,28 +34,22 @@ public class PostProcessingShaders {
     }
 
     public void levelEffect(float partialTicks) {
+        effect(partialTicks, DynamicEffectData.TransformLayer.LEVEL_RENDERER);
+    }
+    public void gameEffect(float partialTicks) {
+        effect(partialTicks, DynamicEffectData.TransformLayer.GAME_RENDERER);
+    }
+    private void effect(float partialTicks, DynamicEffectData.TransformLayer layer) {
         if (isReloading) return;
         if (minecraft.level != null && minecraft.player != null) {
             this.minecraft.getProfiler().push("ending_library:post_effects");
             for (CustomScreenEffect element : PostEffectHandler.getData().values()) {
-                if (SHOULD_PROCESS.test(element) && !(element instanceof DynamicScreenEffect)) {
+                if (SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer) {
                     PostChain postChain = postChains.get(element);
                     if (postChain != null) {
                         element.onRenderTick(partialTicks);
                         postChain.process(partialTicks);
                         this.minecraft.getMainRenderTarget().bindWrite(false);
-                    }
-                }
-            }
-            if (!commandScreenEffects.isEmpty()) {
-                for (CustomScreenEffect element : commandScreenEffects.values()) {
-                    if (SHOULD_PROCESS.test(element)) {
-                        PostChain postChain = postChains.get(element);
-                        if (postChain != null) {
-                            element.onRenderTick(partialTicks);
-                            postChain.process(partialTicks);
-                            this.minecraft.getMainRenderTarget().bindWrite(false);
-                        }
                     }
                 }
             }
