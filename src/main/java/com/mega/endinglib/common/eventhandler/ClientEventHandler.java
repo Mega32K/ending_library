@@ -2,6 +2,7 @@ package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.LambdaClientTaskInstance;
+import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
 import com.mega.endinglib.client.ClientWrapped;
@@ -10,6 +11,7 @@ import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.data.InputOperations;
+import com.mega.endinglib.mixin.shader.GameRendererMixin;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.time.TimeContext;
@@ -21,6 +23,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -28,6 +31,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -80,6 +84,10 @@ public class ClientEventHandler {
                     event.setCanceled(true);
             }
         });
+    }
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void renderAfterGui(RenderGuiEvent.Post event) {
+        PostProcessingShaders.INSTANCE.gameEffect(event.getPartialTick());
     }
     @SubscribeEvent
     public static void renderLevelStageEvent(RenderLevelStageEvent event) {

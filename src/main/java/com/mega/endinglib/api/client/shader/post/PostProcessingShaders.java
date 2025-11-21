@@ -3,6 +3,7 @@ package com.mega.endinglib.api.client.shader.post;
 import com.google.gson.JsonSyntaxException;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
@@ -43,9 +44,12 @@ public class PostProcessingShaders {
         if (isReloading) return;
         if (minecraft.level != null && minecraft.player != null) {
             this.minecraft.getProfiler().push("ending_library:post_effects");
-            for (CustomScreenEffect element : PostEffectHandler.getData().values()) {
+            for (var entry : postChains.entrySet()) {
+                CustomScreenEffect element = entry.getKey();
+                //System.out.printf("%s, %s%n", element, SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer);
                 if (SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer) {
-                    PostChain postChain = postChains.get(element);
+                    System.out.println(element.getTransformLayer());
+                    PostChain postChain = entry.getValue();
                     if (postChain != null) {
                         element.onRenderTick(partialTicks);
                         postChain.process(partialTicks);
@@ -128,6 +132,7 @@ public class PostProcessingShaders {
             if (!allStaticData.isEmpty()) {
                 for (DynamicEffectData dynamicEffectData : allStaticData) {
                     DynamicScreenEffect effect = dynamicEffectData.asEffect().withBuilt(true);
+                    System.out.println(dynamicEffectData);
                     try {
                         Window window = minecraft.getWindow();
                         PostChain postChain = new PostChain(this.minecraft.getTextureManager(), minecraft.getResourceManager(), this.minecraft.getMainRenderTarget(), effect.getShaderLocation());
@@ -167,6 +172,8 @@ public class PostProcessingShaders {
         try {
             synchronized (this.commandScreenEffects) {
                 this.commandScreenEffects.remove(createData(effect));
+                PostChain chain = postChains.remove(effect);
+                if (chain != null) chain.close();
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -178,10 +185,21 @@ public class PostProcessingShaders {
         isReloading = true;
         try {
             synchronized (postChains) {
-                this.commandScreenEffects.forEach((s, customScreenEffect) -> postChains.remove(customScreenEffect));
+                this.commandScreenEffects.forEach((s, customScreenEffect) -> {
+                    if (!(customScreenEffect instanceof DynamicScreenEffect e && e.isFromBuiltJson()))  {
+                        PostChain chain = postChains.remove(customScreenEffect);
+                        if (chain != null) chain.close();
+                    }
+                });
             }
             synchronized (this.commandScreenEffects) {
-                this.commandScreenEffects.clear();
+                ReferenceSet<DynamicEffectData> toRemoved = new ReferenceOpenHashSet<>();
+                for (var entry : commandScreenEffects.object2ObjectEntrySet()) {
+                    if (!(entry.getValue() instanceof DynamicScreenEffect e && e.isFromBuiltJson()))
+                        toRemoved.add(entry.getKey());
+                }
+                for (DynamicEffectData effectData : toRemoved)
+                    commandScreenEffects.remove(effectData);
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();

@@ -34,6 +34,17 @@ public record DynamicEffectData(String name, ResourceLocation location, Transfor
     public DynamicScreenEffect asEffect() {
         return new DynamicScreenEffect(this.name, this.location, this.layer, this.canUse);
     }
+
+    @Override
+    public String toString() {
+        return "DynamicEffectData{" +
+                "name='" + name + '\'' +
+                ", location=" + location +
+                ", layer=" + layer +
+                ", canUse=" + canUse +
+                '}';
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -50,6 +61,7 @@ public record DynamicEffectData(String name, ResourceLocation location, Transfor
     }
 
     public enum TransformLayer {
-        LEVEL_RENDERER, GAME_RENDERER
+        LEVEL_RENDERER,
+        GAME_RENDERER
     }
 }

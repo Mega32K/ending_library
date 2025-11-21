@@ -45,6 +45,8 @@ public class ClientProxy implements ModProxy {
                     if (!mc.isPaused()) TimeContext.Client.timeStopGLFW++;
                 }
             }, 0L, 1L, TimeUnit.MILLISECONDS);
+            ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
+            manager.registerReloadListener(DynamicEffectDataResourceReloadListener.INSTANCE);
         }
         IEventBus modBus = EndingLibrary.getModEventBus();
         modBus.addListener(this::clientSetup);
@@ -54,9 +56,6 @@ public class ClientProxy implements ModProxy {
         event.enqueueWork(() -> {
             MenuScreens.register(ModMenus.OTHER_PLAYER_INV_MENU.get(), OtherPlayerInventoryScreen::new);
             PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(PLAYER_ANIMATION, 4936, p -> new ModifierLayer<>());
-
-            ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-            manager.registerReloadListener(DynamicEffectDataResourceReloadListener.INSTANCE);
             PostEffectHandler.registerEffect(ModernGaussianBlurPostEffect::new);
         });
     }

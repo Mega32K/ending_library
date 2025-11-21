@@ -28,7 +28,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 public class ShaderCommand {
-
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("shader")
                 .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_SHADER.get()))
