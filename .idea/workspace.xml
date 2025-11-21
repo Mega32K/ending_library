@@ -135,7 +135,7 @@
       <recent name="com.mega.endinglib.common.command.argument.scehdule" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
     <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
       <module name="com.mega.CosmicLib.main" />
@@ -239,8 +239,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [build]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [assemble]" />
         <item itemvalue="应用程序.MinecraftInstHandler" />
       </list>
@@ -263,58 +263,6 @@
       <updated>1734902156451</updated>
     </task>
     <servers />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/client/reloadable/DynamicEffectDataResourceReloadListener.java</url>
-          <line>27</line>
-          <properties class="com.mega.endinglib.client.reloadable.DynamicEffectDataResourceReloadListener" method="onResourceManagerReload">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/client/shader/post/PostProcessingShaders.java</url>
-          <line>99</line>
-          <properties class="com.mega.endinglib.api.client.shader.post.PostProcessingShaders" method="initShader">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/client/advanced/StaticItemModelsAppender.java</url>
-          <line>30</line>
-          <properties class="com.mega.endinglib.client.advanced.StaticItemModelsAppender" method="additionalItemModels">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>jar://$PROJECT_DIR$/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.12_mapped_official_1.20.1/forge-1.20.1-47.3.12_mapped_official_1.20.1-sources.jar!/net/minecraft/client/resources/model/ModelManager.java</url>
-          <line>76</line>
-          <properties class="net.minecraft.client.resources.model.ModelManager" method="reload">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/client/reloadable/DynamicEffectDataResourceReloadListener.java</url>
-          <line>34</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/client/reloadable/DynamicEffectDataResourceReloadListener.java</url>
-          <line>56</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

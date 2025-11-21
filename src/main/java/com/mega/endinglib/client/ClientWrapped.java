@@ -285,9 +285,10 @@ public class ClientWrapped {
     }
 
     public static void handleSEUniforms(String name, String passName, short ordinalOfPass, String uniformName, float... values) {
+        DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
         Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-        if (screenEffects.containsKey(name)) {
-            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+        if (screenEffects.containsKey(toCompare)) {
+            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                 try {
                     if (values.length == 1) {
                         PostEffectHandler.updateUniform_post(screenEffect, passName, ordinalOfPass, uniformName, values[0]);

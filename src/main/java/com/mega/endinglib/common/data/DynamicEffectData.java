@@ -7,8 +7,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Objects;
-
 public record DynamicEffectData(String name, ResourceLocation location, TransformLayer layer, boolean canUse) {
     public static final Codec<DynamicEffectData> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
@@ -62,6 +60,6 @@ public record DynamicEffectData(String name, ResourceLocation location, Transfor
 
     public enum TransformLayer {
         LEVEL_RENDERER,
-        GAME_RENDERER
+        AFTER_OVERLAYS
     }
 }

@@ -3,7 +3,6 @@ package com.mega.endinglib.api.client.shader.post;
 import com.google.gson.JsonSyntaxException;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ReferenceSet;
@@ -38,7 +37,7 @@ public class PostProcessingShaders {
         effect(partialTicks, DynamicEffectData.TransformLayer.LEVEL_RENDERER);
     }
     public void gameEffect(float partialTicks) {
-        effect(partialTicks, DynamicEffectData.TransformLayer.GAME_RENDERER);
+        effect(partialTicks, DynamicEffectData.TransformLayer.AFTER_OVERLAYS);
     }
     private void effect(float partialTicks, DynamicEffectData.TransformLayer layer) {
         if (isReloading) return;
