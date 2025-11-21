@@ -2,6 +2,7 @@ package com.mega.endinglib.util.mc.codec;
 
 import com.google.common.primitives.UnsignedBytes;
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.mixin.accessor.AccessorToolAction;
 import com.mega.endinglib.util.mc.codec.impl.MobEffectInstanceParameters;
 import com.mega.endinglib.util.mixin.data_expand.ExtraMobEffectInstanceItf;
@@ -67,6 +68,18 @@ public class Codecs {
                             MobEffectInstanceParameters.CODEC.forGetter(ei -> ((ExtraMobEffectInstanceItf) ei).asParameters())
                     )
                     .apply(instance, MobEffectInstanceParameters::fromParameters)
+    );
+    public static final Codec<DynamicEffectData.TransformLayer> DED_TRANSFORM_LAYER_CODEC = Codec.STRING.flatXmap(
+            string -> {
+                DynamicEffectData.TransformLayer transformLayer;
+                try {
+                    transformLayer = DynamicEffectData.TransformLayer.valueOf(string.toUpperCase(Locale.ROOT));
+                } catch (Throwable throwable) {
+                    return DataResult.error(()-> "\"%s\" is not a TransformLayer".formatted(string));
+                }
+                return DataResult.success(transformLayer);
+            },
+            anim -> DataResult.success(anim.name().toLowerCase(Locale.ROOT))
     );
     public static final Codec<Easing> EASING_CODEC = Codec.STRING.flatXmap(
             string -> {

@@ -21,15 +21,11 @@ public class S2CDynamicEffectReadPacket {
     }
 
     public static S2CDynamicEffectReadPacket decode(FriendlyByteBuf friendlyByteBuf) {
-        return new S2CDynamicEffectReadPacket(friendlyByteBuf.readList(byteBuf -> new DynamicEffectData(byteBuf.readUtf(), byteBuf.readResourceLocation(), byteBuf.readBoolean())));
+        return new S2CDynamicEffectReadPacket(friendlyByteBuf.readList(DynamicEffectData.F_READER));
     }
 
     public static void encode(S2CDynamicEffectReadPacket packet, FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeCollection(packet.data, (byteBuf, dynamicEffectData) -> {
-            byteBuf.writeUtf(dynamicEffectData.name());
-            byteBuf.writeResourceLocation(dynamicEffectData.location());
-            byteBuf.writeBoolean(dynamicEffectData.canUse());
-        });
+        friendlyByteBuf.writeCollection(packet.data, DynamicEffectData.F_WRITER);
     }
 
     public static void handle(S2CDynamicEffectReadPacket packet, Supplier<NetworkEvent.Context> context) {

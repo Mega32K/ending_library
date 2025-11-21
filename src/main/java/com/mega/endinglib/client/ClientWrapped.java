@@ -20,7 +20,6 @@ import com.mega.endinglib.common.command.ShaderCommand;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectChangePacket;
 import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.S2CCompletelySoundPacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
@@ -247,41 +246,46 @@ public class ClientWrapped {
         }
     }
     public static Set<String> keysOfCommandScreenEffects() {
-        return PostProcessingShaders.INSTANCE.getCommandScreenEffects().keySet();
+        return PostProcessingShaders.INSTANCE.getCommandScreenEffects().keySet()
+                .stream()
+                .map(DynamicEffectData::name)
+                .collect(Collectors.toSet());
     }
     public static void handleScreenEffectStatus(String name, boolean using) {
-        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-        if (screenEffects.containsKey(name)) {
-            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect)
+        DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+        Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(toCompare)) {
+            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect)
                 screenEffect.setCanUse(using);
         } else {
             Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
         }
     }
     public static void handleScreenEffectRemove(String name) {
-        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-        if (screenEffects.containsKey(name)) {
-            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+        DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+        Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(toCompare)) {
+            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                 PostProcessingShaders.INSTANCE.removeDynamicScreenEffect(screenEffect);
-                PacketHandler.sendToServer(new C2SDynamicEffectDataPacket(false, name, screenEffect.getShaderLocation()));
+                PacketHandler.sendToServer(new C2SDynamicEffectDataPacket(false, toCompare));
             }
         } else {
             Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
         }
     }
-    public static void handleScreenEffectCreate(String name, ResourceLocation location) {
-        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-        if (!screenEffects.containsKey(name)) {
-            DynamicScreenEffect effect = new DynamicScreenEffect(name, location, false);
-            screenEffects.put(name, effect);
+    public static void handleScreenEffectCreate(DynamicEffectData createData) {
+        Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (!screenEffects.containsKey(createData)) {
+            DynamicScreenEffect effect = new DynamicScreenEffect(createData.name(), createData.location(), createData.layer(), false);
+            screenEffects.put(createData, effect);
             if (PostProcessingShaders.INSTANCE.createDynamicEffectFromCommand(effect)) {
-                PacketHandler.sendToServer(new C2SDynamicEffectDataPacket(true, name, location));
+                PacketHandler.sendToServer(new C2SDynamicEffectDataPacket(true, createData));
             }
         }
     }
 
     public static void handleSEUniforms(String name, String passName, short ordinalOfPass, String uniformName, float... values) {
-        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
         if (screenEffects.containsKey(name)) {
             if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
                 try {
@@ -301,9 +305,10 @@ public class ClientWrapped {
     }
 
     public static void handleSEUniforms(String name, String uniformName, float... values) {
-        Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-        if (screenEffects.containsKey(name)) {
-            if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+        DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+        Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(toCompare)) {
+            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                 try {
                     if (values.length == 1) {
                         PostEffectHandler.updateUniform_post(screenEffect, uniformName, values[0]);
@@ -322,9 +327,10 @@ public class ClientWrapped {
     public static CompletableFuture<Suggestions> suggestCurrentPasses(CommandContext<?> context, SuggestionsBuilder builder) {
         try {
             String name = ShaderCommand.getEffectName(context);
-            Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-            if (screenEffects.containsKey(name)) {
-                if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+            DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+            Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+            if (screenEffects.containsKey(toCompare)) {
+                if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                     CommandsEvent.suggestFromExamples(((AccessorPostChain) screenEffect.current()).getPasses()
                             .stream()
                             .map(p -> "\"" + p.getName() + "\"")
@@ -338,9 +344,10 @@ public class ClientWrapped {
         try {
             String name = ShaderCommand.getEffectName(context);
             String pass = ShaderCommand.getPassName(context);
-            Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-            if (screenEffects.containsKey(name)) {
-                if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+            DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+            Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+            if (screenEffects.containsKey(toCompare)) {
+                if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                     for (PostPass postPass : ((AccessorPostChain) screenEffect.current()).getPasses()) {
                         if (postPass.getName().equals(pass)) {
                             AccessorEffectInstance aei = (AccessorEffectInstance) postPass.getEffect();
@@ -356,9 +363,10 @@ public class ClientWrapped {
     public static CompletableFuture<Suggestions> suggestAllUniforms(CommandContext<?> context, SuggestionsBuilder builder) {
         try {
             String name = ShaderCommand.getEffectName(context);
-            Map<String, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
-            if (screenEffects.containsKey(name)) {
-                if (screenEffects.get(name) instanceof DynamicScreenEffect screenEffect) {
+            DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+            Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+            if (screenEffects.containsKey(toCompare)) {
+                if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                     ReferenceOpenHashSet<String> tempUniforms = new ReferenceOpenHashSet<>();
                     for (PostPass postPass : ((AccessorPostChain) screenEffect.current()).getPasses()) {
                         AccessorEffectInstance aei = (AccessorEffectInstance) postPass.getEffect();

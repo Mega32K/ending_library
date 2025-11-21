@@ -3,6 +3,7 @@ package com.mega.endinglib.common.data;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.api.server.CommandTask;
+import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.*;
@@ -88,8 +89,12 @@ public class EndingLibrarySavedData extends SavedData {
                             if (!dynamicEffects.isEmpty()) {
                                 for (int j = 0;j < dynamicEffects.size();j++) {
                                     try {
-                                        CompoundTag entry_2 = dynamicEffects.getCompound(j);
-                                        effectNames.add(new DynamicEffectData(entry_2.getString("Name"), new ResourceLocation(entry_2.getString("Location")), entry_2.getBoolean("CanUse")));
+                                        DataResult<DynamicEffectData> preliminaryData = DynamicEffectData.CODEC.parse(NbtOps.INSTANCE, dynamicEffects.getCompound(j));
+                                        if (preliminaryData.error().isPresent()) {
+                                            EndingLibrary.LOGGER.warn("A post effect deserialized failed {}, origin data {}", preliminaryData.error().get().message(), dynamicEffects.getCompound(j));
+                                        } else if (preliminaryData.result().isPresent()) {
+                                            effectNames.add(preliminaryData.result().get());
+                                        }
                                     } catch (Throwable ignore) {}
                                 }
                             }
@@ -137,12 +142,12 @@ public class EndingLibrarySavedData extends SavedData {
                 entryTag.putUUID("id", entry.getKey());
                 ListTag dynamicEffects = new ListTag();
                 for (DynamicEffectData singleData : entry.getValue()) {
-                    CompoundTag entry_2 = new CompoundTag();
-                    entry_2.putString("Name", singleData.name());
-                    entry_2.putString("Location", singleData.location().toString());
-                    if (singleData.canUse())
-                        entry_2.putBoolean("CanUse", true);
-                    dynamicEffects.add(entry_2);
+                     DataResult<Tag> preliminaryData = DynamicEffectData.CODEC.encodeStart(NbtOps.INSTANCE, singleData);
+                    if (preliminaryData.error().isPresent()) {
+                        EndingLibrary.LOGGER.warn("A post effect serialize failed {}, origin data {}", preliminaryData.error().get().message(), singleData);
+                    } else if (preliminaryData.result().isPresent()) {
+                        dynamicEffects.add(preliminaryData.result().get());
+                    }
                 }
                 entryTag.put("DynamicEffects", dynamicEffects);
                 listTag.add(entryTag);
@@ -160,7 +165,7 @@ public class EndingLibrarySavedData extends SavedData {
         commandTasks.remove(task);
         setDirty();
     }
-    public void createDynamicEffect(Player player, String name, ResourceLocation rLocation) {
+    public void createDynamicEffect(Player player, DynamicEffectData newData) {
         UUID uuid = player.getUUID();
         List<DynamicEffectData> names = null;
         if (this.playerEnabledDynamicShaders.containsKey(uuid))
@@ -168,18 +173,17 @@ public class EndingLibrarySavedData extends SavedData {
         else {
             names = new ObjectArrayList<>();
             this.playerEnabledDynamicShaders.put(uuid, names);
-        }
-        DynamicEffectData newData = new DynamicEffectData(name, rLocation, false);
+        } 
         names.remove(newData);
         names.add(newData);
         this.setDirty();
     }
-    public void removeDynamicEffect(Player player, String name) {
+    public void removeDynamicEffect(Player player, DynamicEffectData data) {
         UUID uuid = player.getUUID();
         List<DynamicEffectData> names = null;
         if (this.playerEnabledDynamicShaders.containsKey(uuid)) {
             names = this.playerEnabledDynamicShaders.get(uuid);
-            names.remove(new DynamicEffectData(name, new ResourceLocation(""),false));
+            names.remove(data);
             this.setDirty();
         }
     }
@@ -192,7 +196,7 @@ public class EndingLibrarySavedData extends SavedData {
             while (dataIterator.hasNext()) {
                 DynamicEffectData data = dataIterator.next();
                 if (data.name().equals(name)) {
-                    newValue = new DynamicEffectData(name, data.location(), true);
+                    newValue = new DynamicEffectData(name, data.location(), data.layer(), true);
                     dataIterator.remove();
                     this.setDirty();
                     break;
@@ -213,7 +217,7 @@ public class EndingLibrarySavedData extends SavedData {
             while (dataIterator.hasNext()) {
                 DynamicEffectData data = dataIterator.next();
                 if (data.name().equals(name)) {
-                    newValue = new DynamicEffectData(name, data.location(), false);
+                    newValue = new DynamicEffectData(name, data.location(), data.layer(), false);
                     dataIterator.remove();
                     this.setDirty();
                     break;

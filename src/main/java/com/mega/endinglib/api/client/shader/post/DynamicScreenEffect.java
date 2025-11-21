@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.client.shader.post;
 
+import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import net.minecraft.resources.ResourceLocation;
 
@@ -9,15 +10,29 @@ public class DynamicScreenEffect implements CustomScreenEffect {
     private boolean canUse;
     private float lastStamp;
     private float time;
+    private boolean isFromBuiltJson = false;
+    public DynamicEffectData.TransformLayer layer = DynamicEffectData.TransformLayer.LEVEL_RENDERER;
     public void setCanUse(boolean canUse) {
         this.canUse = canUse;
     }
 
-    public DynamicScreenEffect(String name, ResourceLocation json, boolean canUse) {
+    public DynamicScreenEffect(String name, ResourceLocation json, DynamicEffectData.TransformLayer layer, boolean canUse) {
         this.name = name;
         this.json = json;
+        this.layer = layer;
         this.canUse = canUse;
-        this.time = this.lastStamp = 0F;
+    }
+
+    /**
+     * 不参与发包，仅存在客户端供管理器判断
+     */
+    public DynamicScreenEffect withBuilt(boolean flag) {
+        this.isFromBuiltJson = flag;
+        return this;
+    }
+
+    public boolean isFromBuiltJson() {
+        return isFromBuiltJson;
     }
 
     public ResourceLocation getJson() {
@@ -46,6 +61,11 @@ public class DynamicScreenEffect implements CustomScreenEffect {
         ((AccessorPostChain) this.current()).getPasses().forEach(postPass -> {
             postPass.getEffect().safeGetUniform("TotalTime").set(time * 0.05F);
         });
+    }
+
+    @Override
+    public DynamicEffectData.TransformLayer getTransformLayer() {
+        return this.layer;
     }
 
     @Override

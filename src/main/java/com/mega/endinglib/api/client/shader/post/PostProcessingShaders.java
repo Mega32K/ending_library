@@ -1,10 +1,12 @@
 package com.mega.endinglib.api.client.shader.post;
 
 import com.google.gson.JsonSyntaxException;
-import com.mega.endinglib.util.mc.client.ClientUtils;
+import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ReferenceArraySet;
+import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
@@ -19,24 +21,22 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
-public class PostProcessingShaders implements ResourceManagerReloadListener {
+public class PostProcessingShaders {
     public static final PostProcessingShaders INSTANCE = new PostProcessingShaders(Minecraft.getInstance());
     public static final Predicate<CustomScreenEffect> SHOULD_PROCESS = (effect -> effect.autoProcess() && effect.canUse());
     public static final Object2ObjectOpenHashMap<CustomScreenEffect, PostChain> postChains = new Object2ObjectOpenHashMap<>();
     public static volatile boolean isReloading = false;
     private final Minecraft minecraft;
     private final Logger LOGGER = LogManager.getLogger();
-    private final Object2ObjectOpenHashMap<String, CustomScreenEffect> commandScreenEffects = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectOpenHashMap<DynamicEffectData, CustomScreenEffect> commandScreenEffects = new Object2ObjectOpenHashMap<>();
     public PostProcessingShaders(Minecraft minecraft) {
         this.minecraft = minecraft;
     }
 
-    public void renderShaders(float partialTicks) {
+    public void levelEffect(float partialTicks) {
         if (isReloading) return;
         if (minecraft.level != null && minecraft.player != null) {
             this.minecraft.getProfiler().push("ending_library:post_effects");
@@ -71,7 +71,7 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
             Window window = minecraft.getWindow();
             PostChain postChain = new PostChain(this.minecraft.getTextureManager(), minecraft.getResourceManager(), this.minecraft.getMainRenderTarget(), effect.getShaderLocation());
             postChain.resize(window.getWidth(), window.getHeight());
-            commandScreenEffects.put(effect.getName(), effect);
+            commandScreenEffects.put(createData(effect), effect);
             postChains.put(effect, postChain);
         } catch (JsonSyntaxException jsonE) {
             Minecraft.getInstance().gui.getChat().addMessage(Component.literal("Failed to parse shader: " + effect.getShaderLocation()).withStyle(ChatFormatting.RED));
@@ -93,7 +93,7 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
                 Window window = minecraft.getWindow();
                 PostChain postChain = new PostChain(this.minecraft.getTextureManager(), minecraft.getResourceManager(), this.minecraft.getMainRenderTarget(), effect.getShaderLocation());
                 postChain.resize(window.getWidth(), window.getHeight());
-                commandScreenEffects.put(effect.getName(), effect);
+                commandScreenEffects.put(createData(effect), effect);
                 postChains.put(effect, postChain);
             } catch (JsonSyntaxException jsonE) {
                 Minecraft.getInstance().gui.getChat().addMessage(Component.literal("Failed to parse shader: " + effect.getShaderLocation()).withStyle(ChatFormatting.RED));
@@ -106,7 +106,7 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
 
         isReloading = false;
     }
-    public void initShader(ResourceManager manager) {
+    public void initShader(ResourceManager manager, List<DynamicEffectData> allStaticData) {
         isReloading = true;
         try {
             PostEffectHandler.getData().clear();
@@ -127,6 +127,31 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
                     LOGGER.warn("Failed to load shader: {}", effect.getShaderLocation(), IOE);
                 }
             });
+            ReferenceSet<DynamicEffectData> toRemovedBuiltFromJsonEffect = new ReferenceOpenHashSet<>();
+            for (var entry : commandScreenEffects.object2ObjectEntrySet()) {
+                if (entry.getValue() instanceof DynamicScreenEffect e && e.isFromBuiltJson())
+                    toRemovedBuiltFromJsonEffect.add(entry.getKey());
+            }
+            for (DynamicEffectData effectData : toRemovedBuiltFromJsonEffect)
+                commandScreenEffects.remove(effectData);
+            if (!allStaticData.isEmpty()) {
+                for (DynamicEffectData dynamicEffectData : allStaticData) {
+                    DynamicScreenEffect effect = dynamicEffectData.asEffect().withBuilt(true);
+                    try {
+                        Window window = minecraft.getWindow();
+                        PostChain postChain = new PostChain(this.minecraft.getTextureManager(), minecraft.getResourceManager(), this.minecraft.getMainRenderTarget(), effect.getShaderLocation());
+                        postChain.resize(window.getWidth(), window.getHeight());
+                        commandScreenEffects.put(dynamicEffectData, effect);
+                        postChains.put(effect, postChain);
+                    } catch (JsonSyntaxException jsonE) {
+                        Minecraft.getInstance().gui.getChat().addMessage(Component.literal("Failed to parse shader: " + effect.getShaderLocation()).withStyle(ChatFormatting.RED));
+                        LOGGER.warn("Failed to parse shader: {}", effect.getShaderLocation(), jsonE);
+                    } catch (IOException IOE) {
+                        Minecraft.getInstance().gui.getChat().addMessage(Component.literal("Failed to parse shader: " + effect.getShaderLocation()).withStyle(ChatFormatting.RED));
+                        LOGGER.warn("Failed to load shader: {}", effect.getShaderLocation(), IOE);
+                    }
+                }
+            }
             if (!commandScreenEffects.isEmpty()) {
                 commandScreenEffects.values().forEach(effect -> {
                     try {
@@ -150,8 +175,7 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
         isReloading = true;
         try {
             synchronized (this.commandScreenEffects) {
-                this.commandScreenEffects.remove(effect.getName());
-
+                this.commandScreenEffects.remove(createData(effect));
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
@@ -174,11 +198,10 @@ public class PostProcessingShaders implements ResourceManagerReloadListener {
             isReloading = false;
         }
     }
-    public Object2ObjectOpenHashMap<String, CustomScreenEffect> getCommandScreenEffects() {
+    public Object2ObjectOpenHashMap<DynamicEffectData, CustomScreenEffect> getCommandScreenEffects() {
         return commandScreenEffects;
     }
-
-    public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
-        this.initShader(resourceManager);
+    private static DynamicEffectData createData(DynamicScreenEffect effect) {
+        return new DynamicEffectData(effect.getName(), effect.getShaderLocation(), effect.getTransformLayer(), effect.canUse());
     }
 }

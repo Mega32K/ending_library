@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.client.shader.post;
 
+import com.mega.endinglib.common.data.DynamicEffectData;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 
@@ -13,7 +14,6 @@ public interface CustomScreenEffect {
      * @return 此特殊屏幕效果的名字
      */
     String getName();
-
     /**
      * @return 着色器路径
      */
@@ -33,6 +33,12 @@ public interface CustomScreenEffect {
      */
     boolean canUse();
 
+    /**
+     * 注入后处理的位置
+     */
+    default DynamicEffectData.TransformLayer getTransformLayer() {
+        return DynamicEffectData.TransformLayer.LEVEL_RENDERER;
+    }
     /**
      * @return 此后处理效果是否由 {@link PostProcessingShaders} 处理渲染
      */

@@ -6,6 +6,7 @@ import com.mega.endinglib.common.command.argument.PostEffectArgument;
 import com.mega.endinglib.common.command.argument.PostEffectPassArgument;
 import com.mega.endinglib.common.command.argument.PostEffectUniformArgument;
 import com.mega.endinglib.common.config.CommandConfig;
+import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectCreatePacket;
@@ -103,7 +104,7 @@ public class ShaderCommand {
     }
     private static int create(CommandSourceStack sourceStack, ServerPlayer player, String name, ResourceLocation location) {
         if (location.getPath().endsWith(".json")) {
-            PacketHandler.sendToPlayer(new S2CScreenEffectCreatePacket(name, location), player);
+            PacketHandler.sendToPlayer(new S2CScreenEffectCreatePacket(new DynamicEffectData(name, location, DynamicEffectData.TransformLayer.LEVEL_RENDERER, false)), player);
             sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.shader.create", player.getDisplayName(), LoreHelper.withCopy(Component.literal(name), name)), false);
             return 1;
         } else sourceStack.sendFailure(Component.translatable("commands.endinglib.message.shader.invalid.effect_location", location));

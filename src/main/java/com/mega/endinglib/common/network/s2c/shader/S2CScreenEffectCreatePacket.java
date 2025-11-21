@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.network.s2c.shader;
 
 import com.mega.endinglib.client.ClientWrapped;
+import com.mega.endinglib.common.data.DynamicEffectData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.network.NetworkEvent;
@@ -8,21 +9,18 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class S2CScreenEffectCreatePacket {
-    private final String name;
-    private final ResourceLocation location;
+    private final DynamicEffectData data;
 
-    public S2CScreenEffectCreatePacket(String name, ResourceLocation location) {
-        this.name = name;
-        this.location = location;
+    public S2CScreenEffectCreatePacket(DynamicEffectData data) {
+        this.data = data;
     }
 
     public static S2CScreenEffectCreatePacket decode(FriendlyByteBuf friendlyByteBuf) {
-        return new S2CScreenEffectCreatePacket(friendlyByteBuf.readUtf(), friendlyByteBuf.readResourceLocation());
+        return new S2CScreenEffectCreatePacket(DynamicEffectData.F_READER_CREATE.apply(friendlyByteBuf));
     }
 
     public static void encode(S2CScreenEffectCreatePacket packet, FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeUtf(packet.name);
-        friendlyByteBuf.writeResourceLocation(packet.location);
+        DynamicEffectData.F_WRITER_CREATE.accept(friendlyByteBuf, packet.data);
     }
 
     public static void handle(S2CScreenEffectCreatePacket packet, Supplier<NetworkEvent.Context> context) {
@@ -34,6 +32,6 @@ public class S2CScreenEffectCreatePacket {
     }
 
     static void handle0(S2CScreenEffectCreatePacket packet, Supplier<NetworkEvent.Context> context) {
-        ClientWrapped.handleScreenEffectCreate(packet.name, packet.location);
+        ClientWrapped.handleScreenEffectCreate(packet.data);
     }
 }

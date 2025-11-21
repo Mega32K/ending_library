@@ -4,7 +4,6 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
 import com.mega.endinglib.common.network.c2s.C2SItemToggleModePacket;
 import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
-import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectChangePacket;
 import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
@@ -47,7 +46,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), C2SCapabilityDataSyncPacket.class, C2SCapabilityDataSyncPacket::encode, C2SCapabilityDataSyncPacket::decode, C2SCapabilityDataSyncPacket::handle);
         INSTANCE.registerMessage(id(), C2SItemToggleModePacket.class, C2SItemToggleModePacket::encode, C2SItemToggleModePacket::decode, C2SItemToggleModePacket::handle);
         INSTANCE.registerMessage(id(), C2SUserInputPacket.class, C2SUserInputPacket::encode, C2SUserInputPacket::decode, C2SUserInputPacket::handle);
-        INSTANCE.registerMessage(id(), C2SDynamicEffectChangePacket.class, C2SDynamicEffectChangePacket::encode, C2SDynamicEffectChangePacket::decode, C2SDynamicEffectChangePacket::handle);
+        //INSTANCE.registerMessage(id(), C2SDynamicEffectChangePacket.class, C2SDynamicEffectChangePacket::encode, C2SDynamicEffectChangePacket::decode, C2SDynamicEffectChangePacket::handle);
         INSTANCE.registerMessage(id(), C2SDynamicEffectDataPacket.class, C2SDynamicEffectDataPacket::encode, C2SDynamicEffectDataPacket::decode, C2SDynamicEffectDataPacket::handle);
         INSTANCE.registerMessage(id(), TimeStopSkillPacket.class, TimeStopSkillPacket::encode, TimeStopSkillPacket::decode, TimeStopSkillPacket::handle);
         INSTANCE.registerMessage(id(), TimeStopClientEffectPacket.class, TimeStopClientEffectPacket::encode, TimeStopClientEffectPacket::decode, TimeStopClientEffectPacket::handle);

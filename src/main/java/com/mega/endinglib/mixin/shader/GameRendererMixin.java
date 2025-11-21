@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GameRendererMixin {
     @Inject(method = "renderLevel", at = @At("TAIL"))
     public void renderLevelTail(float partialTicks, long l, PoseStack stack, CallbackInfo ci) {
-        PostProcessingShaders.INSTANCE.renderShaders(partialTicks);
+        PostProcessingShaders.INSTANCE.levelEffect(partialTicks);
     }
 
     @Inject(method = {"resize"}, at = {@At("HEAD")})

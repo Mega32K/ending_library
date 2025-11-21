@@ -4,6 +4,7 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientContext;
+import com.mega.endinglib.client.reloadable.DynamicEffectDataResourceReloadListener;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.client.screen.OtherPlayerInventoryScreen;
 import com.mega.endinglib.common.init.ModMenus;
@@ -23,16 +24,16 @@ import org.lwjgl.glfw.GLFW;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientProxy implements ModProxy {
     public static ResourceLocation PLAYER_ANIMATION = SafeClass.loc("animation");
     public static final ScheduledExecutorService SERVICE = Executors.newSingleThreadScheduledExecutor();
-    public final Lock LOCK = new ReentrantLock();
+    public final AtomicInteger initTimes = new AtomicInteger(-1);
     public ClientProxy() {
-        LOCK.lock();
-        try {
+        if (initTimes.incrementAndGet() == 0) {
             Minecraft mc = Minecraft.getInstance();
             SERVICE.scheduleAtFixedRate(() -> {
                 TimeContext.Client.count++;
@@ -44,12 +45,6 @@ public class ClientProxy implements ModProxy {
                     if (!mc.isPaused()) TimeContext.Client.timeStopGLFW++;
                 }
             }, 0L, 1L, TimeUnit.MILLISECONDS);
-
-            ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
-            manager.registerReloadListener(PostProcessingShaders.INSTANCE);
-            PostEffectHandler.registerEffect(ModernGaussianBlurPostEffect::new);
-        } finally {
-            LOCK.unlock();
         }
         IEventBus modBus = EndingLibrary.getModEventBus();
         modBus.addListener(this::clientSetup);
@@ -59,6 +54,10 @@ public class ClientProxy implements ModProxy {
         event.enqueueWork(() -> {
             MenuScreens.register(ModMenus.OTHER_PLAYER_INV_MENU.get(), OtherPlayerInventoryScreen::new);
             PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(PLAYER_ANIMATION, 4936, p -> new ModifierLayer<>());
+
+            ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
+            manager.registerReloadListener(DynamicEffectDataResourceReloadListener.INSTANCE);
+            PostEffectHandler.registerEffect(ModernGaussianBlurPostEffect::new);
         });
     }
 }
