@@ -23,7 +23,9 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -42,7 +44,7 @@ public class ItemComponentManager {
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
                             Codec.INT.optionalFieldOf("Count", 1).forGetter(ItemStack::getCount),
                             CompoundTag.CODEC.optionalFieldOf("tag").forGetter((com) -> Optional.ofNullable(com.getTag())),
-                            ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.builder().build()).forGetter(com -> ItemComponentManager.get(com).components.getChanges())
+                            ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.builder(Items.AIR).build()).forGetter(com -> ItemComponentManager.get(com).components.getChanges())
                     ).apply(stack, ItemComponentManager::itemStackCodec)
     );
     static final Object2ObjectOpenHashMap<ResourceLocation, ItemComponentType<?>> COMPONENTS = new Object2ObjectOpenHashMap<>();
@@ -198,10 +200,23 @@ public class ItemComponentManager {
         if (compoundTag.isPresent()) {
             tag = compoundTag.get();
         }
+        if (like instanceof Item item && like instanceof IDefaultComponentsItem id) {
+            ComponentChanges.Builder builder = new ComponentChanges.Builder();
+            id.defaultComponents(item, builder);
+            ComponentChanges defaultChanges = builder.build();
+            DataResult<Tag> tagDataResult = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), defaultChanges);
+            if (tagDataResult.result().isPresent()) {
+                CompoundTag toMerge = new CompoundTag();
+                tag.put(ItemComponentManager.HEAD, tagDataResult.result().get());
+                tag.merge(toMerge);
+            }
+        }
         if (componentChanges != null && !componentChanges.isEmpty()) {
             DataResult<Tag> tagDataResult = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), componentChanges);
             if (tagDataResult.result().isPresent()) {
+                CompoundTag toMerge = new CompoundTag();
                 tag.put(ItemComponentManager.HEAD, tagDataResult.result().get());
+                tag.merge(toMerge);
             }
         }
         if (!tag.isEmpty()) {

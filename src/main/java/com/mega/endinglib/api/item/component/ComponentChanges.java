@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Unit;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -56,8 +57,11 @@ public final class ComponentChanges {
         this.changedComponents = changedComponents;
     }
 
-    public static ComponentChanges.Builder builder() {
-        return new ComponentChanges.Builder();
+    public static ComponentChanges.Builder builder(Item item) {
+        ComponentChanges.Builder builder = new ComponentChanges.Builder();
+        if (item instanceof IDefaultComponentsItem i)
+            i.defaultComponents(item, builder);
+        return builder;
     }
 
     static String toString(Reference2ObjectMap<ItemComponentType<?>, Optional<?>> changes) {

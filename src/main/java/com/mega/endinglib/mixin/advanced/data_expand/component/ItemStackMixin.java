@@ -56,6 +56,8 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
 
     @Shadow public abstract ItemStack copy();
 
+    @Shadow public abstract Item getItem();
+
     @Unique
     private ItemComponentManager componentManager = new ItemComponentManager((ItemStack) (Object)this, new MergedComponentMap(ComponentMap.EMPTY));
     @Override
@@ -83,7 +85,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             if (!component.isEmpty()) {
                 DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                 dr.result().ifPresent(map -> {
-                    ComponentChanges.Builder builder = ComponentChanges.builder();
+                    ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
                     map.forEach(builder::add);
                     this.componentManager.getComponents().setChanges(builder.build());
                 });
@@ -120,7 +122,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                 if (!component.isEmpty()) {
                     DataResult<Map<ItemComponentType<?>, Object>> mapDataResult = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                     mapDataResult.result().ifPresent(map -> {
-                        ComponentChanges.Builder builder = ComponentChanges.builder();
+                        ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
                         map.forEach(builder::add);
                         this.componentManager.getComponents().setChanges(builder.build());
                     });

@@ -48,7 +48,7 @@ public class WaitingRegistryAccessTask {
                                 ItemComponentManager manager = ItemComponentManager.get(stack);
                                 DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(ops, component);
                                 dr.result().ifPresent(map -> {
-                                    ComponentChanges.Builder builder = ComponentChanges.builder();
+                                    ComponentChanges.Builder builder = ComponentChanges.builder(stack.getItem());
                                     map.forEach(builder::add);
                                     manager.getComponents().setChanges(builder.build());
                                 });
