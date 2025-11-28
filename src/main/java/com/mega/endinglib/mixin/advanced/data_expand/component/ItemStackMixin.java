@@ -24,6 +24,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.extensions.IForgeItemStack;
@@ -77,7 +78,13 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     public void endingLibrary$setComponentManager(ItemComponentManager manager) {
         this.componentManager = manager;
     }
-
+    @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"))
+    private void init0(ItemLike p_41604_, int p_41605_, CompoundTag p_41606_, CallbackInfo ci) {
+        if (p_41604_ instanceof IDefaultComponentsItem) {
+            ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
+            this.componentManager.getComponents().setChanges(builder.build());
+        }
+    }
     @Inject(method = "<init>(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"))
     private void init0(CompoundTag p_41608_, CallbackInfo ci) {
         if (this.tag != null) {
