@@ -270,6 +270,10 @@
   "tooltip.endinglib.input_permission.swap_hand": "交换手",
   "tooltip.endinglib.input_permission.drop_item": "丢弃物品",
   "tooltip.endinglib.input_permission.chat": "聊天",
+  "tooltip.endinglib.holdShiftEffect": "§5Hold §6Shift§5 to see effects details.",
+  "tooltip.endinglib.holdAlt": "§5Hold §6Alt§5 to see details.",
+  "tooltip.endinglib.holdShift": "§5Hold §6Shift§5 to see details.",
+  "tooltip.endinglib.holdAltEffect": "§5Hold §6Alt§5 to see effects details.",
 
   "screen.endinglib.camera.title" : "Custom Camera Screen",
   "screen.endinglib.camera.button.pause" : "是否暂停游戏",
@@ -289,5 +293,7 @@
   "arguments.item.component.expected": "Expected item component",
   "arguments.item.component.malformed": "Malformed '%s' component: '%s'",
   "arguments.item.component.repeated": "Item component '%s' was repeated, but only one value can be specified",
-  "arguments.item.component.unknown": "Unknown item component '%s'"
+  "arguments.item.component.unknown": "Unknown item component '%s'",
+
+  "curios.endinglib.modifiers.slots": "Slots"
 }

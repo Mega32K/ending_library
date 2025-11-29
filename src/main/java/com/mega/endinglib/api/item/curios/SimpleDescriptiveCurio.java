@@ -126,7 +126,7 @@ public class SimpleDescriptiveCurio extends CuriosBaseItem implements ICurioItem
                                         Integer.valueOf(contents.getArgs()[0].toString()),
                                         (cArg instanceof MutableComponent mcArg && mcArg.getStyle().getColor() != null && 16777215 != (mcArg.getStyle().getColor().getValue())) ? LoreHelper.codeMode(textColorToCF(mcArg.getStyle().getColor())) : LoreHelper.codeMode(showHeader ? ChatFormatting.GOLD : ChatFormatting.LIGHT_PURPLE),
                                         I18n.get(cArg.getContents() instanceof TranslatableContents tC ? tC.getKey() : ""),
-                                        I18n.get("curios.goety_revelation.modifiers.slots")
+                                        I18n.get("curios.endinglib.modifiers.slots")
                                 };
                                 if (key.endsWith(".plus.1") || key.endsWith(".plus.2")) {
                                     return CuriosMutableComponent.create(LoreStyle.ATTRIBUTE_PREFIX).appendAttributeFormat(
@@ -175,9 +175,9 @@ public class SimpleDescriptiveCurio extends CuriosBaseItem implements ICurioItem
                 if ((!isEnableShift || !Screen.hasShiftDown()) && (!isEnableAlt || !Screen.hasAltDown()))
                     toArg.addAll(tempAttributeList.stream().map(cmc -> cmc.build(stack)).filter(Objects::nonNull).toList());
                 if (isEnableShift && !Screen.hasShiftDown() && (!isEnableAlt || !Screen.hasAltDown()))
-                    toArg.add(shiftShowType() == ShowMoreType.SPECIAL_EFFECTS ? Component.translatable("tooltip.revelationfix.holdShiftEffect") : Component.translatable("tooltip.revelationfix.holdShift"));
+                    toArg.add(shiftShowType() == ShowMoreType.SPECIAL_EFFECTS ? Component.translatable("tooltip.endinglib.holdShiftEffect") : Component.translatable("tooltip.endinglib.holdShift"));
                 if (isEnableAlt && !Screen.hasAltDown() && (!isEnableShift || !Screen.hasShiftDown()))
-                    toArg.add(altShowType() == ShowMoreType.SPECIAL_EFFECTS ? Component.translatable("tooltip.revelationfix.holdAltEffect") : Component.translatable("tooltip.revelationfix.holdAlt"));
+                    toArg.add(altShowType() == ShowMoreType.SPECIAL_EFFECTS ? Component.translatable("tooltip.endinglib.holdAltEffect") : Component.translatable("tooltip.endinglib.holdAlt"));
                 if (isEnableShift && Screen.hasShiftDown()) {
                     this.appendShiftShowMore(stack, toArg);
                 } else if (isEnableAlt && Screen.hasAltDown()) {
