@@ -3,10 +3,7 @@ package com.mega.endinglib.common;
 import com.google.common.collect.Queues;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.ClientTaskInstance;
-import com.mega.endinglib.api.item.component.ComponentChanges;
-import com.mega.endinglib.api.item.component.ItemComponentManager;
-import com.mega.endinglib.api.item.component.ItemComponentType;
-import com.mega.endinglib.api.item.component.MergedComponentMap;
+import com.mega.endinglib.api.item.component.*;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -15,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -42,13 +40,22 @@ public class WaitingRegistryAccessTask {
                         CompoundTag tag;
                         if (stack != null) {
                             tag = stack.getTag();
+                            Item item = stack.getItem();
                             if (tag == null) continue;
+                            if (item instanceof IDefaultComponentsItem) {
+                                ComponentChanges.Builder builder = ComponentChanges.builder(item);
+                                DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), builder.build());
+                                dr.result().ifPresent(defaultComponentTag -> {
+                                    CompoundTag itemTag = stack.getOrCreateTag();
+                                    itemTag.put(ItemComponentManager.HEAD, itemTag);
+                                });
+                            }
                             CompoundTag component = tag.getCompound(ItemComponentManager.HEAD);
                             if (!component.isEmpty()) {
                                 ItemComponentManager manager = ItemComponentManager.get(stack);
                                 DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(ops, component);
                                 dr.result().ifPresent(map -> {
-                                    ComponentChanges.Builder builder = ComponentChanges.builder(stack.getItem());
+                                    ComponentChanges.Builder builder = ComponentChanges.builder(null);
                                     map.forEach(builder::add);
                                     manager.getComponents().setChanges(builder.build());
                                 });

@@ -44,7 +44,7 @@ public class ItemComponentManager {
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
                             Codec.INT.optionalFieldOf("Count", 1).forGetter(ItemStack::getCount),
                             CompoundTag.CODEC.optionalFieldOf("tag").forGetter((com) -> Optional.ofNullable(com.getTag())),
-                            ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.builder(Items.AIR).build()).forGetter(com -> ItemComponentManager.get(com).components.getChanges())
+                            ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.builder(null).build()).forGetter(com -> ItemComponentManager.get(com).components.getChanges())
                     ).apply(stack, ItemComponentManager::itemStackCodec)
     );
     static final Object2ObjectOpenHashMap<ResourceLocation, ItemComponentType<?>> COMPONENTS = new Object2ObjectOpenHashMap<>();

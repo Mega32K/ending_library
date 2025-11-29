@@ -14,6 +14,7 @@ import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -59,6 +60,8 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
 
     @Shadow public abstract Item getItem();
 
+    @Shadow public abstract CompoundTag getOrCreateTag();
+
     @Unique
     private ItemComponentManager componentManager = new ItemComponentManager((ItemStack) (Object)this, new MergedComponentMap(ComponentMap.EMPTY));
     @Override
@@ -82,6 +85,16 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     private void init0(ItemLike p_41604_, int p_41605_, CompoundTag p_41606_, CallbackInfo ci) {
         if (p_41604_ instanceof IDefaultComponentsItem) {
             ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
+            DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), builder.build());
+            dr.result().ifPresent(tag -> {
+                CompoundTag itemTag = this.getOrCreateTag();
+                itemTag.put(ItemComponentManager.HEAD, itemTag);
+            });
+            dr.error().ifPresent(err -> {
+                this.decodeFailed = true;
+                EndingLibrary.LOGGER.warn("ItemComponent item default components serialized error : {}", err.message());
+                WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
+            });
             this.componentManager.getComponents().setChanges(builder.build());
         }
     }
@@ -92,7 +105,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             if (!component.isEmpty()) {
                 DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                 dr.result().ifPresent(map -> {
-                    ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
+                    ComponentChanges.Builder builder = ComponentChanges.builder(null);
                     map.forEach(builder::add);
                     this.componentManager.getComponents().setChanges(builder.build());
                 });
@@ -129,7 +142,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                 if (!component.isEmpty()) {
                     DataResult<Map<ItemComponentType<?>, Object>> mapDataResult = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                     mapDataResult.result().ifPresent(map -> {
-                        ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
+                        ComponentChanges.Builder builder = ComponentChanges.builder(null);
                         map.forEach(builder::add);
                         this.componentManager.getComponents().setChanges(builder.build());
                     });
