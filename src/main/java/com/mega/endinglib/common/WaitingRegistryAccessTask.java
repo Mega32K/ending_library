@@ -47,7 +47,7 @@ public class WaitingRegistryAccessTask {
                                 DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), builder.build());
                                 dr.result().ifPresent(defaultComponentTag -> {
                                     CompoundTag itemTag = stack.getOrCreateTag();
-                                    itemTag.put(ItemComponentManager.HEAD, itemTag);
+                                    itemTag.put(ItemComponentManager.HEAD, tag);
                                 });
                             }
                             CompoundTag component = tag.getCompound(ItemComponentManager.HEAD);

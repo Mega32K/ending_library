@@ -88,7 +88,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), builder.build());
             dr.result().ifPresent(tag -> {
                 CompoundTag itemTag = this.getOrCreateTag();
-                itemTag.put(ItemComponentManager.HEAD, itemTag);
+                itemTag.put(ItemComponentManager.HEAD, tag);
             });
             dr.error().ifPresent(err -> {
                 this.decodeFailed = true;

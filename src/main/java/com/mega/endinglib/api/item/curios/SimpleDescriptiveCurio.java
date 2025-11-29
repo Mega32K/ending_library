@@ -97,7 +97,7 @@ public class SimpleDescriptiveCurio extends CuriosBaseItem implements ICurioItem
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> components, TooltipFlag tooltipFlag) {
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, level, components, tooltipFlag);
     }
 
