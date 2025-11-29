@@ -52,6 +52,7 @@
     "advanced.data_expand.LivingEntityMixin",
     "advanced.data_expand.MobEffectInstanceMixin",
     "advanced.data_expand.ServerPlayerMixin",
+    "advanced.data_expand.component.AbstractArrowMixin",
     "advanced.data_expand.component.AbstractPiglinMixin",
     "advanced.data_expand.component.AnimalMixin",
     "advanced.data_expand.component.ArmorItemMixin",

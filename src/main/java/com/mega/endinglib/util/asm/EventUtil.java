@@ -5,6 +5,7 @@ import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.function.SwingEventComponent;
 import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.mixin.data_expand.ExtraAbstractArrowItf;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.time.TimeContext;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Interaction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.BannerPatternItem;
@@ -216,5 +218,13 @@ public class EventUtil {
                 return ee.endingLibrary$getCapHitbox().move(entity.position());
         }
         return original;
+    }
+    public static void onAbstractArrowPickupPut(Object owner, AbstractArrow.Pickup pickup) {
+        if (pickup != AbstractArrow.Pickup.CREATIVE_ONLY)
+            if (owner instanceof ExtraAbstractArrowItf itf && owner instanceof AbstractArrow arrow) {
+                if (itf.isIntangibleProjectile()) {
+                    arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+                }
+            }
     }
 }

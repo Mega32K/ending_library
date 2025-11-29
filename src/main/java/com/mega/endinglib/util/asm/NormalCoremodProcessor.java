@@ -464,6 +464,14 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                     m.instructions.remove(fin);
                                     shouldWrite.set(true);
                                 }
+                            } else if (MCMapping.AbstractArrow$FIELD$pickup.equalsFieldNode(fin)) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new InsnNode(Opcodes.DUP2));
+                                insnNodes.add(new FieldInsnNode(fin.getOpcode(), fin.owner, fin.name, fin.desc));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "onAbstractArrowPickupPut", "(Ljava/lang/Object;Lnet/minecraft/world/entity/projectile/AbstractArrow$Pickup;)V"));
+                                m.instructions.insertBefore(fin, insnNodes);
+                                m.instructions.remove(fin);
+                                shouldWrite.set(true);
                             }
                         }
                     } else if (n instanceof MethodInsnNode min) {
