@@ -91,6 +91,24 @@ public class ItemComponentManager {
     public <T> T get(ItemComponentType<? extends T> type) {
         return this.components.get(type);
     }
+    public void mergeChangedToNBTAndUpdate(ComponentChanges componentChanges) {
+        DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), componentChanges);
+        dr.result().ifPresent(tag -> {
+            CompoundTag itemTag = this.itemStack.getOrCreateTag();
+            CompoundTag toMergeIn = new CompoundTag();
+            toMergeIn.put(ItemComponentManager.HEAD, tag);
+            itemTag.merge(toMergeIn);
+            this.components.applyChanges(componentChanges);
+        });
+    }
+    public void setChangesToNBTAndUpdate(ComponentChanges componentChanges) {
+        DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), componentChanges);
+        dr.result().ifPresent(tag -> {
+            CompoundTag itemTag = this.itemStack.getOrCreateTag();
+            itemTag.put(ItemComponentManager.HEAD, tag);
+            this.components.setChanges(componentChanges);
+        });
+    }
 
     /**
      * {@link ItemStackMixin#componentUse(Level, Player, InteractionHand, CallbackInfoReturnable, LocalRef)}可能有问题
