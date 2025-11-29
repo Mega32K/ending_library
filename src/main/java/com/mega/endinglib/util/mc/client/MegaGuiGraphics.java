@@ -24,8 +24,10 @@ public class MegaGuiGraphics extends GuiGraphics {
     public MegaGuiGraphics(Minecraft minecraft, MultiBufferSource.BufferSource bufferSource) {
         super(minecraft, bufferSource);
     }
-    public MegaGuiGraphics(GuiGraphics graphics) {
-        super(Minecraft.getInstance(), graphics.bufferSource());
+    public static MegaGuiGraphics of(GuiGraphics graphics) {
+        if (graphics instanceof MegaGuiGraphics m)
+            return m;
+        else return new MegaGuiGraphics(Minecraft.getInstance(), graphics.bufferSource());
     }
 
     @Override

@@ -7,9 +7,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 public class RenderUtils {
     public final MegaGuiGraphics graphics;
     public RenderUtils(GuiGraphics graphics) {
-        if (graphics instanceof MegaGuiGraphics mg)
-            this.graphics = mg;
-        else this.graphics = new MegaGuiGraphics(graphics);
+        this.graphics = MegaGuiGraphics.of(graphics);
     }
     public static RenderUtils of(GuiGraphics graphics) {
         return new RenderUtils(graphics);

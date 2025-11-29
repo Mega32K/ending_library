@@ -5,7 +5,7 @@
   "mobType.illager.name" : "灾厄村民",
   "mobType.water.name" : "水生生物",
 
-  "item.components": "%s个(伪)组件",
+  "item.components": "%s个组件",
   "component.minecraft.item_model" : "物品模型",
 
   "commands.function.error.argument_not_compound": "无效的参数类型：%s。应为Compound类型",
