@@ -40,6 +40,10 @@ public class SynchedCapabilityData {
     }
 
     public static void writeCapabilityDataList(FriendlyByteBuf byteBuf, List<CapabilityEntityData<?>> list) {
+        if (list == null) {
+            byteBuf.writeInt(0);
+            return;
+        }
         byteBuf.writeInt(list.size());
         if (list.isEmpty())
             return;
