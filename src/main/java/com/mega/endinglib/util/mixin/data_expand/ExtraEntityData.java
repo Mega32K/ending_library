@@ -17,6 +17,8 @@ public class ExtraEntityData {
     public boolean hasCustomRenderScale;
     public boolean lockedYRot;
     public boolean lockedXRot;
+    public byte pushable;
+    public byte canBeCollideWith;
     public ResourceLocation customModelTexture = null;
     //@Nullable
     //public Vector4f customShaderColor = null;

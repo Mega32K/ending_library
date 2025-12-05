@@ -362,27 +362,27 @@ public class CameraCommand {
         switch (mode) {
             case IS_ENABLED -> {
                 boolean b = cap.isUsingCustomCamera();
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.enable").append(LoreHelper.bool(b)), false);
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.enable").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
             case IS_FREEZING_ORIGIN -> {
                 boolean b = cap.isVanillaCameraFreezing();
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.freezing_origin").append(LoreHelper.bool(b)), false);
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.freezing_origin").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
             case FREEZING_MODE_IS_FOLLOW_POSITION -> {
                 boolean b = cap.isFollowPosition();
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.freezing_origin.follow_position").append(LoreHelper.bool(b)), false);
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.freezing_origin.follow_position").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
             case IS_CAMERA_PERSON_LOCKED -> {
                 boolean b = cap.isCameraPersonLocked();
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.is_camera_person_locked").append(LoreHelper.bool(b)), false);
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.is_camera_person_locked").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
             case IS_FOV_LOCKED -> {
                 boolean b = cap.isFovLocked();
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.is_fov_locked").append(LoreHelper.bool(b)), false);
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.is_fov_locked").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
             case AVAILABLE_CAMERA_AREA -> {
@@ -392,7 +392,7 @@ public class CameraCommand {
             }
             case IS_MOUSE_CONTROLLED -> {
                 boolean b = cap.isMouseControlled();
-                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.mouse_control").append(LoreHelper.bool(b)), false);
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.mouse_control").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
         }

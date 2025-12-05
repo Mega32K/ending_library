@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
+    Entity$METHOD$isPushable("isPushable", "m_6094_", "()Z"),
+    Entity$METHOD$canBeCollidedWith("canBeCollidedWith", "m_5829_", "()Z"),
     AbstractArrow$FIELD$pickup("pickup", "f_36705_", "Lnet/minecraft/world/entity/projectile/AbstractArrow$Pickup;"),
     Entity$METHOD$makeBoundingBox("makeBoundingBox", "m_142242_", "()Lnet/minecraft/world/phys/AABB;"),
     EntityRenderer$METHOD$getTextureLocation("getTextureLocation", "m_5478_", "(Lnet/minecraft/world/entity/Entity;)Lnet/minecraft/resources/ResourceLocation;"),

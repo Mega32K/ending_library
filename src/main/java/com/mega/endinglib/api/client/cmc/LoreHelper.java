@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class LoreHelper {
     public static final MutableComponent[] BRACKETS = new MutableComponent[]{
@@ -35,6 +34,7 @@ public class LoreHelper {
     public static final Function<Optional<Vector3f>, Component> OPT_VEC3F_OPERATION = optVec3f -> optionalOf(optVec3f, LoreHelper::vec3f);
     public static final Function<Optional<String>, Component> OPT_STRING_OPERATION = optStr -> optionalOf(optStr, str -> LoreHelper.withCopy(Component.literal(str), str));
     public static final Function<Optional<Vector4f>, Component> OPT_VEC4F_OPERATION = optVec3f -> optionalOf(optVec3f, LoreHelper::vec4f);
+    public static final Function<Optional<Boolean>, Component> OPT_BOOL_OPERATION = optStr -> optionalOf(optStr, LoreHelper::bool);
     public static final Map<ChatFormatting, String> codeMap = new Object2ObjectOpenHashMap<>();
 
     static {
@@ -106,8 +106,10 @@ public class LoreHelper {
     public static MutableComponent empty() {
         return Component.translatable("tooltip.endinglib.optional_empty").withStyle(ChatFormatting.GOLD);
     }
-
     public static MutableComponent bool(boolean z) {
+        return z ? Component.literal("true").withStyle(ChatFormatting.GOLD) : Component.literal("false").withStyle(ChatFormatting.GOLD);
+    }
+    public static MutableComponent openoff(boolean z) {
         return z ? Component.translatable("tooltip.endinglib.on") : Component.translatable("tooltip.endinglib.off");
     }
     public static MutableComponent withCopy(MutableComponent mutableComponent, String valueToString) {

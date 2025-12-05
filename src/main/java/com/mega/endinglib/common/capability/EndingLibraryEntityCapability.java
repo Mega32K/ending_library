@@ -38,6 +38,8 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<String> CUSTOM_MODEL_TEXTURE = this.defineByDataType(6, DataCommand.CUSTOM_MODEL_TEXTURE, CapabilityDataSerializers.STRING);
     public final CapabilityEntityData<Boolean> LOCKED_X_ROT = this.defineByDataType(7, DataCommand.LOCKED_X_ROT, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> LOCKED_Y_ROT = this.defineByDataType(8, DataCommand.LOCKED_Y_ROT, CapabilityDataSerializers.BOOLEAN);
+    public final CapabilityEntityData<Optional<Boolean>> PUSHABLE = this.defineByDataType(9, DataCommand.PUSHABLE, CapabilityDataSerializers.OPTIONAL_BOOLEAN);
+    public final CapabilityEntityData<Optional<Boolean>> CAN_BE_COLLIDE_WITH = this.defineByDataType(10, DataCommand.CAN_BE_COLLIDE_WITH, CapabilityDataSerializers.OPTIONAL_BOOLEAN);
     //public final CapabilityEntityData<Optional<Vector4f>> CUSTOM_SHADER_COLOR = this.defineByDataType(9, DataCommand.CUSTOM_SHADER_COLOR, CapabilityDataSerializers.OPTIONAL_VEC4F);
     private <T> CapabilityEntityData<T> defineByDataType(int id, DataCommand.DataType<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
@@ -132,6 +134,14 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
                 ExtraEntityData extraEntityData = ExtraEntity.of(entity).endinglib$getExtraEntityData();
                 extraEntityData.lockedYRot = this.isYRotLocked();
             }
+        } else if (data.equals(PUSHABLE)) {
+            if (entity instanceof ExtraEntity ee) {
+                ee.endinglib$getExtraEntityData().pushable = this.isPushable().map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
+            }
+        } else if (data.equals(CAN_BE_COLLIDE_WITH)) {
+            if (entity instanceof ExtraEntity ee) {
+                ee.endinglib$getExtraEntityData().canBeCollideWith = this.canBeCollideWith().map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
+            }
         }
         /*else if (data.equals(CUSTOM_SHADER_COLOR)) {
             if (entity != null)
@@ -153,6 +163,11 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
         this.setFrozen(this.isFrozen());
         this.getCustomHitbox().ifPresent(this::setCustomHitbox);
         this.getMobType().ifPresent(type -> setMobType(Optional.of(type)));
+        if (this.getEntity() instanceof ExtraEntity ee) {
+            ExtraEntityData extraEntityData = ee.endinglib$getExtraEntityData();
+            this.isPushable().ifPresent(z -> extraEntityData.pushable = (z ? (byte) 2 : (byte) 1));
+            this.canBeCollideWith().ifPresent(z -> extraEntityData.canBeCollideWith = (z ? (byte) 2 : (byte) 1));
+        }
     }
     public Optional<EntityDimensions> getCustomEntityDimensions() {
         return this.dataManager.getValue(DIMENSIONS);
@@ -269,6 +284,26 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     }
     public void setCustomModelTexture(String skin) {
         this.dataManager.setValue(CUSTOM_MODEL_TEXTURE, skin);
+    }
+    public Optional<Boolean> isPushable() {
+        return this.dataManager.getValue(PUSHABLE);
+    }
+    public void setPushable(Optional<Boolean> flag) {
+        this.dataManager.setValue(PUSHABLE, flag);
+        if (this.getEntity() instanceof ExtraEntity ee) {
+            ExtraEntityData extraEntityData = ee.endinglib$getExtraEntityData();
+            extraEntityData.pushable = flag.map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
+        }
+    }
+    public Optional<Boolean> canBeCollideWith() {
+        return this.dataManager.getValue(CAN_BE_COLLIDE_WITH);
+    }
+    public void setCanBeCollideWith(Optional<Boolean> flag) {
+        this.dataManager.setValue(CAN_BE_COLLIDE_WITH, flag);
+        if (this.getEntity() instanceof ExtraEntity ee) {
+            ExtraEntityData extraEntityData = ee.endinglib$getExtraEntityData();
+            extraEntityData.canBeCollideWith = flag.map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
+        }
     }
     /*
     public void setShaderColor(Optional<Vector4f> vector4f) {

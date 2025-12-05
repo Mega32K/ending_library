@@ -211,6 +211,14 @@ public class EventUtil {
         }
         return false;
     }
+    public static void onAbstractArrowPickupPut(Object owner, AbstractArrow.Pickup pickup) {
+        if (pickup != AbstractArrow.Pickup.CREATIVE_ONLY)
+            if (owner instanceof ExtraAbstractArrowItf itf && owner instanceof AbstractArrow arrow) {
+                if (itf.isIntangibleProjectile()) {
+                    arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
+                }
+            }
+    }
     public static AABB wrapMakeBoundingBox(Object caller, AABB original) {
         if (caller instanceof Entity entity) {
             ExtraEntity ee = ExtraEntity.of(entity);
@@ -219,12 +227,18 @@ public class EventUtil {
         }
         return original;
     }
-    public static void onAbstractArrowPickupPut(Object owner, AbstractArrow.Pickup pickup) {
-        if (pickup != AbstractArrow.Pickup.CREATIVE_ONLY)
-            if (owner instanceof ExtraAbstractArrowItf itf && owner instanceof AbstractArrow arrow) {
-                if (itf.isIntangibleProjectile()) {
-                    arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                }
-            }
+    public static boolean wrapEntityIsPushable(Object caller, boolean original) {
+        if (caller instanceof Entity entity) {
+            byte b = ExtraEntity.of(entity).endinglib$getExtraEntityData().pushable;
+            if (b > 0) return b > 1;
+        }
+        return original;
+    }
+    public static boolean wrapEntityCanBeCollideWith(Object caller, boolean original) {
+        if (caller instanceof Entity entity) {
+            byte b = ExtraEntity.of(entity).endinglib$getExtraEntityData().canBeCollideWith;
+            if (b > 0) return b > 1;
+        }
+        return original;
     }
 }

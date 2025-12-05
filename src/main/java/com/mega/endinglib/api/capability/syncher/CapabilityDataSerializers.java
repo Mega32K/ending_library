@@ -85,6 +85,7 @@ public class CapabilityDataSerializers {
         }
     };
     public static final CapabilityDataSerializer<Boolean> BOOLEAN = CapabilityDataSerializer.simple(FriendlyByteBuf::writeBoolean, FriendlyByteBuf::readBoolean, CompoundTag::putBoolean, CompoundTag::getBoolean);
+    public static final CapabilityDataSerializer<Optional<Boolean>> OPTIONAL_BOOLEAN = CapabilityDataSerializer.optional(FriendlyByteBuf::writeBoolean, FriendlyByteBuf::readBoolean, CompoundTag::putBoolean, CompoundTag::getBoolean);
     public static final CapabilityDataSerializer<BlockPos> BLOCK_POS = CapabilityDataSerializer.simple(FriendlyByteBuf::writeBlockPos, FriendlyByteBuf::readBlockPos, CompoundTagUtils::putBlockPos, CompoundTagUtils::getBlockPos);
     public static final CapabilityDataSerializer<Optional<BlockPos>> OPTIONAL_BLOCK_POS = CapabilityDataSerializer.optional(FriendlyByteBuf::writeBlockPos, FriendlyByteBuf::readBlockPos, CompoundTagUtils::putBlockPos, CompoundTagUtils::getBlockPos);
     public static final CapabilityDataSerializer<Direction> DIRECTION = CapabilityDataSerializer.simpleEnum(Direction.class);
@@ -135,6 +136,7 @@ public class CapabilityDataSerializers {
         registerSerializer(OPTIONAL_COMPONENT);
         registerSerializer(ITEM_STACK);
         registerSerializer(BOOLEAN);
+        registerSerializer(OPTIONAL_BOOLEAN);
         registerSerializer(BLOCK_POS);
         registerSerializer(OPTIONAL_BLOCK_POS);
         registerSerializer(DIRECTION);

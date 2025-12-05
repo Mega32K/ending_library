@@ -70,7 +70,7 @@ public class InputCommand {
         sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.input.permission",
                 serverPlayer.getDisplayName(),
                 withCopyableInputOperation(operations)
-                ).append(LoreHelper.bool(!flag)), false
+                ).append(LoreHelper.openoff(!flag)), false
         );
         return flag ? 1 : 0;
     }

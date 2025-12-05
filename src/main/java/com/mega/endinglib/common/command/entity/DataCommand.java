@@ -11,6 +11,7 @@ import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.CommandFunction;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -184,7 +185,7 @@ public class DataCommand {
             (type, cap) -> type.getCapValue(cap).isEmpty() ? 0 : 1,
             ""
     );
-    public static final DataType<Boolean> LOCKED_X_ROT = build("lockedXRot", (command, personalRule) ->
+    public static final DataType<Boolean> LOCKED_X_ROT = build("locked_x_rot", (command, personalRule) ->
                     command.then(Commands.argument("value", BoolArgumentType.bool())
                                     .executes(context -> set(context.getSource(), getTarget(context), personalRule, BoolArgumentType.getBool(context, "value")))
                             )
@@ -194,7 +195,7 @@ public class DataCommand {
             BOOL_COMMAND_RESULT,
             false
     );
-    public static final DataType<Boolean> LOCKED_Y_ROT = build("lockedYRot", (command, personalRule) ->
+    public static final DataType<Boolean> LOCKED_Y_ROT = build("locked_y_rot", (command, personalRule) ->
                     command.then(Commands.argument("value", BoolArgumentType.bool())
                                     .executes(context -> set(context.getSource(), getTarget(context), personalRule, BoolArgumentType.getBool(context, "value")))
                             )
@@ -203,6 +204,38 @@ public class DataCommand {
             EndingLibraryEntityCapability::isYRotLocked,
             BOOL_COMMAND_RESULT,
             false
+    );
+    public static final DataType<Optional<Boolean>> PUSHABLE = build("pushable", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(BoolArgumentType.getBool(context, "value"))))
+                            )
+                            .executes(context -> get(context.getSource(), getTarget(context), personalRule)),
+            EndingLibraryEntityCapability::setPushable,
+            EndingLibraryEntityCapability::isPushable,
+            (type, cap) -> {
+                Entity entity = cap.getEntity();
+                if (entity != null)
+                    return entity.isPushable() ? 1 : 0;
+                return type.getCapValue(cap).orElse(false) ? 1 : 0;
+            },
+            Optional.empty(),
+            LoreHelper.OPT_BOOL_OPERATION
+    );
+    public static final DataType<Optional<Boolean>> CAN_BE_COLLIDE_WITH = build("can_be_collide_with", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(BoolArgumentType.getBool(context, "value"))))
+                            )
+                            .executes(context -> get(context.getSource(), getTarget(context), personalRule)),
+            EndingLibraryEntityCapability::setCanBeCollideWith,
+            EndingLibraryEntityCapability::canBeCollideWith,
+            (type, cap) -> {
+                Entity entity = cap.getEntity();
+                if (entity != null)
+                    return entity.canBeCollidedWith() ? 1 : 0;
+                return type.getCapValue(cap).orElse(false) ? 1 : 0;
+            },
+            Optional.empty(),
+            LoreHelper.OPT_BOOL_OPERATION
     );
     /*
     public static final DataType<Optional<Vector4f>> CUSTOM_SHADER_COLOR = build("custom_shader_color", (command, personalRule) ->
@@ -238,6 +271,24 @@ public class DataCommand {
                     .then(Commands.literal("default")
                             .executes(context -> set(context.getSource(), getTarget(context), rule, rule.defaultValue, true))
                     )
+            );
+        }
+        {
+            p.then(Commands.literal("invulnerableTime")
+                    .then(Commands.argument("ticks", IntegerArgumentType.integer())
+                            .executes(context -> {
+                                int ticks = IntegerArgumentType.getInteger(context, "ticks");
+                                Entity entity = getTarget(context);
+                                entity.invulnerableTime = ticks;
+                                sendModifyMessage(context.getSource(), entity, "invulnerable_time", LoreHelper.number(ticks, ChatFormatting.GOLD));
+                                return ticks;
+                            })
+                    )
+                    .executes(context -> {
+                        Entity entity = getTarget(context);
+                        sendGetMessage(context.getSource(), entity, "invulnerable_time", LoreHelper.number(entity.invulnerableTime, ChatFormatting.GOLD));
+                        return entity.invulnerableTime;
+                    })
             );
         }
         return p;
