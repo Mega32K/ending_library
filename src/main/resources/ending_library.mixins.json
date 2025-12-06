@@ -111,7 +111,6 @@
   "client": [
     "EditBoxMixin",
     "ItemRendererMixin",
-    "LevelRendererMixin",
     "MinecraftMixin",
     "accessor.AccessorAbstractWidget",
     "accessor.AccessorClientLevel",
@@ -131,6 +130,9 @@
     "accessor.AccessorOptions",
     "accessor.AccessorPostChain",
     "accessor.AccessorUniform",
+    "advanced.client.LevelRendererMixin",
+    "advanced.client.ShaderInstanceMixin",
+    "advanced.client.VertexBufferMixin",
     "advanced.client.custom_style.FontMixin",
     "advanced.client.custom_style.GuiGraphicsMixin",
     "advanced.client.registry.ClientPacketListenerMixin",
