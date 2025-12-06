@@ -136,7 +136,7 @@
     "advanced.client.custom_style.FontMixin",
     "advanced.client.custom_style.GuiGraphicsMixin",
     "advanced.client.registry.ClientPacketListenerMixin",
-    "advanced.client.xenon.LevelRendererMixin",
+    "advanced.client.embeddium.LevelRendererMixin",
     "advanced.config.ClientLevelMixin",
     "advanced.data_command.ChatScreenMixin",
     "advanced.data_command.KeyMappingMixin",

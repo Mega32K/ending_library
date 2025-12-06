@@ -2,6 +2,7 @@ package com.mega.endinglib.util.mixin;
 
 import com.mega.endinglib.util.EarlyConfig;
 import com.mega.endinglib.util.MCMapping;
+import com.mega.endinglib.util.annotation.NoModDependsMixin;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -39,6 +40,12 @@ public abstract class ApplyCheckMixinConfigPlugin implements IMixinConfigPlugin 
                 atomicBoolean.set(EarlyConfig.modIds.contains((String) annotationNode.values.get(1)));
             if (annotationNode.desc.equals("Lcom/mega/endinglib/util/annotation/NoModDependsMixin;")) {
                 //0-> value 1-> modid
+                System.out.println(EarlyConfig.modIds);
+                try {
+                    Thread.sleep(15000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 atomicBoolean.set(!EarlyConfig.modIds.contains((String) annotationNode.values.get(1)));
             }
         }
