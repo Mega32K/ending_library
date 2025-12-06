@@ -19,17 +19,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LevelRenderer.class)
-public class LevelRendererMixin {
+public abstract class LevelRendererMixin {
     @Inject(method = "levelEvent", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void customLevelEvent(int p_234305_, BlockPos p_234306_, int p_234307_, CallbackInfo ci, RandomSource randomsource) {
         LevelEventManager.onReceive(p_234305_, randomsource, p_234306_, p_234307_);
-    }
-    @Inject(expect = 0, method = "renderChunkLayer", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;getShader()Lnet/minecraft/client/renderer/ShaderInstance;"))
-    private void putProgramTime(RenderType p_172994_, PoseStack p_172995_, double p_172996_, double p_172997_, double p_172998_, Matrix4f p_254039_, CallbackInfo ci) {
-        if (RenderSystem.getShader() instanceof ExtraShaderInstance esi) {
-            if (esi.getUniformProgramTime() != null) {
-                esi.getUniformProgramTime().set(TimeContext.Client.currentSeconds());
-            }
-        }
     }
 }
