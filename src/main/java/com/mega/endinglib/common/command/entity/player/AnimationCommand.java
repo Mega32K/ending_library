@@ -11,20 +11,17 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 
-@SuppressWarnings("InstantiationOfUtilityClass")
 public class AnimationCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("animate")
@@ -54,7 +51,7 @@ public class AnimationCommand {
         return IntArrayList.toList(entities.stream().mapToInt(Entity::getId));
     }
     private static int play(CommandSourceStack stack, Collection<ServerPlayer> players, ResourceLocation animation) {
-        List<ServerPlayer> toSendPlayers = new ObjectArrayList<>(players.size());
+        Set<ServerPlayer> toSendPlayers = new ObjectOpenHashSet<>(players);
         for (ServerPlayer serverPlayer : players) {
             PacketHandler.collectSeenPlayers(toSendPlayers, serverPlayer, stack.getLevel());
         }
@@ -66,7 +63,7 @@ public class AnimationCommand {
         return players.size();
     }
     private static int partialPlay(CommandSourceStack stack, Collection<ServerPlayer> players, ResourceLocation animation, int length, Easing easing) {
-        List<ServerPlayer> toSendPlayers = new ObjectArrayList<>(players.size());
+        Set<ServerPlayer> toSendPlayers = new ObjectOpenHashSet<>(players);
         for (ServerPlayer serverPlayer : players) {
             PacketHandler.collectSeenPlayers(toSendPlayers, serverPlayer, stack.getLevel());
         }
@@ -77,7 +74,7 @@ public class AnimationCommand {
         return players.size();
     }
     private static int stop(CommandSourceStack stack, Collection<ServerPlayer> players) {
-        List<ServerPlayer> toSendPlayers = new ObjectArrayList<>(players.size());
+        Set<ServerPlayer> toSendPlayers = new ObjectOpenHashSet<>(players);
         for (ServerPlayer serverPlayer : players) {
             PacketHandler.collectSeenPlayers(toSendPlayers, serverPlayer, stack.getLevel());
         }
