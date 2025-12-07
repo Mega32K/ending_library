@@ -49,6 +49,7 @@ import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientRegistryLayer;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.PostPass;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -105,7 +106,11 @@ public class ClientWrapped {
                 if (player != null)
                     player.setForcedPose(null);
             }
-            case RELOAD_RESOURCES_PACK -> Minecraft.getInstance().execute(()->Minecraft.getInstance().reloadResourcePacks());
+            case RELOAD_RESOURCES_PACK -> Minecraft.getInstance().execute(()->{
+                Minecraft.getInstance().options.keyAttack.setDown(false);
+                Minecraft.getInstance().options.keyRight.setDown(false);
+                Minecraft.getInstance().reloadResourcePacks();
+            });
         }
     }
     public static void operateInputAction(InputOperations operations) {
@@ -191,9 +196,9 @@ public class ClientWrapped {
     public static void activeMouseControl() {
     }
     @SuppressWarnings("unchecked")
-    public static void playPlayerAnimation(ResourceLocation identifier) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
+    public static void playPlayerAnimation(ResourceLocation identifier, Player player) {
+        if (!(player instanceof AbstractClientPlayer)) return;
+        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get(ClientProxy.PLAYER_ANIMATION);
         if (animation != null) {
             KeyframeAnimation animation1 = PlayerAnimationRegistry.getAnimation(identifier);
             if (animation1 != null)
@@ -201,9 +206,9 @@ public class ClientWrapped {
         }
     }
     @SuppressWarnings("unchecked")
-    public static void partialPlayPlayerAnimation(ResourceLocation identifier, int length, Easing easing) {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
+    public static void partialPlayPlayerAnimation(ResourceLocation identifier, int length, Easing easing, Player player) {
+        if (!(player instanceof AbstractClientPlayer)) return;
+        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get(ClientProxy.PLAYER_ANIMATION);
         if (animation != null) {
             KeyframeAnimation animation1 = PlayerAnimationRegistry.getAnimation(identifier);
             if (animation1 != null) {
@@ -217,9 +222,9 @@ public class ClientWrapped {
         }
     }
     @SuppressWarnings("unchecked")
-    public static void stopPlayerAnimation() {
-        LocalPlayer localPlayer = Minecraft.getInstance().player;
-        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(localPlayer).get(ClientProxy.PLAYER_ANIMATION);
+    public static void stopPlayerAnimation(Player player) {
+        if (!(player instanceof AbstractClientPlayer)) return;
+        var animation = (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData((AbstractClientPlayer) player).get(ClientProxy.PLAYER_ANIMATION);
         if (animation != null) {
             animation.setAnimation(null);
         }

@@ -9,13 +9,20 @@ import com.mega.endinglib.common.network.s2c.S2CPlayerAnimationPacket;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.Collection;
+import java.util.List;
 
 @SuppressWarnings("InstantiationOfUtilityClass")
 public class AnimationCommand {
@@ -25,39 +32,58 @@ public class AnimationCommand {
                 .then(Commands.argument("players", EntityArgument.players())
                         .then(Commands.literal("partialPlay")
                                 .then(Commands.argument("animation", PlayerAnimationArgument.animation())
-                                        .executes(context -> partialPlay(EntityArgument.getPlayers(context, "players"), PlayerAnimationArgument.getAnimation(context, "animation"), 20, Easing.LINEAR))
+                                        .executes(context -> partialPlay(context.getSource(), EntityArgument.getPlayers(context, "players"), PlayerAnimationArgument.getAnimation(context, "animation"), 20, Easing.LINEAR))
                                         .then(Commands.argument("length", IntegerArgumentType.integer(0))
                                                 .then(Commands.argument("easing", EasingArgument.easing())
-                                                        .executes(context -> partialPlay(EntityArgument.getPlayers(context, "players"), PlayerAnimationArgument.getAnimation(context, "animation"), IntegerArgumentType.getInteger(context, "length"), EasingArgument.getEasing(context, "easing")))
+                                                        .executes(context -> partialPlay(context.getSource(), EntityArgument.getPlayers(context, "players"), PlayerAnimationArgument.getAnimation(context, "animation"), IntegerArgumentType.getInteger(context, "length"), EasingArgument.getEasing(context, "easing")))
                                                 )
                                         )
                                 )
                         )
                         .then(Commands.literal("play")
                                 .then(Commands.argument("animation", PlayerAnimationArgument.animation())
-                                        .executes(context -> play(EntityArgument.getPlayers(context, "players"), PlayerAnimationArgument.getAnimation(context, "animation")))
+                                        .executes(context -> play(context.getSource(), EntityArgument.getPlayers(context, "players"), PlayerAnimationArgument.getAnimation(context, "animation")))
                                 )
                         )
                         .then(Commands.literal("stop")
-                                .executes(context -> stop(EntityArgument.getPlayers(context, "players")))
+                                .executes(context -> stop(context.getSource(), EntityArgument.getPlayers(context, "players")))
                         )
                 );
     }
-    private static int play(Collection<ServerPlayer> players, ResourceLocation animation) {
+    private static IntList entitiesToIds(Collection<? extends Entity> entities) {
+        return IntArrayList.toList(entities.stream().mapToInt(Entity::getId));
+    }
+    private static int play(CommandSourceStack stack, Collection<ServerPlayer> players, ResourceLocation animation) {
+        List<ServerPlayer> toSendPlayers = new ObjectArrayList<>(players.size());
         for (ServerPlayer serverPlayer : players) {
-            PacketHandler.sendToPlayer(new S2CPlayerAnimationPacket.Play(animation), serverPlayer);
+            PacketHandler.collectSeenPlayers(toSendPlayers, serverPlayer, stack.getLevel());
+        }
+        IntList ids = entitiesToIds(players);
+        for (ServerPlayer seen : toSendPlayers) {
+            PacketHandler.sendToPlayer(new S2CPlayerAnimationPacket.Play(ids, animation), seen);
+
         }
         return players.size();
     }
-    private static int partialPlay(Collection<ServerPlayer> players, ResourceLocation animation, int length, Easing easing) {
+    private static int partialPlay(CommandSourceStack stack, Collection<ServerPlayer> players, ResourceLocation animation, int length, Easing easing) {
+        List<ServerPlayer> toSendPlayers = new ObjectArrayList<>(players.size());
         for (ServerPlayer serverPlayer : players) {
-            PacketHandler.sendToPlayer(new S2CPlayerAnimationPacket.PartialPlay(animation, length, easing), serverPlayer);
+            PacketHandler.collectSeenPlayers(toSendPlayers, serverPlayer, stack.getLevel());
+        }
+        IntList ids = entitiesToIds(players);
+        for (ServerPlayer seen : toSendPlayers) {
+            PacketHandler.sendToPlayer(new S2CPlayerAnimationPacket.PartialPlay(ids, animation, length, easing), seen);
         }
         return players.size();
     }
-    private static int stop(Collection<ServerPlayer> players) {
+    private static int stop(CommandSourceStack stack, Collection<ServerPlayer> players) {
+        List<ServerPlayer> toSendPlayers = new ObjectArrayList<>(players.size());
         for (ServerPlayer serverPlayer : players) {
-            PacketHandler.sendToPlayer(new S2CPlayerAnimationPacket.Stop(), serverPlayer);
+            PacketHandler.collectSeenPlayers(toSendPlayers, serverPlayer, stack.getLevel());
+        }
+        IntList ids = entitiesToIds(players);
+        for (ServerPlayer seen : toSendPlayers) {
+            PacketHandler.sendToPlayer(new S2CPlayerAnimationPacket.Stop(ids), seen);
         }
         return players.size();
     }

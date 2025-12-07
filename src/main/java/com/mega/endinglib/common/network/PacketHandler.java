@@ -35,6 +35,8 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
+import java.util.Collection;
+
 public class PacketHandler {
 
     private static final String PROTOCOL_VERSION = "1";
@@ -118,6 +120,15 @@ public class PacketHandler {
         }
         if (!hasSelf && entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(message, player);
+    }
+    public static void collectSeenPlayers(Collection<ServerPlayer> collection, Entity entity, ServerLevel serverLevel) {
+        AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;
+        ChunkMap.TrackedEntity trackedEntity = chunkMapAccessor.getEntityMap().get(entity.getId());
+        if (trackedEntity != null) {
+            for (ServerPlayerConnection connection : ((AccessorTrackedEntity) trackedEntity).getSeenBy()) {
+                collection.add(connection.getPlayer());
+            }
+        }
     }
 
     public static void playSound(ServerPlayer serverPlayer, SoundEvent soundEvent, SoundSource source, float volume, float s) {
