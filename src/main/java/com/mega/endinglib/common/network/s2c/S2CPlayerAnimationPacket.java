@@ -32,6 +32,7 @@ public class S2CPlayerAnimationPacket {
         }
 
         public static void encode(Play packet, FriendlyByteBuf friendlyByteBuf) {
+            friendlyByteBuf.writeIntIdList(packet.players);
             friendlyByteBuf.writeResourceLocation(packet.animation);
         }
 
@@ -69,6 +70,7 @@ public class S2CPlayerAnimationPacket {
         }
 
         public static void encode(PartialPlay packet, FriendlyByteBuf friendlyByteBuf) {
+            friendlyByteBuf.writeIntIdList(packet.players);
             friendlyByteBuf.writeResourceLocation(packet.animation);
             friendlyByteBuf.writeInt(packet.length);
             friendlyByteBuf.writeEnum(packet.easing);
@@ -103,6 +105,7 @@ public class S2CPlayerAnimationPacket {
         }
 
         public static void encode(Stop packet, FriendlyByteBuf friendlyByteBuf) {
+            friendlyByteBuf.writeIntIdList(packet.players);
         }
 
         public static void handle(Stop packet, Supplier<NetworkEvent.Context> context) {
