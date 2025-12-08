@@ -23,7 +23,7 @@ public abstract class ShaderInstanceMixin implements ExtraShaderInstance {
     private Uniform _PROGRAM_TIME;
     @Inject(method = "<init>(Lnet/minecraft/server/packs/resources/ResourceProvider;Lnet/minecraft/resources/ResourceLocation;Lcom/mojang/blaze3d/vertex/VertexFormat;)V", at = @At("RETURN"))
     private void injectInit(ResourceProvider p_173336_, ResourceLocation shaderLocation, VertexFormat p_173338_, CallbackInfo ci) {
-        this._PROGRAM_TIME =  this.getUniform("GameTime");
+        this._PROGRAM_TIME =  this.getUniform("_ProgramTime");
     }
 
     @Override
