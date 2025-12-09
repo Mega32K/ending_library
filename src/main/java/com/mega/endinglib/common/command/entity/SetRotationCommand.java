@@ -39,12 +39,12 @@ public class SetRotationCommand {
                 .then(Commands.argument("targets", EntityArgument.entities())
                         .then(Commands.literal("set")
                                 .then(Commands.argument("rotation", Vec2Argument.vec2(false))
-                                        .executes(context -> setRotation(context.getSource(), EntityArgument.getEntities(context, "targets"), Vec2Argument.getVec2(context, "rotation")))
+                                        .executes(context -> setRotation(context.getSource(), EntityArgument.getEntities(context, "targets"), switch_(Vec2Argument.getVec2(context, "rotation"))))
                                 )
                         )
                         .then(Commands.literal("add")
                                 .then(Commands.argument("rotation", Vec2Argument.vec2(false))
-                                        .executes(context -> addRotation(context.getSource(), EntityArgument.getEntities(context, "targets"), Vec2Argument.getVec2(context, "rotation")))
+                                        .executes(context -> addRotation(context.getSource(), EntityArgument.getEntities(context, "targets"), switch_(Vec2Argument.getVec2(context, "rotation"))))
                                 )
                         )
                         .then(Commands.literal("facing")
@@ -67,8 +67,10 @@ public class SetRotationCommand {
                         )
                 );
     }
-
-
+    
+    private static Vec2 switch_(Vec2 vec2) {
+        return new Vec2(vec2.y, vec2.x);
+    }
     private static int setRotation(CommandSourceStack stack, Collection<? extends Entity> targets, Vec2 rotation) {
         int i = 0;
         if (!targets.isEmpty()) {
