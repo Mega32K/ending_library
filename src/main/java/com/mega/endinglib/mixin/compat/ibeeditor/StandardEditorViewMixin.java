@@ -9,6 +9,7 @@ import com.github.franckyi.ibeeditor.client.util.texteditor.StyleType;
 import com.github.franckyi.ibeeditor.common.ModTexts;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.compat.ibeeditor.IBESafeClass;
+import com.mega.endinglib.common.eventhandler.ClientEventHandler;
 import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.annotation.ModDependsMixin;
 import net.minecraft.network.chat.Component;
@@ -30,5 +31,4 @@ public abstract class StandardEditorViewMixin {
     private void addStyleFormattingMiddle(HBoxBuilder middle, CallbackInfo ci) {
         middle.add(this.createTextButton(IBESafeClass.CENTERED, SafeClass.loc("textures/ui/text_centered.png"), Component.translatable("tooltip.endinglib.text.centered")));
     }
-
 }
