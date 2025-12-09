@@ -13,9 +13,11 @@ import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.SlotArgument;
 import net.minecraft.commands.arguments.item.ItemArgument;
 import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.commands.ItemCommands;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.Item;
@@ -32,12 +34,12 @@ public class CooldownCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("increase")
                                 .then(Commands.literal("hand")
-                                        .then(Commands.argument("hand", InteractionHandArgument.hand())
+                                        .then(Commands.argument("hand", SlotArgument.slot())
                                                 .then(Commands.argument("ticks", IntegerArgumentType.integer(0))
                                                         .executes(context -> increase(
                                                                 context.getSource(),
                                                                 EntityArgument.getPlayer(context, "player"),
-                                                                InteractionHandArgument.getHand(context, "hand"),
+                                                                SlotArgument.getSlot(context, "hand"),
                                                                 IntegerArgumentType.getInteger(context, "ticks")
                                                         ))
                                                 )
@@ -58,12 +60,12 @@ public class CooldownCommand {
                         )
                         .then(Commands.literal("decrease")
                                 .then(Commands.literal("hand")
-                                        .then(Commands.argument("hand", InteractionHandArgument.hand())
+                                        .then(Commands.argument("hand", SlotArgument.slot())
                                                 .then(Commands.argument("ticks", IntegerArgumentType.integer(0))
                                                         .executes(context -> decrease(
                                                                 context.getSource(),
                                                                 EntityArgument.getPlayer(context, "player"),
-                                                                InteractionHandArgument.getHand(context, "hand"),
+                                                                SlotArgument.getSlot(context, "hand"),
                                                                 IntegerArgumentType.getInteger(context, "ticks")
                                                         ))
                                                 )
@@ -88,11 +90,11 @@ public class CooldownCommand {
                                         EntityArgument.getPlayer(context, "player"))
                                 )
                                 .then(Commands.literal("hand")
-                                        .then(Commands.argument("hand", InteractionHandArgument.hand())
+                                        .then(Commands.argument("hand", SlotArgument.slot())
                                                 .executes(context -> remove(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "player"),
-                                                        InteractionHandArgument.getHand(context, "hand")
+                                                        SlotArgument.getSlot(context, "hand")
                                                 ))
 
                                         )
@@ -110,11 +112,11 @@ public class CooldownCommand {
                         )
                         .then(Commands.literal("get")
                                 .then(Commands.literal("hand")
-                                        .then(Commands.argument("hand", InteractionHandArgument.hand())
+                                        .then(Commands.argument("hand", SlotArgument.slot())
                                                 .executes(context -> get(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "player"),
-                                                        InteractionHandArgument.getHand(context, "hand")
+                                                        SlotArgument.getSlot(context, "hand")
                                                 ))
 
                                         )
@@ -133,12 +135,12 @@ public class CooldownCommand {
                 );
     }
 
-    private static int increase(CommandSourceStack sourceStack, ServerPlayer player, InteractionHand hand, int ticks) {
+    private static int increase(CommandSourceStack sourceStack, ServerPlayer player, int slot, int ticks) {
         ItemStack itemStack;
-        if (!(itemStack = player.getItemInHand(hand)).isEmpty()) {
+        if (!(itemStack = player.getSlot(slot).get()).isEmpty()) {
             player.getCooldowns().addCooldown(itemStack.getItem(), ticks);
         }
-        sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.cooldown.increase.hand", player.getDisplayName(), LoreHelper.withCopyEnum("tooltip.endinglib.", hand), LoreHelper.number(ticks, ChatFormatting.GOLD)), false);
+        sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.cooldown.increase.hand", player.getDisplayName(), LoreHelper.number(slot, ChatFormatting.GOLD), LoreHelper.number(ticks, ChatFormatting.GOLD)), false);
         return ticks;
     }
 
@@ -149,12 +151,12 @@ public class CooldownCommand {
         return ticks;
     }
 
-    private static int decrease(CommandSourceStack sourceStack, ServerPlayer player, InteractionHand hand, int ticks) {
+    private static int decrease(CommandSourceStack sourceStack, ServerPlayer player, int slot, int ticks) {
         ItemStack itemStack;
-        if (!(itemStack = player.getItemInHand(hand)).isEmpty()) {
+        if (!(itemStack = player.getSlot(slot).get()).isEmpty()) {
             player.getCooldowns().addCooldown(itemStack.getItem(), -ticks);
         }
-        sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.cooldown.decrease.hand", player.getDisplayName(), LoreHelper.withCopyEnum("tooltip.endinglib.", hand), LoreHelper.number(ticks, ChatFormatting.GOLD)), false);
+        sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.cooldown.decrease.hand", player.getDisplayName(), LoreHelper.number(slot, ChatFormatting.GOLD), LoreHelper.number(ticks, ChatFormatting.GOLD)), false);
         return ticks;
     }
 
@@ -165,12 +167,12 @@ public class CooldownCommand {
         return ticks;
     }
 
-    private static int remove(CommandSourceStack sourceStack, ServerPlayer player, InteractionHand hand) {
+    private static int remove(CommandSourceStack sourceStack, ServerPlayer player, int slot) {
         ItemStack itemStack;
-        if (!(itemStack = player.getItemInHand(hand)).isEmpty()) {
+        if (!(itemStack = player.getSlot(slot).get()).isEmpty()) {
             player.getCooldowns().removeCooldown(itemStack.getItem());
         }
-        sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.cooldown.clear.hand", player.getDisplayName(), LoreHelper.withCopyEnum("tooltip.endinglib.", hand)), false);
+        sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.cooldown.clear.hand", player.getDisplayName(), LoreHelper.number(slot, ChatFormatting.GOLD)), false);
         return 1;
     }
 
@@ -190,9 +192,9 @@ public class CooldownCommand {
         return 1;
     }
 
-    private static int get(CommandSourceStack sourceStack, ServerPlayer player, InteractionHand hand) {
+    private static int get(CommandSourceStack sourceStack, ServerPlayer player, int slot) {
         ItemStack itemStack;
-        if (!(itemStack = player.getItemInHand(hand)).isEmpty()) {
+        if (!(itemStack = player.getSlot(slot).get()).isEmpty()) {
             ItemCooldowns cooldowns = player.getCooldowns();
             AccessorItemCooldowns aic = (AccessorItemCooldowns) cooldowns;
             AccessorCooldownsInstance cooldownsInstance = (AccessorCooldownsInstance) aic.getCooldowns().get(itemStack.getItem());

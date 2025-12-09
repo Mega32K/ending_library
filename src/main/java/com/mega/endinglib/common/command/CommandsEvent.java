@@ -2,6 +2,7 @@ package com.mega.endinglib.common.command;
 
 import com.mega.endinglib.common.command.entity.*;
 import com.mega.endinglib.common.command.entity.player.*;
+import com.mega.endinglib.common.command.test.DHPExtraCommandCommand;
 import com.mega.endinglib.common.command.test.DumpCommand;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -48,6 +49,7 @@ public class CommandsEvent {
                         .then(DataCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
+                                //.then(DHPExtraCommandCommand.register())
                         )
         );
     }
