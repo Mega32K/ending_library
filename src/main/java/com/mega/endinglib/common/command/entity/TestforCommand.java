@@ -35,7 +35,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class TestforCommand {
-    private static final Supplier<Component> RAYCAST_FAILURE = ()-> Component.translatable("commands.endinglib.message.testfor.failure");
+    private static final Supplier<Component> RAYCAST_FAILURE = () -> Component.translatable("commands.endinglib.message.testfor.failure");
 
     public static ArgumentBuilder<CommandSourceStack, ?> register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("testfor")
@@ -58,30 +58,33 @@ public class TestforCommand {
                                                                 )
                                                         )
                                                 )
-                                        ).then(Commands.literal("at")
-                                                .then(Commands.literal("target")
-                                                        .then(Commands.literal("run")
-                                                                .fork(dispatcher.getRoot(), (context) -> {
-                                                                    Entity executor = raycastEntity(context);
-                                                                    if (executor == null) {
-                                                                        return Collections.emptyList();
-                                                                    } else {
-                                                                        return Collections.singleton(context.getSource().withPosition(executor.position()));
-                                                                    }
-                                                                })
+                                                .then(Commands.literal("at")
+                                                        .then(Commands.literal("target")
+                                                                .then(Commands.literal("run")
+                                                                        .fork(dispatcher.getRoot(), (context) -> {
+                                                                            Entity executor = raycastEntity(context);
+                                                                            if (executor == null) {
+                                                                                return Collections.emptyList();
+                                                                            } else {
+                                                                                return Collections.singleton(context.getSource().withPosition(executor.position()));
+                                                                            }
+                                                                        })
+                                                                )
                                                         )
                                                 )
-                                        ).then(Commands.literal("run")
-                                                .fork(dispatcher.getRoot(), (context) -> {
-                                                    Entity executor = raycastEntity(context);
-                                                    if (executor == null) {
-                                                        return Collections.emptyList();
-                                                    } else {
-                                                        return Collections.singleton(context.getSource());
-                                                    }
-                                                })
+                                                .then(Commands.literal("run")
+                                                        .fork(dispatcher.getRoot(), (context) -> {
+                                                            Entity executor = raycastEntity(context);
+                                                            if (executor == null) {
+                                                                return Collections.emptyList();
+                                                            } else {
+                                                                return Collections.singleton(context.getSource());
+                                                            }
+                                                        })
+                                                )
                                         )
-                                ).then(Commands.literal("block")
+                                )
+                                .then(Commands.literal("block")
                                         .then(Commands.argument("MaxDistance", IntegerArgumentType.integer(0, 128))
                                                 .then(Commands.literal("at")
                                                         .then(Commands.literal("pos")
@@ -95,7 +98,8 @@ public class TestforCommand {
                                                                             }
                                                                         })
                                                                 )
-                                                        ).then(Commands.literal("block_pos")
+                                                        )
+                                                        .then(Commands.literal("block_pos")
                                                                 .then(Commands.literal("run")
                                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                                             BlockHitResult blockHitResult = raycastBlock(context);
@@ -107,7 +111,8 @@ public class TestforCommand {
                                                                         })
                                                                 )
                                                         )
-                                                ).then(Commands.literal("run")
+                                                )
+                                                .then(Commands.literal("run")
                                                         .fork(dispatcher.getRoot(), (context) -> {
                                                             BlockHitResult blockHitResult = raycastBlock(context);
                                                             if (!testResult(blockHitResult)) {
@@ -118,7 +123,8 @@ public class TestforCommand {
                                                         })
                                                 )
                                         )
-                                ).then(Commands.literal("miss")
+                                )
+                                .then(Commands.literal("miss")
                                         .then(Commands.argument("MaxDistance", IntegerArgumentType.integer(0, 128))
                                                 .then(Commands.literal("at")
                                                         .then(Commands.literal("target")
@@ -135,20 +141,22 @@ public class TestforCommand {
                                                                 )
                                                         )
                                                 )
-                                        ).then(Commands.literal("run")
-                                                .fork(dispatcher.getRoot(), (context) -> {
-                                                    Entity executor = raycastEntity(context);
-                                                    BlockHitResult blockHitResult = raycastBlock(context);
-                                                    if (executor == null && testResult(blockHitResult)) {
-                                                        return Collections.singleton(context.getSource());
-                                                    } else {
-                                                        return Collections.emptyList();
-                                                    }
-                                                })
+                                                .then(Commands.literal("run")
+                                                        .fork(dispatcher.getRoot(), (context) -> {
+                                                            Entity executor = raycastEntity(context);
+                                                            BlockHitResult blockHitResult = raycastBlock(context);
+                                                            if (executor == null && testResult(blockHitResult)) {
+                                                                return Collections.singleton(context.getSource());
+                                                            } else {
+                                                                return Collections.emptyList();
+                                                            }
+                                                        })
+                                                )
                                         )
                                 )
                         )
-                ).then(Commands.literal("distance")
+                )
+                .then(Commands.literal("distance")
                         .then(Commands.argument("entity", EntityArgument.entity())
                                 .then(Commands.literal("entity")
                                         .then(Commands.argument("target", EntityArgument.entity())
@@ -161,7 +169,8 @@ public class TestforCommand {
                                         )
                                 )
                         )
-                ).then(Commands.literal("collision")
+                )
+                .then(Commands.literal("collision")
                         .then(Commands.argument("entity", EntityArgument.entity())
                                 .then(Commands.argument("Direction", DirectionArgument.direction())
                                         .then(Commands.literal("blocks")
@@ -173,7 +182,8 @@ public class TestforCommand {
                                                             return list;
                                                         })
                                                 )
-                                        ).then(Commands.literal("block")
+                                        )
+                                        .then(Commands.literal("block")
                                                 .then(Commands.argument("Block", BlockPredicateArgument.blockPredicate(buildContext))
                                                         .then(Commands.literal("run")
                                                                 .fork(dispatcher.getRoot(), (context) -> {
@@ -189,12 +199,15 @@ public class TestforCommand {
                         )
                 );
     }
+
     static boolean testResult(@Nullable BlockHitResult result) {
         return result != null && result.getType() == HitResult.Type.BLOCK;
     }
+
     static boolean testResult(@Nullable EntityHitResult result) {
         return result != null && result.getType() == HitResult.Type.ENTITY;
     }
+
     private static Entity raycastEntity(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "entity");
         int maxDistance = IntegerArgumentType.getInteger(context, "MaxDistance");
