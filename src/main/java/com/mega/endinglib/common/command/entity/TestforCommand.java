@@ -212,7 +212,7 @@ public class TestforCommand {
         Entity entity = EntityArgument.getEntity(context, "entity");
         double result = entity.position().distanceTo(pos);
         context.getSource().sendSuccess(() -> Component.translatable("commands.endinglib.message.testfor.result", result), true);
-        return (int) Math.round(result);
+        return (int) Math.round(result * 100);
     }
 
     private static Set<BlockPos> collisionBlock(CommandContext<CommandSourceStack> context, boolean blocks) throws CommandSyntaxException {
