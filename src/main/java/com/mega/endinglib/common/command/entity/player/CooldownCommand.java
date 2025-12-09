@@ -33,13 +33,13 @@ public class CooldownCommand {
                 .requires(stack -> stack.hasPermission(CommandConfig.COMMAND_COOLDOWN.get()))
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("increase")
-                                .then(Commands.literal("container")
-                                        .then(Commands.argument("container", SlotArgument.slot())
+                                .then(Commands.literal("slot")
+                                        .then(Commands.argument("slot", SlotArgument.slot())
                                                 .then(Commands.argument("ticks", IntegerArgumentType.integer(0))
                                                         .executes(context -> increase(
                                                                 context.getSource(),
                                                                 EntityArgument.getPlayer(context, "player"),
-                                                                SlotArgument.getSlot(context, "container"),
+                                                                SlotArgument.getSlot(context, "slot"),
                                                                 IntegerArgumentType.getInteger(context, "ticks")
                                                         ))
                                                 )
@@ -59,13 +59,13 @@ public class CooldownCommand {
                                 )
                         )
                         .then(Commands.literal("decrease")
-                                .then(Commands.literal("container")
-                                        .then(Commands.argument("container", SlotArgument.slot())
+                                .then(Commands.literal("slot")
+                                        .then(Commands.argument("slot", SlotArgument.slot())
                                                 .then(Commands.argument("ticks", IntegerArgumentType.integer(0))
                                                         .executes(context -> decrease(
                                                                 context.getSource(),
                                                                 EntityArgument.getPlayer(context, "player"),
-                                                                SlotArgument.getSlot(context, "container"),
+                                                                SlotArgument.getSlot(context, "slot"),
                                                                 IntegerArgumentType.getInteger(context, "ticks")
                                                         ))
                                                 )
@@ -89,12 +89,12 @@ public class CooldownCommand {
                                         context.getSource(),
                                         EntityArgument.getPlayer(context, "player"))
                                 )
-                                .then(Commands.literal("container")
-                                        .then(Commands.argument("container", SlotArgument.slot())
+                                .then(Commands.literal("slot")
+                                        .then(Commands.argument("slot", SlotArgument.slot())
                                                 .executes(context -> remove(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "player"),
-                                                        SlotArgument.getSlot(context, "container")
+                                                        SlotArgument.getSlot(context, "slot")
                                                 ))
 
                                         )
@@ -111,12 +111,12 @@ public class CooldownCommand {
                                 )
                         )
                         .then(Commands.literal("get")
-                                .then(Commands.literal("container")
-                                        .then(Commands.argument("container", SlotArgument.slot())
+                                .then(Commands.literal("slot")
+                                        .then(Commands.argument("slot", SlotArgument.slot())
                                                 .executes(context -> get(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "player"),
-                                                        SlotArgument.getSlot(context, "container")
+                                                        SlotArgument.getSlot(context, "slot")
                                                 ))
 
                                         )
