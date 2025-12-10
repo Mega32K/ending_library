@@ -18,6 +18,10 @@ public class EndingLibraryMixinPlugin extends ApplyCheckMixinConfigPlugin {
                 .processor(MillisTimeRedirector.INSTANCE)
                 .processor(NormalCoremodProcessor.INSTANCE)
                 .build();
+        try {
+            Class.forName("com.mega.endinglib.util.java.MUtils");
+        } catch (ClassNotFoundException ignored) {
+        }
     }
 
     @Override

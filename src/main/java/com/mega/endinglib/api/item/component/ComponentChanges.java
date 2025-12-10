@@ -42,11 +42,13 @@ public final class ComponentChanges {
 
         for (Map.Entry<ItemComponentType<?>, Optional<?>> entry : Reference2ObjectMaps.fastIterable(changes.changedComponents)) {
             ItemComponentType<?> componentType = (ItemComponentType<?>) entry.getKey();
-            Optional<?> optional = (Optional<?>) entry.getValue();
-            if (optional.isPresent()) {
-                reference2ObjectMap.put(new ComponentChanges.Type(componentType, false), optional.get());
-            } else {
-                reference2ObjectMap.put(new ComponentChanges.Type(componentType, true), Unit.INSTANCE);
+            if (componentType.codec() != null) {
+                Optional<?> optional = (Optional<?>) entry.getValue();
+                if (optional.isPresent()) {
+                    reference2ObjectMap.put(new ComponentChanges.Type(componentType, false), optional.get());
+                } else {
+                    reference2ObjectMap.put(new ComponentChanges.Type(componentType, true), Unit.INSTANCE);
+                }
             }
         }
         return MUtils.objectForced(reference2ObjectMap);

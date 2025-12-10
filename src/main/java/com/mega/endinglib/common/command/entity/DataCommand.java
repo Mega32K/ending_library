@@ -95,7 +95,7 @@ public class DataCommand {
             EndingLibraryEntityCapability::getCustomEntityDimensions,
             (type, cap) -> {
                 EntityDimensions ed = type.getCapValue(cap).orElse(EntityDimensions.scalable(0,0));
-                return (int) (new Vec2(ed.width, ed.height).length() * 100F);
+                return Math.round(ed.width * 1000.0F * 1000.0F) + Math.round(ed.height * 1000.0F);
             },
             Optional.empty(),
             LoreHelper.OPT_ENTITY_DIMENSIONAL_COMPONENT_OPERATION

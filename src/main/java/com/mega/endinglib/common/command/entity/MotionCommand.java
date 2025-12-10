@@ -48,7 +48,7 @@ public class MotionCommand {
         Vec3 motion = vec3;
         entity.setDeltaMovement(motion);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.set", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
-        return (int) (motion.length() * 100);
+        return (int) (motion.length() * 1000);
     }
 
     private static int push(CommandSourceStack stack, Entity entity, Vec3 vec3, boolean relative) {
@@ -60,7 +60,7 @@ public class MotionCommand {
         Vec3 motion = vec3;
         entity.push(motion.x, motion.y, motion.z);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.push", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
-        return (int) (motion.length() * 100);
+        return (int) (motion.length() * 1000);
     }
 
     private static Vec3 relative(float xRot, float yRot, Vec3 origin) {
