@@ -20,7 +20,7 @@ public record CameraKeyframe(float timestamp, float endPoint, Easing easing) {
     public static Codec<CameraKeyframe> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                     Codecs.NON_NEGATIVE_FLOAT.fieldOf("timestamp").forGetter(CameraKeyframe::timestamp),
-                    Codecs.NON_NEGATIVE_FLOAT.fieldOf("endPoint").forGetter(CameraKeyframe::endPoint),
+                    Codec.FLOAT.fieldOf("endPoint").forGetter(CameraKeyframe::endPoint),
                     Codecs.EASING_CODEC.fieldOf("easing").forGetter(CameraKeyframe::easing)
             ).apply(instance, CameraKeyframe::new)
     );
