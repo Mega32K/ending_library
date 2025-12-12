@@ -502,7 +502,7 @@ public class ClientWrapped {
             CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
             if (animation != null) {
                 animation.setStopped(false);
-                sendModifyMessage(player);
+                //sendModifyMessage(player);
             }
         }
         public static void stopAnimation(Player player, CameraValueInstance cvi, String name) {
@@ -510,7 +510,7 @@ public class ClientWrapped {
             if (animation != null) {
                 animation.setStopped(true);
                 animation.reset();
-                sendModifyMessage(player);
+                //sendModifyMessage(player);
             }
         }
         public static void startGroupAnimation(Player player, ResourceLocation group) {
@@ -521,7 +521,7 @@ public class ClientWrapped {
                     }
                 }
             }
-            sendModifyMessage(player);
+            //sendModifyMessage(player);
         }
         public static void stopGroupAnimation(Player player, ResourceLocation group) {
             for (List<CameraKeyframeAnimation> animations : StaticCameraAnimationReloadListener.INSTANCE.getGroupAnimations().get(group).values()) {
@@ -532,7 +532,7 @@ public class ClientWrapped {
                     }
                 }
             }
-            sendModifyMessage(player);
+            //sendModifyMessage(player);
         }
     }
 }
