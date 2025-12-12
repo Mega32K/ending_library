@@ -7,6 +7,7 @@ import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
 import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
+import com.mega.endinglib.common.network.s2c.camera.clientload.S2CCameraAnimationNoticePacket;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputCooldownPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
@@ -20,6 +21,7 @@ import com.mega.endinglib.common.network.s2c.timestop.TimeStopClientEffectPacket
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
 import com.mega.endinglib.mixin.accessor.AccessorChunkMap;
 import com.mega.endinglib.mixin.accessor.AccessorTrackedEntity;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSoundEntityPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -84,6 +86,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CSetCameraEntityPacket.class, S2CSetCameraEntityPacket::encode, S2CSetCameraEntityPacket::decode, S2CSetCameraEntityPacket::handle);
         INSTANCE.registerMessage(id(), S2CBuildAnimationOperationPacket.class, S2CBuildAnimationOperationPacket::encode, S2CBuildAnimationOperationPacket::decode, S2CBuildAnimationOperationPacket::handle);
         INSTANCE.registerMessage(id(), S2CDynamicEffectReadPacket.class, S2CDynamicEffectReadPacket::encode, S2CDynamicEffectReadPacket::decode, S2CDynamicEffectReadPacket::handle);
+        INSTANCE.registerMessage(id(), S2CCameraAnimationNoticePacket.class, S2CCameraAnimationNoticePacket::encode, S2CCameraAnimationNoticePacket::decode, S2CCameraAnimationNoticePacket::handle);
 
     }
 
@@ -102,11 +105,9 @@ public class PacketHandler {
     public static <MSG> void sendToPlayer(MSG msg, ServerPlayer player) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
-
     public static <MSG> void sendToEntity(MSG message, LivingEntity entity) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
     }
-
     public static <MSG> void sendToSeen(MSG message, Entity entity, ServerLevel serverLevel) {
         AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;
         ChunkMap.TrackedEntity trackedEntity = chunkMapAccessor.getEntityMap().get(entity.getId());
@@ -120,6 +121,10 @@ public class PacketHandler {
         }
         if (!hasSelf && entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(message, player);
+    }
+    public static <MSG> void sendToCommandSourcePlayer(MSG msg, CommandSourceStack sourceStack) {
+        if (sourceStack.isPlayer())
+            INSTANCE.send(PacketDistributor.PLAYER.with(sourceStack::getPlayer), msg);
     }
     public static void collectSeenPlayers(Collection<ServerPlayer> collection, Entity entity, ServerLevel serverLevel) {
         AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;

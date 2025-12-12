@@ -17,7 +17,9 @@ public class Args {
     public Args(Object... values) {
         this.values = values;
     }
-
+    public Args() {
+        this(new Object[0]);
+    }
     /**
      * Return the argument list size.
      *

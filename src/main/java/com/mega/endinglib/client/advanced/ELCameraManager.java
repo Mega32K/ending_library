@@ -383,7 +383,9 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public double getYRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.yRelativeOld, this.yRelative.getValue()) + yRelative.getAnimationValue(partialTicks);
+        float f = yRelative.getAnimationValue(partialTicks);
+        System.out.println(f);
+        return Mth.lerp(partialTicks, this.yRelativeOld, this.yRelative.getValue()) + f;
     }
 
     public double getZRelative(float partialTicks) {

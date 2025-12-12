@@ -31,7 +31,7 @@ public class CameraAnimTypeArgument implements ArgumentType<String> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        CommandsEvent.suggestFromExamples(EXAMPLES, "commands.endinglib.message.camera_anim_type.", builder);
+        CommandsEvent.suggestFromExamples(EXAMPLES, "commands.endinglib.message.camera.camera_anim_type.", builder);
         return builder.buildFuture();
     }
 

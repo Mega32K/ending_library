@@ -62,9 +62,11 @@ public class S2CCameraAnimationSetPacket {
         for (CameraSnapshot snapshot : packet.cameraValues) {
             CameraValueInstance cvi = snapshot.modifierType().getFieldGetter().apply(manager);
             Set<CameraKeyframeAnimation> set = new ObjectOpenHashSet<>(snapshot.animations);
-            cvi.removeKeyframeAnimations();
-            for (CameraKeyframeAnimation animation : set)
+            cvi.removeDynamicKeyframeAnimations();
+            for (CameraKeyframeAnimation animation : set) {
+                animation.setDynamic(true);
                 cvi.addKeyframeAnimation(animation);
+            }
         }
     }
 

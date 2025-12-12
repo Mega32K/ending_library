@@ -82,6 +82,9 @@ public abstract class CameraMixin {
                         finalY = Mth.clamp(finalY, area.minY, area.maxY);
                         finalZ = Mth.clamp(finalZ, area.minZ, area.maxZ);
                     }
+                }
+                this.setPosition(finalX, finalY, finalZ);
+                if (this.detached) {
                     double xRelative = manager.getXRelative(partial);
                     double yRelative = manager.getYRelative(partial);
                     double zRelative = manager.getZRelative(partial);
@@ -89,8 +92,6 @@ public abstract class CameraMixin {
                         this.move(zRelative, yRelative, -xRelative);
 
                 }
-                this.setPosition(finalX, finalY, finalZ);
-
                 return false;
             }
         } catch (Throwable throwable) {

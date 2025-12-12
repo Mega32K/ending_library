@@ -23,6 +23,7 @@ import net.minecraft.util.Mth;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,6 +35,7 @@ public class CameraKeyframeAnimation {
         CameraKeyframeAnimation anim = new CameraKeyframeAnimation(byteBuf.readUtf(), byteBuf.readEnum(AnimType.class), byteBuf.readFloat());
         anim.tickCount = byteBuf.readInt();
         anim.stopped = byteBuf.readBoolean();
+        anim.setDynamic(true);
         anim.keyframes.putAll(byteBuf.readMap(FriendlyByteBuf::readUtf, bb -> bb.readList(CameraKeyframe.READER_F)));
         return anim;
     };
@@ -63,11 +65,13 @@ public class CameraKeyframeAnimation {
     });
     private int tickCountOld;
     private int tickCount;
+    //100 = 1scd
     private float duration;
     private AnimType animType;
     private boolean stopped = true;
     private boolean dirty = true;
-    public boolean isDynamic = false;
+    //是否是由命令生成的关键帧动画
+    public boolean isDynamic = true;
 
     public CameraKeyframeAnimation(String name, AnimType animType) {
         this(name, animType, -1);
@@ -81,6 +85,7 @@ public class CameraKeyframeAnimation {
     private static CameraKeyframeAnimation jsonConstruct(String name, AnimType animType, float duration, Map<String, List<CameraKeyframe>> keyframes) {
         CameraKeyframeAnimation cka = new CameraKeyframeAnimation(name, animType, duration);
         cka.keyframes.putAll(keyframes);
+        cka.isDynamic = false;
         return cka;
     }
 
@@ -91,6 +96,7 @@ public class CameraKeyframeAnimation {
             anim.stopped = compoundTag.getBoolean("Stopped");
             anim.tickCountOld = anim.tickCount = compoundTag.getInt("Tick");
             anim.keyframes.clear();
+            anim.isDynamic = compoundTag.getBoolean("IsDynamic");
             ListTag keyframesData = compoundTag.getList("KeyframesData", Tag.TAG_COMPOUND);
             if (!keyframesData.isEmpty()) {
                 for (int i=0;i<keyframesData.size();i++) {
@@ -123,7 +129,12 @@ public class CameraKeyframeAnimation {
         compoundtag.putFloat("Duration", this.duration);
         compoundtag.putInt("Tick", this.tickCount);
         compoundtag.putBoolean("Stopped", this.stopped);
+        compoundtag.putBoolean("IsDynamic", this.isDynamic);
         return compoundtag;
+    }
+
+    public void setDynamic(boolean dynamic) {
+        isDynamic = dynamic;
     }
 
     public void tick() {
@@ -226,6 +237,12 @@ public class CameraKeyframeAnimation {
         this.keyframes.get(group).add(keyframe);
         this.setDirty();
     }
+    public void addKeyframes(String group, List<CameraKeyframe> keyframe) {
+        if (!this.keyframes.containsKey(group))
+            this.keyframes.put(group, new ObjectArrayList<>(keyframe));
+        this.keyframes.get(group).addAll(keyframe);
+        this.setDirty();
+    }
 
     public float anim(float partialTicks) {
         if (keyframes.isEmpty()) return 0f;
@@ -262,7 +279,7 @@ public class CameraKeyframeAnimation {
     }
 
     public void reset() {
-        this.tickCountOld = this.tickCount;
+        this.tickCountOld = this.tickCount = 0;
     }
 
     @Override

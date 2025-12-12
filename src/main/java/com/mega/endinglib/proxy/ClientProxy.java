@@ -5,6 +5,7 @@ import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.client.reloadable.DynamicEffectDataResourceReloadListener;
+import com.mega.endinglib.client.reloadable.StaticCameraAnimationReloadListener;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
 import com.mega.endinglib.client.screen.OtherPlayerInventoryScreen;
 import com.mega.endinglib.common.init.ModMenus;
@@ -47,6 +48,7 @@ public class ClientProxy implements ModProxy {
             }, 0L, 1L, TimeUnit.MILLISECONDS);
             ReloadableResourceManager manager = (ReloadableResourceManager) Minecraft.getInstance().getResourceManager();
             manager.registerReloadListener(DynamicEffectDataResourceReloadListener.INSTANCE);
+            manager.registerReloadListener(StaticCameraAnimationReloadListener.INSTANCE);
         }
         IEventBus modBus = EndingLibrary.getModEventBus();
         modBus.addListener(this::clientSetup);

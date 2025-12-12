@@ -3,10 +3,7 @@ package com.mega.endinglib.api.client.camera;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.mega.endinglib.api.data.CompoundTagUtils;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -73,7 +70,38 @@ public class CameraValueInstance {
             lock.writeLock().unlock();
         }
     }
-
+    public void removeDynamicKeyframeAnimations() {
+        lock.writeLock().lock();
+        try {
+            Set<String> keys = new ReferenceOpenHashSet<>();
+            for (var entry : this.animationByName.object2ObjectEntrySet()) {
+                if (entry.getValue().isDynamic)
+                    keys.add(entry.getKey());
+            }
+            keys.forEach(key-> {
+                if (key != null) this.animationByName.remove(key);
+            });
+            this.setAnimDirty();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+    public void removeStaticKeyframeAnimations() {
+        lock.writeLock().lock();
+        try {
+            Set<String> keys = new ReferenceOpenHashSet<>();
+            for (var entry : this.animationByName.object2ObjectEntrySet()) {
+                if (!entry.getValue().isDynamic)
+                    keys.add(entry.getKey());
+            }
+            keys.forEach(key-> {
+                if (key != null) this.animationByName.remove(key);
+            });
+            this.setAnimDirty();
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
     public void removeKeyframeAnimations() {
         lock.writeLock().lock();
         try {

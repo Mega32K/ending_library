@@ -8,4 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AccessorCommandSourceStack {
     @Accessor
     int getPermissionLevel();
+    @Accessor
+    boolean isSilent();
 }

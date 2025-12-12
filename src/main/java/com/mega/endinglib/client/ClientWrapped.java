@@ -5,10 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.Easing;
-import com.mega.endinglib.api.client.camera.CameraKeyframeAnimation;
-import com.mega.endinglib.api.client.camera.CameraUtils;
-import com.mega.endinglib.api.client.camera.CameraValueInstance;
-import com.mega.endinglib.api.client.camera.ModifierType;
+import com.mega.endinglib.api.client.camera.*;
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
 import com.mega.endinglib.api.client.shader.post.DynamicScreenEffect;
@@ -23,12 +20,14 @@ import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.S2CCompletelySoundPacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
+import com.mega.endinglib.common.network.s2c.camera.clientload.S2CCameraAnimationNoticePacket;
 import com.mega.endinglib.mixin.accessor.AccessorEffectInstance;
 import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.mixin.accessor.AccessorOptions;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.java.Args;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -61,6 +60,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
@@ -111,6 +111,36 @@ public class ClientWrapped {
                 Minecraft.getInstance().options.keyRight.setDown(false);
                 Minecraft.getInstance().reloadResourcePacks();
             });
+        }
+    }
+    public static void executeCamera(S2CCameraAnimationNoticePacket.Type type, ModifierType modifierType, Args args) {
+        Player player = clientPlayer();
+        if (player == null) return;
+        CameraValueInstance cvi = modifierType.getFieldGetter().apply(CameraUtils.getInstance());
+        switch (type) {
+            case GET_INFO -> {
+                player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.get_anims", modifierType.name()));
+                for (CameraKeyframeAnimation animation : cvi.getKeyframeAnimations()) {
+                    CameraPart.sendAnimationMessage(player, animation);
+                }
+            }
+            case GET_KEYFRAMES -> {
+                String name = args.get(0);
+                String group = args.get(1);
+                CameraPart.listAnimationKeyframes(group, player, cvi, name);
+            }
+            case GET_KEYFRAMES_DEFAULT -> {
+                String name = args.get(0);
+                CameraPart.listAnimationKeyframes(CameraKeyframeAnimation.DEFAULT_KEY, player, cvi, name);
+            }
+            case START_ANIM -> {
+                String name = args.get(0);
+                CameraPart.startAnimation(player, cvi, name);
+            }
+            case STOP_ANIM -> {
+                String name = args.get(0);
+                CameraPart.stopAnimation(player ,cvi, name);
+            }
         }
     }
     public static void operateInputAction(InputOperations operations) {
@@ -417,7 +447,7 @@ public class ClientWrapped {
             int i=0;
             int totalCount = jsonSet.size();
             try {
-                Path path = FMLLoader.getGamePath().resolve("endinglib").resolve("camera_animations").resolve(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm_ss"))).resolve(modifierType.name());
+                Path path = FMLLoader.getGamePath().resolve("endinglib").resolve("camera_animations").resolve(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm_ss"))).resolve(modifierType.name().toLowerCase(Locale.ROOT));
                 Files.createDirectories(path);
                 for (JsonElement je : jsonSet) {
                     if (je instanceof JsonObject jo) {
@@ -440,5 +470,44 @@ public class ClientWrapped {
     }
     public static void handleDynamicEffectRead(List<DynamicEffectData> data) {
         PostProcessingShaders.INSTANCE.createDynamicEffectFromCommand(data.stream().map(DynamicEffectData::asEffect).toList());
+    }
+    static class CameraPart {
+        public static void sendAnimationMessage(Player player, CameraKeyframeAnimation animation, MutableComponent base) {
+            player.sendSystemMessage(base.append(animation.toComponent()));
+        }
+        public static void sendAnimationMessage(Player player, CameraKeyframeAnimation animation) {
+            sendAnimationMessage(player, animation, Component.empty());
+        }
+        private static void sendModifyMessage(Player player) {
+            player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_mode_modify", player.getDisplayName()));
+        }
+        public static void listAnimationKeyframes(String group, Player player, CameraValueInstance cvi, String name) {
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            if (animation != null) {
+                List<CameraKeyframe> cameraKeyframes = animation.getKeyframes().get(group);
+                player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.list_keyframes"));
+                if (cameraKeyframes != null && !cameraKeyframes.isEmpty()) {
+                    for (int i = 0; i < cameraKeyframes.size(); i++) {
+                        CameraKeyframe keyframe = cameraKeyframes.get(i);
+                        player.sendSystemMessage(Component.literal(String.valueOf(i)).append(keyframe.toComponent()));
+                    }
+                }
+            }
+        }
+        public static void startAnimation(Player player, CameraValueInstance cvi, String name) {
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            if (animation != null) {
+                animation.setStopped(false);
+                sendModifyMessage(player);
+            }
+        }
+        public static void stopAnimation(Player player, CameraValueInstance cvi, String name) {
+            CameraKeyframeAnimation animation = cvi.getKeyframeAnimation(name);
+            if (animation != null) {
+                animation.setStopped(true);
+                animation.reset();
+                sendModifyMessage(player);
+            }
+        }
     }
 }
