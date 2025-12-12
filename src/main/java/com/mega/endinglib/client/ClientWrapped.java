@@ -11,6 +11,7 @@ import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
 import com.mega.endinglib.api.client.shader.post.DynamicScreenEffect;
 import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
+import com.mega.endinglib.client.reloadable.StaticCameraAnimationReloadListener;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.command.CommandsEvent;
 import com.mega.endinglib.common.command.ShaderCommand;
@@ -130,16 +131,19 @@ public class ClientWrapped {
                 CameraPart.listAnimationKeyframes(group, player, cvi, name);
             }
             case GET_KEYFRAMES_DEFAULT -> {
-                String name = args.get(0);
-                CameraPart.listAnimationKeyframes(CameraKeyframeAnimation.DEFAULT_KEY, player, cvi, name);
+                CameraPart.listAnimationKeyframes(CameraKeyframeAnimation.DEFAULT_KEY, player, cvi, args.get(0));
             }
             case START_ANIM -> {
-                String name = args.get(0);
-                CameraPart.startAnimation(player, cvi, name);
+                CameraPart.startAnimation(player, cvi, args.get(0));
             }
             case STOP_ANIM -> {
-                String name = args.get(0);
-                CameraPart.stopAnimation(player ,cvi, name);
+                CameraPart.stopAnimation(player, cvi, args.get(0));
+            }
+            case START_GROUP -> {
+                CameraPart.startGroupAnimation(player, args.get(0));
+            }
+            case STOP_GROUP -> {
+                CameraPart.stopGroupAnimation(player, args.get(0));
             }
         }
     }
@@ -508,6 +512,27 @@ public class ClientWrapped {
                 animation.reset();
                 sendModifyMessage(player);
             }
+        }
+        public static void startGroupAnimation(Player player, ResourceLocation group) {
+            for (List<CameraKeyframeAnimation> animations : StaticCameraAnimationReloadListener.INSTANCE.getGroupAnimations().get(group).values()) {
+                for (CameraKeyframeAnimation animation : animations) {
+                    if (animation != null) {
+                        animation.setStopped(false);
+                    }
+                }
+            }
+            sendModifyMessage(player);
+        }
+        public static void stopGroupAnimation(Player player, ResourceLocation group) {
+            for (List<CameraKeyframeAnimation> animations : StaticCameraAnimationReloadListener.INSTANCE.getGroupAnimations().get(group).values()) {
+                for (CameraKeyframeAnimation animation : animations) {
+                    if (animation != null) {
+                        animation.setStopped(true);
+                        animation.reset();
+                    }
+                }
+            }
+            sendModifyMessage(player);
         }
     }
 }

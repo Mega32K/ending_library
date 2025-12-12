@@ -25,7 +25,11 @@ public class S2CCameraAnimationNoticePacket {
         //0-> anim name
         START_ANIM(byteBuf -> new Args(byteBuf.readUtf()), (args, byteBuf) -> byteBuf.writeUtf(args.get(0))),
         //0-> anim name
-        STOP_ANIM(byteBuf -> new Args(byteBuf.readUtf()), (args, byteBuf) -> byteBuf.writeUtf(args.get(0)));
+        STOP_ANIM(byteBuf -> new Args(byteBuf.readUtf()), (args, byteBuf) -> byteBuf.writeUtf(args.get(0))),
+        //0-> group anim name
+        START_GROUP(byteBuf -> new Args(byteBuf.readResourceLocation()), (args, byteBuf) -> byteBuf.writeResourceLocation(args.get(0))),
+        //0-> group anim name
+        STOP_GROUP(byteBuf -> new Args(byteBuf.readResourceLocation()), (args, byteBuf) -> byteBuf.writeResourceLocation(args.get(0)));
         private final Function<FriendlyByteBuf, Args> argsReader;
         private final BiConsumer<Args, FriendlyByteBuf> argsWriter;
 

@@ -22,16 +22,32 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class DynamicEffectDataResourceReloadListener implements ResourceManagerReloadListener {
     public static final DynamicEffectDataResourceReloadListener INSTANCE = new DynamicEffectDataResourceReloadListener();
     private List<DynamicEffectData> allStaticData = new ObjectArrayList<>();
+    private List<ResourceLocation> postShaders = new ObjectArrayList<>();
     private final ReadWriteLock LOCK = new ReentrantReadWriteLock();
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
-        Reference2ReferenceOpenHashMap<ResourceLocation, JsonElement> map = new Reference2ReferenceOpenHashMap<>();
-        List<DynamicEffectData> preliminaryData = new ObjectArrayList<>();
-        SimpleJsonResourceReloadListener.scanDirectory(resourceManager, "shaders/dynamic_post_effects", GSON, map);
+        Reference2ReferenceOpenHashMap<ResourceLocation, JsonElement> map1 = new Reference2ReferenceOpenHashMap<>();
+        SimpleJsonResourceReloadListener.scanDirectory(resourceManager, "shaders/post", GSON, map1);
         LOCK.writeLock().lock();
         try {
-            map.forEach((rl, json) -> {
+            map1.forEach((rl, json) -> {
+                if (json != null && rl != null) {
+                    if (json instanceof JsonObject single) {
+                        postShaders.add(new ResourceLocation(rl.toString() + ".json"));
+                    }
+                }
+            });
+        } finally {
+            LOCK.writeLock().unlock();
+        }
+
+        Reference2ReferenceOpenHashMap<ResourceLocation, JsonElement> map2 = new Reference2ReferenceOpenHashMap<>();
+        List<DynamicEffectData> preliminaryData = new ObjectArrayList<>();
+        SimpleJsonResourceReloadListener.scanDirectory(resourceManager, "shaders/dynamic_post_effects", GSON, map2);
+        LOCK.writeLock().lock();
+        try {
+            map2.forEach((rl, json) -> {
                 if (json != null && rl != null) {
                     if (json instanceof JsonObject single) {
                         DataResult<DynamicEffectData> singleResult = DynamicEffectData.CODEC.parse(JsonOps.INSTANCE, single);
@@ -66,6 +82,14 @@ public class DynamicEffectDataResourceReloadListener implements ResourceManagerR
         LOCK.readLock().lock();
         try {
             return Collections.unmodifiableList(allStaticData);
+        } finally {
+            LOCK.readLock().unlock();
+        }
+    }
+    public List<ResourceLocation> getPostShaders() {
+        LOCK.readLock().lock();
+        try {
+            return Collections.unmodifiableList(postShaders);
         } finally {
             LOCK.readLock().unlock();
         }

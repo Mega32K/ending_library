@@ -33,6 +33,8 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<PostEffectArgument, ?>> POST_EFFECT = REGISTRIES.register("post_effect", () -> SingletonArgumentInfo.contextFree(PostEffectArgument::postEffect));
     public static final RegistryObject<ArgumentTypeInfo<PostEffectPassArgument, ?>> POST_EFFECT_PASS = REGISTRIES.register("post_effect_pass", () -> SingletonArgumentInfo.contextFree(PostEffectPassArgument::pass));
     public static final RegistryObject<ArgumentTypeInfo<PostEffectUniformArgument, ?>> POST_EFFECT_UNIFORM = REGISTRIES.register("post_effect_uniform", PostEffectUniformArgument.PostEffectUniformArgumentInfo::new);
+    public static final RegistryObject<ArgumentTypeInfo<PostShadersArgument, ?>> POST_SHADERS = REGISTRIES.register("post_shaders", () -> SingletonArgumentInfo.contextFree(PostShadersArgument::id));
+    public static final RegistryObject<ArgumentTypeInfo<CameraStaticGroupAnimationArgument, ?>> CAMERA_GROUP_ANIMATIONS = REGISTRIES.register("camera_animation_groups", () -> SingletonArgumentInfo.contextFree(CameraStaticGroupAnimationArgument::group));
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);
     }

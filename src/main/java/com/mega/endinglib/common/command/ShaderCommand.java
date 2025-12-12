@@ -1,10 +1,7 @@
 package com.mega.endinglib.common.command;
 
 import com.mega.endinglib.api.client.cmc.LoreHelper;
-import com.mega.endinglib.common.command.argument.FloatArrayArgument;
-import com.mega.endinglib.common.command.argument.PostEffectArgument;
-import com.mega.endinglib.common.command.argument.PostEffectPassArgument;
-import com.mega.endinglib.common.command.argument.PostEffectUniformArgument;
+import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
@@ -34,8 +31,8 @@ public class ShaderCommand {
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("create")
                                 .then(Commands.argument("name", StringArgumentType.word())
-                                        .then(Commands.argument("effectLocation", ResourceLocationArgument.id())
-                                                .executes(context -> create(context.getSource(), getPlayer(context), getEffectName(context), ResourceLocationArgument.getId(context, "effectLocation")))
+                                        .then(Commands.argument("effectLocation", PostShadersArgument.id())
+                                                .executes(context -> create(context.getSource(), getPlayer(context), getEffectName(context), PostShadersArgument.getId(context, "effectLocation")))
                                         )
                                 )
                         )

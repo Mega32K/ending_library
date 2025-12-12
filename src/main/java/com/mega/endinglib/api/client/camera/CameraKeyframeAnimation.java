@@ -284,7 +284,12 @@ public class CameraKeyframeAnimation {
 
     @Override
     public String toString() {
-        return "CameraKeyframeAnimation{duration=" + this.duration + ", stopped=" + this.stopped + ", name='" + this.name + "}";
+        return "CameraKeyframeAnimation{" +
+                "name='" + name + '\'' +
+                ", duration=" + duration +
+                ", stopped=" + stopped +
+                ", isDynamic=" + isDynamic +
+                '}';
     }
 
     public Component toComponent() {

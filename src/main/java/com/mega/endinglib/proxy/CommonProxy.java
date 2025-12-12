@@ -2,7 +2,6 @@ package com.mega.endinglib.proxy;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
-import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
@@ -18,12 +17,10 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.command.EntitySelectorManager;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -86,6 +83,8 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(PostEffectArgument.class, ModCommandArgumentTypes.POST_EFFECT.get());
             ArgumentTypeInfos.registerByClass(PostEffectPassArgument.class, ModCommandArgumentTypes.POST_EFFECT_PASS.get());
             ArgumentTypeInfos.registerByClass(PostEffectUniformArgument.class, ModCommandArgumentTypes.POST_EFFECT_UNIFORM.get());
+            ArgumentTypeInfos.registerByClass(PostShadersArgument.class, ModCommandArgumentTypes.POST_SHADERS.get());
+            ArgumentTypeInfos.registerByClass(CameraStaticGroupAnimationArgument.class, ModCommandArgumentTypes.CAMERA_GROUP_ANIMATIONS.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {

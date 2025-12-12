@@ -28,6 +28,7 @@ import net.minecraft.commands.arguments.coordinates.Vec2Argument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -247,9 +248,7 @@ public class CameraCommand {
                                 )
                         )
                         .then(Commands.literal("animation")
-                                .then(Commands.literal("static")
-                                        .then(animation(true))
-                                )
+                                .then(animation(true))
                                 .then(animation(false))
                         )
                 );
@@ -375,24 +374,38 @@ public class CameraCommand {
                             )
                     );
         } else {
-            return Commands.argument("modifierType", CameraModifierArgument.modifierType())
-                    .then(Commands.literal("list")
-                            .executes(context -> getCameraAnimationsStatic(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType")))
-                            .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                    .then(Commands.argument("animationGroup", CameraAnimationGroupArgument.group())
-                                            .executes(context -> listAnimationKeyframesStatic(CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+            return Commands.literal("static")
+                    .then(Commands.literal("startGroupAnimations")
+                            .then(Commands.argument("groupAnimations", CameraStaticGroupAnimationArgument.group())
+                                    .executes(context -> startGroupAnimations(getPlayer(context), CameraStaticGroupAnimationArgument.getGroup(context, "groupAnimations")))
+                            )
+                    )
+                    .then(Commands.literal("stopGroupAnimations")
+                            .then(Commands.argument("groupAnimations", CameraStaticGroupAnimationArgument.group())
+                                    .executes(context -> stopGroupAnimations(getPlayer(context), CameraStaticGroupAnimationArgument.getGroup(context, "groupAnimations")))
+                            )
+                    )
+                    .then(Commands.literal("type")
+                            .then(Commands.argument("modifierType", CameraModifierArgument.modifierType())
+                                    .then(Commands.literal("list")
+                                            .executes(context -> getCameraAnimationsStatic(context.getSource(), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType")))
+                                            .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
+                                                    .then(Commands.argument("animationGroup", CameraAnimationGroupArgument.group())
+                                                            .executes(context -> listAnimationKeyframesStatic(CameraAnimationGroupArgument.getGroup(context, "animationGroup"), getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                                    )
+                                                    .executes(context -> listAnimationKeyframesStatic(CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                            )
                                     )
-                                    .executes(context -> listAnimationKeyframesStatic(CameraKeyframeAnimation.DEFAULT_KEY, getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
-                            )
-                    )
-                    .then(Commands.literal("start")
-                            .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                    .executes(context -> startAnimationStatic(getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
-                            )
-                    )
-                    .then(Commands.literal("stop")
-                            .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
-                                    .executes(context -> stopAnimationStatic(getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                    .then(Commands.literal("start")
+                                            .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
+                                                    .executes(context -> startAnimationStatic(getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                            )
+                                    )
+                                    .then(Commands.literal("stop")
+                                            .then(Commands.argument("animationTarget", CameraAnimationArgument.name())
+                                                    .executes(context -> stopAnimationStatic(getPlayer(context), CameraModifierArgument.getModifierType(context, "modifierType"), CameraAnimationArgument.getName(context, "animationTarget")))
+                                            )
+                                    )
                             )
                     );
         }
@@ -808,6 +821,15 @@ public class CameraCommand {
     }
     private static int stopAnimationStatic(ServerPlayer player, ModifierType modifierType, String name) {
         PacketHandler.sendToPlayer(new S2CCameraAnimationNoticePacket(S2CCameraAnimationNoticePacket.Type.STOP_ANIM, modifierType, new Args(name)), player);
+        return 0;
+    }
+
+    private static int startGroupAnimations(ServerPlayer player, ResourceLocation group) {
+        PacketHandler.sendToPlayer(new S2CCameraAnimationNoticePacket(S2CCameraAnimationNoticePacket.Type.START_GROUP, ModifierType.FOV, new Args(group)), player);
+        return 0;
+    }
+    private static int stopGroupAnimations(ServerPlayer player, ResourceLocation group) {
+        PacketHandler.sendToPlayer(new S2CCameraAnimationNoticePacket(S2CCameraAnimationNoticePacket.Type.STOP_GROUP, ModifierType.FOV, new Args(group)), player);
         return 0;
     }
     public static class CameraModeDefault {
