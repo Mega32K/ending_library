@@ -4,6 +4,7 @@ import com.mega.endinglib.common.command.entity.*;
 import com.mega.endinglib.common.command.entity.player.*;
 import com.mega.endinglib.common.command.test.DHPExtraCommandCommand;
 import com.mega.endinglib.common.command.test.DumpCommand;
+import com.mega.endinglib.common.command.test.RunFunctionCommand;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -49,6 +50,7 @@ public class CommandsEvent {
                         .then(DataCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
+                                .then(RunFunctionCommand.register())
                                 //.then(DHPExtraCommandCommand.register())
                         )
         );

@@ -35,6 +35,7 @@ public class CommandConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_FREEZE;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_DATA;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_MOB_CONTROL;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_RUN_FUNCTION;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -119,6 +120,9 @@ public class CommandConfig {
         COMMAND_MOB_CONTROL = BUILDER
                 .comment("/endinglib mobControl命令的权限要求")
                 .defineInRange("MobControlPermission", 2, -1, 6);
+        COMMAND_RUN_FUNCTION = BUILDER
+                .comment("/endinglib hack runFunction命令的权限要求")
+                .defineInRange("RunFunctionPermission", 2, -1, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
