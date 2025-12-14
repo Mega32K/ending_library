@@ -44,6 +44,10 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * 向客户端传数据时记得检测entity是不是当前客户端的玩家
+ */
+
 public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public static final ModifierType[] MODIFIER_TYPES = ModifierType.values().clone();
     public static final ResourceLocation NAME = SafeClass.loc("endinglib_player_cap");

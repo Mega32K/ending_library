@@ -58,7 +58,7 @@ public abstract class InteractionEntityMixin extends Entity {
             tag.putString("TickingCommand", this.tickingCommand);
         }
         if (delay > 1)
-            tag.putShort("delay", delay);
+            tag.putShort("Delay", delay);
     }
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
     private void readExtraAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
@@ -68,7 +68,9 @@ public abstract class InteractionEntityMixin extends Entity {
             this.attackCommand = tag.getString("AttackCommand");
         if (CompoundTagUtils.containsString(tag, "TickingCommand"))
             this.tickingCommand = tag.getString("TickingCommand");
-        if (CompoundTagUtils.containsShort(tag, "delay"))
+        if (CompoundTagUtils.containsShort(tag, "Delay"))
+            this.delay = tag.getShort("Delay");
+        else if (CompoundTagUtils.containsShort(tag, "delay"))
             this.delay = tag.getShort("delay");
     }
     @Inject(method = "interact", at = @At(value = "RETURN", ordinal = 1, shift = At.Shift.BEFORE))

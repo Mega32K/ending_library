@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class ELCameraManager implements ICameraManager {
@@ -113,6 +114,7 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public void tick(EndingLibraryPlayerCapability capability) {
+        if (!Objects.equals(capability.getEntity(), ClientWrapped.clientPlayer())) return;
         this.oldUpdate();
         this.xOffset.tickAnimations();
         this.yOffset.tickAnimations();
@@ -126,7 +128,6 @@ public class ELCameraManager implements ICameraManager {
         this.zoomOffset.tickAnimations();
         this.fovOffset.tickAnimations();
         this.raycastOffset.tickAnimations();
-
 
         CameraUtils.isUsingCustomCamera = capability.isUsingCustomCamera();
         {
