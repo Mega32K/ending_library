@@ -58,6 +58,7 @@ public class ClientUtils {
         map.put(mc.options.keyDown, InputOperations.MOVE_BACKWARD);
         map.put(mc.options.keyLeft, InputOperations.MOVE_LEFT);
         map.put(mc.options.keyRight, InputOperations.MOVE_RIGHT);
+        map.put(mc.options.keyShift, InputOperations.SNEAK);
         map.put(mc.options.keyJump, InputOperations.JUMP);
         map.put(mc.options.keyAttack, InputOperations.MOUSE_ATTACK);
         map.put(mc.options.keyUse, InputOperations.MOUSE_USE);
@@ -85,6 +86,7 @@ public class ClientUtils {
         map.put(InputOperations.MOVE_BACKWARD, ()-> mc.options.keyDown);
         map.put(InputOperations.MOVE_LEFT, ()-> mc.options.keyLeft);
         map.put(InputOperations.MOVE_RIGHT, ()-> mc.options.keyRight);
+        map.put(InputOperations.SNEAK, ()-> mc.options.keyShift);
         map.put(InputOperations.JUMP, ()-> mc.options.keyJump);
         map.put(InputOperations.MOUSE_ATTACK, ()-> mc.options.keyAttack);
         map.put(InputOperations.MOUSE_USE, ()-> mc.options.keyUse);
