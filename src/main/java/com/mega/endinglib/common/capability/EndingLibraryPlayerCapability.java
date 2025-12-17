@@ -113,7 +113,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                         PacketHandler.sendToPlayer(new S2CInputOperationPacket(operations), player);
                 }
         } else {
-            if (type == CapabilitySyncType.PLAYER_LOGGED_IN) {
+            if (type == CapabilitySyncType.PLAYER_LOGGED_IN && entity == ClientWrapped.clientPlayer()) {
                 toWrite.putShort("CameraType", (short) ClientWrapped.getCameraTypeOrdinal());
             }
         }
@@ -127,7 +127,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                     this.cameraType = toRead.getShort("CameraType");
             }
         } else {
-            if (type == CapabilitySyncType.PLAYER_LOGGED_IN) {
+            if (type == CapabilitySyncType.PLAYER_LOGGED_IN && entity == ClientWrapped.clientPlayer()) {
                 if (CompoundTagUtils.containsShort(toRead, "CameraType"))
                     ClientWrapped.setCameraType(toRead.getShort("CameraType"));
             }
