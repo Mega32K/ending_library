@@ -4,18 +4,14 @@ import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.ToolComponent;
 import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
-import com.mega.endinglib.common.data.DynamicEffectData;
-import com.mega.endinglib.common.data.EndingLibrarySavedData;
-import com.mega.endinglib.common.data.InputOperations;
+import com.mega.endinglib.common.data.*;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
+import com.mega.endinglib.common.network.s2c.key.S2CDynamicKeyMappingSyncPacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CDynamicEffectReadPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
-import com.mega.endinglib.mixin.accessor.AccessorDamageSource;
-import com.mega.endinglib.proxy.CommonProxy;
-import com.mega.endinglib.util.mc.entity.DamageSourceContext;
-import com.mega.endinglib.util.mixin.data_expand.ExtraDamageSource;
+import com.mega.endinglib.server.resource.DynamicKeyMappingReloadListener;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
@@ -28,6 +24,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -47,6 +44,31 @@ import java.util.List;
 
 @Mod.EventBusSubscriber
 public class CommonEventHandler {
+    @SubscribeEvent
+    public static void onDatapackSync(OnDatapackSyncEvent event) {
+        boolean isSendToSingle = event.getPlayer() != null;
+        if (isSendToSingle)  {
+            EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(event.getPlayer().server);
+            ServerPlayer player = event.getPlayer();
+            if (!DynamicKeyMappingReloadListener.DYNAMIC_KEYS.isEmpty()) {
+                PacketHandler.sendToPlayer(new S2CDynamicKeyMappingSyncPacket(DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
+                        .stream()
+                        .map(DynamicKeyMapping::createClientMode)
+                        .toList(), savedData.getDynamicKeySetting(player)), player);
+            }
+        } else {
+            EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(event.getPlayerList().getServer());
+            if (!DynamicKeyMappingReloadListener.DYNAMIC_KEYS.isEmpty()) {
+                List<ClientDynamicKeyMapping> values = DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
+                        .stream()
+                        .map(DynamicKeyMapping::createClientMode)
+                        .toList();
+                for (ServerPlayer player : event.getPlayers()) {
+                    PacketHandler.sendToPlayer(new S2CDynamicKeyMappingSyncPacket(values, savedData.getDynamicKeySetting(player)), player);
+                }
+            }
+        }
+    }
     @SubscribeEvent
     public static void onPlayerPreTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {

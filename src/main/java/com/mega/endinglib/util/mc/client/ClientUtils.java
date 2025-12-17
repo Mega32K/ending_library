@@ -5,12 +5,18 @@ import com.mega.endinglib.api.client.MinecraftExtra;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELCameraManager;
+import com.mega.endinglib.common.data.ClientDynamicKeyMapping;
+import com.mega.endinglib.common.data.DynamicKeyMapping;
 import com.mega.endinglib.common.data.InputOperations;
+import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.mixin.accessor.AccessorGameRenderer;
+import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.util.mc.entity.RaycastHelper;
 import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.blaze3d.platform.Window;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
@@ -32,10 +38,7 @@ import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +55,7 @@ public class ClientUtils {
     private static Vec3 MOUSE_CLIP_POS = Vec3.ZERO;
     private static final float[] MOUSE_POINT_TO_ROT = new float[] {0F, 0F};
     public static long lastRunAsync = 0L;
+    public static final Map<ClientDynamicKeyMapping, KeyMapping> DYNAMIC_KEYS = new Object2ObjectOpenHashMap<>();
     public static final Map<KeyMapping, InputOperations> KEY_2_OPERATIONS = Util.make(() -> {
         Reference2ObjectOpenHashMap<KeyMapping, InputOperations> map = new Reference2ObjectOpenHashMap<>();
         map.put(mc.options.keyUp, InputOperations.MOVE_FORWARD);
@@ -113,6 +117,15 @@ public class ClientUtils {
             "float", "vec2", "vec3", "vec4",
             "Matrix2x2", "Matrix3x3", "Matrix4x4", "UNDEFINED"
     };
+    public static KeyMapping[] extraDynamicKeys(KeyMapping[] original) {
+        int originSize = original.length;
+        List<KeyMapping> dynamicKeys = new ObjectArrayList<>(ClientUtils.DYNAMIC_KEYS.values());
+        if (dynamicKeys.isEmpty()) return original;
+        KeyMapping[] result = Arrays.copyOf(original, originSize + dynamicKeys.size());
+        for (int i = originSize; i < result.length; i++)
+            result[i] = dynamicKeys.get(i - originSize);
+        return result;
+    }
     public static void createMouseCursor(ResourceLocation icon, float scale, int xHot, int yHot, MouseHandler mouseHandler) {
         CURRENT_CURSOR_ICON = icon;
         mc.execute(()-> {
@@ -158,6 +171,13 @@ public class ClientUtils {
             GLFW.glfwSetCursor(window, 0L);
             GLFW.glfwSetCursorPos(window, mc.mouseHandler.xpos(), mc.mouseHandler.ypos());
             PostProcessingShaders.INSTANCE.clearCommandScreenEffects();
+            synchronized (AccessorKeyMapping.getALL()) {
+                for (KeyMapping keyMapping : DYNAMIC_KEYS.values())
+                    AccessorKeyMapping.getALL().remove(keyMapping.getName());
+            }
+            synchronized (ClientUtils.DYNAMIC_KEYS) {
+                ClientUtils.DYNAMIC_KEYS.clear();
+            }
             //MinecraftExtra.of(mc).setELCameraManager(new ELCameraManager(mc, mc.gameRenderer, mc.gameRenderer.getMainCamera()));
         });
     }

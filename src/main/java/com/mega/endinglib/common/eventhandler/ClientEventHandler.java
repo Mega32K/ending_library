@@ -10,15 +10,20 @@ import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
+import com.mega.endinglib.common.data.ClientDynamicKeyMapping;
 import com.mega.endinglib.common.data.InputOperations;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.c2s.key.C2SDynamicKeyOperationPacket;
 import com.mega.endinglib.mixin.shader.GameRendererMixin;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -31,16 +36,61 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
+import net.minecraftforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.EnumSet;
 import java.util.concurrent.CompletionException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ClientEventHandler {
+    public static int clientTick;
+    @SubscribeEvent
+    public static void keyEvent(InputEvent.Key event) {
+        for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
+            ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
+            InputConstants.Key key = dynamicKeyMapping.key == null ? dynamicKeyMapping.defaultKey : dynamicKeyMapping.key;
+            if (event.getKey() == key.getValue()) {
+                switch (event.getAction()) {
+                    case GLFW.GLFW_PRESS -> {
+                        if (dynamicKeyMapping.pressCommand())
+                            PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Press(dynamicKeyMapping.getId()));
+                    }
+                    case GLFW.GLFW_RELEASE -> {
+                        if (dynamicKeyMapping.releaseCommand())
+                            PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Release(dynamicKeyMapping.getId()));
+                    }
+                    case GLFW.GLFW_REPEAT -> {
+                        if (dynamicKeyMapping.repeatCommand())
+                            PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Repeat(dynamicKeyMapping.getId()));
+                    }
+                }
+            }
+        }
+    }
 
+    @SubscribeEvent
+    public static void clientTick(TickEvent.ClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            clientTick++;
+            for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
+                ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
+                KeyMapping keyMapping = entry.getValue();
+                if (dynamicKeyMapping.clickCommand()) {
+                    while (keyMapping.consumeClick())
+                        PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Click(dynamicKeyMapping.getId()));
+                }
+                if (dynamicKeyMapping.downCommand()) {
+                    if (keyMapping.isDown() && clientTick % dynamicKeyMapping.downDelay == 0)
+                        PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Down(dynamicKeyMapping.getId()));
+                }
+            }
+        }
+    }
     @SubscribeEvent
     public static void disableMouseEventWhenTimeStopping(ScreenEvent.MouseButtonPressed.Pre event) {
         Minecraft mc = Minecraft.getInstance();

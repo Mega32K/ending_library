@@ -235,7 +235,6 @@ public class CompoundTagUtils {
     }
 
     public static void setByteFlags(ByteConsumer consumer, byte flagData, int mask, boolean value) {
-        ;
         if (value) {
             flagData |= mask;
         } else {

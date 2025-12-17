@@ -4,6 +4,8 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.network.c2s.C2SCapabilityDataSyncPacket;
 import com.mega.endinglib.common.network.c2s.C2SItemToggleModePacket;
 import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
+import com.mega.endinglib.common.network.c2s.key.C2SDynamicKeyOperationPacket;
+import com.mega.endinglib.common.network.c2s.key.C2SSetKeyPacket;
 import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
 import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
@@ -11,6 +13,7 @@ import com.mega.endinglib.common.network.s2c.camera.clientload.S2CCameraAnimatio
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputCooldownPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
+import com.mega.endinglib.common.network.s2c.key.S2CDynamicKeyMappingSyncPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CListSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CMapSetRotationPacket;
 import com.mega.endinglib.common.network.s2c.rotation.S2CSetPlayerRotationPacket;
@@ -87,6 +90,13 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CBuildAnimationOperationPacket.class, S2CBuildAnimationOperationPacket::encode, S2CBuildAnimationOperationPacket::decode, S2CBuildAnimationOperationPacket::handle);
         INSTANCE.registerMessage(id(), S2CDynamicEffectReadPacket.class, S2CDynamicEffectReadPacket::encode, S2CDynamicEffectReadPacket::decode, S2CDynamicEffectReadPacket::handle);
         INSTANCE.registerMessage(id(), S2CCameraAnimationNoticePacket.class, S2CCameraAnimationNoticePacket::encode, S2CCameraAnimationNoticePacket::decode, S2CCameraAnimationNoticePacket::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicKeyOperationPacket.Click.class, C2SDynamicKeyOperationPacket.Click::encode, C2SDynamicKeyOperationPacket.Click::decode, C2SDynamicKeyOperationPacket.Click::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicKeyOperationPacket.Down.class, C2SDynamicKeyOperationPacket.Down::encode, C2SDynamicKeyOperationPacket.Down::decode, C2SDynamicKeyOperationPacket.Down::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicKeyOperationPacket.Press.class, C2SDynamicKeyOperationPacket.Press::encode, C2SDynamicKeyOperationPacket.Press::decode, C2SDynamicKeyOperationPacket.Press::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicKeyOperationPacket.Release.class, C2SDynamicKeyOperationPacket.Release::encode, C2SDynamicKeyOperationPacket.Release::decode, C2SDynamicKeyOperationPacket.Release::handle);
+        INSTANCE.registerMessage(id(), C2SDynamicKeyOperationPacket.Repeat.class, C2SDynamicKeyOperationPacket.Repeat::encode, C2SDynamicKeyOperationPacket.Repeat::decode, C2SDynamicKeyOperationPacket.Repeat::handle);
+        INSTANCE.registerMessage(id(), C2SSetKeyPacket.class, C2SSetKeyPacket::encode, C2SSetKeyPacket::decode, C2SSetKeyPacket::handle);
+        INSTANCE.registerMessage(id(), S2CDynamicKeyMappingSyncPacket.class, S2CDynamicKeyMappingSyncPacket::encode, S2CDynamicKeyMappingSyncPacket::decode, S2CDynamicKeyMappingSyncPacket::handle);
 
     }
 

@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(Entity.class)
 public interface AccessorEntity {
+    @Invoker
+    int callGetPermissionLevel();
     @Accessor("position")
     void setPositionField(Vec3 position);
 

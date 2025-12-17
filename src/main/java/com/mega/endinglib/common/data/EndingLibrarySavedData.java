@@ -18,6 +18,7 @@ import java.util.*;
 
 public class EndingLibrarySavedData extends SavedData {
     public List<CommandTask> commandTasks = Collections.synchronizedList(new ObjectArrayList<>());
+    private final Object2ObjectOpenHashMap<UUID, Object2IntMap<ResourceLocation>> userDynamicKeySetting = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectOpenHashMap<UUID, EnumSet<InputOperations>> playersDisabledInputPermissions = new Object2ObjectOpenHashMap<>();
     private final ObjectOpenHashSet<UUID> dirtyPlayerIDs = new ObjectOpenHashSet<>();
     /**
@@ -33,6 +34,22 @@ public class EndingLibrarySavedData extends SavedData {
 
     public static EndingLibrarySavedData load(CompoundTag tag, MinecraftServer server) {
         EndingLibrarySavedData data = new EndingLibrarySavedData();
+        if (CompoundTagUtils.containsListTag(tag, "UserDynamicKeySetting")) {
+            ListTag listTag = tag.getList("UserDynamicKeySetting", Tag.TAG_COMPOUND);
+            if (!listTag.isEmpty()) {
+                for (int i = 0; i < listTag.size(); i++) {
+                    CompoundTag compoundTag = listTag.getCompound(i);
+                    if (compoundTag.hasUUID("User")) {
+                        UUID uuid = compoundTag.getUUID("User");
+                        ListTag userSetting = compoundTag.getList("Settings", Tag.TAG_COMPOUND);
+                        for (int j=0;j<userSetting.size();j++) {
+                            CompoundTag singleSetting = userSetting.getCompound(j);
+                            data.addUserKeySetting(uuid, new ResourceLocation(singleSetting.getString("id")), singleSetting.getInt("key"));
+                        }
+                    }
+                }
+            }
+        }
         if (CompoundTagUtils.containsListTag(tag, "CommandTasks")) {
             ListTag listTag = tag.getList("CommandTasks", Tag.TAG_COMPOUND);
             if (!listTag.isEmpty()) {
@@ -110,6 +127,27 @@ public class EndingLibrarySavedData extends SavedData {
 
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
+        if (!this.userDynamicKeySetting.isEmpty()) {
+            ListTag listTag = new ListTag();
+            for (var entry : this.userDynamicKeySetting.object2ObjectEntrySet()) {
+                UUID uuid = entry.getKey();
+                Object2IntMap<ResourceLocation> map = entry.getValue();
+                CompoundTag single = new CompoundTag();
+                single.putUUID("User", uuid);
+                ListTag settings = new ListTag();
+                for (var entry2 : map.object2IntEntrySet()) {
+                    ResourceLocation id = entry2.getKey();
+                    int key = entry2.getIntValue();
+                    CompoundTag setting = new CompoundTag();
+                    setting.putString("id", id.toString());
+                    setting.putInt("key", key);
+                    settings.add(setting);
+                }
+                single.put("Settings", settings);
+                listTag.add(single);
+            }
+            compoundTag.put("UserDynamicKeySetting", listTag);
+        }
         if (!commandTasks.isEmpty()) {
             ListTag listTag = new ListTag();
             for (CommandTask task : commandTasks) {
@@ -117,7 +155,6 @@ public class EndingLibrarySavedData extends SavedData {
                     listTag.add(task.serialize());
                 }
             }
-            commandTasks.clear();
             compoundTag.put("CommandTasks", listTag);
         }
         if (!this.playersDisabledInputPermissions.isEmpty()) {
@@ -142,7 +179,7 @@ public class EndingLibrarySavedData extends SavedData {
                 entryTag.putUUID("id", entry.getKey());
                 ListTag dynamicEffects = new ListTag();
                 for (DynamicEffectData singleData : entry.getValue()) {
-                     DataResult<Tag> preliminaryData = DynamicEffectData.CODEC.encodeStart(NbtOps.INSTANCE, singleData);
+                    DataResult<Tag> preliminaryData = DynamicEffectData.CODEC.encodeStart(NbtOps.INSTANCE, singleData);
                     if (preliminaryData.error().isPresent()) {
                         EndingLibrary.LOGGER.warn("A post effect serialize failed {}, origin data {}", preliminaryData.error().get().message(), singleData);
                     } else if (preliminaryData.result().isPresent()) {
@@ -155,6 +192,21 @@ public class EndingLibrarySavedData extends SavedData {
             compoundTag.put("DynamicPostEffects", listTag);
         }
         return compoundTag;
+    }
+    public Object2IntMap<ResourceLocation> getDynamicKeySetting(UUID userId) {
+        if (!this.userDynamicKeySetting.containsKey(userId))
+            this.userDynamicKeySetting.put(userId, new Object2IntArrayMap<>());
+        return this.userDynamicKeySetting.get(userId);
+    }
+    public Object2IntMap<ResourceLocation> getDynamicKeySetting(Player user) {
+        return this.getDynamicKeySetting(user.getUUID());
+    }
+    public void addUserKeySetting(UUID userId, ResourceLocation key, int value) {
+        this.getDynamicKeySetting(userId).put(key, value);
+        this.setDirty();
+    }
+    public void addUserKeySetting(Player player, ResourceLocation key, int value) {
+        this.addUserKeySetting(player.getUUID(), key, value);
     }
     public void addCommandTask(CommandTask task) {
         commandTasks.add(task);
