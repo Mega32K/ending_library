@@ -1,6 +1,7 @@
 package com.mega.endinglib.mixin.advanced.data_expand.dynamic_keys;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.mega.endinglib.util.annotation.DeprecatedMixin;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.controls.KeyBindsList;
@@ -8,7 +9,11 @@ import net.minecraft.client.gui.screens.controls.KeyBindsScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+/**
+ * 使用 Coremod替代
+ */
 @Mixin(KeyBindsScreen.class)
+@DeprecatedMixin
 public abstract class KeyBindsScreenMixin {
     @ModifyExpressionValue(method = "lambda$init$0", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;keyMappings:[Lnet/minecraft/client/KeyMapping;"))
     private KeyMapping[] keyMappings(KeyMapping[] original) {

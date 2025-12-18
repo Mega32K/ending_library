@@ -1,7 +1,6 @@
 package com.mega.endinglib.common.network.c2s.key;
 
 import com.mega.endinglib.common.data.DynamicKeyMapping;
-import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
 import com.mega.endinglib.server.resource.DynamicKeyMappingReloadListener;
 import net.minecraft.commands.CommandSigningContext;
@@ -55,7 +54,7 @@ public class C2SDynamicKeyOperationPacket {
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
                 ServerPlayer player = context.get().getSender();
                 if (player != null) {
-                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;;
+                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;
                     if (map != null && map.containsKey(packet.id)) {
                         String command = map.get(packet.id).keyListener.clickCommand;
                         if (!command.isEmpty())
@@ -91,7 +90,7 @@ public class C2SDynamicKeyOperationPacket {
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
                 ServerPlayer player = context.get().getSender();
                 if (player != null) {
-                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;;
+                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;
                     if (map != null && map.containsKey(packet.id)) {
                         String command = map.get(packet.id).keyListener.downCommand;
                         if (!command.isEmpty())
@@ -127,7 +126,7 @@ public class C2SDynamicKeyOperationPacket {
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
                 ServerPlayer player = context.get().getSender();
                 if (player != null) {
-                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;;
+                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;
                     if (map != null && map.containsKey(packet.id)) {
                         String command = map.get(packet.id).keyListener.pressCommand;
                         if (!command.isEmpty())
@@ -163,7 +162,7 @@ public class C2SDynamicKeyOperationPacket {
             if (context.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
                 ServerPlayer player = context.get().getSender();
                 if (player != null) {
-                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;;
+                    Map<ResourceLocation, DynamicKeyMapping> map = DynamicKeyMappingReloadListener.DYNAMIC_KEYS;
                     if (map != null && map.containsKey(packet.id)) {
                         String command = map.get(packet.id).keyListener.releaseCommand;
                         if (!command.isEmpty())

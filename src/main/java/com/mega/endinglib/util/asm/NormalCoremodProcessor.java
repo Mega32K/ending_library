@@ -21,6 +21,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
     static final String MINECRAFT_CLASS = "net/minecraft/client/Minecraft";
     static final String OPTIONS_CLASS = "net/minecraft/client/Options";
     public static String KEYMAPPING_CLASS = "net/minecraft/client/KeyMapping";
+    public static String KEY_BINDS_SCREEN_CLASS = "net/minecraft/client/gui/screens/controls/KeyBindsScreen";
     public static final String EVENT_FIELD$el_isUnCancelable = "el_isUnCancelable";
     public static final String EVENT_FIELD$el_isUnCancelable$desc = "Z";
     public static final int SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND = 16;
@@ -387,6 +388,16 @@ public class NormalCoremodProcessor implements IClassProcessor {
                             }
                         });
                     }
+                });
+            } else if (KEY_BINDS_SCREEN_CLASS.equals(classNode.name)) {
+                classNode.methods.forEach(methodNode -> {
+                    methodNode.instructions.forEach(insnNode -> {
+                        if (insnNode instanceof FieldInsnNode keyMappingsNode && MCMapping.Options$FIELD$keyMappings.equalsFieldNode(keyMappingsNode)) {
+                            if (keyMappingsNode.getOpcode() == Opcodes.GETFIELD) {
+                                methodNode.instructions.insert(keyMappingsNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/mega/endinglib/util/mc/client/ClientUtils", "extraDynamicKeys", "([Lnet/minecraft/client/KeyMapping;)[Lnet/minecraft/client/KeyMapping;"));
+                            }
+                        }
+                    });
                 });
             }
             if (classNode.superName.equals(EVENT_CLASS)) {
