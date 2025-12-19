@@ -66,9 +66,13 @@ public class StaticCameraAnimationReloadListener implements ResourceManagerReloa
                         result.result().ifPresent(cka0 -> {
                             CameraKeyframeAnimation cka = cvi.getKeyframeAnimation(cka0.getName());
                             if (cka != null) {
+                                cka.setStopped(true);
+                                cka.reset();
                                 cvi.removeKeyframeAnimation(cka);
                             }
                             cka0.setDynamic(false);
+                            cka0.reset();
+                            cka0.setStopped(true);
                             loadedStaticAnimations.put(new ResourceLocation(rl.getNamespace(), modifierType.name().toLowerCase(Locale.ROOT)+"/"+rl.getPath()), Pair.of(modifierType, cka0));
                             cvi.addKeyframeAnimation(cka0);
                         });
