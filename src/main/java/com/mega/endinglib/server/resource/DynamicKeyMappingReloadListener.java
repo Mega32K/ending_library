@@ -28,7 +28,7 @@ public class DynamicKeyMappingReloadListener extends SimpleJsonResourceReloadLis
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     public DynamicKeyMappingReloadListener() {
-        super(GSON, "endinglib/keys");
+        super(GSON, "endinglib/key_mappings");
     }
 
     @Override

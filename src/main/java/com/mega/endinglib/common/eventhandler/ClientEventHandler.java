@@ -26,6 +26,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -49,6 +50,16 @@ import java.util.concurrent.CompletionException;
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ClientEventHandler {
     public static int clientTick;
+    public static boolean isControlAction(int action) {
+        long ptr = Minecraft.getInstance().getWindow().getWindow();
+        if (Minecraft.ON_OSX) {
+            return GLFW.glfwGetKey(ptr, GLFW.GLFW_KEY_LEFT_SUPER) == action
+                    || GLFW.glfwGetKey(ptr, GLFW.GLFW_KEY_RIGHT_SUPER) == action;
+        } else {
+            return GLFW.glfwGetKey(ptr, GLFW.GLFW_KEY_LEFT_CONTROL) == action
+                    || GLFW.glfwGetKey(ptr, GLFW.GLFW_KEY_RIGHT_CONTROL) == action;
+        }
+    }
     @SubscribeEvent
     public static void keyEvent(InputEvent.Key event) {
         for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
@@ -76,7 +87,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
-            clientTick++;
+            //clientTick++;
             for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
                 ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
                 KeyMapping keyMapping = entry.getValue();
