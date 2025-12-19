@@ -256,6 +256,14 @@ public class CameraKeyframeAnimation {
     }
     private float anim(List<CameraKeyframe> pKeyframes, float partialTicks) {
         if (pKeyframes.isEmpty()) return 0f;
+        else if (this.tickCount == 0) {
+            if (pKeyframes.size() < 2) {
+                return pKeyframes.get(0).endPoint();
+            } else {
+                CameraKeyframe keyframe1 = pKeyframes.get(1);
+                return keyframe1.easing().interpolate(0F, pKeyframes.get(0).endPoint(), keyframe1.endPoint());
+            }
+        }
         float time = this.getAnimTime(partialTicks);
         int i = Math.max(0, Mth.binarySearch(
                 0,

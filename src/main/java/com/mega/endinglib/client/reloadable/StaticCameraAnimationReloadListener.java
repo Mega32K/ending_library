@@ -66,6 +66,7 @@ public class StaticCameraAnimationReloadListener implements ResourceManagerReloa
                         result.result().ifPresent(cka0 -> {
                             CameraKeyframeAnimation cka = cvi.getKeyframeAnimation(cka0.getName());
                             if (cka != null) {
+                                cka.reset();
                                 cka.setStopped(true);
                                 cka.reset();
                                 cvi.removeKeyframeAnimation(cka);
@@ -73,6 +74,7 @@ public class StaticCameraAnimationReloadListener implements ResourceManagerReloa
                             cka0.setDynamic(false);
                             cka0.reset();
                             cka0.setStopped(true);
+                            cka0.reset();
                             loadedStaticAnimations.put(new ResourceLocation(rl.getNamespace(), modifierType.name().toLowerCase(Locale.ROOT)+"/"+rl.getPath()), Pair.of(modifierType, cka0));
                             cvi.addKeyframeAnimation(cka0);
                         });
@@ -146,6 +148,11 @@ public class StaticCameraAnimationReloadListener implements ResourceManagerReloa
                     }
                 }
             }
+            GROUP_ANIMATIONS.values().forEach(l-> l.values().forEach(l2-> l2.forEach(animation -> {
+                animation.reset();
+                animation.setStopped(true);
+                animation.reset();
+            })));
         } finally {
             LOCK.writeLock().unlock();
         }
