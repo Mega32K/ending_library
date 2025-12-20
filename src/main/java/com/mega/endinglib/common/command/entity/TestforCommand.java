@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.command.entity;
 
 import com.google.common.collect.Lists;
+import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.command.argument.DirectionArgument;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.util.mc.CollisionHelper;
@@ -21,6 +22,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -170,6 +172,15 @@ public class TestforCommand {
                                 )
                         )
                 )
+                .then(Commands.literal("hasLineOfSight")
+                        .then(Commands.argument("entity", EntityArgument.entity())
+                                .then(Commands.literal("entity")
+                                        .then(Commands.argument("target", EntityArgument.entity())
+                                                .executes((context) -> hasLineOfSight(context, EntityArgument.getEntity(context, "target")))
+                                        )
+                                )
+                        )
+                )
                 .then(Commands.literal("collision")
                         .then(Commands.argument("entity", EntityArgument.entity())
                                 .then(Commands.argument("Direction", DirectionArgument.direction())
@@ -220,7 +231,12 @@ public class TestforCommand {
         int maxDistance = IntegerArgumentType.getInteger(context, "MaxDistance");
         return entity.pick(maxDistance, 1.0F, false) instanceof BlockHitResult blockHitResult ? blockHitResult : null;
     }
-
+    private static int hasLineOfSight(CommandContext<CommandSourceStack> context, Entity target) throws CommandSyntaxException {
+        Entity entity = EntityArgument.getEntity(context, "entity");
+        boolean b = target instanceof LivingEntity living && living.hasLineOfSight(entity);
+        context.getSource().sendSuccess(() -> Component.translatable("commands.endinglib.message.testfor.result", LoreHelper.bool(b)), true);
+        return b ? 1 : 0;
+    }
     private static int distance(CommandContext<CommandSourceStack> context, Vec3 pos) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "entity");
         double result = entity.position().distanceTo(pos);
