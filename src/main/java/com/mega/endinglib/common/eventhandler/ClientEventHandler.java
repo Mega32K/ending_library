@@ -63,9 +63,13 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void keyEvent(InputEvent.Key event) {
         for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
+            boolean screenNull = Minecraft.getInstance().screen == null;
+            boolean overlayNull = Minecraft.getInstance().getOverlay() == null;
             ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
             InputConstants.Key key = dynamicKeyMapping.key == null ? dynamicKeyMapping.defaultKey : dynamicKeyMapping.key;
             if (event.getKey() == key.getValue()) {
+                if (!screenNull && dynamicKeyMapping.disableWhenScreen) continue;
+                if (!overlayNull && dynamicKeyMapping.disableWhenOverlay) continue;
                 switch (event.getAction()) {
                     case GLFW.GLFW_PRESS -> {
                         if (dynamicKeyMapping.pressCommand())
@@ -88,9 +92,13 @@ public class ClientEventHandler {
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             //clientTick++;
+            boolean screenNull = Minecraft.getInstance().screen == null;
+            boolean overlayNull = Minecraft.getInstance().getOverlay() == null;
             for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
                 ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
                 KeyMapping keyMapping = entry.getValue();
+                if (!screenNull && dynamicKeyMapping.disableWhenScreen) continue;
+                if (!overlayNull && dynamicKeyMapping.disableWhenOverlay) continue;
                 if (dynamicKeyMapping.clickCommand()) {
                     while (keyMapping.consumeClick())
                         PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Click(dynamicKeyMapping.getId()));
