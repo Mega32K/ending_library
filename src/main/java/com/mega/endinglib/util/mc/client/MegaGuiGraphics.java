@@ -2,10 +2,12 @@ package com.mega.endinglib.util.mc.client;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.mixin.accessor.AccessorGuiGraphics;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -270,26 +272,9 @@ public class MegaGuiGraphics extends GuiGraphics {
     public void blit(@NotNull ResourceLocation texture, int x, int y, int zDepth, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY) {
         super.blit(texture, x, y, zDepth, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY);
     }
-    /**
-     * 在屏幕(x,y)处渲染纹理,<br>
-     * 纹理显示范围为(startWidth, startHeight)到(startWidth+endWidth, startHeight+endHeight),<br>
-     * 渲染大小为(renderWidth, renderHeight),<br>
-     * 纹理分辨率为 resolutionX*resolutionY
-     * @param texture 纹理路径
-     * @param x x轴纹理渲染位置
-     * @param y y轴纹理渲染位置
-     * @param renderWidth 渲染尺寸宽度
-     * @param renderHeight 渲染尺寸高度
-     * @param startWidth x轴纹理裁剪位置(0 ~ 分辨率width)
-     * @param startHeight y轴纹理裁剪位置(0 ~ 分辨率height)
-     * @param endWidth 纹理裁剪宽度
-     * @param endHeight 纹理裁剪高度
-     * @param resolutionX 分辨率x
-     * @param resolutionY 分辨率y
-     */
-    @Override
-    public void blit(@NotNull ResourceLocation texture, int x, int y, int renderWidth, int renderHeight, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY) {
-        super.blit(texture, x, y, renderWidth, renderHeight, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY);
+
+    public void blit(@NotNull ResourceLocation texture, float x, float y, float renderWidth, float renderHeight, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY) {
+        this.blit(texture, x, x + renderWidth, y, y + renderHeight, 0, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY);
     }
 
 
@@ -311,5 +296,38 @@ public class MegaGuiGraphics extends GuiGraphics {
     @Override
     public void blit(@NotNull ResourceLocation texture, int x, int y, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY) {
         super.blit(texture, x, y, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY);
+    }
+    /**
+     * 在屏幕(x,y)处渲染纹理,<br>
+     * 纹理显示范围为(startWidth, startHeight)到(startWidth+endWidth, startHeight+endHeight),<br>
+     * 渲染大小为(renderWidth, renderHeight),<br>
+     * 纹理分辨率为 resolutionX*resolutionY
+     * @param texture 纹理路径
+     * @param x x轴纹理渲染位置
+     * @param y y轴纹理渲染位置
+     * @param endX x轴纹理渲染终点
+     * @param endY y轴纹理渲染终点
+     * @param depth 深度
+     * @param startWidth x轴纹理裁剪位置(0 ~ 分辨率width)
+     * @param startHeight y轴纹理裁剪位置(0 ~ 分辨率height)
+     * @param endWidth 纹理裁剪宽度
+     * @param endHeight 纹理裁剪高度
+     * @param resolutionX 分辨率x
+     * @param resolutionY 分辨率y
+     */
+    void blit(ResourceLocation texture, float x, float endX, float y, float endY, float depth, float endWidth, float endHeight, float startWidth, float startHeight, float resolutionX, float resolutionY) {
+        this.innerBlit(texture, x, endX, y, endY, depth, (startWidth + 0.0F) / resolutionX, (startWidth + endWidth) / resolutionX, (startHeight + 0.0F) / resolutionY, (startHeight + endHeight) / resolutionY);
+    }
+    void innerBlit(ResourceLocation texture, float x, float endX, float y, float endY, float depth, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShaderTexture(0, texture);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        Matrix4f matrix4f = this.pose().last().pose();
+        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.vertex(matrix4f, x, y, depth).uv(u0, v0).endVertex();
+        bufferbuilder.vertex(matrix4f, x, endY, depth).uv(u0, v1).endVertex();
+        bufferbuilder.vertex(matrix4f, endX, endY, depth).uv(u1, v1).endVertex();
+        bufferbuilder.vertex(matrix4f, endX, y, depth).uv(u1, v0).endVertex();
+        BufferUploader.drawWithShader(bufferbuilder.end());
     }
 }
