@@ -1,5 +1,6 @@
 package com.mega.endinglib.util.mc.client;
 
+import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.mixin.accessor.AccessorGuiGraphics;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
