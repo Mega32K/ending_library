@@ -21,6 +21,12 @@ public class ServerTaskManager {
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
+            if (!toAdd.isEmpty()) {
+                ServerTask serverTask;
+                while ((serverTask = toAdd.poll()) != null) {
+                    queue.add(serverTask);
+                }
+            }
             if (!queue.isEmpty()) {
                 Iterator<ServerTask> iterator = queue.iterator();
                 while (iterator.hasNext()) {
@@ -30,12 +36,6 @@ public class ServerTaskManager {
                         taskInstance.onRemove();
                         iterator.remove();
                     }
-                }
-            }
-            if (!toAdd.isEmpty()) {
-                ServerTask serverTask;
-                while ((serverTask = toAdd.poll()) != null) {
-                    queue.add(serverTask);
                 }
             }
             if (!WaitingRegistryAccessTask.toAddItemStacks.isEmpty() || !WaitingRegistryAccessTask.itemStacks.isEmpty())
