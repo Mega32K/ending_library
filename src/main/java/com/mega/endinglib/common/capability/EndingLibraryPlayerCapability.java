@@ -24,8 +24,6 @@ import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
 import com.mega.endinglib.util.SafeClass;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -78,6 +76,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     private boolean isCameraPersonLocked;
     private boolean isFovLocked;
     private boolean isMouseControlled;
+    private boolean forcedControlledCamera;
     private <T> CapabilityEntityData<T> defineByPersonalRule(int id, PersonalRuleCommand.PersonalRule<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
@@ -283,11 +282,21 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public boolean isMouseControlled() {
         return this.isMouseControlled && this.isVanillaCameraFreezing;
     }
-
     public void setMouseControlled(boolean flag) {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 32, flag);
         this.restoreCameraFlagsToFields();
     }
+    /**
+     * @return camera实体非客户端玩家时强制控制玩家
+     */
+    public boolean isForcedControlledCamera() {
+        return this.forcedControlledCamera;
+    }
+
+    public void setForcedControlledCamera(boolean forcedControlledCamera) {
+        this.forcedControlledCamera = forcedControlledCamera;
+    }
+
     public boolean otherPlayerRendering() {
         return this.dataManager.getValue(OTHER_PLAYERS_RENDERING);
     }
@@ -406,6 +415,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         this.isCameraPersonLocked = CompoundTagUtils.getIntFlag(flags, 8);
         this.isFovLocked = CompoundTagUtils.getIntFlag(flags, 16);
         this.isMouseControlled = CompoundTagUtils.getIntFlag(flags, 32);
+        this.forcedControlledCamera = CompoundTagUtils.getIntFlag(flags, 64);
     }
     public ELServerCameraManager getCameraDataManager() {
         return cameraDataManager;

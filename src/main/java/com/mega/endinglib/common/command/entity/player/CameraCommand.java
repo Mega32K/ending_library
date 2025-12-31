@@ -59,6 +59,7 @@ public class CameraCommand {
     public static final byte IS_FOV_LOCKED = 'e';
     public static final byte AVAILABLE_CAMERA_AREA = 'f';
     public static final byte IS_MOUSE_CONTROLLED = 'g';
+    public static final byte FORCED_CONTROLLED_CAMERA = 'h';
 
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return Commands.literal("camera")
@@ -244,6 +245,12 @@ public class CameraCommand {
                                         )
                                         .then(Commands.argument("value", EntityArgument.entity())
                                                 .executes(context -> setCameraEntity(context.getSource(), getPlayer(context), EntityArgument.getEntity(context, "value")))
+                                        )
+                                        .then(Commands.literal("forceControl")
+                                                .executes(context -> message(context.getSource(), FORCED_CONTROLLED_CAMERA, getPlayer(context)))
+                                                .then(Commands.argument("value", BoolArgumentType.bool())
+                                                        .executes(context -> forceControlledCamera(context.getSource(), getPlayer(context), BoolArgumentType.getBool(context, "value")))
+                                                )
                                         )
                                 )
                         )
@@ -451,6 +458,11 @@ public class CameraCommand {
                 stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.mouse_control").append(LoreHelper.openoff(b)), false);
                 return b ? 1 : 0;
             }
+            case FORCED_CONTROLLED_CAMERA -> {
+                boolean b = cap.isForcedControlledCamera();
+                stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.camera.option.mouse_control").append(LoreHelper.openoff(b)), false);
+                return b ? 1 : 0;
+            }
         }
         return 0;
     }
@@ -578,6 +590,13 @@ public class CameraCommand {
     private static int setCameraEntity(CommandSourceStack stack, ServerPlayer player, @Nullable Entity target) {
         PacketHandler.sendToPlayer(new S2CSetCameraEntityPacket(target == null ? -1 : target.getId()), player);
         sendModifyVanillaMessage(stack, player);
+        return 0;
+    }
+    private static int forceControlledCamera(CommandSourceStack stack, ServerPlayer player, boolean value) {
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            capability.setForcedControlledCamera(value);
+            sendModifyMessage(stack, player);
+        });
         return 0;
     }
     private static int addModifier(CommandSourceStack stack, ServerPlayer player, ModifierType modifierType, String name, final @Nullable UUID uuid, double amount, CameraModifier.Operation operation, boolean isPermanent) {

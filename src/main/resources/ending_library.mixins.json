@@ -159,6 +159,7 @@
     "advanced.multi_jump.LocalPlayerMixin",
     "camera.CameraMixin",
     "camera.GameRendererMixin",
+    "camera.LocalPlayerMixin",
     "camera.MouseHandlerMixin",
     "camera.OptionInstanceMixin",
     "camera.OptionsMixin",

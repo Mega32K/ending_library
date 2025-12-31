@@ -101,6 +101,7 @@
   "commands.endinglib.message.camera.option.available_camera_area": "§7相机约束范围:",
   "commands.endinglib.message.camera.option.available_camera_area.set": "§7已将%s§7的相机约束范围设为:%s",
   "commands.endinglib.message.camera.option.mouse_control": "§7鼠标上帝模式:",
+  "commands.endinglib.message.camera.option.forced_controlled_camera": "§7强制控制相机:",
   "commands.endinglib.message.camera.option.mouse_control.failure.no_freezing_origin": "§7你没有开启 冻结原版相机, 无法开启 鼠标上帝模式。",
 
   "commands.endinglib.message.personal.rule.default": "§7已将%s的§7个人规则 %s §7重置为默认值:%s",
