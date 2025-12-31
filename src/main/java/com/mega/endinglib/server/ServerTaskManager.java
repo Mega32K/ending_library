@@ -5,6 +5,7 @@ import com.google.common.collect.Queues;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.server.ServerTask;
 import com.mega.endinglib.common.WaitingRegistryAccessTask;
+import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;

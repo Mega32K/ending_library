@@ -88,7 +88,6 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor&quot;: &quot;Run&quot;,
-    &quot;JavaMethodFindUsagesOptions.isIncludeOverloadUsages&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;1.20.1&quot;,
@@ -136,7 +135,7 @@
       <recent name="com.mega.endinglib.client.screen.camera" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
     <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
       <module name="com.mega.CosmicLib.main" />
@@ -240,8 +239,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [build]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [assemble]" />
         <item itemvalue="应用程序.MinecraftInstHandler" />
       </list>

@@ -20,6 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ElytraItem;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -273,7 +274,6 @@ public class CameraKeyframeAnimation {
                 pKeyframes.size(),
                 (index) -> time <= pKeyframes.get(index).timestamp()) - 1
         );
-
 
         int j = Math.min(pKeyframes.size() - 1, i + 1);
         CameraKeyframe keyframe = pKeyframes.get(i);
