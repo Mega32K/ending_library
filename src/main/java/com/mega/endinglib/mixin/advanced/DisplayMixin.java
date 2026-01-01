@@ -1,11 +1,17 @@
 package com.mega.endinglib.mixin.advanced;
 
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
+
+import java.util.Set;
 
 @Mixin(Display.class)
 public abstract class DisplayMixin extends Entity {
@@ -35,5 +41,26 @@ public abstract class DisplayMixin extends Entity {
         this.setXRot(p_19895_ % 360.0F);
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
+    }
+    public boolean teleportTo(@NotNull ServerLevel p_265257_, double p_265407_, double p_265727_, double p_265410_, @NotNull Set<RelativeMovement> p_265083_, float p_265573_, float p_265094_) {
+        if (p_265257_ == this.level()) {
+            this.moveTo(p_265407_, p_265727_, p_265410_, p_265573_, p_265094_);
+            ((AccessorEntity) this).invokeTeleportPassengers();
+            this.setYHeadRot(p_265573_);
+        } else {
+            this.unRide();
+            Entity entity = this.getType().create(p_265257_);
+            if (entity == null) {
+                return false;
+            }
+
+            entity.restoreFrom(this);
+            entity.moveTo(p_265407_, p_265727_, p_265410_, p_265573_, p_265094_);
+            entity.setYHeadRot(p_265573_);
+            this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+            p_265257_.addDuringTeleport(entity);
+        }
+
+        return true;
     }
 }

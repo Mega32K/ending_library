@@ -192,7 +192,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     @Override
     public void tick(Entity entity) {
         if (entity instanceof Player player) {
-            if (entity.tickCount % player.getType().updateInterval() == 0 || this.dataManager.isDirty()) {
+            if (this.dataManager.isDirty()) {
                 this.restoreCameraFlagsToFields();
             }
             this.inputCooldowns.tick(player);
@@ -293,8 +293,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         return this.forcedControlledCamera;
     }
 
-    public void setForcedControlledCamera(boolean forcedControlledCamera) {
-        this.forcedControlledCamera = forcedControlledCamera;
+    public void setForcedControlledCamera(boolean flag) {
+        CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 64, flag);
+        this.restoreCameraFlagsToFields();
     }
 
     public boolean otherPlayerRendering() {

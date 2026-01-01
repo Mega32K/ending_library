@@ -38,4 +38,6 @@ public interface AccessorEntity {
     AABB invokeMakeBoundingBox();
     @Accessor
     EntityDimensions getDimensions();
+    @Invoker
+    void invokeTeleportPassengers();
 }
