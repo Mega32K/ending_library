@@ -48,6 +48,7 @@ public class CommandsEvent {
                         .then(ShaderCommand.register())
                         .then(FreezeCommand.register())
                         .then(DataCommand.register())
+                        .then(HealCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                                 .then(RunFunctionCommand.register())
