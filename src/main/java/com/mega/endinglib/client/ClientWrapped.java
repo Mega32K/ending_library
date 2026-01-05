@@ -112,6 +112,11 @@ public class ClientWrapped {
                 Minecraft.getInstance().options.keyRight.setDown(false);
                 Minecraft.getInstance().reloadResourcePacks();
             });
+            case RELOAD_CAMERA_ANIMATIONS -> Minecraft.getInstance().execute(()->{
+                Minecraft.getInstance().options.keyAttack.setDown(false);
+                Minecraft.getInstance().options.keyRight.setDown(false);
+                StaticCameraAnimationReloadListener.INSTANCE.onResourceManagerReload(Minecraft.getInstance().getResourceManager());
+            });
         }
     }
     public static void executeCamera(S2CCameraAnimationNoticePacket.Type type, ModifierType modifierType, Args args) {

@@ -35,7 +35,6 @@ public class RealCSSBuilder implements ICommandSourceStackBuilder {
                 output = (CommandSource) clazz.getDeclaredConstructor().newInstance();
             }
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
         }
 
         ListTag posList = sourceNbt.getList("Position", 6);

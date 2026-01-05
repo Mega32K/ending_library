@@ -12,7 +12,7 @@ public enum CameraPacketAction {
     MOUSE_GRAB,
     MOUSE_RELEASE,
     FORCED_POSE_CLEAR,
-
+    RELOAD_CAMERA_ANIMATIONS,
     RELOAD_RESOURCES_PACK;
     public void execute() {
         ClientWrapped.executeAction(this);
