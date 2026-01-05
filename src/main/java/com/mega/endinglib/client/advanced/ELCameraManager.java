@@ -24,6 +24,7 @@ import java.util.Optional;
 
 public class ELCameraManager implements ICameraManager {
     public static final float DEFAULT_ORIGIN_ROT = 32768F;
+    public CameraType cameraType = CameraType.FIRST_PERSON;
     public final CameraValueInstance xOffset = new CameraValueInstance();
     public final CameraValueInstance yOffset = new CameraValueInstance();
     public final CameraValueInstance zOffset = new CameraValueInstance();
@@ -86,6 +87,7 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public void oldUpdate() {
+        this.cameraType = minecraft.options.getCameraType();
         this.xOffsetOld = this.xOffset.getValue();
         this.yOffsetOld = this.yOffset.getValue();
         this.zOffsetOld = this.zOffset.getValue();
@@ -380,51 +382,51 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public double getXRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue()) + xRelative.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue()) + xRelative.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getYRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.yRelativeOld, this.yRelative.getValue()) + yRelative.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.yRelativeOld, this.yRelative.getValue()) + yRelative.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getZRelative(float partialTicks) {
-        return Mth.lerp(partialTicks, this.zRelativeOld, this.zRelative.getValue()) + zRelative.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.zRelativeOld, this.zRelative.getValue()) + zRelative.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getXOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.xOffsetOld, this.xOffset.getValue()) + xOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.xOffsetOld, this.xOffset.getValue()) + xOffset.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getYOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.yOffsetOld, this.yOffset.getValue()) + yOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.yOffsetOld, this.yOffset.getValue()) + yOffset.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getZOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.zOffsetOld, this.zOffset.getValue()) + zOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.zOffsetOld, this.zOffset.getValue()) + zOffset.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getXRotation(float partialTicks) {
-        return Mth.lerp(partialTicks, this.xRotOld, this.xRot.getValue()) + xRot.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.xRotOld, this.xRot.getValue()) + xRot.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getYRotation(float partialTicks) {
-        return Mth.lerp(partialTicks, this.yRotOld, this.yRot.getValue()) + yRot.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.yRotOld, this.yRot.getValue()) + yRot.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getZRotation(float partialTicks) {
-        return Mth.lerp(partialTicks, this.zRotOld, this.zRot.getValue()) + zRot.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.zRotOld, this.zRot.getValue()) + zRot.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getFovOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.fovOffsetOld, this.fovOffset.getValue()) + fovOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.fovOffsetOld, this.fovOffset.getValue()) + fovOffset.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getZoomOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.zoomOffsetOld, this.zoomOffset.getValue()) + zoomOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.zoomOffsetOld, this.zoomOffset.getValue()) + zoomOffset.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getRaycastOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.raycastOffsetOld, this.raycastOffset.getValue()) + raycastOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.raycastOffsetOld, this.raycastOffset.getValue()) + raycastOffset.getAnimationValue(partialTicks, cameraType);
     }
 
     public double getOriginX() {

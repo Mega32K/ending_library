@@ -11,6 +11,7 @@ import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
 import com.mega.endinglib.api.client.shader.post.DynamicScreenEffect;
 import com.mega.endinglib.api.client.shader.post.PostEffectHandler;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
+import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.client.reloadable.StaticCameraAnimationReloadListener;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.command.CommandsEvent;
@@ -208,6 +209,8 @@ public class ClientWrapped {
                 });
             }
         }
+        if (CameraUtils.getInstance() instanceof ELCameraManager c)
+            c.cameraType = CameraType.class.getEnumConstants()[cameraType];
         ((AccessorOptions)Minecraft.getInstance().options).endinglib$setCameraType(CameraType.class.getEnumConstants()[cameraType]);
     }
     public static LayeredRegistryAccess<ClientRegistryLayer> createRegistryAccess() {

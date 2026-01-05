@@ -84,14 +84,11 @@ public abstract class CameraMixin {
                     }
                 }
                 this.setPosition(finalX, finalY, finalZ);
-                if (this.detached) {
-                    double xRelative = manager.getXRelative(partial);
-                    double yRelative = manager.getYRelative(partial);
-                    double zRelative = manager.getZRelative(partial);
-                    if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0)
-                        this.move(zRelative, yRelative, -xRelative);
-
-                }
+                double xRelative = manager.getXRelative(partial);
+                double yRelative = manager.getYRelative(partial);
+                double zRelative = manager.getZRelative(partial);
+                if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0)
+                    this.move(zRelative, yRelative, -xRelative);
                 return false;
             }
         } catch (Throwable throwable) {

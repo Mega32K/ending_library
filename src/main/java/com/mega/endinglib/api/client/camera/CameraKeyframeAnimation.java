@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.client.CameraType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -71,6 +72,12 @@ public class CameraKeyframeAnimation {
     private AnimType animType;
     private boolean stopped = true;
     private boolean dirty = true;
+    /**
+     * 0 -> 允许第一人称使用<br/>
+     * 1 -> 只许第一人称使用<br/>
+     * 2 -> 不许第一人称使用<br/>
+     */
+    private byte allowFirstPerson = (byte) 0;
     //是否是由命令生成的关键帧动画
     public boolean isDynamic = true;
 
@@ -81,7 +88,7 @@ public class CameraKeyframeAnimation {
     public CameraKeyframeAnimation(String name, AnimType animType, float duration) {
         this.name = name;
         this.duration = duration;
-        this.animType = animType;
+        this.animType = animType; 
     }
     private static CameraKeyframeAnimation jsonConstruct(String name, AnimType animType, float duration, Map<String, List<CameraKeyframe>> keyframes) {
         CameraKeyframeAnimation cka = new CameraKeyframeAnimation(name, animType, duration);
@@ -245,7 +252,19 @@ public class CameraKeyframeAnimation {
         this.setDirty();
     }
 
-    public float anim(float partialTicks) {
+    public float anim(float partialTicks, CameraType cameraType) {
+        if (allowFirstPerson != 0) {
+            switch (allowFirstPerson) {
+                case 1 -> {
+                    if (cameraType.ordinal() != CameraType.FIRST_PERSON.ordinal())
+                        return 0F;
+                }
+                case 2 -> {
+                    if (cameraType.ordinal() == CameraType.FIRST_PERSON.ordinal())
+                        return 0F;
+                }
+            }
+        }
         if (keyframes.isEmpty()) return 0f;
         else if (keyframes.size() == 1) return anim(keyframes.get(DEFAULT_KEY), partialTicks);
         else {

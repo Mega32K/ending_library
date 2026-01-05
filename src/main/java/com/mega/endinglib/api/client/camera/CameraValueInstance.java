@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import it.unimi.dsi.fastutil.objects.*;
+import net.minecraft.client.CameraType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
@@ -314,12 +315,12 @@ public class CameraValueInstance {
         return this.cachedValue;
     }
 
-    public float getAnimationValue(float partialTicks) {
+    public float getAnimationValue(float partialTicks, CameraType cameraType) {
         float animValue = 0F;
         if (this.animationByName.isEmpty())
             return animValue;
         for (CameraKeyframeAnimation anim : this.animationByName.values()) {
-            animValue += anim.anim(partialTicks);
+            animValue += anim.anim(partialTicks, cameraType);
         }
         return animValue;
     }

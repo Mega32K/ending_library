@@ -5,6 +5,7 @@ import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.minecraft.client.CameraType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Mth;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ELServerCameraManager implements ICameraManager {
+    public CameraType cameraType = CameraType.FIRST_PERSON;
     public final CameraValueInstance xOffset = new CameraValueInstance();
     public final CameraValueInstance yOffset = new CameraValueInstance();
     public final CameraValueInstance zOffset = new CameraValueInstance();
@@ -302,7 +304,7 @@ public class ELServerCameraManager implements ICameraManager {
     }
 
     public double getRaycastOffset(float partialTicks) {
-        return Mth.lerp(partialTicks, this.raycastOffsetOld, this.raycastOffset.getValue()) + raycastOffset.getAnimationValue(partialTicks);
+        return Mth.lerp(partialTicks, this.raycastOffsetOld, this.raycastOffset.getValue()) + raycastOffset.getAnimationValue(partialTicks, CameraType.THIRD_PERSON_BACK);
     }
     public double getOriginX() {
         return originX;

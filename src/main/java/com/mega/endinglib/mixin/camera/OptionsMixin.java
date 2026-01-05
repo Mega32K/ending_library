@@ -2,6 +2,7 @@ package com.mega.endinglib.mixin.camera;
 
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.camera.CameraUtils;
+import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -25,6 +26,8 @@ public abstract class OptionsMixin {
         if (!CameraUtils.canChangeCameraType())
             ci.cancel();
         else {
+            if (CameraUtils.getInstance() instanceof ELCameraManager c)
+                c.cameraType = p_92158_;
             if (this.cameraType != p_92158_ && minecraft.player != null) {
                 CommonProxy.getCameraCapOptional(minecraft.player).ifPresent(cap -> {
                     CompoundTag tag = new CompoundTag();
