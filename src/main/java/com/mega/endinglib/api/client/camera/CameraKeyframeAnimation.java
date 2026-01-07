@@ -88,7 +88,7 @@ public class CameraKeyframeAnimation {
     public CameraKeyframeAnimation(String name, AnimType animType, float duration) {
         this.name = name;
         this.duration = duration;
-        this.animType = animType; 
+        this.animType = animType;
     }
     private static CameraKeyframeAnimation jsonConstruct(String name, AnimType animType, float duration, Map<String, List<CameraKeyframe>> keyframes) {
         CameraKeyframeAnimation cka = new CameraKeyframeAnimation(name, animType, duration);

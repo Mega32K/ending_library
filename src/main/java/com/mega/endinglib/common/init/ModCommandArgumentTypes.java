@@ -35,6 +35,7 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<PostEffectUniformArgument, ?>> POST_EFFECT_UNIFORM = REGISTRIES.register("post_effect_uniform", PostEffectUniformArgument.PostEffectUniformArgumentInfo::new);
     public static final RegistryObject<ArgumentTypeInfo<PostShadersArgument, ?>> POST_SHADERS = REGISTRIES.register("post_shaders", () -> SingletonArgumentInfo.contextFree(PostShadersArgument::id));
     public static final RegistryObject<ArgumentTypeInfo<CameraStaticGroupAnimationArgument, ?>> CAMERA_GROUP_ANIMATIONS = REGISTRIES.register("camera_animation_groups", () -> SingletonArgumentInfo.contextFree(CameraStaticGroupAnimationArgument::group));
+    public static final RegistryObject<ArgumentTypeInfo<VanillaAnimationArgument, ?>> CAMERA_VANILLA_ANIMATIONS = REGISTRIES.register("vanilla_animations", () -> SingletonArgumentInfo.contextFree(VanillaAnimationArgument::animation));
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);
     }

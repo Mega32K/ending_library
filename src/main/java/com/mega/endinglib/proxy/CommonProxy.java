@@ -85,6 +85,7 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(PostEffectUniformArgument.class, ModCommandArgumentTypes.POST_EFFECT_UNIFORM.get());
             ArgumentTypeInfos.registerByClass(PostShadersArgument.class, ModCommandArgumentTypes.POST_SHADERS.get());
             ArgumentTypeInfos.registerByClass(CameraStaticGroupAnimationArgument.class, ModCommandArgumentTypes.CAMERA_GROUP_ANIMATIONS.get());
+            ArgumentTypeInfos.registerByClass(VanillaAnimationArgument.class, ModCommandArgumentTypes.CAMERA_VANILLA_ANIMATIONS.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {
