@@ -1,5 +1,6 @@
 package com.mega.endinglib.util.mixin.data_expand;
 
+import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.resources.ResourceLocation;
@@ -35,15 +36,15 @@ public class ExtraEntityData {
         });
     }
     public float getScaleX(float x, float partialTicks) {
-        if (isFrozen) partialTicks = 1F;
+        if (isFrozen) partialTicks = ClientWrapped.partialTicks();
         return Mth.lerp(partialTicks, this.scaleXOld, x);
     }
     public float getScaleY(float y, float partialTicks) {
-        if (isFrozen) partialTicks = 1F;
+        if (isFrozen) partialTicks = ClientWrapped.partialTicks();
         return Mth.lerp(partialTicks, this.scaleYOld, y);
     }
     public float getScaleZ(float z, float partialTicks) {
-        if (isFrozen) partialTicks = 1F;
+        if (isFrozen) partialTicks = ClientWrapped.partialTicks();
         return Mth.lerp(partialTicks, this.scaleZOld, z);
     }
 }

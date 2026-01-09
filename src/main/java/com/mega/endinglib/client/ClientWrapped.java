@@ -94,6 +94,12 @@ public class ClientWrapped {
     public static Level clientLevel() {
         return Minecraft.getInstance().level;
     }
+    public static float partialTicks() {
+        return Minecraft.getInstance().getPartialTick();
+    }
+    public static float frameTicks() {
+        return Minecraft.getInstance().getFrameTime();
+    }
     public static void executeAction(CameraPacketAction action) {
         switch (action) {
             case OPEN_CAMERA_BENCH_SCREEN -> Minecraft.getInstance().setScreen(new CameraModifyScreen());
