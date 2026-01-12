@@ -152,6 +152,11 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     }
 
     @Override
+    protected void tick(Entity entity) {
+        super.tick(entity);
+    }
+
+    @Override
     public void customSerializeNBT(CompoundTag nbt) {
 
     }

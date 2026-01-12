@@ -36,15 +36,15 @@ public class ExtraEntityData {
         });
     }
     public float getScaleX(float x, float partialTicks) {
-        if (isFrozen) partialTicks = 1.0F;
+        if (isFrozen || !entity.canUpdate()) partialTicks = 1.0F;
         return Mth.lerp(partialTicks, this.scaleXOld, x);
     }
     public float getScaleY(float y, float partialTicks) {
-        if (isFrozen) partialTicks = 1.0F;
+        if (isFrozen || !entity.canUpdate()) partialTicks = 1.0F;
         return Mth.lerp(partialTicks, this.scaleYOld, y);
     }
     public float getScaleZ(float z, float partialTicks) {
-        if (isFrozen) partialTicks = 1.0F;
+        if (isFrozen || !entity.canUpdate()) partialTicks = 1.0F;
         return Mth.lerp(partialTicks, this.scaleZOld, z);
     }
 }
