@@ -188,7 +188,7 @@ public class ClientEventHandler {
     public static void onDisconnected(ClientPlayerNetworkEvent.LoggingOut event) {
         //说明只是退出游戏
         if (event.getMultiPlayerGameMode() != null) {
-            new LambdaClientTaskInstance(5, level -> {}, s -> {}, ClientUtils::onPlayerDisconnect).onAddedToWorld();
+            new LambdaClientTaskInstance.Stop(5, ClientUtils::onPlayerDisconnect).onAddedToWorld();
             ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
         }
         ClientWrapped.reloadRegistryAccess();

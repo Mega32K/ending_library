@@ -3,16 +3,19 @@ package com.mega.endinglib.api.client;
 import com.mega.endinglib.client.task.ClientTaskManager;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
+import org.jetbrains.annotations.Nullable;
 
 public class LambdaClientTaskInstance extends ClientTaskInstance {
+    @Nullable
     private final E1 exe1;
+    @Nullable
     private final E2 exe2;
     private final Runnable stop;
     public int tickCount;
     private final int maxTickCount;
     private boolean removed;
 
-    public LambdaClientTaskInstance(int maxTickCount, E1 e1, E2 e2, Runnable stop) {
+    public LambdaClientTaskInstance(int maxTickCount, @Nullable E1 e1, @Nullable E2 e2, Runnable stop) {
         this.maxTickCount = maxTickCount;
         this.exe1 = e1;
         this.exe2 = e2;
@@ -56,5 +59,11 @@ public class LambdaClientTaskInstance extends ClientTaskInstance {
 
     public interface E2 {
         void renderTick(TickEvent.RenderTickEvent event);
+    }
+    public static class Stop extends LambdaClientTaskInstance {
+
+        public Stop(int maxTickCount, Runnable stop) {
+            super(maxTickCount, null, null, stop);
+        }
     }
 }
