@@ -1,8 +1,13 @@
 package com.mega.endinglib.mixin.advanced;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.common.init.ModEntityDataSerializers;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
+import com.mega.endinglib.util.mixin.data_expand.ExtraDisplayEntity;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -10,13 +15,39 @@ import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Set;
 
-@Mixin(Display.class)
-public abstract class DisplayMixin extends Entity {
+@Mixin(value = Display.class, priority = 232424314)
+public abstract class DisplayMixin extends Entity implements ExtraDisplayEntity {
+    @SuppressWarnings("WrongEntityDataParameterClass")
+    @Unique
+    private static final EntityDataAccessor<Easing> INTERPOLATION_EASING = SynchedEntityData.defineId(Display.class, ModEntityDataSerializers.EASING);
     public DisplayMixin(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
+    }
+    @Inject(method = "defineSynchedData", at = @At("TAIL"))
+    private void defineSynchedData(CallbackInfo ci) {
+        this.entityData.define(INTERPOLATION_EASING, Easing.LINEAR);
+    }
+    @SuppressWarnings("AddedMixinMembersNamePattern")
+    @Override
+    public Easing getInterpolationEasing() {
+        return this.entityData.get(INTERPOLATION_EASING);
+    }
+
+    @SuppressWarnings("AddedMixinMembersNamePattern")
+    @Override
+    public void setInterpolationEasing(Easing easing) {
+        this.entityData.set(INTERPOLATION_EASING, easing);
+    }
+    @ModifyExpressionValue(method = "calculateInterpolationProgress", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;clamp(FFF)F"))
+    private float easingTransform(float original) {
+        return this.getInterpolationEasing().calculate(original);
     }
 
     @Override

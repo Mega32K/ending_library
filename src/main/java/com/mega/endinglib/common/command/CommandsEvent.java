@@ -50,6 +50,7 @@ public class CommandsEvent {
                         .then(DataCommand.register())
                         .then(HealCommand.register())
                         .then(EntityAnimateCommand.register())
+                        .then(DisplayCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                                 .then(RunFunctionCommand.register())

@@ -13,7 +13,6 @@ public class S2CSetFovPacket {
     public S2CSetFovPacket(int fov) {
         this.fov = fov;
     }
-
     public static S2CSetFovPacket decode(FriendlyByteBuf friendlyByteBuf) {
         return new S2CSetFovPacket(friendlyByteBuf.readInt());
     }

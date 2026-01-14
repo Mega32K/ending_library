@@ -38,6 +38,7 @@ public class CommandConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_RUN_FUNCTION;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_HEAL;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_ENTITY_ANIMATE;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_DISPLAY;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -131,6 +132,9 @@ public class CommandConfig {
         COMMAND_ENTITY_ANIMATE = BUILDER
                 .comment("/endinglib entityAnimate命令的权限要求")
                 .defineInRange("EntityAnimatePermission", 2, -1, 6);
+        COMMAND_DISPLAY = BUILDER
+                .comment("/endinglib display命令的权限要求")
+                .defineInRange("DisplayPermission", 2, -1, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
