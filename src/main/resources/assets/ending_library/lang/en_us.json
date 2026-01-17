@@ -110,7 +110,7 @@
   "commands.endinglib.message.personal.rule.get": "%s§7当前的个人规则 %s §7为:%s",
   "commands.endinglib.message.personal_rule.othrSpectorRender": "其他旁观玩家渲染",
   "commands.endinglib.message.personal_rule.othrPlayersRender": "其他玩家渲染",
-  "commands.endinglib.message.personal_rule.othrPNameRender": "其他玩家名称渲染",
+  "commands.endinglib.message.personal_rule.othrPlayerNameRender": "其他玩家名称渲染",
   "commands.endinglib.message.personal_rule.othrTeamPNameRender": "其他队伍玩家名称渲染",
   "commands.endinglib.message.personal_rule.walkingViewMultiplier": "玩家行走视角摇晃乘数",
   "commands.endinglib.message.personal_rule.hurtViewMultiplier": "玩家受伤视角Z轴摇晃乘数",

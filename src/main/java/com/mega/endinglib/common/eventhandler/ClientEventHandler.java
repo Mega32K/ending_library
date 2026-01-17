@@ -154,6 +154,18 @@ public class ClientEventHandler {
             }
         });
     }
+    @SubscribeEvent
+    public static void prePlayerNameRendering(RenderNameTagEvent event) {
+        if (event.getEntity() instanceof Player target) {
+            Player player = ClientWrapped.clientPlayer();
+            if (target == player) return;
+            CommonProxy.getCameraCapOptional(ClientWrapped.clientPlayer()).ifPresent(cap -> {
+                if (!cap.otherPlayerNamesRendering()) {
+                    event.setCanceled(true);
+                }
+            });
+        }
+    }
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void renderAfterGui(RenderGuiEvent.Post event) {
         PostProcessingShaders.INSTANCE.gameEffect(event.getPartialTick());

@@ -56,6 +56,16 @@ public class PersonalRuleCommand {
             BOOL_COMMAND_RESULT,
             true
     );
+    public static final PersonalRule<Boolean> OTHER_PLAYER_NAMES_RENDERER = build("othrPlayerNameRender", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), EntityArgument.getPlayer(context, "player"), personalRule, BoolArgumentType.getBool(context, "value")))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryPlayerCapability::setOtherPlayerNamesRendering,
+            EndingLibraryPlayerCapability::otherPlayerNamesRendering,
+            BOOL_COMMAND_RESULT,
+            true
+    );
     public static final PersonalRule<Float> WALKING_VIEW_MULTIPLIER = build("walkingViewMultiplier", (command, personalRule) ->
                     command.then(Commands.argument("value", FloatArgumentType.floatArg(0, 8F))
                                     .executes(context -> set(context.getSource(), EntityArgument.getPlayer(context, "player"), personalRule, FloatArgumentType.getFloat(context, "value")))

@@ -55,7 +55,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Boolean> OTHER_PLAYERS_RENDERING = this.defineByPersonalRule(2, PersonalRuleCommand.OTHER_PLAYERS_RENDERING, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Float> WALKING_VIEW_MULTIPLIER = this.defineByPersonalRule(3, PersonalRuleCommand.WALKING_VIEW_MULTIPLIER, CapabilityDataSerializers.FLOAT);
     public final CapabilityEntityData<Float> HURT_VIEW_MULTIPLIER = this.defineByPersonalRule(5, PersonalRuleCommand.HURT_VIEW_MULTIPLIER, CapabilityDataSerializers.FLOAT);
-    //public final CapabilityEntityData<Boolean> OTHER_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(6, PersonalRuleCommand.OTHER_PLAYER_NAMES_RENDERER, CapabilityDataSerializers.BOOLEAN);
+    public final CapabilityEntityData<Boolean> OTHER_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(6, PersonalRuleCommand.OTHER_PLAYER_NAMES_RENDERER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Boolean> LOCKED_GAME_MODE = this.defineByPersonalRule(7, PersonalRuleCommand.LOCKED_GAME_MODE, CapabilityDataSerializers.BOOLEAN);
     //public final CapabilityEntityData<Boolean> OTHER_TEAMS_PLAYER_NAMES_RENDERER = this.defineByPersonalRule(8, PersonalRuleCommand.OTHER_TEAM_PLAYERS_NAMES_RENDER, CapabilityDataSerializers.BOOLEAN);
     public final CapabilityEntityData<Optional<AABB>> CAMERA_AVAILABLE_AREA = this.dataManager.define(9, "cameraAvailableArea", Optional.empty(), CapabilityDataSerializers.OPTIONAL_AABB);
@@ -297,7 +297,13 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(USING_CAMERA_MODE, value), this.getFlags(), 64, flag);
         this.restoreCameraFlagsToFields();
     }
+    public boolean otherPlayerNamesRendering() {
+        return this.dataManager.getValue(OTHER_PLAYER_NAMES_RENDERER);
+    }
 
+    public void setOtherPlayerNamesRendering(boolean value) {
+        this.dataManager.setValue(OTHER_PLAYER_NAMES_RENDERER, value);
+    }
     public boolean otherPlayerRendering() {
         return this.dataManager.getValue(OTHER_PLAYERS_RENDERING);
     }
