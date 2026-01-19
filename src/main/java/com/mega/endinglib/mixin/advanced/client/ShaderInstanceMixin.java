@@ -21,13 +21,34 @@ public abstract class ShaderInstanceMixin implements ExtraShaderInstance {
 
     @Unique
     private Uniform _PROGRAM_TIME;
+    @Unique
+    private Uniform LEVEL_MODEL_VIEW_MATRIX;
+    @Unique
+    private Uniform LEVEL_PROJ_MATRIX;
+    @Unique
+    private Uniform CAMERA_POS;
     @Inject(method = "<init>(Lnet/minecraft/server/packs/resources/ResourceProvider;Lnet/minecraft/resources/ResourceLocation;Lcom/mojang/blaze3d/vertex/VertexFormat;)V", at = @At("RETURN"))
     private void injectInit(ResourceProvider p_173336_, ResourceLocation shaderLocation, VertexFormat p_173338_, CallbackInfo ci) {
         this._PROGRAM_TIME =  this.getUniform("_ProgramTime");
+        this.LEVEL_MODEL_VIEW_MATRIX =  this.getUniform("LevelModelViewMat");
+        this.LEVEL_PROJ_MATRIX =  this.getUniform("LevelProjMat");
+        this.CAMERA_POS =  this.getUniform("CameraPos");
     }
 
     @Override
     public @Nullable Uniform getUniformProgramTime() {
         return _PROGRAM_TIME;
+    }
+    @Override
+    public @Nullable Uniform getUniformLevelModelViewMat() {
+        return LEVEL_MODEL_VIEW_MATRIX;
+    }
+    @Override
+    public Uniform getUniformLevelProjMat() {
+        return LEVEL_PROJ_MATRIX;
+    }
+    @Override
+    public Uniform getUniformCameraPos() {
+        return CAMERA_POS;
     }
 }

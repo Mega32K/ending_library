@@ -1,20 +1,15 @@
 package com.mega.endinglib.util.mc.client;
 
 import com.mega.endinglib.EndingLibrary;
-import com.mega.endinglib.api.client.MinecraftExtra;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientWrapped;
-import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.common.data.ClientDynamicKeyMapping;
-import com.mega.endinglib.common.data.DynamicKeyMapping;
 import com.mega.endinglib.common.data.InputOperations;
-import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.mixin.accessor.AccessorGameRenderer;
 import com.mega.endinglib.mixin.accessor.AccessorKeyMapping;
 import com.mega.endinglib.util.mc.entity.RaycastHelper;
 import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.blaze3d.platform.Window;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
@@ -47,6 +42,8 @@ import java.util.function.Supplier;
 public class ClientUtils {
     public static final ExecutorService CLIENT_TEST_POOL = Executors.newFixedThreadPool(4);
     public static Set<InputOperations> disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
+    public static Matrix4f LEVEL_MODEL_VIEW_MAT = new Matrix4f();
+    public static Matrix4f LEVEL_PROJ_MAT = new Matrix4f();
     public static Minecraft mc = Minecraft.getInstance();
     public static ResourceLocation CURRENT_CURSOR_ICON = null;
     public static long customCursorHandle = -1L;

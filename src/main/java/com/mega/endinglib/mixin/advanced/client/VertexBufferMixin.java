@@ -1,5 +1,8 @@
 package com.mega.endinglib.mixin.advanced.client;
 
+import com.mega.endinglib.client.ClientWrapped;
+import com.mega.endinglib.proxy.ClientProxy;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.mixin.data_expand.ExtraShaderInstance;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mojang.blaze3d.vertex.VertexBuffer;
@@ -17,6 +20,15 @@ public abstract class VertexBufferMixin {
         if (p_166879_ instanceof ExtraShaderInstance esi) {
             if (esi.getUniformProgramTime() != null) {
                 esi.getUniformProgramTime().set(TimeContext.Client.currentSeconds());
+            }
+            if (esi.getUniformLevelModelViewMat() != null) {
+                esi.getUniformLevelModelViewMat().set(ClientUtils.LEVEL_MODEL_VIEW_MAT);
+            }
+            if (esi.getUniformLevelProjMat() != null) {
+                esi.getUniformLevelProjMat().set(ClientUtils.LEVEL_PROJ_MAT);
+            }
+            if (esi.getUniformCameraPos() != null) {
+                esi.getUniformCameraPos().set(ClientUtils.mc.gameRenderer.getMainCamera().getPosition().toVector3f());
             }
         }
     }

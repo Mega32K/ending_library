@@ -11,4 +11,10 @@ public interface ExtraShaderInstance {
     }
     @Nullable
     Uniform getUniformProgramTime();
+    @Nullable
+    Uniform getUniformLevelModelViewMat();
+    @Nullable
+    Uniform getUniformLevelProjMat();
+    @Nullable
+    Uniform getUniformCameraPos();
 }

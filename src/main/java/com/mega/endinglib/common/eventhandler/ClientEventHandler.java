@@ -2,6 +2,7 @@ package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.LambdaClientTaskInstance;
+import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
@@ -17,6 +18,8 @@ import com.mega.endinglib.common.network.c2s.key.C2SDynamicKeyOperationPacket;
 import com.mega.endinglib.mixin.shader.GameRendererMixin;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
+import com.mega.endinglib.util.mc.client.MegaGuiGraphics;
+import com.mega.endinglib.util.mc.client.RenderUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -25,6 +28,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -42,6 +46,9 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.EnumSet;
@@ -168,6 +175,18 @@ public class ClientEventHandler {
     }
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void renderAfterGui(RenderGuiEvent.Post event) {
+        /*
+        Minecraft mc = Minecraft.getInstance();
+        Vector3f pos = new Vector3f(-938, 11, 2075).add(mc.gameRenderer.getMainCamera().getPosition().toVector3f().mul(-1).add(0.5F, 0.F, 0.5F));
+        System.out.println("%.2f, %.2f, %.2f".formatted(pos.x, pos.y, pos.z));
+        Vector4f v4 = new Matrix4f(ClientUtils.LEVEL_MODEL_VIEW_MAT).transform(new Vector4f(pos, 0));
+        System.out.println("%.2f, %.2f, %.2f".formatted(v4.x, v4.y, v4.z));
+        new Matrix4f(ClientUtils.LEVEL_PROJ_MAT).transform(v4);
+        v4 = new Vector4f((v4.x/v4.z+1)/2f, (v4.y/v4.z+1)/2f, v4.z, 1);
+        System.out.println("%.2f, %.2f, %.2f".formatted(v4.x, v4.y, v4.z));
+        new MegaGuiGraphics(mc, mc.renderBuffers().bufferSource()).drawString(mc.font, "X", mc.getWindow().getGuiScaledWidth()*v4.x, mc.getWindow().getGuiScaledHeight()-mc.getWindow().getGuiScaledHeight() * v4.y, 0xFFFFFFFF, false);
+        System.out.println();
+         */
         PostProcessingShaders.INSTANCE.gameEffect(event.getPartialTick());
     }
     @SubscribeEvent

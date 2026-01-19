@@ -196,6 +196,7 @@ public class LoreHelper {
                                 .withStyle(style -> style
                                         .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.format("%.3f", vec4.z)))
                                         .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("chat.copy.click"))))
+                                .append(Component.literal(", ").withStyle(ChatFormatting.GREEN))
                 ).append(
                         Component.literal(String.format("%.3f", vec4.w))
                                 .withStyle(ChatFormatting.GOLD)
