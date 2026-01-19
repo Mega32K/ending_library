@@ -207,7 +207,7 @@
   "commands.endinglib.message.shader.invalid.effect_location": "§7无效的着色器路径 %s",
   "commands.endinglib.message.shader.create": "§7已为%s§7的客户端创建名为 %s §7的后处理效果",
   "commands.endinglib.message.shader.remove": "§7已为%s§7的客户端删除名为 %s §7的后处理效果",
-  "commands.endinglib.message.shader.life": "§7已将%s§7客户端的后处理效果 %s §7的生命时间设为%s§6秒",
+  "commands.endinglib.message.shader.life": "§7已将%s§7客户端的后处理效果 %s §7的生命时间设为%s§6秒tick",
   "commands.endinglib.message.shader.enable": "§7已为%s§7启用后处理效果 %s",
   "commands.endinglib.message.shader.disable": "§7已为%s§7禁用后处理效果 %s",
   "commands.endinglib.message.shader.uniform.set": "§7Uniform值已更新",

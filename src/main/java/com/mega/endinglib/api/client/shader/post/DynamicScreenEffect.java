@@ -16,6 +16,9 @@ public class DynamicScreenEffect implements CustomScreenEffect {
     private boolean isFromBuiltJson = false;
     public DynamicEffectData.TransformLayer layer = DynamicEffectData.TransformLayer.LEVEL_RENDERER;
     public void setCanUse(boolean canUse) {
+        if (this.canUse != canUse) {
+            this.time = this.lastStamp = 0;
+        }
         this.canUse = canUse;
     }
 

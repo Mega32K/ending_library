@@ -318,8 +318,9 @@ public class ClientWrapped {
         DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
         Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
         if (screenEffects.containsKey(toCompare)) {
-            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect)
+            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect) {
                 screenEffect.setCanUse(using);
+            }
         } else {
             Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
         }
