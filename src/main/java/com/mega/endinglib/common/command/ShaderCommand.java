@@ -6,16 +6,15 @@ import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.data.EndingLibrarySavedData;
 import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectCreatePacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectRemovePacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectStatusPacket;
-import com.mega.endinglib.common.network.s2c.shader.S2CScreenEffectUniformPacket;
+import com.mega.endinglib.common.network.s2c.shader.*;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -44,6 +43,13 @@ public class ShaderCommand {
                         .then(Commands.literal("enable")
                                 .then(Commands.argument("name", PostEffectArgument.postEffect())
                                         .executes(context -> status(context.getSource(), getPlayer(context), getEffectName(context), true))
+                                )
+                        )
+                        .then(Commands.literal("life")
+                                .then(Commands.argument("name", PostEffectArgument.postEffect())
+                                        .then(Commands.argument("life", FloatArgumentType.floatArg(0))
+                                                .executes(context -> life(context.getSource(), getPlayer(context), getEffectName(context), FloatArgumentType.getFloat(context, "life")))
+                                        )
                                 )
                         )
                         .then(Commands.literal("disable")
@@ -109,6 +115,11 @@ public class ShaderCommand {
     private static int remove(CommandSourceStack sourceStack, ServerPlayer player, String name) {
         PacketHandler.sendToPlayer(new S2CScreenEffectRemovePacket(name), player);
         sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.shader.remove", player.getDisplayName(), LoreHelper.withCopy(Component.literal(name), name)), false);
+        return 1;
+    }
+    private static int life(CommandSourceStack sourceStack, ServerPlayer player, String name, float life) {
+        PacketHandler.sendToPlayer(new S2CScreenEffectLifePacket(name, life), player);
+        sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.shader.life", player.getDisplayName(), name, LoreHelper.number(life, ChatFormatting.GOLD)), false);
         return 1;
     }
     private static int status(CommandSourceStack sourceStack, ServerPlayer player, String name, boolean using) {

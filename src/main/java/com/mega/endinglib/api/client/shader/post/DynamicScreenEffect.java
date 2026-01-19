@@ -1,6 +1,8 @@
 package com.mega.endinglib.api.client.shader.post;
 
 import com.mega.endinglib.common.data.DynamicEffectData;
+import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.c2s.shader.C2SScreenEffectStatusPacket;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import net.minecraft.resources.ResourceLocation;
 
@@ -10,10 +12,15 @@ public class DynamicScreenEffect implements CustomScreenEffect {
     private boolean canUse;
     private float lastStamp;
     private float time;
+    private float life;
     private boolean isFromBuiltJson = false;
     public DynamicEffectData.TransformLayer layer = DynamicEffectData.TransformLayer.LEVEL_RENDERER;
     public void setCanUse(boolean canUse) {
         this.canUse = canUse;
+    }
+
+    public void setLife(float life) {
+        this.life = life;
     }
 
     public DynamicScreenEffect(String name, ResourceLocation json, DynamicEffectData.TransformLayer layer, boolean canUse) {
@@ -61,6 +68,10 @@ public class DynamicScreenEffect implements CustomScreenEffect {
         ((AccessorPostChain) this.current()).getPasses().forEach(postPass -> {
             postPass.getEffect().safeGetUniform("TotalTime").set(time * 0.05F);
         });
+        if (time >= life) {
+            PacketHandler.sendToServer(new C2SScreenEffectStatusPacket(this.name, false));
+            setCanUse(false);
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.mega.endinglib.common.network.c2s.C2SUserInputPacket;
 import com.mega.endinglib.common.network.c2s.key.C2SDynamicKeyOperationPacket;
 import com.mega.endinglib.common.network.c2s.key.C2SSetKeyPacket;
 import com.mega.endinglib.common.network.c2s.shader.C2SDynamicEffectDataPacket;
+import com.mega.endinglib.common.network.c2s.shader.C2SScreenEffectStatusPacket;
 import com.mega.endinglib.common.network.s2c.*;
 import com.mega.endinglib.common.network.s2c.camera.*;
 import com.mega.endinglib.common.network.s2c.camera.clientload.S2CCameraAnimationNoticePacket;
@@ -84,6 +85,8 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CScreenEffectCreatePacket.class, S2CScreenEffectCreatePacket::encode, S2CScreenEffectCreatePacket::decode, S2CScreenEffectCreatePacket::handle);
         INSTANCE.registerMessage(id(), S2CScreenEffectRemovePacket.class, S2CScreenEffectRemovePacket::encode, S2CScreenEffectRemovePacket::decode, S2CScreenEffectRemovePacket::handle);
         INSTANCE.registerMessage(id(), S2CScreenEffectStatusPacket.class, S2CScreenEffectStatusPacket::encode, S2CScreenEffectStatusPacket::decode, S2CScreenEffectStatusPacket::handle);
+        INSTANCE.registerMessage(id(), C2SScreenEffectStatusPacket.class, C2SScreenEffectStatusPacket::encode, C2SScreenEffectStatusPacket::decode, C2SScreenEffectStatusPacket::handle);
+        INSTANCE.registerMessage(id(), S2CScreenEffectLifePacket.class, S2CScreenEffectLifePacket::encode, S2CScreenEffectLifePacket::decode, S2CScreenEffectLifePacket::handle);
         INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.SinglePass.class, S2CScreenEffectUniformPacket.SinglePass::encode, S2CScreenEffectUniformPacket.SinglePass::decode, S2CScreenEffectUniformPacket.SinglePass::handle);
         INSTANCE.registerMessage(id(), S2CScreenEffectUniformPacket.AllPasses.class, S2CScreenEffectUniformPacket.AllPasses::encode, S2CScreenEffectUniformPacket.AllPasses::decode, S2CScreenEffectUniformPacket.AllPasses::handle);
         INSTANCE.registerMessage(id(), S2CSetCameraEntityPacket.class, S2CSetCameraEntityPacket::encode, S2CSetCameraEntityPacket::decode, S2CSetCameraEntityPacket::handle);

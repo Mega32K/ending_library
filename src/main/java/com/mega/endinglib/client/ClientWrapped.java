@@ -304,6 +304,16 @@ public class ClientWrapped {
                 .map(DynamicEffectData::name)
                 .collect(Collectors.toSet());
     }
+    public static void handleScreenEffectLife(String name, float life) {
+        DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
+        Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
+        if (screenEffects.containsKey(toCompare)) {
+            if (screenEffects.get(toCompare) instanceof DynamicScreenEffect screenEffect)
+                screenEffect.setLife(life);
+        } else {
+            Minecraft.getInstance().gui.getChat().addMessage(Component.translatable("commands.endinglib.message.shader.invalid.name", name));
+        }
+    }
     public static void handleScreenEffectStatus(String name, boolean using) {
         DynamicEffectData toCompare = new DynamicEffectData(name, null, null, false);
         Map<DynamicEffectData, CustomScreenEffect> screenEffects = PostProcessingShaders.INSTANCE.getCommandScreenEffects();
