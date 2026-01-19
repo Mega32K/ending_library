@@ -12,7 +12,7 @@ public class DynamicScreenEffect implements CustomScreenEffect {
     private boolean canUse;
     private float lastStamp;
     private float time;
-    private float life;
+    private float life = Float.MAX_VALUE;
     private boolean isFromBuiltJson = false;
     public DynamicEffectData.TransformLayer layer = DynamicEffectData.TransformLayer.LEVEL_RENDERER;
     public void setCanUse(boolean canUse) {

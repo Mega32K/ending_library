@@ -129,11 +129,11 @@
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.network.c2s.shader" />
+      <recent name="com.mega.endinglib.common.network.s2c.shader" />
       <recent name="com.mega.endinglib.mixin.advanced.client" />
       <recent name="com.mega.endinglib.common.command.argument" />
       <recent name="com.mega.endinglib.mixin.advanced.data_command" />
-      <recent name="com.mega.endinglib.client.reloadable" />
-      <recent name="com.mega.endinglib.mixin.advanced.client.xenon" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [build]">
