@@ -33,6 +33,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -155,7 +156,7 @@ public class ClientEventHandler {
             if (target == player) return;
             CommonProxy.getCameraCapOptional(ClientWrapped.clientPlayer()).ifPresent(cap -> {
                 if (!cap.otherPlayerNamesRendering()) {
-                    event.setCanceled(true);
+                    event.setResult(Event.Result.DENY);
                 }
             });
         }
