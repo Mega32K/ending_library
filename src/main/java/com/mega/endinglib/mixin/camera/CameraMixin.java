@@ -130,10 +130,8 @@ public abstract class CameraMixin {
                     manager.setOriginYRot(y);
                 }
                 float partial = partialTicks.get();
-                if (this.detached) {
-                    this.setRotation(y + (float) manager.getYRotation(partial), x + (float) manager.getXRotation(partial));
-                    return false;
-                }
+                this.setRotation(y + (float) manager.getYRotation(partial), x + (float) manager.getXRotation(partial));
+                return false;
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();
