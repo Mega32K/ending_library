@@ -2,12 +2,10 @@ package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.LambdaClientTaskInstance;
-import com.mega.endinglib.api.client.cmc.LoreHelper;
-import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
-import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.ClientContext;
+import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
@@ -15,11 +13,8 @@ import com.mega.endinglib.common.data.ClientDynamicKeyMapping;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.c2s.key.C2SDynamicKeyOperationPacket;
-import com.mega.endinglib.mixin.shader.GameRendererMixin;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
-import com.mega.endinglib.util.mc.client.MegaGuiGraphics;
-import com.mega.endinglib.util.mc.client.RenderUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -28,12 +23,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.DeathScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -41,14 +32,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.EnumSet;
@@ -187,7 +174,6 @@ public class ClientEventHandler {
         new MegaGuiGraphics(mc, mc.renderBuffers().bufferSource()).drawString(mc.font, "X", mc.getWindow().getGuiScaledWidth()*v4.x, mc.getWindow().getGuiScaledHeight()-mc.getWindow().getGuiScaledHeight() * v4.y, 0xFFFFFFFF, false);
         System.out.println();
          */
-        PostProcessingShaders.INSTANCE.gameEffect(event.getPartialTick());
     }
     @SubscribeEvent
     public static void renderLevelStageEvent(RenderLevelStageEvent event) {

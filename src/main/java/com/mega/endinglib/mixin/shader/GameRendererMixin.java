@@ -25,4 +25,8 @@ public abstract class GameRendererMixin {
     public void resize(int p_109098_, int p_109099_, CallbackInfo callbackInfo) {
         PostProcessingShaders.postChains.keySet().forEach(effect -> effect.current().resize(p_109098_, p_109099_));
     }
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V", ordinal = 0, shift = At.Shift.BEFORE))
+    private void afterGuiRender(float p_109094_, long p_109095_, boolean p_109096_, CallbackInfo ci) {
+        PostProcessingShaders.INSTANCE.gameEffect(p_109094_);
+    }
 }
