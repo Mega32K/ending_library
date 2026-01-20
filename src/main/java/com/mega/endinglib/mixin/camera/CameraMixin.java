@@ -71,13 +71,13 @@ public abstract class CameraMixin {
                     manager.setOriginZ(z);
                 }
                 float partial = partialTicks.get();
-                if (!manager.getX().isEmpty()) {
+                if (!manager.getX().isEmpty() && Double.compare(manager.getX().getValue(), 0.0d) != 0) {
                     x = manager.getX(partial);
                 }
-                if (!manager.getY().isEmpty()) {
+                if (!manager.getY().isEmpty() && Double.compare(manager.getY().getValue(), 0.0d) != 0) {
                     y = manager.getY(partial);
                 }
-                if (!manager.getZ().isEmpty()) {
+                if (!manager.getZ().isEmpty() && Double.compare(manager.getZ().getValue(), 0.0d) != 0) {
                     z = manager.getZ(partial);
                 }
                 double finalX = x + manager.getXOffset(partial);
