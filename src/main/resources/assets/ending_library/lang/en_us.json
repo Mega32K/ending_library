@@ -42,6 +42,9 @@
 
   "commands.endinglib.message.message.invalid_target": "§7非法的目标 %s",
 
+  "commands.endinglib.message.modifierType.x": "§aX轴坐标",
+  "commands.endinglib.message.modifierType.y": "§aY轴坐标",
+  "commands.endinglib.message.modifierType.z": "§aZ轴坐标",
   "commands.endinglib.message.modifierType.translation_x": "§aX轴坐标偏移",
   "commands.endinglib.message.modifierType.translation_y": "§aY轴坐标偏移",
   "commands.endinglib.message.modifierType.translation_z": "§aZ轴坐标偏移",

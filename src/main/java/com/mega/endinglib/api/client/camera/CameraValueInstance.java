@@ -233,6 +233,9 @@ public class CameraValueInstance {
         this.permanentModifiers.remove(modifier);
         this.setDirty();
     }
+    public boolean isEmpty() {
+        return this.animationByName.isEmpty();
+    }
 
     public boolean isDirty() {
         return dirty;

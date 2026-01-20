@@ -14,7 +14,10 @@ public enum ModifierType {
     ROTATION_Z(ICameraManager::getZRot0),
     FOV(ICameraManager::getFovOffset0),
     ZOOM(ICameraManager::getZoomOffset0),
-    RAYCAST(ICameraManager::getRaycastOffset0);
+    RAYCAST(ICameraManager::getRaycastOffset0),
+    X(ICameraManager::getX),
+    Y(ICameraManager::getY),
+    Z(ICameraManager::getZ);
     private final Function<ICameraManager, CameraValueInstance> field;
 
     ModifierType(Function<ICameraManager, CameraValueInstance> field) {

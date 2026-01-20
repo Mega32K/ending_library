@@ -10,6 +10,11 @@ public interface ICameraManager {
     void updateModifier();
 
     void tick(EndingLibraryPlayerCapability capability);
+    CameraValueInstance getX();
+
+    CameraValueInstance getY();
+
+    CameraValueInstance getZ();
 
     CameraValueInstance getXOffset0();
 
@@ -32,6 +37,11 @@ public interface ICameraManager {
     CameraValueInstance getFovOffset0();
     CameraValueInstance getZoomOffset0();
     CameraValueInstance getRaycastOffset0();
+    void addXModifier(CameraModifier modifier);
+
+    void addYModifier(CameraModifier modifier);
+
+    void addZModifier(CameraModifier modifier);
 
     void addRelativeXModifier(CameraModifier modifier);
 
@@ -54,6 +64,11 @@ public interface ICameraManager {
     void addFovModifier(CameraModifier modifier);
     void addZoomModifier(CameraModifier modifier);
     void addRaycastModifier(CameraModifier modifier);
+    void addPermanentXModifier(CameraModifier modifier);
+
+    void addPermanentYModifier(CameraModifier modifier);
+
+    void addPermanentZModifier(CameraModifier modifier);
 
     void addPermanentRelativeXModifier(CameraModifier modifier);
 
@@ -76,7 +91,11 @@ public interface ICameraManager {
     void addPermanentFovModifier(CameraModifier modifier);
     void addPermanentZoomModifier(CameraModifier modifier);
     void addPermanentRaycastModifier(CameraModifier modifier);
+    void removeXModifier(CameraModifier modifier);
 
+    void removeYModifier(CameraModifier modifier);
+
+    void removeZModifier(CameraModifier modifier);
     void removeRelativeXModifier(CameraModifier modifier);
 
     void removeRelativeYModifier(CameraModifier modifier);
@@ -98,7 +117,11 @@ public interface ICameraManager {
     void removeFovModifier(CameraModifier modifier);
     void removeZoomModifier(CameraModifier modifier);
     void removeRaycastModifier(CameraModifier modifier);
+    double getX(float partialTicks);
 
+    double getY(float partialTicks);
+
+    double getZ(float partialTicks);
     double getXRelative(float partialTicks);
 
     double getYRelative(float partialTicks);

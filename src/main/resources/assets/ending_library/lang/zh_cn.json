@@ -42,6 +42,9 @@
 
   "commands.endinglib.message.message.invalid_target": "§7非法的目标 %s",
 
+  "commands.endinglib.message.modifierType.x": "§aX轴坐标",
+  "commands.endinglib.message.modifierType.y": "§aY轴坐标",
+  "commands.endinglib.message.modifierType.z": "§aZ轴坐标",
   "commands.endinglib.message.modifierType.translation_x": "§aX轴坐标偏移",
   "commands.endinglib.message.modifierType.translation_y": "§aY轴坐标偏移",
   "commands.endinglib.message.modifierType.translation_z": "§aZ轴坐标偏移",
@@ -240,6 +243,9 @@
   "commands.endinglib.message.vanilla_animation.magic_critical_hit": "§7被暴击效果(魔法)",
   "commands.endinglib.message.vanilla_animation.success.single": "§7实体%s§7正在播放动画",
   "commands.endinglib.message.vanilla_animation.success.multiple": "%s个§7实体%s§7正在播放动画",
+
+  "commands.endinglib.message.display.interpolation_type.get": "§7%s§7当前的插值函数为 %s",
+  "commands.endinglib.message.display.interpolation_type.set": "§7已将%s§7当前的插值函数设置为 %s",
 
   "tooltip.endinglib.specialEffect": "§7特殊效果:",
   "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",

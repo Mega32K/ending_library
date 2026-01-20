@@ -17,6 +17,9 @@ import java.util.Set;
 
 public class ELServerCameraManager implements ICameraManager {
     public CameraType cameraType = CameraType.FIRST_PERSON;
+    public final CameraValueInstance x = new CameraValueInstance();
+    public final CameraValueInstance y = new CameraValueInstance();
+    public final CameraValueInstance z = new CameraValueInstance();
     public final CameraValueInstance xOffset = new CameraValueInstance();
     public final CameraValueInstance yOffset = new CameraValueInstance();
     public final CameraValueInstance zOffset = new CameraValueInstance();
@@ -35,6 +38,9 @@ public class ELServerCameraManager implements ICameraManager {
     private double originX;
     private double originY;
     private double originZ;
+    private double xOld;
+    private double yOld;
+    private double zOld;
     private double xOffsetOld;
     private double yOffsetOld;
     private double zOffsetOld;
@@ -68,6 +74,21 @@ public class ELServerCameraManager implements ICameraManager {
 
     public void tick(EndingLibraryPlayerCapability capability) {
         this.oldUpdate();
+    }
+
+    @Override
+    public CameraValueInstance getX() {
+        return x;
+    }
+
+    @Override
+    public CameraValueInstance getY() {
+        return y;
+    }
+
+    @Override
+    public CameraValueInstance getZ() {
+        return z;
     }
 
     public CameraValueInstance getXOffset0() {
@@ -117,6 +138,22 @@ public class ELServerCameraManager implements ICameraManager {
     public CameraValueInstance getRaycastOffset0() {
         return raycastOffset;
     }
+
+    @Override
+    public void addXModifier(CameraModifier modifier) {
+        this.xRelative.addTransientModifier(modifier);
+    }
+
+    @Override
+    public void addYModifier(CameraModifier modifier) {
+        this.yRelative.addTransientModifier(modifier);
+    }
+
+    @Override
+    public void addZModifier(CameraModifier modifier) {
+        this.zRelative.addTransientModifier(modifier);
+    }
+
     public void addRelativeXModifier(CameraModifier modifier) {
         this.xRelative.addTransientModifier(modifier);
     }
@@ -164,6 +201,21 @@ public class ELServerCameraManager implements ICameraManager {
         this.raycastOffset.addTransientModifier(modifier);
     }
 
+    @Override
+    public void addPermanentXModifier(CameraModifier modifier) {
+        this.xRelative.addPermanentModifier(modifier);
+    }
+
+    @Override
+    public void addPermanentYModifier(CameraModifier modifier) {
+        this.yRelative.addPermanentModifier(modifier);
+    }
+
+    @Override
+    public void addPermanentZModifier(CameraModifier modifier) {
+        this.zRelative.addPermanentModifier(modifier);
+    }
+
 
     public void addPermanentRelativeXModifier(CameraModifier modifier) {
         this.xRelative.addPermanentModifier(modifier);
@@ -207,6 +259,22 @@ public class ELServerCameraManager implements ICameraManager {
     public void addPermanentRaycastModifier(CameraModifier modifier) {
         this.raycastOffset.addPermanentModifier(modifier);
     }
+
+    @Override
+    public void removeXModifier(CameraModifier modifier) {
+        this.xRelative.removeModifier(modifier);
+    }
+
+    @Override
+    public void removeYModifier(CameraModifier modifier) {
+        this.yRelative.removeModifier(modifier);
+    }
+
+    @Override
+    public void removeZModifier(CameraModifier modifier) {
+        this.zRelative.removeModifier(modifier);
+    }
+
     public void addPermanentZoomModifier(CameraModifier modifier) {
         this.zoomOffset.addPermanentModifier(modifier);
     }
@@ -258,6 +326,22 @@ public class ELServerCameraManager implements ICameraManager {
     public void removeRaycastModifier(CameraModifier modifier) {
         this.raycastOffset.removeModifier(modifier);
     }
+
+    @Override
+    public double getX(float partialTicks) {
+        return Mth.lerp(partialTicks, this.xOld, this.x.getValue());
+    }
+
+    @Override
+    public double getY(float partialTicks) {
+        return Mth.lerp(partialTicks, this.yOld, this.y.getValue());
+    }
+
+    @Override
+    public double getZ(float partialTicks) {
+        return Mth.lerp(partialTicks, this.zOld, this.z.getValue());
+    }
+
     public double getXRelative(float partialTicks) {
         return Mth.lerp(partialTicks, this.xRelativeOld, this.xRelative.getValue());
     }
