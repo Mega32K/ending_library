@@ -148,7 +148,6 @@ public class CameraKeyframeAnimation {
     public void tick() {
         this.tickCountOld = this.tickCount;
         if (this.isStopped()) return;
-
         if (this.tickCount < this.getDuration() * 0.2) {
             this.tickCount++;
             if (this.tickCount == this.getDuration() * 0.2) {
