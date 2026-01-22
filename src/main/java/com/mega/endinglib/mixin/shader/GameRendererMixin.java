@@ -25,8 +25,9 @@ public abstract class GameRendererMixin {
     public void resize(int p_109098_, int p_109099_, CallbackInfo callbackInfo) {
         PostProcessingShaders.postChains.keySet().forEach(effect -> effect.current().resize(p_109098_, p_109099_));
     }
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V", ordinal = 0, shift = At.Shift.BEFORE))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;<init>(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V" ))
     private void afterGuiRender(float p_109094_, long p_109095_, boolean p_109096_, CallbackInfo ci) {
-        PostProcessingShaders.INSTANCE.gameEffect(p_109094_);
+        if (!minecraft.options.hideGui || minecraft.screen != null)
+            PostProcessingShaders.INSTANCE.gameEffect(p_109094_);
     }
 }

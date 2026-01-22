@@ -2,6 +2,7 @@ package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.LambdaClientTaskInstance;
+import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
 import com.mega.endinglib.client.ClientContext;
@@ -175,6 +176,7 @@ public class ClientEventHandler {
         new MegaGuiGraphics(mc, mc.renderBuffers().bufferSource()).drawString(mc.font, "X", mc.getWindow().getGuiScaledWidth()*v4.x, mc.getWindow().getGuiScaledHeight()-mc.getWindow().getGuiScaledHeight() * v4.y, 0xFFFFFFFF, false);
         System.out.println();
          */
+        PostProcessingShaders.INSTANCE.gameEffect(event.getPartialTick());
     }
     @SubscribeEvent
     public static void renderLevelStageEvent(RenderLevelStageEvent event) {
