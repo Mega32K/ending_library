@@ -48,7 +48,7 @@ public class TimeContext {
         }
 
         public static float alwaysPartial() {
-            return (TimeStopUtils.isTimeStop || Minecraft.getInstance().isPaused()) ? Client.timer.partialTick : Minecraft.getInstance().getPartialTick();
+            return (TimeStopUtils.isTimeStop || Minecraft.getInstance().isPaused()) ? Client.timer.partialTick : Minecraft.getInstance().getFrameTime();
         }
 
         public static float getPartialTickCount(Entity owner, boolean always) {

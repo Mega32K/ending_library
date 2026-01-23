@@ -27,7 +27,8 @@ public abstract class GameRendererMixin {
     }
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;<init>(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V" ))
     private void afterGuiRender(float p_109094_, long p_109095_, boolean p_109096_, CallbackInfo ci) {
-        if (!minecraft.options.hideGui || minecraft.screen != null)
+        if (minecraft.options.hideGui)
             PostProcessingShaders.INSTANCE.gameEffect(p_109094_);
+
     }
 }

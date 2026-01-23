@@ -4,14 +4,20 @@ import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.c2s.shader.C2SScreenEffectStatusPacket;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
+import com.mega.endinglib.mixin.accessor.AccessorUniform;
+import com.mega.endinglib.util.time.TimeContext;
+import com.mojang.blaze3d.shaders.AbstractUniform;
 import net.minecraft.resources.ResourceLocation;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class DynamicScreenEffect implements CustomScreenEffect {
     private final String name;
     private final ResourceLocation json;
     private boolean canUse;
     private float lastStamp;
+    private float sLastStamp;
     private float time;
+    private float sTime;
     private float life = Float.MAX_VALUE;
     private boolean isFromBuiltJson = false;
     public DynamicEffectData.TransformLayer layer = DynamicEffectData.TransformLayer.LEVEL_RENDERER;
@@ -68,12 +74,32 @@ public class DynamicScreenEffect implements CustomScreenEffect {
             this.time += partialTicks - this.lastStamp;
         }
         lastStamp = partialTicks;
+        partialTicks = TimeContext.Client.alwaysPartial();
+        if (partialTicks < this.sLastStamp) {
+            this.sTime += 1.0F - this.sLastStamp;
+            this.sTime += partialTicks;
+        } else {
+            this.sTime += partialTicks - this.sLastStamp;
+        }
+        sLastStamp = partialTicks;
+        MutableObject<AbstractUniform> SeriouslyTotalTime = new MutableObject<>(null);
         ((AccessorPostChain) this.current()).getPasses().forEach(postPass -> {
             postPass.getEffect().safeGetUniform("TotalTime").set(time * 0.05F);
+            SeriouslyTotalTime.setValue(postPass.getEffect().getUniform("SeriouslyTotalTime"));
+            AbstractUniform uniform = SeriouslyTotalTime.getValue();
+            if (uniform != null)
+                uniform.set(sTime * 0.05F);
         });
-        if (time >= life) {
-            PacketHandler.sendToServer(new C2SScreenEffectStatusPacket(this.name, false));
-            setCanUse(false);
+        if (SeriouslyTotalTime.getValue() == null) {
+            if (time >= life) {
+                PacketHandler.sendToServer(new C2SScreenEffectStatusPacket(this.name, false));
+                setCanUse(false);
+            }
+        } else {
+            if (sTime >= life) {
+                PacketHandler.sendToServer(new C2SScreenEffectStatusPacket(this.name, false));
+                setCanUse(false);
+            }
         }
     }
 
