@@ -11,14 +11,15 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Optional;
 
-public record AttackEventComponent(String command, float attackCooldownRequirement, Optional<ResourceLocation> function, int contactCooldownTicks, int minimumPermission) implements FunctionComponent {
+public record AttackEventComponent(String command, float attackCooldownRequirement, Optional<ResourceLocation> function, int contactCooldownTicks, int minimumPermission, boolean silent) implements FunctionComponent {
     public static Codec<AttackEventComponent> CODEC = RecordCodecBuilder.create(
             com -> com.group(
                     Codec.STRING.optionalFieldOf("command", "").forGetter(AttackEventComponent::command),
                     Codecs.O2ONE_FLOAT.optionalFieldOf("attack_cooldown_requirement", 0F).forGetter(AttackEventComponent::attackCooldownRequirement),
                     ResourceLocation.CODEC.optionalFieldOf("function").forGetter(AttackEventComponent::function),
                     Codecs.NON_NEGATIVE_INT.optionalFieldOf("contact_cooldown_ticks", 0).forGetter(AttackEventComponent::contactCooldownTicks),
-                    Codec.INT.optionalFieldOf("min_permission", 2).forGetter(AttackEventComponent::minimumPermission)
+                    Codec.INT.optionalFieldOf("min_permission", 2).forGetter(AttackEventComponent::minimumPermission),
+                    Codec.BOOL.optionalFieldOf("silent", true).forGetter(AttackEventComponent::silent)
             ).apply(com, AttackEventComponent::new)
     );
     private boolean canUse(Player player) {
@@ -28,7 +29,7 @@ public record AttackEventComponent(String command, float attackCooldownRequireme
         if (this.canUse(player)) {
             if (!command.isEmpty()) {
                 CommandSourceStack sourceStack = player.createCommandSourceStack().withMaximumPermission(minimumPermission);
-                ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+                ((AccessorCommandSourceStack) sourceStack).setSilent(silent);
                 serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
             }
             function.ifPresent(location -> this.apply(player, location, minimumPermission));

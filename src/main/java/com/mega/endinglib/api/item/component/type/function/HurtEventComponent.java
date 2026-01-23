@@ -49,17 +49,18 @@ public record HurtEventComponent(List<HurtEvent> onDirectEvents, List<HurtEvent>
         }
     }
 
-    public record HurtEvent(String command, Optional<ResourceLocation> function, int minimumPermission) implements FunctionComponent {
+    public record HurtEvent(String command, Optional<ResourceLocation> function, int minimumPermission, boolean silent) implements FunctionComponent {
         public static Codec<HurtEvent> CODEC = RecordCodecBuilder.create(
                 instance -> instance.group(
                         Codec.STRING.optionalFieldOf("command", "").forGetter(HurtEvent::command),
                         ResourceLocation.CODEC.optionalFieldOf("function").forGetter(HurtEvent::function),
-                        Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(HurtEvent::minimumPermission)
+                        Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(HurtEvent::minimumPermission),
+                        Codec.BOOL.optionalFieldOf("silent", true).forGetter(HurtEvent::silent)
                 ).apply(instance, HurtEvent::new)
         );
         void apply(MinecraftServer server, CommandSourceStack sourceStack) {
             if (!command.isEmpty()) {
-                ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+                ((AccessorCommandSourceStack) sourceStack).setSilent(silent);
                 server.getCommands().performPrefixedCommand(sourceStack, this.command);
             }
             function.ifPresent(location -> this.apply(server, sourceStack, location, minimumPermission));

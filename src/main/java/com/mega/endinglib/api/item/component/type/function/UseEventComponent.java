@@ -13,21 +13,22 @@ import net.minecraft.world.entity.player.Player;
 
 import java.util.Optional;
 
-public record UseEventComponent(String command, Optional<InteractionHand> onlyInHand, Optional<ResourceLocation> function, int cooldownTicks, int minimumPermission) implements FunctionComponent {
+public record UseEventComponent(String command, Optional<InteractionHand> onlyInHand, Optional<ResourceLocation> function, int cooldownTicks, int minimumPermission, boolean silent) implements FunctionComponent {
     public static Codec<UseEventComponent> CODEC = RecordCodecBuilder.create(
             com -> com.group(
                     Codec.STRING.optionalFieldOf("command","").forGetter(UseEventComponent::command),
                     Codecs.HAND_CODEC.optionalFieldOf("only_in_hand").forGetter(UseEventComponent::onlyInHand),
                     ResourceLocation.CODEC.optionalFieldOf("function").forGetter(UseEventComponent::function),
                     Codec.INT.optionalFieldOf("cooldown_ticks", 0).forGetter(UseEventComponent::cooldownTicks),
-                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(UseEventComponent::minimumPermission)
+                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(UseEventComponent::minimumPermission),
+                    Codec.BOOL.optionalFieldOf("silent", true).forGetter(UseEventComponent::silent)
             ).apply(com, UseEventComponent::new)
     );
     public void apply(ServerLevel serverLevel, LivingEntity user, InteractionHand hand) {
         if (this.onlyInHand.isEmpty() || this.onlyInHand.get().equals(hand)) {
             if (!command.isEmpty()) {
                 CommandSourceStack sourceStack = user.createCommandSourceStack().withMaximumPermission(minimumPermission);
-                ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+                ((AccessorCommandSourceStack) sourceStack).setSilent(silent);
                 serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
             }
             function.ifPresent(location -> this.apply(user, location, minimumPermission));

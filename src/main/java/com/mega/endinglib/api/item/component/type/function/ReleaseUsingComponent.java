@@ -14,7 +14,7 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-public record ReleaseUsingComponent(String command, boolean isFinishedUsing, int timeLeft, Optional<ResourceLocation> function, int cooldownTicks, int minimumPermission) implements FunctionComponent {
+public record ReleaseUsingComponent(String command, boolean isFinishedUsing, int timeLeft, Optional<ResourceLocation> function, int cooldownTicks, int minimumPermission, boolean silent) implements FunctionComponent {
     public static Codec<ReleaseUsingComponent> CODEC = RecordCodecBuilder.create(
             com -> com.group(
                     Codec.STRING.optionalFieldOf("command", "").forGetter(ReleaseUsingComponent::command),
@@ -22,16 +22,18 @@ public record ReleaseUsingComponent(String command, boolean isFinishedUsing, int
                     Codecs.NON_NEGATIVE_INT.optionalFieldOf("time_left", 0).forGetter(ReleaseUsingComponent::timeLeft),
                     ResourceLocation.CODEC.optionalFieldOf("function").forGetter(ReleaseUsingComponent::function),
                     Codec.INT.optionalFieldOf("cooldown_ticks", 0).forGetter(ReleaseUsingComponent::cooldownTicks),
-                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(ReleaseUsingComponent::minimumPermission)
+                    Codecs.NON_NEGATIVE_INT.optionalFieldOf("min_permission", 2).forGetter(ReleaseUsingComponent::minimumPermission),
+                    Codec.BOOL.optionalFieldOf("silent", true).forGetter(ReleaseUsingComponent::silent)
             ).apply(com, ReleaseUsingComponent::new)
     );
     public void apply(ServerLevel serverLevel, LivingEntity livingEntity, boolean finished, ItemStack itemStack) {
         if (this.isFinishedUsing) {
             if (!finished)
                 return;
-        }if (!command.isEmpty()) {
+        }
+        if (!command.isEmpty()) {
             CommandSourceStack sourceStack = livingEntity.createCommandSourceStack().withMaximumPermission(minimumPermission);
-            ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+            ((AccessorCommandSourceStack) sourceStack).setSilent(silent);
             serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
         }
         function.ifPresent(location -> this.apply(livingEntity, location, minimumPermission));
