@@ -1,8 +1,10 @@
 package com.mega.endinglib.api.item.component.type.function;
 
+import com.mega.endinglib.mixin.accessor.AccessorCommandSourceStack;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.commands.ExecuteCommand;
 import net.minecraft.server.level.ServerLevel;
@@ -27,9 +29,11 @@ public record ReleaseUsingComponent(String command, boolean isFinishedUsing, int
         if (this.isFinishedUsing) {
             if (!finished)
                 return;
+        }if (!command.isEmpty()) {
+            CommandSourceStack sourceStack = livingEntity.createCommandSourceStack().withMaximumPermission(minimumPermission);
+            ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+            serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
         }
-        if (!command.isEmpty())
-            serverLevel.getServer().getCommands().performPrefixedCommand(livingEntity.createCommandSourceStack(), command);
         function.ifPresent(location -> this.apply(livingEntity, location, minimumPermission));
         if (livingEntity instanceof Player player) {
             if (cooldownTicks != 0)

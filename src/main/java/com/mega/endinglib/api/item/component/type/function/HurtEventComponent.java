@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.item.component.type.function;
 
+import com.mega.endinglib.mixin.accessor.AccessorCommandSourceStack;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -57,8 +58,10 @@ public record HurtEventComponent(List<HurtEvent> onDirectEvents, List<HurtEvent>
                 ).apply(instance, HurtEvent::new)
         );
         void apply(MinecraftServer server, CommandSourceStack sourceStack) {
-            if (!command.isEmpty())
-                server.getCommands().performPrefixedCommand(sourceStack.withMaximumPermission(minimumPermission), command);
+            if (!command.isEmpty()) {
+                ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+                server.getCommands().performPrefixedCommand(sourceStack, this.command);
+            }
             function.ifPresent(location -> this.apply(server, sourceStack, location, minimumPermission));
         }
     }

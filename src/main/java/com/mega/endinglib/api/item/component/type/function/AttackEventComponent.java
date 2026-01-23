@@ -1,8 +1,10 @@
 package com.mega.endinglib.api.item.component.type.function;
 
+import com.mega.endinglib.mixin.accessor.AccessorCommandSourceStack;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -24,8 +26,11 @@ public record AttackEventComponent(String command, float attackCooldownRequireme
     }
     public void apply(ServerLevel serverLevel, Player player) {
         if (this.canUse(player)) {
-            if (!command.isEmpty())
-                serverLevel.getServer().getCommands().performPrefixedCommand(player.createCommandSourceStack(), this.command);
+            if (!command.isEmpty()) {
+                CommandSourceStack sourceStack = player.createCommandSourceStack().withMaximumPermission(minimumPermission);
+                ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+                serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
+            }
             function.ifPresent(location -> this.apply(player, location, minimumPermission));
             if (this.contactCooldownTicks != 0)
                 player.getCooldowns().addCooldown(player.getMainHandItem().getItem(), contactCooldownTicks);

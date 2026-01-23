@@ -1,8 +1,10 @@
 package com.mega.endinglib.api.item.component.type.function;
 
+import com.mega.endinglib.mixin.accessor.AccessorCommandSourceStack;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,8 +29,11 @@ public record SwingEventComponent(String command, float attackCooldownRequiremen
     }
     public boolean apply(ServerLevel serverLevel, LivingEntity livingEntity) {
         if (!(livingEntity instanceof ServerPlayer player) || this.canUse(player)) {
-            if (!command.isEmpty())
-                serverLevel.getServer().getCommands().performPrefixedCommand(livingEntity.createCommandSourceStack(), this.command);
+            if (!command.isEmpty()) {
+                CommandSourceStack sourceStack = livingEntity.createCommandSourceStack().withMaximumPermission(minimumPermission);
+                ((AccessorCommandSourceStack) sourceStack).setSilent(true);
+                serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
+            }
             function.ifPresent(location -> this.apply(livingEntity, location, minimumPermission));
             return cancelFurtherProcessing;
         }
