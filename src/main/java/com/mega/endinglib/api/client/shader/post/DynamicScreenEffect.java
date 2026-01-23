@@ -82,15 +82,15 @@ public class DynamicScreenEffect implements CustomScreenEffect {
             this.sTime += partialTicks - this.sLastStamp;
         }
         sLastStamp = partialTicks;
-        MutableObject<AbstractUniform> SeriouslyTotalTime = new MutableObject<>(null);
+        MutableObject<AbstractUniform> SeriousTotalTime = new MutableObject<>(null);
         ((AccessorPostChain) this.current()).getPasses().forEach(postPass -> {
             postPass.getEffect().safeGetUniform("TotalTime").set(time * 0.05F);
-            SeriouslyTotalTime.setValue(postPass.getEffect().getUniform("SeriouslyTotalTime"));
-            AbstractUniform uniform = SeriouslyTotalTime.getValue();
+            SeriousTotalTime.setValue(postPass.getEffect().getUniform("SeriousTotalTime"));
+            AbstractUniform uniform = SeriousTotalTime.getValue();
             if (uniform != null)
                 uniform.set(sTime * 0.05F);
         });
-        if (SeriouslyTotalTime.getValue() == null) {
+        if (SeriousTotalTime.getValue() == null) {
             if (time >= life) {
                 PacketHandler.sendToServer(new C2SScreenEffectStatusPacket(this.name, false));
                 setCanUse(false);
