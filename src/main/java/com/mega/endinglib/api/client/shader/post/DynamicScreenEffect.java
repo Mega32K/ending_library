@@ -23,7 +23,7 @@ public class DynamicScreenEffect implements CustomScreenEffect {
     public DynamicEffectData.TransformLayer layer = DynamicEffectData.TransformLayer.LEVEL_RENDERER;
     public void setCanUse(boolean canUse) {
         if (this.canUse != canUse) {
-            this.time = this.lastStamp = 0;
+            this.time = this.sTime = this.sLastStamp = this.lastStamp = 0;
         }
         this.canUse = canUse;
     }
@@ -111,7 +111,7 @@ public class DynamicScreenEffect implements CustomScreenEffect {
     @Override
     public boolean canUse() {
         if (!this.canUse) {
-            time = lastStamp = 0F;
+            time = sTime = sLastStamp = lastStamp = 0F;
         }
         return this.canUse;
     }
