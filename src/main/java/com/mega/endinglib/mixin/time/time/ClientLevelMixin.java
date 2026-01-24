@@ -1,6 +1,7 @@
 package com.mega.endinglib.mixin.time.time;
 
 import com.mega.endinglib.client.ClientContext;
+import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.mixin.level.ClientLevelExpandedContext;
 import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.mixin.level.LevelExpandedContext;
@@ -78,7 +79,6 @@ public abstract class ClientLevelMixin extends Level implements LevelEC {
             }
         }
     }
-
     @Override
     public LevelExpandedContext endinglib$levelECData() {
         return uom$clientEC;
@@ -87,5 +87,9 @@ public abstract class ClientLevelMixin extends Level implements LevelEC {
     @Override
     public void endinglib$setECData(LevelExpandedContext data) {
         this.uom$clientEC = (ClientLevelExpandedContext) data;
+    }
+    @Inject(method = "tickNonPassenger", at = @At("TAIL"))
+    private void forceCapClientTick(Entity p_104640_, CallbackInfo ci) {
+        ExtraEntity.of(p_104640_).endinglib$getExtraEntityData().forceClientTick();
     }
 }
