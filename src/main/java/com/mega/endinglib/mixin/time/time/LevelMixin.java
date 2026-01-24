@@ -40,8 +40,11 @@ public abstract class LevelMixin implements LevelEC {
                 return;
             }
         }
-        if (ExtraEntity.of(entity).endinglib$getExtraEntityData().isFrozen)
+        ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+        if (eed.isFrozen) {
             ci.cancel();
+            eed.forceClientTick();
+        }
     }
 
     @Override
