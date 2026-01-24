@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.capability.syncher;
 
+import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -122,6 +123,7 @@ public class CapabilityDataSerializers {
     public static final CapabilityDataSerializer<Optional<Vector3f>> OPTIONAL_VEC3F = CapabilityDataSerializer.optional(FriendlyByteBuf::writeVector3f, FriendlyByteBuf::readVector3f, CompoundTagUtils::putVector3f, CompoundTagUtils::getVector3f);
     public static final CapabilityDataSerializer<Vector4f> VEC4F = CapabilityDataSerializer.simple(F_VEC4F_WRITER, F_VEC4F_READER, CompoundTagUtils::putVector4f, CompoundTagUtils::getVector4f);
     public static final CapabilityDataSerializer<Optional<Vector4f>> OPTIONAL_VEC4F = CapabilityDataSerializer.optional(F_VEC4F_WRITER, F_VEC4F_READER, CompoundTagUtils::putVector4f, CompoundTagUtils::getVector4f);
+    public static final CapabilityDataSerializer<Easing> EASING = CapabilityDataSerializer.simple(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Easing.class), CompoundTagUtils::putEasing, CompoundTagUtils::getEasing);
     private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
 
     static {
@@ -151,6 +153,7 @@ public class CapabilityDataSerializers {
         registerSerializer(OPTIONAL_VEC3F);
         registerSerializer(VEC4F);
         registerSerializer(OPTIONAL_VEC4F);
+        registerSerializer(EASING);
     }
 
     public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {

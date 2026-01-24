@@ -1,5 +1,6 @@
 package com.mega.endinglib.api.data;
 
+import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import io.netty.handler.codec.DecoderException;
 import it.unimi.dsi.fastutil.bytes.ByteConsumer;
@@ -216,6 +217,15 @@ public class CompoundTagUtils {
         return tag.getBoolean("fixed") ? EntityDimensions.fixed(tag.getFloat("width"), tag.getFloat("height")) : EntityDimensions.scalable(tag.getFloat("width"), tag.getFloat("height"));
     }
 
+    public static void putEasing(CompoundTag nbt, String key, Easing easing) {
+        nbt.putInt(key, easing.ordinal());
+    }
+    public static Easing getEasing(CompoundTag nbt, String key) {
+        if (CompoundTagUtils.containsInt(nbt, key)) {
+            return Easing.class.getEnumConstants()[nbt.getInt(key)];
+        }
+        return Easing.LINEAR;
+    }
     public static boolean getIntFlag(int flagData, int mask) {
         return (flagData & mask) != 0;
     }

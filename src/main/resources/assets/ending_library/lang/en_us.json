@@ -227,6 +227,8 @@
   "commands.endinglib.message.data.dimensions": "实体尺寸",
   "commands.endinglib.message.data.hitbox": "碰撞箱",
   "commands.endinglib.message.data.render_scale": "渲染缩放",
+  "commands.endinglib.message.data.render_scale_easing": "渲染缩放插值函数",
+  "commands.endinglib.message.data.render_scale_interpolation_duration": "渲染缩放插值时间",
   "commands.endinglib.message.data.mob_type": "生物类型",
   "commands.endinglib.message.data.model_texture": "自定义模型纹理",
   "commands.endinglib.message.data.locked_x_rot": "锁定实体x轴角度",

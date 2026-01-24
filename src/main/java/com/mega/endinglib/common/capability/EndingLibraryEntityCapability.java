@@ -5,6 +5,7 @@ import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializer;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
+import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import com.mega.endinglib.common.command.entity.DataCommand;
 import com.mega.endinglib.mixin.accessor.AccessorEntity;
@@ -22,7 +23,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -41,6 +41,8 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Optional<Boolean>> PUSHABLE = this.defineByDataType(9, DataCommand.PUSHABLE, CapabilityDataSerializers.OPTIONAL_BOOLEAN);
     public final CapabilityEntityData<Optional<Boolean>> CAN_BE_COLLIDE_WITH = this.defineByDataType(10, DataCommand.CAN_BE_COLLIDE_WITH, CapabilityDataSerializers.OPTIONAL_BOOLEAN);
     //public final CapabilityEntityData<Optional<Vector4f>> CUSTOM_SHADER_COLOR = this.defineByDataType(9, DataCommand.CUSTOM_SHADER_COLOR, CapabilityDataSerializers.OPTIONAL_VEC4F);
+    public final CapabilityEntityData<Easing> RENDER_SCALE_EASING = this.defineByDataType(11, DataCommand.RENDER_SCALE_EASING, CapabilityDataSerializers.EASING);
+    public final CapabilityEntityData<Integer> RENDER_SCALE_INTERPOLATION_DURATION = this.defineByDataType(12, DataCommand.RENDER_SCALE_INTERPOLATION_DURATION, CapabilityDataSerializers.INT);
     private <T> CapabilityEntityData<T> defineByDataType(int id, DataCommand.DataType<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
@@ -96,17 +98,28 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
             Optional<AABB> hitboxOptional = this.getCustomHitbox();
 
             if (entity != null) {
-                hitboxOptional.ifPresent(aabb -> {
-                    ExtraEntity.of(entity).endingLibrary$setCapHitbox(aabb);
-                });
+                hitboxOptional.ifPresent(aabb -> ExtraEntity.of(entity).endingLibrary$setCapHitbox(aabb));
                 if (hitboxOptional.isEmpty()) {
                     ExtraEntity.of(entity).endingLibrary$setCapHitbox(null);
                 }
                 entity.setBoundingBox(((AccessorEntity) entity).invokeMakeBoundingBox());
             }
         } else if (data.equals(RENDER_SCALE)) {
-            if (entity != null)
-                ExtraEntity.of(entity).endinglib$getExtraEntityData().hasCustomRenderScale = this.getRenderScale().isPresent();
+            if (entity != null) {
+                ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+                eed.hasCustomRenderScale = this.getRenderScale().isPresent();
+                eed.onRenderScaleUpdate();
+            }
+        } else if (data.equals(RENDER_SCALE_EASING)) {
+            if (entity != null) {
+                ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+                eed.setInterpolationType(this.getRenderScaleEasing());
+            }
+        } else if (data.equals(RENDER_SCALE_INTERPOLATION_DURATION)) {
+            if (entity != null) {
+                ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+                eed.setInterpolationDuration(this.getRenderScaleInterpolationDuration());
+            }
         } else if (data.equals(FROZEN)) {
             if (entity != null) {
                 ExtraEntityData extraEntityData = ExtraEntity.of(entity).endinglib$getExtraEntityData();
@@ -309,6 +322,18 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
             ExtraEntityData extraEntityData = ee.endinglib$getExtraEntityData();
             extraEntityData.canBeCollideWith = flag.map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
         }
+    }
+    public Easing getRenderScaleEasing() {
+        return this.dataManager.getValue(RENDER_SCALE_EASING);
+    }
+    public void setRenderScaleEasing(Easing easing) {
+        this.dataManager.setValue(RENDER_SCALE_EASING, easing);
+    }
+    public int getRenderScaleInterpolationDuration() {
+        return this.dataManager.getValue(RENDER_SCALE_INTERPOLATION_DURATION);
+    }
+    public void setRenderScaleInterpolationDuration(int duration) {
+        this.dataManager.setValue(RENDER_SCALE_INTERPOLATION_DURATION, duration);
     }
     /*
     public void setShaderColor(Optional<Vector4f> vector4f) {

@@ -1,7 +1,9 @@
 package com.mega.endinglib.common.command.entity;
 
+import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
+import com.mega.endinglib.common.command.argument.EasingArgument;
 import com.mega.endinglib.common.command.argument.FloatArrayArgument;
 import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import com.mega.endinglib.common.command.entity.mob.MobControlCommand;
@@ -144,6 +146,27 @@ public class DataCommand {
             (type, cap) -> (int) (type.getCapValue(cap).orElse(new Vector3f()).length() * 100F),
             Optional.empty(),
             LoreHelper.OPT_VEC3F_OPERATION
+    );
+    public static final DataType<Easing> RENDER_SCALE_EASING = build("render_scale_easing", (command, personalRule) ->
+                    command.then(Commands.argument("easing", EasingArgument.easing())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, EasingArgument.getEasing(context,"easing")))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryEntityCapability::setRenderScaleEasing,
+            EndingLibraryEntityCapability::getRenderScaleEasing,
+            (type, cap) -> type.getCapValue(cap).ordinal(),
+            Easing.LINEAR,
+            (easing -> LoreHelper.withCopy(Component.literal(easing.name()).withStyle(ChatFormatting.LIGHT_PURPLE), easing.name()))
+    );
+    public static final DataType<Integer> RENDER_SCALE_INTERPOLATION_DURATION = build("render_scale_interpolation_duration", (command, personalRule) ->
+                    command.then(Commands.argument("duration", IntegerArgumentType.integer(0))
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, IntegerArgumentType.getInteger(context,"duration")))
+                            )
+                            .executes(context -> NORMAL_COMMAND_GET_RULE.apply(context, personalRule)),
+            EndingLibraryEntityCapability::setRenderScaleInterpolationDuration,
+            EndingLibraryEntityCapability::getRenderScaleInterpolationDuration,
+            DataType::getCapValue,
+            1
     );
     public static final DataType<Optional<String>> CUSTOM_MOB_TYPE = build("mob_type", (command, personalRule) ->
                     command.then(Commands.argument("mobType", MobTypeArgument.mobType())
