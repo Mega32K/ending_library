@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class TimeContext {
 
-    public static float safeClientPartialTicks() {
+    public static float safeClientFrameTime() {
         return Minecraft.getInstance().getFrameTime();
     }
 
