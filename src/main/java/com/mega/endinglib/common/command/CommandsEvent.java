@@ -52,6 +52,7 @@ public class CommandsEvent {
                         .then(EntityAnimateCommand.register())
                         .then(DisplayCommand.register())
                         .then(AbilitiesCommand.register())
+                        .then(DynamicKeysCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                                 .then(RunFunctionCommand.register())

@@ -257,6 +257,10 @@
   "commands.endinglib.message.ability.mayfly": "§aMayFly",
   "commands.endinglib.message.ability.instabuild": "§aInstabuild",
 
+  "commands.endinglib.message.dynamic_key.enable": "§7服务器已启用id为 %s §7的动态按键映射",
+  "commands.endinglib.message.dynamic_key.disable": "§7服务器已禁用id为 %s §7的动态按键映射",
+  "commands.endinglib.message.dynamic_key.sync": "§7服务器当前所有启用的动态按键映射已同步至所有玩家",
+
   "tooltip.endinglib.specialEffect": "§5Special Effect:",
   "tooltip.endinglib.holdShiftSetEffect": "§5Hold §6Shift§5 to see set effect details.",
   "tooltip.endinglib.setEffect": "§5Set Effect:",

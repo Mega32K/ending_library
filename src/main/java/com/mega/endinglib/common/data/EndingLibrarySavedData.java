@@ -4,7 +4,6 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.api.server.CommandTask;
 import com.mojang.serialization.DataResult;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +24,10 @@ public class EndingLibrarySavedData extends SavedData {
      * Dynamic后处理效果"玩家->效果"映射
      */
     private final Object2ObjectOpenHashMap<UUID, List<DynamicEffectData>> playerEnabledDynamicShaders = new Object2ObjectOpenHashMap<>();
+    /**
+     * 被禁用的键盘映射
+     */
+    private final ObjectOpenHashSet<String> disabledDynamicKeyMappings = new ObjectOpenHashSet<>();
     private MinecraftServer server;
     public static EndingLibrarySavedData readOrCreate(MinecraftServer server) {
         EndingLibrarySavedData data = server.overworld().getDataStorage().computeIfAbsent(tag-> load(tag,server), EndingLibrarySavedData::new, "endinglib_saved_data");
@@ -34,6 +37,14 @@ public class EndingLibrarySavedData extends SavedData {
 
     public static EndingLibrarySavedData load(CompoundTag tag, MinecraftServer server) {
         EndingLibrarySavedData data = new EndingLibrarySavedData();
+        if (CompoundTagUtils.containsListTag(tag, "DisabledDynamicKeySetting")) {
+            ListTag listTag = tag.getList("DisabledDynamicKeySetting", Tag.TAG_STRING);
+            if (!listTag.isEmpty()) {
+                for (int i = 0;i < listTag.size();i++) {
+                    data.disabledDynamicKeyMappings.add(listTag.getString(i));
+                }
+            }
+        }
         if (CompoundTagUtils.containsListTag(tag, "UserDynamicKeySetting")) {
             ListTag listTag = tag.getList("UserDynamicKeySetting", Tag.TAG_COMPOUND);
             if (!listTag.isEmpty()) {
@@ -127,6 +138,13 @@ public class EndingLibrarySavedData extends SavedData {
 
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
+        if (!this.disabledDynamicKeyMappings.isEmpty()) {
+            ListTag listTag = new ListTag();
+            if (!listTag.isEmpty()) {
+                listTag.addAll(this.disabledDynamicKeyMappings.stream().map(StringTag::valueOf).toList());
+            }
+            compoundTag.put("DisabledDynamicKeySetting", listTag);
+        }
         if (!this.userDynamicKeySetting.isEmpty()) {
             ListTag listTag = new ListTag();
             for (var entry : this.userDynamicKeySetting.object2ObjectEntrySet()) {
@@ -335,5 +353,35 @@ public class EndingLibrarySavedData extends SavedData {
         for (UUID uuid : data.keySet())
             this.dirtyPlayerIDs.remove(uuid);
         return data;
+    }
+
+    public ObjectOpenHashSet<String> getDisabledDynamicKeyMappings() {
+        return disabledDynamicKeyMappings;
+    }
+    public void disableDynamicKeyMapping(DynamicKeyMapping keyMapping) {
+        this.disableDynamicKeyMapping(keyMapping.keyId);
+    }
+    public void enableDynamicKeyMapping(DynamicKeyMapping keyMapping) {
+        this.enableDynamicKeyMapping(keyMapping.keyId);
+    }
+    public boolean disableDynamicKeyMapping(ResourceLocation id) {
+        if (this.disabledDynamicKeyMappings.add(id.toString())) {
+            this.setDirty();
+            return true;
+        }
+        return false;
+    }
+    public boolean enableDynamicKeyMapping(ResourceLocation id) {
+        if (this.disabledDynamicKeyMappings.remove(id.toString())) {
+            this.setDirty();
+            return true;
+        }
+        return false;
+    }
+    public boolean isKeyMappingEnabled(DynamicKeyMapping key) {
+        return !this.disabledDynamicKeyMappings.contains(key.keyId.toString());
+    }
+    public boolean isKeyMappingDisabled(DynamicKeyMapping key) {
+        return this.disabledDynamicKeyMappings.contains(key.keyId.toString());
     }
 }

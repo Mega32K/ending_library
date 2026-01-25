@@ -39,6 +39,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -53,21 +54,29 @@ public class CommonEventHandler {
             if (!DynamicKeyMappingReloadListener.DYNAMIC_KEYS.isEmpty()) {
                 PacketHandler.sendToPlayer(new S2CDynamicKeyMappingSyncPacket(DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
                         .stream()
+                        .filter(savedData::isKeyMappingEnabled)
                         .map(DynamicKeyMapping::createClientMode)
                         .toList(), savedData.getDynamicKeySetting(player)), player);
             }
         } else {
             EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(event.getPlayerList().getServer());
-            if (!DynamicKeyMappingReloadListener.DYNAMIC_KEYS.isEmpty()) {
-                List<ClientDynamicKeyMapping> values = DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
-                        .stream()
-                        .map(DynamicKeyMapping::createClientMode)
-                        .toList();
-                for (ServerPlayer player : event.getPlayers()) {
-                    PacketHandler.sendToPlayer(new S2CDynamicKeyMappingSyncPacket(values, savedData.getDynamicKeySetting(player)), player);
-                }
-            }
+            syncDynamicKeyMappings(savedData, event.getPlayers());
         }
+    }
+    public static int syncDynamicKeyMappings(EndingLibrarySavedData savedData, Collection<ServerPlayer> players) {
+        if (!DynamicKeyMappingReloadListener.DYNAMIC_KEYS.isEmpty()) {
+            List<ClientDynamicKeyMapping> values = DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
+                    .stream()
+                    .filter(savedData::isKeyMappingEnabled)
+                    .map(DynamicKeyMapping::createClientMode)
+                    .toList();
+            int size = values.size();
+            for (ServerPlayer player : players) {
+                PacketHandler.sendToPlayer(new S2CDynamicKeyMappingSyncPacket(values, savedData.getDynamicKeySetting(player)), player);
+            }
+            return size;
+        }
+        return 0;
     }
     @SubscribeEvent
     public static void onPlayerPreTick(TickEvent.PlayerTickEvent event) {
