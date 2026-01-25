@@ -236,6 +236,7 @@
   "commands.endinglib.message.data.custom_shader_color": "自定义着色",
   "commands.endinglib.message.data.invulnerable_time": "无敌时间",
   "commands.endinglib.message.data.pushable": "可被推动",
+  "commands.endinglib.message.data.pickable": "可被选中",
   "commands.endinglib.message.data.can_be_collide_with": "可被碰撞",
 
   "commands.endinglib.message.vanilla_animation.swing_main_hand": "§7挥动主手",

@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
+    Entity$METHOD$isPickable("isPickable", "m_6087_", "()Z"),
     Options$FIELD$keyMappings("keyMappings", "f_92059_", "[Lnet/minecraft/client/KeyMapping;"),
     Entity$METHOD$isPushable("isPushable", "m_6094_", "()Z"),
     Entity$METHOD$canBeCollidedWith("canBeCollidedWith", "m_5829_", "()Z"),

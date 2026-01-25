@@ -516,6 +516,16 @@ public class NormalCoremodProcessor implements IClassProcessor {
                                 m.instructions.remove(min);
                                 shouldWrite.set(true);
                             }
+                        } else if (MCMapping.Entity$METHOD$isPickable.equalsMethodNode(min)) {
+                            if (min.getOpcode() == Opcodes.INVOKEVIRTUAL || min.getOpcode() == Opcodes.INVOKESPECIAL) {
+                                InsnList insnNodes = new InsnList();
+                                insnNodes.add(new InsnNode(Opcodes.DUP));
+                                insnNodes.add(new MethodInsnNode(min.getOpcode(), min.owner, min.name, min.desc, min.itf));
+                                insnNodes.add(new MethodInsnNode(Opcodes.INVOKESTATIC, EVENT_UTIL_CLASS, "wrapEntityIsPickable", "(Ljava/lang/Object;Z)Z"));
+                                m.instructions.insertBefore(min, insnNodes);
+                                m.instructions.remove(min);
+                                shouldWrite.set(true);
+                            }
                         } else if (MCMapping.Entity$METHOD$canBeCollidedWith.equalsMethodNode(min)) {
                             if (min.getOpcode() == Opcodes.INVOKEVIRTUAL || min.getOpcode() == Opcodes.INVOKESPECIAL) {
                                 InsnList insnNodes = new InsnList();
@@ -534,6 +544,6 @@ public class NormalCoremodProcessor implements IClassProcessor {
     }
 
     static boolean isUnsupportModifyingClass(String name) {
-        return name.startsWith("com/mega/endinglib/util/");
+        return name.startsWith("com/mega/endinglib/util/asm/");
     }
 }

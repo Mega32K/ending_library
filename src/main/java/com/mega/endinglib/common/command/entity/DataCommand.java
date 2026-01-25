@@ -260,6 +260,22 @@ public class DataCommand {
             Optional.empty(),
             LoreHelper.OPT_BOOL_OPERATION
     );
+    public static final DataType<Optional<Boolean>> PICKABLE = build("pickable", (command, personalRule) ->
+                    command.then(Commands.argument("value", BoolArgumentType.bool())
+                                    .executes(context -> set(context.getSource(), getTarget(context), personalRule, Optional.of(BoolArgumentType.getBool(context, "value"))))
+                            )
+                            .executes(context -> get(context.getSource(), getTarget(context), personalRule)),
+            EndingLibraryEntityCapability::setPickable,
+            EndingLibraryEntityCapability::isPickable,
+            (type, cap) -> {
+                Entity entity = cap.getEntity();
+                if (entity != null)
+                    return entity.isPickable() ? 1 : 0;
+                return type.getCapValue(cap).orElse(false) ? 1 : 0;
+            },
+            Optional.empty(),
+            LoreHelper.OPT_BOOL_OPERATION
+    );
     /*
     public static final DataType<Optional<Vector4f>> CUSTOM_SHADER_COLOR = build("custom_shader_color", (command, personalRule) ->
                     command.then(Commands.argument("value", FloatArrayArgument.floats(4))

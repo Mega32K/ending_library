@@ -255,6 +255,7 @@ public class ClientUtils {
             BlockHitResult hitResult = getBlockHitResultFromMouse(focusedEntity, start, end);
             EntityHitResult entityHitResult = RaycastHelper.findCrosshairTarget(focusedEntity, start, end, 128D);
             if (entityHitResult != null && entityHitResult.getEntity().getY() - hitResult.getBlockPos().getY() > 0) {
+
                 MOUSE_CLIP_POS = entityHitResult.getEntity().getBoundingBox().clip(start, end).orElseGet(() -> localPlayer.getEyePosition().add(localPlayer.getLookAngle()));
             } else {
                 MOUSE_CLIP_POS = new AABB(hitResult.getBlockPos()).clip(start, end).orElseGet(() -> localPlayer.getEyePosition().add(localPlayer.getLookAngle()));

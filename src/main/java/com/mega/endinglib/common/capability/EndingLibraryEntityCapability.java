@@ -43,6 +43,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     //public final CapabilityEntityData<Optional<Vector4f>> CUSTOM_SHADER_COLOR = this.defineByDataType(9, DataCommand.CUSTOM_SHADER_COLOR, CapabilityDataSerializers.OPTIONAL_VEC4F);
     public final CapabilityEntityData<Easing> RENDER_SCALE_EASING = this.defineByDataType(11, DataCommand.RENDER_SCALE_EASING, CapabilityDataSerializers.EASING);
     public final CapabilityEntityData<Integer> RENDER_SCALE_INTERPOLATION_DURATION = this.defineByDataType(12, DataCommand.RENDER_SCALE_INTERPOLATION_DURATION, CapabilityDataSerializers.INT);
+    public final CapabilityEntityData<Optional<Boolean>> PICKABLE = this.defineByDataType(13, DataCommand.PICKABLE, CapabilityDataSerializers.OPTIONAL_BOOLEAN);
     private <T> CapabilityEntityData<T> defineByDataType(int id, DataCommand.DataType<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
@@ -155,6 +156,10 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
             if (entity instanceof ExtraEntity ee) {
                 ee.endinglib$getExtraEntityData().canBeCollideWith = this.canBeCollideWith().map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
             }
+        } else if (data.equals(PICKABLE)) {
+            if (entity instanceof ExtraEntity ee) {
+                ee.endinglib$getExtraEntityData().pickable = this.isPickable().map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
+            }
         }
         /*else if (data.equals(CUSTOM_SHADER_COLOR)) {
             if (entity != null)
@@ -184,6 +189,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
         if (this.getEntity() instanceof ExtraEntity ee) {
             ExtraEntityData extraEntityData = ee.endinglib$getExtraEntityData();
             this.isPushable().ifPresent(z -> extraEntityData.pushable = (z ? (byte) 2 : (byte) 1));
+            this.isPickable().ifPresent(z -> extraEntityData.pickable = (z ? (byte) 2 : (byte) 1));
             this.canBeCollideWith().ifPresent(z -> extraEntityData.canBeCollideWith = (z ? (byte) 2 : (byte) 1));
         }
     }
@@ -302,6 +308,16 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
     }
     public void setCustomModelTexture(String skin) {
         this.dataManager.setValue(CUSTOM_MODEL_TEXTURE, skin);
+    }
+    public Optional<Boolean> isPickable() {
+        return this.dataManager.getValue(PICKABLE);
+    }
+    public void setPickable(Optional<Boolean> flag) {
+        this.dataManager.setValue(PICKABLE, flag);
+        if (this.getEntity() instanceof ExtraEntity ee) {
+            ExtraEntityData extraEntityData = ee.endinglib$getExtraEntityData();
+            extraEntityData.pickable = flag.map(z -> (z ? (byte) 2 : (byte) 1)).orElse((byte) 0);
+        }
     }
     public Optional<Boolean> isPushable() {
         return this.dataManager.getValue(PUSHABLE);

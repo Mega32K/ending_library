@@ -241,4 +241,12 @@ public class EventUtil {
         }
         return original;
     }
+    public static boolean wrapEntityIsPickable(Object caller, boolean original) {
+        if (caller instanceof Entity entity) {
+            byte b = ExtraEntity.of(entity).endinglib$getExtraEntityData().pickable;
+
+            if (b > 0) return b > 1;
+        }
+        return original;
+    }
 }
