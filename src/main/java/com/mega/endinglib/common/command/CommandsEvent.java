@@ -51,6 +51,7 @@ public class CommandsEvent {
                         .then(HealCommand.register())
                         .then(EntityAnimateCommand.register())
                         .then(DisplayCommand.register())
+                        .then(AbilitiesCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                                 .then(RunFunctionCommand.register())

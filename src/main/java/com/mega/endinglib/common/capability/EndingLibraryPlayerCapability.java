@@ -14,6 +14,7 @@ import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
+import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
@@ -24,12 +25,14 @@ import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
 import com.mega.endinglib.util.SafeClass;
+import kroppeb.stareval.function.Type;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -65,6 +68,12 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Optional<Component>> DISPLAY_NAME = this.defineByPersonalRule(13, PersonalRuleCommand.NAME, CapabilityDataSerializers.OPTIONAL_COMPONENT);
     public final CapabilityEntityData<Optional<Float>> LOCKED_CAMERA_ORIGIN_X_ROT = this.dataManager.define(14, "lockedCameraOriginXRot", Optional.empty(), CapabilityDataSerializers.OPTIONAL_FLOAT);
     public final CapabilityEntityData<Optional<Float>> LOCKED_CAMERA_ORIGIN_Y_ROT = this.dataManager.define(15, "lockedCameraOriginYRot", Optional.empty(), CapabilityDataSerializers.OPTIONAL_FLOAT);
+    /**
+     * 0x00   optional<br>
+     * 0x10   false <br>
+     * 0x11   true <br>
+     */
+    public final CapabilityEntityData<Integer> OVERRIDE_ABILITIES = this.dataManager.define(16, "overrideAbilities", 0, CapabilityDataSerializers.INT);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
     public int poseLockingTime;
@@ -77,6 +86,12 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     private boolean isFovLocked;
     private boolean isMouseControlled;
     private boolean forcedControlledCamera;
+    //private boolean abilityInvulnerable;
+    private int abilityFlying;
+    private int abilityMayfly;
+    private int abilityInstabuild;
+    private int abilityMayBuild;
+    private int abilityInvulnerable;
     private <T> CapabilityEntityData<T> defineByPersonalRule(int id, PersonalRuleCommand.PersonalRule<T> rule, CapabilityDataSerializer<T> serializer) {
         return this.dataManager.define(id, rule.getName(), rule.getDefaultValue(), serializer);
     }
@@ -166,12 +181,24 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         }
         if (!this.USING_CAMERA_MODE.isInitValue())
             this.restoreCameraFlagsToFields();
+        if (!this.OVERRIDE_ABILITIES.isInitValue()) {
+            this.restoreAbilityFlagsToFields();
+            if (this.getEntity() instanceof ServerPlayer player) {
+                player.onUpdateAbilities();
+            }
+        }
     }
 
     @Override
     public void onSyncedDataUpdated(CapabilityEntityData<?> data) {
         if (data.equals(USING_CAMERA_MODE))
             this.restoreCameraFlagsToFields();
+        else if (data.equals(OVERRIDE_ABILITIES)) {
+            this.restoreAbilityFlagsToFields();
+            if (this.getEntity() instanceof Player player) {
+                this.modifyAbilities(player.getAbilities());
+            }
+        }
         else if (data.equals(LOCKED_CAMERA_ORIGIN_X_ROT)) {
             Optional<Float> opt = this.getLockedCameraOriginXRot();
             if (opt.isPresent()) {
@@ -193,6 +220,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public void tick(Entity entity) {
         if (entity instanceof Player player) {
             if (this.dataManager.isDirty()) {
+                this.restoreCameraFlagsToFields();
                 this.restoreCameraFlagsToFields();
             }
             this.inputCooldowns.tick(player);
@@ -413,6 +441,115 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     }
     public Optional<Float> getLockedCameraOriginYRot() {
         return this.dataManager.getValue(LOCKED_CAMERA_ORIGIN_Y_ROT);
+    }
+    public int getAbilityFlags() {
+        return this.dataManager.getValue(OVERRIDE_ABILITIES);
+    }
+
+    public int getAbilityFlying() {
+        return abilityFlying;
+    }
+    public int getAbilityMayfly() {
+        return abilityMayfly;
+    }
+    public int getAbilityInstabuild() {
+        return abilityInstabuild;
+    }
+    public int getAbilityMayBuild() {
+        return abilityMayBuild;
+    }
+    public int getAbilityInvulnerable() {
+        return abilityInvulnerable;
+    }
+    public void setAbilityFlying(int flag) {
+        if (flag == 0) {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 1, false);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 2, false);
+        } else {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 1, flag > 0);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 2, true);
+        }
+        this.restoreAbilityFlagsToFields();
+        if (this.getEntity() instanceof ServerPlayer player) {
+            player.onUpdateAbilities();
+        }
+    }
+    public void setAbilityMayfly(int flag) {
+        if (flag == 0) {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 4, false);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 8, false);
+        } else {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 4, flag > 0);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 8, true);
+        }
+        this.restoreAbilityFlagsToFields();
+        if (this.getEntity() instanceof ServerPlayer player) {
+            player.onUpdateAbilities();
+        }
+    }
+    public void setAbilityMayBuild(int flag) {
+        if (flag == 0) {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 16, false);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 32, false);
+        } else {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 16, flag > 0);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 32, true);
+        }
+        this.restoreAbilityFlagsToFields();
+        if (this.getEntity() instanceof ServerPlayer player) {
+            player.onUpdateAbilities();
+        }
+    }
+    public void setAbilityInstabuild(int flag) {
+        if (flag == 0) {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 64, false);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 128, false);
+        } else {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 64, flag > 0);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 128, true);
+        }
+        this.restoreAbilityFlagsToFields();
+        if (this.getEntity() instanceof ServerPlayer player) {
+            player.onUpdateAbilities();
+        }
+    }
+    public void setAbilityInvulnerable(int flag) {
+        if (flag == 0) {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 256, false);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 512, false);
+        } else {
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 256, flag > 0);
+            CompoundTagUtils.setIntFlags((value) -> this.dataManager.setValue(OVERRIDE_ABILITIES, value), this.getAbilityFlags(), 512, true);
+        }
+        this.restoreAbilityFlagsToFields();
+        if (this.getEntity() instanceof ServerPlayer player) {
+            player.onUpdateAbilities();
+        }
+    }
+    public void modifyAbilities(Abilities abilities) {
+        if (this.abilityInvulnerable != 0) {
+            abilities.invulnerable = this.abilityInvulnerable > 0;
+        }
+        if (this.abilityFlying != 0) {
+            abilities.flying = this.abilityFlying > 0;
+        }
+        if (this.abilityMayfly != 0) {
+            abilities.mayfly = this.abilityMayfly > 0;
+        }
+        if (this.abilityInstabuild != 0) {
+            abilities.instabuild = this.abilityInstabuild > 0;
+        }
+        if (this.abilityMayBuild != 0) {
+            abilities.mayBuild = this.abilityMayBuild > 0;
+        }
+    }
+    protected void restoreAbilityFlagsToFields() {
+        int flags = this.getAbilityFlags();
+        this.abilityFlying = CompoundTagUtils.getIntFlag(flags, 2) ? (CompoundTagUtils.getIntFlag(flags, 1) ? 1 : -1) : 0;
+        this.abilityMayfly = CompoundTagUtils.getIntFlag(flags, 8) ? (CompoundTagUtils.getIntFlag(flags, 4) ? 1 : -1) : 0;
+        this.abilityInstabuild = CompoundTagUtils.getIntFlag(flags, 32) ? (CompoundTagUtils.getIntFlag(flags, 16) ? 1 : -1) : 0;
+        this.abilityMayBuild = CompoundTagUtils.getIntFlag(flags, 128) ? (CompoundTagUtils.getIntFlag(flags, 64) ? 1 : -1) : 0;
+        this.abilityInvulnerable = CompoundTagUtils.getIntFlag(flags, 512) ? (CompoundTagUtils.getIntFlag(flags, 256) ? 1 : -1) : 0;
     }
     protected void restoreCameraFlagsToFields() {
         int flags = this.getFlags();

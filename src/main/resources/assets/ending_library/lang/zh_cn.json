@@ -249,6 +249,14 @@
   "commands.endinglib.message.display.interpolation_type.get": "§7%s§7当前的插值函数为 %s",
   "commands.endinglib.message.display.interpolation_type.set": "§7已将%s§7当前的插值函数设置为 %s",
 
+  "commands.endinglib.message.abilities.get": "%s§7当前的原版覆盖能力 %s §7为:%s",
+  "commands.endinglib.message.abilities.set": "已将%s§7当前的原版覆盖能力 %s §7设为:%s",
+  "commands.endinglib.message.ability.invulnerable": "§aInvulnerable",
+  "commands.endinglib.message.ability.flying": "§aFlying",
+  "commands.endinglib.message.ability.mayBuild": "§aMayBuild",
+  "commands.endinglib.message.ability.mayfly": "§aMayFly",
+  "commands.endinglib.message.ability.instabuild": "§aInstabuild",
+
   "tooltip.endinglib.specialEffect": "§7特殊效果:",
   "tooltip.endinglib.holdShiftSetEffect": "§5按住 §6Shift§5 查看套装效果。",
   "tooltip.endinglib.setEffect": "§7套装效果:",
