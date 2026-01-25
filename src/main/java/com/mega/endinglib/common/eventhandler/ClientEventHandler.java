@@ -209,9 +209,15 @@ public class ClientEventHandler {
         //说明只是退出游戏
         if (event.getMultiPlayerGameMode() != null) {
             new LambdaClientTaskInstance.Stop(5, ClientUtils::onPlayerDisconnect).onAddedToWorld();
-            ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
         }
         ClientWrapped.reloadRegistryAccess();
+    }
+    @SubscribeEvent
+    public static void disableOverlayRendering(RenderGuiOverlayEvent.Pre event) {
+        if (!ClientUtils.disabledOverlays.isEmpty()) {
+            if (ClientUtils.disabledOverlays.contains(event.getOverlay()))
+                event.setCanceled(true);
+        }
     }
     @SubscribeEvent
     public static void onScreenOpen(ScreenEvent.Opening event) {

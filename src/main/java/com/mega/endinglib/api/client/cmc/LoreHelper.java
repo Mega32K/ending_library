@@ -1,6 +1,8 @@
 package com.mega.endinglib.api.client.cmc;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.ClickEvent;
@@ -15,9 +17,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 public class LoreHelper {
@@ -93,6 +93,19 @@ public class LoreHelper {
     }
     public static String codeMode(ChatFormatting formatting) {
         return codeMap.getOrDefault(formatting, String.valueOf(ChatFormatting.PREFIX_CODE) + formatting.getChar());
+    }
+    public static <T> MutableComponent array(Collection<T> collection, Function<T, Component> maker, ChatFormatting bracketColor) {
+        MutableComponent r = Component.literal("[").withStyle(bracketColor);
+        List<T> list = new ObjectArrayList<>(collection);
+        if (!list.isEmpty()) {
+            for (int i=0;i<list.size();i++) {
+                if (i != list.size()-1) {
+                    r.append(Component.literal(",").withStyle(bracketColor));
+                }
+                r.append(maker.apply(list.get(i)));
+            }
+        }
+        return r;
     }
     public static MutableComponent optionalWrap(Component component) {
         return Component.literal("Optional").withStyle(ChatFormatting.GRAY).append(BRACKETS[0].copy().append(component).append(BRACKETS[1].copy()));

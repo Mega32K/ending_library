@@ -12,6 +12,7 @@ import com.mega.endinglib.util.mc.entity.RotationUtils;
 import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import net.minecraft.Util;
 import net.minecraft.client.Camera;
@@ -28,6 +29,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
+import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
@@ -42,6 +45,7 @@ import java.util.function.Supplier;
 public class ClientUtils {
     public static final ExecutorService CLIENT_TEST_POOL = Executors.newFixedThreadPool(4);
     public static Set<InputOperations> disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
+    public static final Set<NamedGuiOverlay> disabledOverlays = new ObjectOpenHashSet<>();
     public static Matrix4f LEVEL_MODEL_VIEW_MAT = new Matrix4f();
     public static Matrix4f LEVEL_PROJ_MAT = new Matrix4f();
     public static Minecraft mc = Minecraft.getInstance();
@@ -123,6 +127,16 @@ public class ClientUtils {
             result[i] = dynamicKeys.get(i - originSize);
         return result;
     }
+    public static void storeDisabledOverlays(Collection<ResourceLocation> ids) {
+        synchronized (disabledOverlays) {
+            disabledOverlays.clear();
+            for (ResourceLocation id : ids) {
+                NamedGuiOverlay overlay = GuiOverlayManager.findOverlay(id);
+                if (overlay != null)
+                    disabledOverlays.add(overlay);
+            }
+        }
+    }
     public static void createMouseCursor(ResourceLocation icon, float scale, int xHot, int yHot, MouseHandler mouseHandler) {
         CURRENT_CURSOR_ICON = icon;
         mc.execute(()-> {
@@ -175,6 +189,10 @@ public class ClientUtils {
             synchronized (ClientUtils.DYNAMIC_KEYS) {
                 ClientUtils.DYNAMIC_KEYS.clear();
             }
+            synchronized (disabledOverlays) {
+                ClientUtils.disabledOverlays.clear();
+            }
+            ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
             //MinecraftExtra.of(mc).setELCameraManager(new ELCameraManager(mc, mc.gameRenderer, mc.gameRenderer.getMainCamera()));
         });
     }

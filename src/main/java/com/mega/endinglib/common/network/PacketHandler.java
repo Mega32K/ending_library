@@ -100,6 +100,7 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), C2SDynamicKeyOperationPacket.Repeat.class, C2SDynamicKeyOperationPacket.Repeat::encode, C2SDynamicKeyOperationPacket.Repeat::decode, C2SDynamicKeyOperationPacket.Repeat::handle);
         INSTANCE.registerMessage(id(), C2SSetKeyPacket.class, C2SSetKeyPacket::encode, C2SSetKeyPacket::decode, C2SSetKeyPacket::handle);
         INSTANCE.registerMessage(id(), S2CDynamicKeyMappingSyncPacket.class, S2CDynamicKeyMappingSyncPacket::encode, S2CDynamicKeyMappingSyncPacket::decode, S2CDynamicKeyMappingSyncPacket::handle);
+        INSTANCE.registerMessage(id(), S2CDisabledOverlaysPacket.class, S2CDisabledOverlaysPacket::encode, S2CDisabledOverlaysPacket::decode, S2CDisabledOverlaysPacket::handle);
 
     }
 

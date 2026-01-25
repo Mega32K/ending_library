@@ -41,6 +41,7 @@ public class CommandConfig {
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_DISPLAY;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_ABILITIES;
     public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_DYNAMIC_KEYS;
+    public static final ForgeConfigSpec.ConfigValue<Integer> COMMAND_OVERLAY;
     public static final ForgeConfigSpec SPEC;  
 
     static { 
@@ -143,6 +144,9 @@ public class CommandConfig {
         COMMAND_DYNAMIC_KEYS = BUILDER
                 .comment("/endinglib dynamicKeys命令的权限要求")
                 .defineInRange("DynamicKeysPermission", 2, -1, 6);
+        COMMAND_OVERLAY = BUILDER
+                .comment("/endinglib overlay命令的权限要求")
+                .defineInRange("OverlayPermission", 2, -1, 6);
         BUILDER.pop();
         SPEC = BUILDER.build();
     }

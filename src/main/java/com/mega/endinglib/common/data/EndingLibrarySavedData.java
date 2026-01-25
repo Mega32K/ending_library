@@ -8,14 +8,18 @@ import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class EndingLibrarySavedData extends SavedData {
+    private final ReadWriteLock LOCK = new ReentrantReadWriteLock();
     public List<CommandTask> commandTasks = Collections.synchronizedList(new ObjectArrayList<>());
     private final Object2ObjectOpenHashMap<UUID, Object2IntMap<ResourceLocation>> userDynamicKeySetting = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectOpenHashMap<UUID, EnumSet<InputOperations>> playersDisabledInputPermissions = new Object2ObjectOpenHashMap<>();
@@ -28,6 +32,8 @@ public class EndingLibrarySavedData extends SavedData {
      * 被禁用的键盘映射
      */
     private final ObjectOpenHashSet<String> disabledDynamicKeyMappings = new ObjectOpenHashSet<>();
+    private final Object2ObjectOpenHashMap<UUID, Set<ResourceLocation>> playersDisabledOverlays = new Object2ObjectOpenHashMap<>();
+    private final ObjectOpenHashSet<UUID> dirtyOverlayPlayerIDs = new ObjectOpenHashSet<>();
     private MinecraftServer server;
     public static EndingLibrarySavedData readOrCreate(MinecraftServer server) {
         EndingLibrarySavedData data = server.overworld().getDataStorage().computeIfAbsent(tag-> load(tag,server), EndingLibrarySavedData::new, "endinglib_saved_data");
@@ -37,6 +43,29 @@ public class EndingLibrarySavedData extends SavedData {
 
     public static EndingLibrarySavedData load(CompoundTag tag, MinecraftServer server) {
         EndingLibrarySavedData data = new EndingLibrarySavedData();
+        if (CompoundTagUtils.containsListTag(tag, "PlayersDisabledOverlays")) {
+            ListTag listTag = tag.getList("PlayersDisabledOverlays", Tag.TAG_COMPOUND);
+            if (!listTag.isEmpty()) {
+                for (int i = 0;i < listTag.size();i++) {
+                    CompoundTag entry = listTag.getCompound(i);
+                    if (entry.hasUUID("id")) {
+                        Set<ResourceLocation> overlays = new ObjectOpenHashSet<>();
+                        if (CompoundTagUtils.containsListTag(entry, "overlays")) {
+                            ListTag list = entry.getList("overlays", Tag.TAG_STRING);
+                            if (!list.isEmpty()) {
+                                for (int j = 0;j < list.size();j++) {
+                                    overlays.add(new ResourceLocation(list.getString(j)));
+                                }
+                            }
+                        }
+                        if (!overlays.isEmpty()) {
+                            UUID id = entry.getUUID("id");
+                            data.playersDisabledOverlays.put(id, overlays);
+                        }
+                    }
+                }
+            }
+        }
         if (CompoundTagUtils.containsListTag(tag, "DisabledDynamicKeySetting")) {
             ListTag listTag = tag.getList("DisabledDynamicKeySetting", Tag.TAG_STRING);
             if (!listTag.isEmpty()) {
@@ -138,6 +167,20 @@ public class EndingLibrarySavedData extends SavedData {
 
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
+        if (!this.playersDisabledOverlays.isEmpty()) {
+            ListTag listTag = new ListTag();
+            for (var entry : this.playersDisabledOverlays.object2ObjectEntrySet()) {
+                CompoundTag entryTag = new CompoundTag();
+                entryTag.putUUID("id", entry.getKey());
+                ListTag overlays = new ListTag();
+                for (ResourceLocation id : entry.getValue()) {
+                    overlays.add(StringTag.valueOf(id.toString()));
+                }
+                entryTag.put("overlays", overlays);
+                listTag.add(entryTag);
+            }
+            compoundTag.put("PlayersDisabledOverlays", listTag);
+        }
         if (!this.disabledDynamicKeyMappings.isEmpty()) {
             ListTag listTag = new ListTag();
             if (!listTag.isEmpty()) {
@@ -237,7 +280,7 @@ public class EndingLibrarySavedData extends SavedData {
     }
     public void createDynamicEffect(Player player, DynamicEffectData newData) {
         UUID uuid = player.getUUID();
-        List<DynamicEffectData> names = null;
+        List<DynamicEffectData> names ;
         if (this.playerEnabledDynamicShaders.containsKey(uuid))
             names = this.playerEnabledDynamicShaders.get(uuid);
         else {
@@ -250,7 +293,7 @@ public class EndingLibrarySavedData extends SavedData {
     }
     public void removeDynamicEffect(Player player, DynamicEffectData data) {
         UUID uuid = player.getUUID();
-        List<DynamicEffectData> names = null;
+        List<DynamicEffectData> names ;
         if (this.playerEnabledDynamicShaders.containsKey(uuid)) {
             names = this.playerEnabledDynamicShaders.get(uuid);
             names.remove(data);
@@ -332,37 +375,33 @@ public class EndingLibrarySavedData extends SavedData {
             this.setDirty();
         }
     }
-    public ObjectOpenHashSet<UUID> getDirtyPlayerIDs() {
-        return dirtyPlayerIDs;
-    }
     public @Nullable Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> packDisabledPermissionsData() {
-        Set<UUID> dirtyPlayerIDs = this.dirtyPlayerIDs;
-        if (dirtyPlayerIDs.isEmpty())
-            return null;
-        Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> data = new Reference2ReferenceOpenHashMap<>(dirtyPlayerIDs.size());
-        for (UUID uuid : dirtyPlayerIDs) {
-            if (server.getPlayerList().getPlayer(uuid) == null)
-                continue;
-            EnumSet<InputOperations> readSet = this.playersDisabledInputPermissions.get(uuid);
-            if (readSet != null) {
-                data.put(uuid, EnumSet.copyOf(readSet));
-            } else {
-                data.put(uuid, EnumSet.noneOf(InputOperations.class));
+        LOCK.writeLock().lock();
+        try {
+            Set<UUID> dirtyPlayerIDs = this.dirtyPlayerIDs;
+            if (dirtyPlayerIDs.isEmpty())
+                return null;
+            Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> data = new Reference2ReferenceOpenHashMap<>(dirtyPlayerIDs.size());
+            for (UUID uuid : dirtyPlayerIDs) {
+                if (server.getPlayerList().getPlayer(uuid) == null)
+                    continue;
+                EnumSet<InputOperations> readSet = this.playersDisabledInputPermissions.get(uuid);
+                if (readSet != null) {
+                    data.put(uuid, EnumSet.copyOf(readSet));
+                } else {
+                    data.put(uuid, EnumSet.noneOf(InputOperations.class));
+                }
             }
+            for (UUID uuid : data.keySet())
+                this.dirtyPlayerIDs.remove(uuid);
+            return data;
+        } finally {
+            LOCK.writeLock().unlock();
         }
-        for (UUID uuid : data.keySet())
-            this.dirtyPlayerIDs.remove(uuid);
-        return data;
     }
 
     public ObjectOpenHashSet<String> getDisabledDynamicKeyMappings() {
         return disabledDynamicKeyMappings;
-    }
-    public void disableDynamicKeyMapping(DynamicKeyMapping keyMapping) {
-        this.disableDynamicKeyMapping(keyMapping.keyId);
-    }
-    public void enableDynamicKeyMapping(DynamicKeyMapping keyMapping) {
-        this.enableDynamicKeyMapping(keyMapping.keyId);
     }
     public boolean disableDynamicKeyMapping(ResourceLocation id) {
         if (this.disabledDynamicKeyMappings.add(id.toString())) {
@@ -383,5 +422,64 @@ public class EndingLibrarySavedData extends SavedData {
     }
     public boolean isKeyMappingDisabled(DynamicKeyMapping key) {
         return this.disabledDynamicKeyMappings.contains(key.keyId.toString());
+    }
+
+    public Set<UUID> getDirtyOverlayPlayerIDs() {
+        LOCK.readLock().lock();
+        try {
+            return dirtyOverlayPlayerIDs;
+        } finally {
+            LOCK.readLock().unlock();
+        }
+    }
+
+    public Set<ResourceLocation> getOrPutPlayerDisabledOverlays(Player player) {
+        return this.getOrPutPlayerDisabledOverlays(player.getUUID());
+    }
+    public Set<ResourceLocation> getOrPutPlayerDisabledOverlays(UUID uuid) {
+        if (this.playersDisabledOverlays.containsKey(uuid))
+            return this.playersDisabledOverlays.get(uuid);
+        else {
+            Set<ResourceLocation> newSet = new ObjectOpenHashSet<>();
+            this.playersDisabledOverlays.put(uuid, newSet);
+            return newSet;
+        }
+    }
+    public boolean addDisabledOverlay(ServerPlayer player, ResourceLocation id) {
+        LOCK.writeLock().lock();
+        try {
+            if (this.getOrPutPlayerDisabledOverlays(player).add(id)) {
+                this.dirtyOverlayPlayerIDs.add(player.getUUID());
+                this.setDirty();
+                return true;
+            }
+        } finally {
+            LOCK.writeLock().unlock();
+        }
+        return false;
+    }
+    public boolean removeDisabledOverlay(ServerPlayer player, ResourceLocation id) {
+        LOCK.writeLock().lock();
+        try {
+            if (this.getOrPutPlayerDisabledOverlays(player).remove(id)) {
+                this.dirtyOverlayPlayerIDs.add(player.getUUID());
+                this.setDirty();
+                return true;
+            }
+        } finally {
+            LOCK.writeLock().unlock();
+        }
+        return false;
+    }
+    public Set<ResourceLocation> packDisabledOverlaysPacket(ServerPlayer player) {
+        LOCK.writeLock().lock();
+        try {
+            Set<ResourceLocation> data = this.playersDisabledOverlays.get(player.getUUID());
+            if (data == null) data = new ObjectOpenHashSet<>();
+            this.dirtyPlayerIDs.remove(player.getUUID());
+            return data;
+        } finally {
+            LOCK.writeLock().unlock();
+        }
     }
 }

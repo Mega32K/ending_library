@@ -8,6 +8,7 @@ import com.mega.endinglib.common.command.test.RunFunctionCommand;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -53,6 +54,7 @@ public class CommandsEvent {
                         .then(DisplayCommand.register())
                         .then(AbilitiesCommand.register())
                         .then(DynamicKeysCommand.register())
+                        .then(OverlayCommand.register())
                         .then(Commands.literal("hack")
                                 .then(DumpCommand.register())
                                 .then(RunFunctionCommand.register())
@@ -68,7 +70,10 @@ public class CommandsEvent {
         for (String ex : examples) {
             String toLowerExample = ex.toLowerCase(Locale.ROOT);
             if (remaining.isEmpty() || toLowerExample.startsWith(remaining)) {
-                builder.suggest(ex, Component.translatable(translationKey.formatted(toLowerExample)));
+                String langKey = translationKey.formatted(toLowerExample);
+                if (I18n.exists(langKey))
+                    builder.suggest(ex, Component.translatable(langKey));
+                else builder.suggest(ex);
             }
         }
     }

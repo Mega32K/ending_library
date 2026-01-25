@@ -7,6 +7,7 @@ import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.data.*;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.network.PacketHandler;
+import com.mega.endinglib.common.network.s2c.S2CDisabledOverlaysPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
 import com.mega.endinglib.common.network.s2c.key.S2CDynamicKeyMappingSyncPacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CDynamicEffectReadPacket;
@@ -15,6 +16,7 @@ import com.mega.endinglib.server.resource.DynamicKeyMappingReloadListener;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,6 +44,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @Mod.EventBusSubscriber
 public class CommonEventHandler {
@@ -128,8 +131,12 @@ public class CommonEventHandler {
             MinecraftServer server = serverPlayer.server;
             EndingLibrarySavedData data = EndingLibrarySavedData.readOrCreate(server);
             EnumSet<InputOperations> permissions = data.getOrPutPlayerDisabledPermissions(serverPlayer);
+            //可以排除empty情况发包,client utils那边在推出存档后会自动清数据
             if (!permissions.isEmpty())
                 PacketHandler.sendToPlayer(new S2CDisabledInputPermissionsPacket(permissions), serverPlayer);
+            Set<ResourceLocation> overlays = data.getOrPutPlayerDisabledOverlays(serverPlayer);
+            if (!overlays.isEmpty())
+                PacketHandler.sendToPlayer(new S2CDisabledOverlaysPacket(overlays), serverPlayer);
             List<DynamicEffectData> dynamicEffectData = data.getPlayerEnabledDynamicShaders(serverPlayer);
             if (dynamicEffectData != null && !dynamicEffectData.isEmpty()) {
                 PacketHandler.sendToPlayer(new S2CDynamicEffectReadPacket(dynamicEffectData), serverPlayer);
