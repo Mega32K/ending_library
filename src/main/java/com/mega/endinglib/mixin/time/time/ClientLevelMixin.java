@@ -90,6 +90,6 @@ public abstract class ClientLevelMixin extends Level implements LevelEC {
     }
     @Inject(method = "tickNonPassenger", at = @At("TAIL"))
     private void forceCapClientTick(Entity p_104640_, CallbackInfo ci) {
-        ExtraEntity.of(p_104640_).endinglib$getExtraEntityData().forceClientTick();
+        ExtraEntity.of(p_104640_).endinglib$getExtraEntityData().forceTick();
     }
 }
