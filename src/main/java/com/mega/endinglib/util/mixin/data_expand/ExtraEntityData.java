@@ -74,7 +74,7 @@ public class ExtraEntityData {
         } else {
             float f = (float)((long)this.entity.tickCount - this.interpolationStartClientTick);
             float f1 = f + partialTicks;
-            return Mth.clamp(Mth.inverseLerp(f1, 0.0F, (float)i), 0.0F, 1.0F);
+            return interpolationType.calculate(Mth.clamp(Mth.inverseLerp(f1, 0.0F, (float)i), 0.0F, 1.0F));
         }
     }
 }
