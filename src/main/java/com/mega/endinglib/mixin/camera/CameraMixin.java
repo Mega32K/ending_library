@@ -60,8 +60,8 @@ public abstract class CameraMixin {
                     double[] pos = cms.translationPos(partialTicks.get());
                     this.setPosition(x + pos[0], y + pos[1], z + pos[2]);
                 }
-                return false;
             } else {
+                float partial = partialTicks.get();
                 if (CameraUtils.isUsingCustomCamera()) {
                     ICameraManager manager = CameraUtils.getInstance();
                     if (CameraUtils.getInstance().shouldStoreOriginPos()) {
@@ -72,7 +72,6 @@ public abstract class CameraMixin {
                         y = manager.getOriginY();
                         z = manager.getOriginZ();
                     }
-                    float partial = partialTicks.get();
                     if (!manager.getX().isEmpty()) {
                         double xm = manager.getX(partial);
                         if (Double.compare(xm, 0.0d) != 0)
@@ -109,14 +108,16 @@ public abstract class CameraMixin {
                     if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0)
                         this.move(zRelative, yRelative, -xRelative);
                 }
-                @SuppressWarnings("DataFlowIssue") CameraPosEvent event = new CameraPosEvent(Minecraft.getInstance().gameRenderer, ((Camera) (Object)this), partialTicks.get(), x, y, z);
+                @SuppressWarnings("DataFlowIssue") CameraPosEvent event = new CameraPosEvent.Pre(Minecraft.getInstance().gameRenderer, ((Camera) (Object)this), partial, x, y, z);
                 MinecraftForge.EVENT_BUS.post(event);
                 x = event.getX();
                 y = event.getY();
                 z = event.getZ();
                 this.setPosition(x, y, z);
-                return false;
+                event = new CameraPosEvent.Post(Minecraft.getInstance().gameRenderer, ((Camera) (Object)this), partial, x, y, z);
+                MinecraftForge.EVENT_BUS.post(event);
             }
+            return false;
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
