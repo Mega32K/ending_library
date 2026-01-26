@@ -46,6 +46,7 @@ public class ELCameraManager implements ICameraManager {
     public boolean vanillaFovNeedsToFreeze;
     public boolean vanillaAngelsNeedsToFreeze;
     public boolean vanillaZoomNeedsToFreeze;
+    public boolean shouldStoreOriginPos;
     private double originX;
     private double originY;
     private double originZ;
@@ -115,9 +116,7 @@ public class ELCameraManager implements ICameraManager {
         this.vanillaFovNeedsToFreeze = true;
         this.vanillaAngelsNeedsToFreeze = true;
         this.vanillaZoomNeedsToFreeze = true;
-        this.originX = mainCamera.getPosition().x;
-        this.originY = mainCamera.getPosition().y;
-        this.originZ = mainCamera.getPosition().z;
+        this.shouldStoreOriginPos = true;
     }
 
     public void updateModifier() {
@@ -201,6 +200,18 @@ public class ELCameraManager implements ICameraManager {
                 this.unlockOriginYRot();
             }
         }
+    }
+
+    @Override
+    public boolean shouldStoreOriginPos() {
+        return shouldStoreOriginPos;
+    }
+    @Override
+    public void storeOriginPos(double x, double y, double z) {
+        this.originX = x;
+        this.originY = y;
+        this.originZ = z;
+        this.shouldStoreOriginPos = false;
     }
 
     @Override

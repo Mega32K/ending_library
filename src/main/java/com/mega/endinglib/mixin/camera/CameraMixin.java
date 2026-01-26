@@ -61,14 +61,13 @@ public abstract class CameraMixin {
                 return false;
             } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
+                if (CameraUtils.getInstance().shouldStoreOriginPos()) {
+                    CameraUtils.getInstance().storeOriginPos(x, y, z);
+                }
                 if (CameraUtils.isVanillaCameraFreezing() && !CameraUtils.isFollowPosition()) {
                     x = manager.getOriginX();
                     y = manager.getOriginY();
                     z = manager.getOriginZ();
-                } else {
-                    manager.setOriginX(x);
-                    manager.setOriginY(y);
-                    manager.setOriginZ(z);
                 }
                 float partial = partialTicks.get();
                 if (!manager.getX().isEmpty()) {

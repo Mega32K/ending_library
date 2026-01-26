@@ -39,6 +39,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -76,6 +77,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Integer> OVERRIDE_ABILITIES = this.dataManager.define(16, "overrideAbilities", 0, CapabilityDataSerializers.INT);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
+    public Vector3f cameraOriginPos = new Vector3f(0F);
     public int poseLockingTime;
     public @Nullable Pose lockedPose;
     public ELServerCameraManager cameraDataManager = new ELServerCameraManager();
@@ -119,6 +121,8 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                         PacketHandler.sendToSeen(new S2CCameraAnimationSetPacket(map), player, player.serverLevel());
                     if (this.cameraType > -1)
                         toWrite.putShort("CameraType", this.cameraType);
+                    if (this.cameraOriginPos.length() > 0F)
+                        CompoundTagUtils.putVector3f(toWrite, "CameraOriginPos", this.cameraOriginPos);
                 }
             } else if (type == CapabilitySyncType.PLAYER_RESPAWN || type == CapabilitySyncType.PLAYER_CLONE)
                 if (entity instanceof ServerPlayer player) {
@@ -129,6 +133,11 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         } else {
             if (type == CapabilitySyncType.PLAYER_LOGGED_IN && entity == ClientWrapped.clientPlayer()) {
                 toWrite.putShort("CameraType", (short) ClientWrapped.getCameraTypeOrdinal());
+                CompoundTagUtils.putVector3f(toWrite, "CameraOriginPos", new Vector3f(
+                        (float) CameraUtils.getInstance().getOriginX(),
+                        (float) CameraUtils.getInstance().getOriginY(),
+                        (float) CameraUtils.getInstance().getOriginZ()
+                ));
             }
         }
     }
@@ -139,11 +148,16 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
             if (type == CapabilitySyncType.CLIENT_OPTIONS || type == CapabilitySyncType.PLAYER_LOGGED_IN) {
                 if (CompoundTagUtils.containsShort(toRead, "CameraType"))
                     this.cameraType = toRead.getShort("CameraType");
+                this.cameraOriginPos = CompoundTagUtils.getVector3f(toRead, "CameraOriginPos");
             }
         } else {
             if (type == CapabilitySyncType.PLAYER_LOGGED_IN && entity == ClientWrapped.clientPlayer()) {
                 if (CompoundTagUtils.containsShort(toRead, "CameraType"))
                     ClientWrapped.setCameraType(toRead.getShort("CameraType"));
+                Vector3f originPos = CompoundTagUtils.getVector3f(toRead, "CameraOriginPos");
+                if (originPos.length() > 0F) {
+                    CameraUtils.getInstance().storeOriginPos(originPos.x, originPos.y, originPos.z);
+                }
             }
         }
     }
@@ -159,6 +173,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         if (this.cameraType > -1) {
             nbt.putShort("CameraType", cameraType);
         }
+        if (this.cameraOriginPos.length() > 0F) {
+            CompoundTagUtils.putVector3f(nbt, "CameraOriginPos", this.cameraOriginPos);
+        }
         if (this.poseLockingTime > 0)
             nbt.putInt("PoseLockingTime", poseLockingTime);
         if (this.lockedPose != null)
@@ -170,6 +187,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         this.cameraDataManager.customDeserializeNBT(nbt, this);
         if (CompoundTagUtils.containsShort(nbt, "CameraType"))
             this.cameraType = nbt.getShort("CameraType");
+        Vector3f originPos = CompoundTagUtils.getVector3f(nbt, "CameraOriginPos");
+        if (originPos.length() > 0F)
+            this.cameraOriginPos = originPos;
         if (CompoundTagUtils.containsInt(nbt, "PoseLockingTime"))
             this.poseLockingTime = nbt.getInt("PoseLockingTime");
         if (CompoundTagUtils.containsShort(nbt, "LockedPose")) {

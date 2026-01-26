@@ -10,6 +10,8 @@ public interface ICameraManager {
     void updateModifier();
 
     void tick(EndingLibraryPlayerCapability capability);
+    boolean shouldStoreOriginPos();
+    void storeOriginPos(double x, double y, double z);
     CameraValueInstance getX();
 
     CameraValueInstance getY();

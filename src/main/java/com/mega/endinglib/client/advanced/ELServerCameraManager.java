@@ -75,7 +75,16 @@ public class ELServerCameraManager implements ICameraManager {
     public void tick(EndingLibraryPlayerCapability capability) {
         this.oldUpdate();
     }
-
+    @Override
+    public boolean shouldStoreOriginPos() {
+        return false;
+    }
+    @Override
+    public void storeOriginPos(double x, double y, double z) {
+        this.originX = x;
+        this.originY = y;
+        this.originZ = z;
+    }
     @Override
     public CameraValueInstance getX() {
         return x;
