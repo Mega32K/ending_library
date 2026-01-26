@@ -6,6 +6,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.ICameraManager;
+import com.mega.endinglib.api.event.render.CameraPosEvent;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.init.ModAttributes;
 import net.minecraft.client.Camera;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -59,50 +61,60 @@ public abstract class CameraMixin {
                     this.setPosition(x + pos[0], y + pos[1], z + pos[2]);
                 }
                 return false;
-            } else if (CameraUtils.isUsingCustomCamera()) {
-                ICameraManager manager = CameraUtils.getInstance();
-                if (CameraUtils.getInstance().shouldStoreOriginPos()) {
-                    CameraUtils.getInstance().storeOriginPos(x, y, z);
-                }
-                if (CameraUtils.isVanillaCameraFreezing() && !CameraUtils.isFollowPosition()) {
-                    x = manager.getOriginX();
-                    y = manager.getOriginY();
-                    z = manager.getOriginZ();
-                }
-                float partial = partialTicks.get();
-                if (!manager.getX().isEmpty()) {
-                    double xm = manager.getX(partial);
-                    if (Double.compare(xm, 0.0d) != 0)
-                        x = xm;
-                }
-                if (!manager.getY().isEmpty()) {
-                    double ym = manager.getY(partial);
-                    if (Double.compare(ym, 0.0d) != 0)
-                        y = ym;
-                }
-                if (!manager.getZ().isEmpty()) {
-                    double zm = manager.getZ(partial);
-                    if (Double.compare(zm, 0.0d) != 0)
-                        z = zm;
-                }
-                double finalX = x + manager.getXOffset(partial);
-                double finalY = y + manager.getYOffset(partial);
-                double finalZ = z + manager.getZOffset(partial);
-                if (this.detached) {
-                    Optional<AABB> areaOptional = CameraUtils.getAvailableCameraArea();
-                    if (areaOptional.isPresent()) {
-                        AABB area = areaOptional.get();
-                        finalX = Mth.clamp(finalX, area.minX, area.maxX);
-                        finalY = Mth.clamp(finalY, area.minY, area.maxY);
-                        finalZ = Mth.clamp(finalZ, area.minZ, area.maxZ);
+            } else {
+                if (CameraUtils.isUsingCustomCamera()) {
+                    ICameraManager manager = CameraUtils.getInstance();
+                    if (CameraUtils.getInstance().shouldStoreOriginPos()) {
+                        CameraUtils.getInstance().storeOriginPos(x, y, z);
                     }
+                    if (CameraUtils.isVanillaCameraFreezing() && !CameraUtils.isFollowPosition()) {
+                        x = manager.getOriginX();
+                        y = manager.getOriginY();
+                        z = manager.getOriginZ();
+                    }
+                    float partial = partialTicks.get();
+                    if (!manager.getX().isEmpty()) {
+                        double xm = manager.getX(partial);
+                        if (Double.compare(xm, 0.0d) != 0)
+                            x = xm;
+                    }
+                    if (!manager.getY().isEmpty()) {
+                        double ym = manager.getY(partial);
+                        if (Double.compare(ym, 0.0d) != 0)
+                            y = ym;
+                    }
+                    if (!manager.getZ().isEmpty()) {
+                        double zm = manager.getZ(partial);
+                        if (Double.compare(zm, 0.0d) != 0)
+                            z = zm;
+                    }
+                    double finalX = x + manager.getXOffset(partial);
+                    double finalY = y + manager.getYOffset(partial);
+                    double finalZ = z + manager.getZOffset(partial);
+                    if (this.detached) {
+                        Optional<AABB> areaOptional = CameraUtils.getAvailableCameraArea();
+                        if (areaOptional.isPresent()) {
+                            AABB area = areaOptional.get();
+                            finalX = Mth.clamp(finalX, area.minX, area.maxX);
+                            finalY = Mth.clamp(finalY, area.minY, area.maxY);
+                            finalZ = Mth.clamp(finalZ, area.minZ, area.maxZ);
+                        }
+                    }
+                    x = finalX;
+                    y = finalY;
+                    z = finalZ;
+                    double xRelative = manager.getXRelative(partial);
+                    double yRelative = manager.getYRelative(partial);
+                    double zRelative = manager.getZRelative(partial);
+                    if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0)
+                        this.move(zRelative, yRelative, -xRelative);
                 }
-                this.setPosition(finalX, finalY, finalZ);
-                double xRelative = manager.getXRelative(partial);
-                double yRelative = manager.getYRelative(partial);
-                double zRelative = manager.getZRelative(partial);
-                if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0)
-                    this.move(zRelative, yRelative, -xRelative);
+                @SuppressWarnings("DataFlowIssue") CameraPosEvent event = new CameraPosEvent(Minecraft.getInstance().gameRenderer, ((Camera) (Object)this), partialTicks.get(), x, y, z);
+                MinecraftForge.EVENT_BUS.post(event);
+                x = event.getX();
+                y = event.getY();
+                z = event.getZ();
+                this.setPosition(x, y, z);
                 return false;
             }
         } catch (Throwable throwable) {

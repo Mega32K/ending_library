@@ -115,6 +115,7 @@
     "ItemRendererMixin",
     "MinecraftMixin",
     "accessor.AccessorAbstractWidget",
+    "accessor.AccessorCamera",
     "accessor.AccessorClientLevel",
     "accessor.AccessorEffectInstance",
     "accessor.AccessorFont",
