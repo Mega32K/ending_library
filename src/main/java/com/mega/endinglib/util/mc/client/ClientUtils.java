@@ -144,9 +144,7 @@ public class ClientUtils {
                 if (customCursorHandle != -1L)
                     GLFW.glfwDestroyCursor(customCursorHandle);
                 Resource resource = mc.getResourceManager().getResourceOrThrow(icon);
-                GLFWImageUtils.safeGetImage(resource.open(), scale, glfwImage -> {
-                    customCursorHandle = GLFW.glfwCreateCursor(glfwImage, xHot, yHot);
-                });
+                GLFWImageUtils.safeGetImage(resource.open(), scale, glfwImage -> customCursorHandle = GLFW.glfwCreateCursor(glfwImage, xHot, yHot));
                 long windowHandle = mc.getWindow().getWindow();
                 GLFW.glfwSetCursor(windowHandle, customCursorHandle);
                 GLFW.glfwSetCursorPos(windowHandle, mouseHandler.xpos(), mouseHandler.ypos());
@@ -254,7 +252,7 @@ public class ClientUtils {
             end = start.add(direction.scale(128.0D));
             BlockHitResult hitResult = getBlockHitResultFromMouse(focusedEntity, start, end);
             EntityHitResult entityHitResult = RaycastHelper.findCrosshairTarget(focusedEntity, start, end, 128D);
-            if (entityHitResult != null && entityHitResult.getEntity().getY() - hitResult.getBlockPos().getY() > 0) {
+            if (entityHitResult != null && entityHitResult.getEntity().distanceToSqr(start.x, start.y, start.z) <= hitResult.getBlockPos().distToCenterSqr(start.x, start.y, start.z)) {
 
                 MOUSE_CLIP_POS = entityHitResult.getEntity().getBoundingBox().clip(start, end).orElseGet(() -> localPlayer.getEyePosition().add(localPlayer.getLookAngle()));
             } else {

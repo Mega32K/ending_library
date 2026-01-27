@@ -33,7 +33,6 @@ public class PostProcessingShaders {
     public PostProcessingShaders(Minecraft minecraft) {
         this.minecraft = minecraft;
     }
-
     public void levelEffect(float partialTicks) {
         effect(partialTicks, DynamicEffectData.TransformLayer.LEVEL_RENDERER);
     }
@@ -43,7 +42,7 @@ public class PostProcessingShaders {
     private void effect(float partialTicks, DynamicEffectData.TransformLayer layer) {
         if (isReloading) return;
         if (minecraft.level != null && minecraft.player != null) {
-            this.minecraft.getProfiler().push("ending_library:post_effects");
+            this.minecraft.getProfiler().push("ending_library:post_effects_"+layer.name());
             for (var entry : postChains.entrySet()) {
                 CustomScreenEffect element = entry.getKey();
                 //System.out.printf("%s, %s%n", element, SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer);
