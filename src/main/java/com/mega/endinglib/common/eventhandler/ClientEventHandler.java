@@ -85,17 +85,12 @@ public class ClientEventHandler {
     }
     @SubscribeEvent
     public static void timeStoppedTick(TimeStoppedClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            Player player = ClientWrapped.clientPlayer();
-            if (player != null && !Minecraft.getInstance().isPaused())
-                CommonProxy.getCameraCapOptional(player).ifPresent(capability -> CameraUtils.getInstance().tick(capability));
-        }
     }
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             Player player = ClientWrapped.clientPlayer();
-            if (player != null && !Minecraft.getInstance().isPaused())
+            if (player != null && !Minecraft.getInstance().isPaused() && player.level().isClientSide)
                 CommonProxy.getCameraCapOptional(player).ifPresent(capability -> CameraUtils.getInstance().tick(capability));
             //clientTick++;
             boolean screenNull = Minecraft.getInstance().screen == null;

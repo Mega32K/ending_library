@@ -138,6 +138,7 @@ public abstract class MinecraftMixin {
                 accessorMcTimer.setMsPerTick(1.0e32F);
                 realPartialTick = timer.partialTick;
                 for (int i = 0; i < l; i++) {
+                    System.out.println(l);
                     MinecraftForge.EVENT_BUS.post(new TimeStoppedClientTickEvent(TickEvent.Phase.START));
                     this.profiler.push("BetterCombatHead");
                     if ((Object) this instanceof BetterCombatTicker ticker) {

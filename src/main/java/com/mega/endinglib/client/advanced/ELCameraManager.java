@@ -18,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
