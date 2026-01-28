@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 
 public class ExtraEntityData {
     private final Entity entity;
-    private int tickCount = 1;
+    public int tickCount = 1;
     public boolean isFrozen;
     private long interpolationStartClientTick = -2147483648L;
     private int interpolationDuration = 1;
@@ -45,7 +45,7 @@ public class ExtraEntityData {
                     this.scaleYOld = scale.y;
                     this.scaleZOld = scale.z;
                 });
-            }); 
+            });
         tickCount++;
     }
     public float getScaleX(float x, float partialTicks) {

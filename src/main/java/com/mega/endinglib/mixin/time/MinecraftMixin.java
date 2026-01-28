@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.time;
 
+import com.mega.endinglib.api.event.client.TimeStoppedClientTickEvent;
 import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.mixin.accessor.AccessorClientLevel;
 import com.mega.endinglib.mixin.accessor.AccessorMcTimer;
@@ -29,6 +30,8 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.tutorial.Tutorial;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -135,6 +138,7 @@ public abstract class MinecraftMixin {
                 accessorMcTimer.setMsPerTick(1.0e32F);
                 realPartialTick = timer.partialTick;
                 for (int i = 0; i < l; i++) {
+                    MinecraftForge.EVENT_BUS.post(new TimeStoppedClientTickEvent(TickEvent.Phase.START));
                     this.profiler.push("BetterCombatHead");
                     if ((Object) this instanceof BetterCombatTicker ticker) {
                         ticker.tickHead();
@@ -225,6 +229,8 @@ public abstract class MinecraftMixin {
                         ticker.tickTail();
                     }
                     this.profiler.pop();
+
+                    MinecraftForge.EVENT_BUS.post(new TimeStoppedClientTickEvent(TickEvent.Phase.END));
                 }
 
             }

@@ -238,7 +238,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
             }
             this.inputCooldowns.tick(player);
             if (entity.level().isClientSide) {
-                CameraUtils.getInstance().tick(this);
             } else if (player instanceof ServerPlayer sp) {
                 if (this.isUsingCustomCamera) {
                     {

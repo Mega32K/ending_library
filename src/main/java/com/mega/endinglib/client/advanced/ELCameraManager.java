@@ -127,7 +127,6 @@ public class ELCameraManager implements ICameraManager {
     }
 
     public void tick(EndingLibraryPlayerCapability capability) {
-        if (!Objects.equals(capability.getEntity(), ClientWrapped.clientPlayer())) return;
         this.oldUpdate();
         this.x.tickAnimations();
         this.y.tickAnimations();

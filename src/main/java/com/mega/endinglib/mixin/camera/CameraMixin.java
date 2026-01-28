@@ -12,6 +12,7 @@ import com.mega.endinglib.api.event.render.CameraPosEvent;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.proxy.CommonProxy;
+import com.mega.endinglib.util.time.TimeContext;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
@@ -52,21 +53,16 @@ public abstract class CameraMixin {
 
     @Shadow private Entity entity;
 
-    @Inject(method = "setup", at = @At("HEAD"))
-    private void argExtra(BlockGetter p_90576_, Entity p_90577_, boolean p_90578_, boolean p_90579_, float p_90580_, CallbackInfo ci, @Share("partialTicks") LocalFloatRef partialTicks) {
-        partialTicks.set(p_90580_);
-    }
-
     @WrapWithCondition(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
-    private boolean replaceWhenCustomMode(Camera camera, double x, double y, double z, @Share("partialTicks") LocalFloatRef partialTicks) {
+    private boolean replaceWhenCustomMode(Camera camera, double x, double y, double z) {
         try {
+            float partial = TimeContext.Client.alwaysPartial();
             if (CameraModifyScreen.isOpening) {
                 if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
-                    double[] pos = cms.translationPos(partialTicks.get());
+                    double[] pos = cms.translationPos(partial);
                     this.setPosition(x + pos[0], y + pos[1], z + pos[2]);
                 }
             } else {
-                float partial = partialTicks.get();
                 if (CameraUtils.isUsingCustomCamera()) {
                     ICameraManager manager = CameraUtils.getInstance();
                     if (CameraUtils.isVanillaCameraFreezing() && !CameraUtils.isFollowPosition()) {
@@ -140,11 +136,12 @@ public abstract class CameraMixin {
     }
 
     @WrapWithCondition(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation(FF)V"))
-    private boolean replaceRotationWithCondition(Camera camera, float y, float x, @Share("partialTicks") LocalFloatRef partialTicks) {
+    private boolean replaceRotationWithCondition(Camera camera, float y, float x) {
         try {
+            float partial = TimeContext.Client.alwaysPartial();
             if (CameraModifyScreen.isOpening) {
                 if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
-                    this.setRotation(cms.getYRot(partialTicks.get()), cms.getXRot(partialTicks.get()));
+                    this.setRotation(cms.getYRot(partial), cms.getXRot(partial));
                 }
                 return false;
             } else if (CameraUtils.isUsingCustomCamera()) {
@@ -156,7 +153,6 @@ public abstract class CameraMixin {
                     manager.setOriginXRot(x);
                     manager.setOriginYRot(y);
                 }
-                float partial = partialTicks.get();
                 this.setRotation(y + (float) manager.getYRotation(partial), x + (float) manager.getXRotation(partial));
                 return false;
             }
@@ -166,17 +162,18 @@ public abstract class CameraMixin {
         return true;
     }
     @ModifyExpressionValue(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;getMaxZoom(D)D"))
-    private double replaceMaxZoomRaycast(double original, @Share("partialTicks") LocalFloatRef partialTicks) {
+    private double replaceMaxZoomRaycast(double original) {
         if (entity instanceof LivingEntity living)
             original = this.getMaxZoom(ModAttributes.getCameraDistance(living));
         try {
+            float partial = TimeContext.Client.alwaysPartial();
             if (CameraModifyScreen.isOpening) {
                 if (Minecraft.getInstance().screen instanceof CameraModifyScreen cms) {
-                    return original + cms.getRaycast(partialTicks.get()) - 1F;
+                    return original + cms.getRaycast(partial) - 1F;
                 }
             } else if (CameraUtils.isUsingCustomCamera()) {
                 ICameraManager manager = CameraUtils.getInstance();
-                return original + manager.getRaycastOffset(partialTicks.get());
+                return original + manager.getRaycastOffset(partial);
             }
         } catch (Throwable throwable) {
             throwable.printStackTrace();

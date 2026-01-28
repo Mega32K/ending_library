@@ -2,8 +2,9 @@ package com.mega.endinglib.common.eventhandler;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.client.LambdaClientTaskInstance;
-import com.mega.endinglib.api.client.shader.post.CustomScreenEffect;
+import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
+import com.mega.endinglib.api.event.client.TimeStoppedClientTickEvent;
 import com.mega.endinglib.api.event.render.ItemRendererEvent;
 import com.mega.endinglib.api.item.IDragonLightRendererItem;
 import com.mega.endinglib.client.ClientContext;
@@ -12,15 +13,12 @@ import com.mega.endinglib.client.renderer.item.Dragon2DLightRenderer;
 import com.mega.endinglib.client.renderer.item.ItemRendererContext;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.data.ClientDynamicKeyMapping;
-import com.mega.endinglib.common.data.DynamicEffectData;
-import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.c2s.key.C2SDynamicKeyOperationPacket;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
-import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -30,7 +28,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.DeathScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.PostChain;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -43,9 +40,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL30;
 
-import java.util.EnumSet;
 import java.util.concurrent.CompletionException;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT)
@@ -88,10 +83,20 @@ public class ClientEventHandler {
             }
         }
     }
-
+    @SubscribeEvent
+    public static void timeStoppedTick(TimeStoppedClientTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) {
+            Player player = ClientWrapped.clientPlayer();
+            if (player != null && !Minecraft.getInstance().isPaused())
+                CommonProxy.getCameraCapOptional(player).ifPresent(capability -> CameraUtils.getInstance().tick(capability));
+        }
+    }
     @SubscribeEvent
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
+            Player player = ClientWrapped.clientPlayer();
+            if (player != null && !Minecraft.getInstance().isPaused())
+                CommonProxy.getCameraCapOptional(player).ifPresent(capability -> CameraUtils.getInstance().tick(capability));
             //clientTick++;
             boolean screenNull = Minecraft.getInstance().screen == null;
             boolean overlayNull = Minecraft.getInstance().getOverlay() == null;
