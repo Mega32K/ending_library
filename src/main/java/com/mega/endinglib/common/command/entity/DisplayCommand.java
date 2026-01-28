@@ -1,17 +1,28 @@
 package com.mega.endinglib.common.command.entity;
 
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.api.client.cmc.LoreHelper;
 import com.mega.endinglib.common.command.argument.EasingArgument;
+import com.mega.endinglib.common.command.argument.TextColorArgument;
 import com.mega.endinglib.common.config.CommandConfig;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mixin.data_expand.ExtraDisplayEntity;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DisplayCommand {
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
@@ -23,6 +34,18 @@ public class DisplayCommand {
                                         .executes(context -> setInterpolationType(context.getSource(), EntityArgument.getEntity(context, "target"), EasingArgument.getEasing(context, "easing")))
                                 )
                                 .executes(context -> getInterpolationType(context.getSource(), EntityArgument.getEntity(context, "target")))
+                        )
+                        .then(Commands.literal("dispatch")
+                                .then(Commands.literal("text")
+                                        .then(Commands.literal("colorAnim")
+                                                .then(Commands.argument("newColor", TextColorArgument.color())
+                                                        .then(Commands.argument("duration", IntegerArgumentType.integer(0))
+                                                                .executes(context -> Text.colorAnim(context.getSource(), EntityArgument.getEntity(context, "target"), TextColorArgument.getColor(context, "newColor"), IntegerArgumentType.getInteger(context, "duration")))
+                                                        )
+                                                )
+                                                .executes(context -> Text.getColorAnim(context.getSource(), EntityArgument.getEntity(context, "target")))
+                                        )
+                                )
                         )
                 );
     }
@@ -48,5 +71,36 @@ public class DisplayCommand {
             return easing.ordinal();
         }
         return 0;
+    }
+    public static class Text {
+        private static final DynamicCommandExceptionType NOT_TEXT_DISPLAY_ENTITY = new DynamicCommandExceptionType(e -> Component.translatable("commands.endinglib.message.display.text.color_anim.error.entity", e).withStyle(ChatFormatting.RED));
+        private static int colorAnim(CommandSourceStack sourceStack, Entity entity, TextColor color, int duration) throws CommandSyntaxException {
+            if (!(entity instanceof Display.TextDisplay))
+                throw NOT_TEXT_DISPLAY_ENTITY.create(entity.getDisplayName());
+            else if (color == TextColorArgument.NULL_COLOR) {
+                sourceStack.sendFailure(Component.translatable("commands.endinglib.message.display.text.color_anim.error.color"));
+                return 0;
+            } else {
+                Display.TextDisplay display = (Display.TextDisplay) entity;
+                CommonProxy.getTextCapOptional(display).ifPresent(capability -> {
+                    capability.setAnimColor(color.getValue());
+                    capability.setAnimColorDuration(duration);
+                    sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.color_anim.set", Component.literal(color.toString()).withStyle(ChatFormatting.GOLD), LoreHelper.number(duration, ChatFormatting.LIGHT_PURPLE)), false);
+                });
+                return color.getValue();
+            }
+        }
+        private static int getColorAnim(CommandSourceStack sourceStack, Entity entity) throws CommandSyntaxException {
+            if (!(entity instanceof Display.TextDisplay))
+                throw NOT_TEXT_DISPLAY_ENTITY.create(entity.getDisplayName());
+            else {
+                AtomicInteger value = new AtomicInteger(-1);
+                CommonProxy.getTextCapOptional(entity).ifPresent(capability -> {
+                    value.set(capability.getAnimColor());
+                    sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.color_anim.get", LoreHelper.number(value.get(), ChatFormatting.GOLD)), false);
+                });
+                return value.get();
+            }
+        }
     }
 }

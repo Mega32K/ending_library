@@ -97,6 +97,7 @@ public class SynchedCapabilityData {
         try {
             if (assertChanged || ObjectUtils.notEqual(value, c.getValue())) {
                 c.setValue(value);
+                c.setDirty(true);
                 this.anyOfDirty.set(true);
             }
         } finally {

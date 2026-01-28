@@ -250,6 +250,10 @@
 
   "commands.endinglib.message.display.interpolation_type.get": "§7%s§7当前的插值函数为 %s",
   "commands.endinglib.message.display.interpolation_type.set": "§7已将%s§7当前的插值函数设置为 %s",
+  "commands.endinglib.message.display.text.color_anim.error.entity": "实体 %s 不是文本展示实体",
+  "commands.endinglib.message.display.text.color_anim.error.color": "文本颜色不合法",
+  "commands.endinglib.message.display.text.color_anim.set": "§7已将文本的颜色转变动画的颜色设为 %s§7,转变时长设为 %s",
+  "commands.endinglib.message.display.text.color_anim.get": "§7文本的颜色转变颜色为 %s",
 
   "commands.endinglib.message.abilities.get": "%s§7当前的原版覆盖能力 %s §7为:%s",
   "commands.endinglib.message.abilities.set": "已将%s§7当前的原版覆盖能力 %s §7设为:%s",

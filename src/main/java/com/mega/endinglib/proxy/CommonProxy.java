@@ -6,6 +6,7 @@ import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
+import com.mega.endinglib.common.capability.display.TextDisplayCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.command.argument.scehdule.MobTypeArgument;
 import com.mega.endinglib.common.command.entity.selector.MobEntitySelector;
@@ -31,6 +32,7 @@ public class CommonProxy implements ModProxy {
     public static LazyOptional<Capability<EndingLibraryPlayerCapability>> PLAYER_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()));
     public static LazyOptional<Capability<EndingLibraryLivingCapability>> LIVING_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString()));
     public static LazyOptional<Capability<EndingLibraryEntityCapability>> ENTITY_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryEntityCapability.NAME.toString()));
+    public static LazyOptional<Capability<TextDisplayCapability>> TEXT_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(TextDisplayCapability.NAME.toString()));
 
     public CommonProxy() {
         IEventBus modBus = EndingLibrary.getModEventBus();
@@ -50,6 +52,9 @@ public class CommonProxy implements ModProxy {
     public static LazyOptional<EndingLibraryEntityCapability> getEntityCapOptional(Entity entity) {
         return entity.getCapability(ENTITY_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryEntityCapability.NAME.toString())));
     }
+    public static LazyOptional<TextDisplayCapability> getTextCapOptional(Entity entity) {
+        return entity.getCapability(TEXT_CAP.orElse(ELCapabilityManager.getCapability(TextDisplayCapability.NAME.toString())));
+    }
     public void commonSetup(final FMLCommonSetupEvent event) {
         ItemComponentManager.init();
         EntitySelectorManager.register("m", new MobEntitySelector());
@@ -61,6 +66,8 @@ public class CommonProxy implements ModProxy {
             ELCapabilityManager.regsterCapability(EndingLibraryLivingCapability::new, new CapabilityToken<EndingLibraryLivingCapability>() {
             });
             ELCapabilityManager.regsterCapability(EndingLibraryEntityCapability::new, new CapabilityToken<EndingLibraryEntityCapability>() {
+            });
+            ELCapabilityManager.regsterCapability(TextDisplayCapability::new, new CapabilityToken<TextDisplayCapability>() {
             });
             ArgumentTypeInfos.registerByClass(CameraModifierArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER.get());
             ArgumentTypeInfos.registerByClass(CameraOperationArgument.class, ModCommandArgumentTypes.CAMERA_OPERATION.get());
@@ -86,7 +93,8 @@ public class CommonProxy implements ModProxy {
             ArgumentTypeInfos.registerByClass(PostShadersArgument.class, ModCommandArgumentTypes.POST_SHADERS.get());
             ArgumentTypeInfos.registerByClass(CameraStaticGroupAnimationArgument.class, ModCommandArgumentTypes.CAMERA_GROUP_ANIMATIONS.get());
             ArgumentTypeInfos.registerByClass(VanillaAnimationArgument.class, ModCommandArgumentTypes.CAMERA_VANILLA_ANIMATIONS.get());
-            ArgumentTypeInfos.registerByClass(GuiOverlayArgument.class, ModCommandArgumentTypes.GUI_OVERLAY_ANIMATIONS.get());
+            ArgumentTypeInfos.registerByClass(GuiOverlayArgument.class, ModCommandArgumentTypes.GUI_OVERLAY_ANIMATIONS.get());;
+            ArgumentTypeInfos.registerByClass(TextColorArgument.class, ModCommandArgumentTypes.TEXT_COLOR.get());
         });
     }
     public void addAttributes(EntityAttributeModificationEvent event) {

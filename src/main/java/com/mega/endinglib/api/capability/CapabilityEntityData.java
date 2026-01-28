@@ -57,7 +57,6 @@ public class CapabilityEntityData<T> {
     }
     void setValue(T value) {
         this.value = value;
-        this.isDirty.set(true);
     }
 
     public void write(CompoundTag nbt) {

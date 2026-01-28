@@ -249,7 +249,7 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     @Override
     public final void deserializeNBT(CompoundTag nbt) {
         this.dataManager.forEachRead(data -> data.read(nbt));
-        this.dataManager.dirtyAllNotInitValue();
+        //this.dataManager.dirtyAllNotInitValue();
         this.customDeserializeNBT(nbt);
     }
 

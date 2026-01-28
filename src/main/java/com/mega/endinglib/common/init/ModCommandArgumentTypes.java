@@ -37,6 +37,7 @@ public class ModCommandArgumentTypes {
     public static final RegistryObject<ArgumentTypeInfo<CameraStaticGroupAnimationArgument, ?>> CAMERA_GROUP_ANIMATIONS = REGISTRIES.register("camera_animation_groups", () -> SingletonArgumentInfo.contextFree(CameraStaticGroupAnimationArgument::group));
     public static final RegistryObject<ArgumentTypeInfo<VanillaAnimationArgument, ?>> CAMERA_VANILLA_ANIMATIONS = REGISTRIES.register("vanilla_animations", () -> SingletonArgumentInfo.contextFree(VanillaAnimationArgument::animation));
     public static final RegistryObject<ArgumentTypeInfo<GuiOverlayArgument, ?>> GUI_OVERLAY_ANIMATIONS = REGISTRIES.register("gui_overlay", () -> SingletonArgumentInfo.contextFree(GuiOverlayArgument::overlay));
+    public static final RegistryObject<ArgumentTypeInfo<TextColorArgument, ?>> TEXT_COLOR = REGISTRIES.register("text_color", () -> SingletonArgumentInfo.contextFree(TextColorArgument::color));
     public static void init(IEventBus bus) {
         REGISTRIES.register(bus);
     }

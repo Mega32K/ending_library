@@ -6,6 +6,7 @@ import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntityData;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;

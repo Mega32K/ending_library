@@ -1,11 +1,23 @@
 package com.mega.endinglib.util.mixin.data_expand;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.api.client.text.TextColorUtils;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.time.TimeContext;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExtraEntityData {
     private final Entity entity;
@@ -47,6 +59,9 @@ public class ExtraEntityData {
                 });
             });
         tickCount++;
+        if (entity instanceof Display.TextDisplay display) {
+            CommonProxy.getTextCapOptional(display).ifPresent(cap-> cap.forceTick(display));
+        }
     }
     public float getScaleX(float x, float partialTicks) {
         if (isFrozen) partialTicks = TimeContext.safeClientFrameTime();
