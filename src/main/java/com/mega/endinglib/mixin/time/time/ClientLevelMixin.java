@@ -88,8 +88,4 @@ public abstract class ClientLevelMixin extends Level implements LevelEC {
     public void endinglib$setECData(LevelExpandedContext data) {
         this.uom$clientEC = (ClientLevelExpandedContext) data;
     }
-    @Inject(method = "tickNonPassenger", at = @At("TAIL"))
-    private void forceCapClientTick(Entity p_104640_, CallbackInfo ci) {
-        ExtraEntity.of(p_104640_).endinglib$getExtraEntityData().forceTick();
-    }
 }

@@ -14,18 +14,16 @@ import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
-import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
 import com.mega.endinglib.common.network.s2c.S2CSetPlayerForcedPosePacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
-import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
+import com.mega.endinglib.common.network.s2c.camera.S2CClientActionPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CInputOperationPacket;
 import com.mega.endinglib.util.SafeClass;
-import kroppeb.stareval.function.Type;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -75,9 +73,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
      * 0x11   true <br>
      */
     public final CapabilityEntityData<Integer> OVERRIDE_ABILITIES = this.dataManager.define(16, "overrideAbilities", 0, CapabilityDataSerializers.INT);
+    public final CapabilityEntityData<Optional<Vector3f>> ORIGIN_POS = this.dataManager.define(17, "originPos", Optional.empty(), CapabilityDataSerializers.OPTIONAL_VEC3F);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
-    public Vector3f cameraOriginPos = new Vector3f(0F);
     public int poseLockingTime;
     public @Nullable Pose lockedPose;
     public ELServerCameraManager cameraDataManager = new ELServerCameraManager();
@@ -121,8 +119,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                         PacketHandler.sendToSeen(new S2CCameraAnimationSetPacket(map), player, player.serverLevel());
                     if (this.cameraType > -1)
                         toWrite.putShort("CameraType", this.cameraType);
-                    if (this.cameraOriginPos.length() > 0F)
-                        CompoundTagUtils.putVector3f(toWrite, "CameraOriginPos", this.cameraOriginPos);
                 }
             } else if (type == CapabilitySyncType.PLAYER_RESPAWN || type == CapabilitySyncType.PLAYER_CLONE)
                 if (entity instanceof ServerPlayer player) {
@@ -133,11 +129,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         } else {
             if (type == CapabilitySyncType.PLAYER_LOGGED_IN && entity == ClientWrapped.clientPlayer()) {
                 toWrite.putShort("CameraType", (short) ClientWrapped.getCameraTypeOrdinal());
-                CompoundTagUtils.putVector3f(toWrite, "CameraOriginPos", new Vector3f(
-                        (float) CameraUtils.getInstance().getOriginX(),
-                        (float) CameraUtils.getInstance().getOriginY(),
-                        (float) CameraUtils.getInstance().getOriginZ()
-                ));
             }
         }
     }
@@ -148,16 +139,15 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
             if (type == CapabilitySyncType.CLIENT_OPTIONS || type == CapabilitySyncType.PLAYER_LOGGED_IN) {
                 if (CompoundTagUtils.containsShort(toRead, "CameraType"))
                     this.cameraType = toRead.getShort("CameraType");
-                this.cameraOriginPos = CompoundTagUtils.getVector3f(toRead, "CameraOriginPos");
+                Vector3f originPos = CompoundTagUtils.getVector3fN(toRead, "CameraOriginPos");
+                if (originPos != null) {
+                    this.setOriginPos(originPos);
+                }
             }
         } else {
             if (type == CapabilitySyncType.PLAYER_LOGGED_IN && entity == ClientWrapped.clientPlayer()) {
                 if (CompoundTagUtils.containsShort(toRead, "CameraType"))
                     ClientWrapped.setCameraType(toRead.getShort("CameraType"));
-                Vector3f originPos = CompoundTagUtils.getVector3f(toRead, "CameraOriginPos");
-                if (originPos.length() > 0F) {
-                    CameraUtils.getInstance().storeOriginPos(originPos.x, originPos.y, originPos.z);
-                }
             }
         }
     }
@@ -173,9 +163,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         if (this.cameraType > -1) {
             nbt.putShort("CameraType", cameraType);
         }
-        if (this.cameraOriginPos.length() > 0F) {
-            CompoundTagUtils.putVector3f(nbt, "CameraOriginPos", this.cameraOriginPos);
-        }
         if (this.poseLockingTime > 0)
             nbt.putInt("PoseLockingTime", poseLockingTime);
         if (this.lockedPose != null)
@@ -187,9 +174,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         this.cameraDataManager.customDeserializeNBT(nbt, this);
         if (CompoundTagUtils.containsShort(nbt, "CameraType"))
             this.cameraType = nbt.getShort("CameraType");
-        Vector3f originPos = CompoundTagUtils.getVector3f(nbt, "CameraOriginPos");
-        if (originPos.length() > 0F)
-            this.cameraOriginPos = originPos;
         if (CompoundTagUtils.containsInt(nbt, "PoseLockingTime"))
             this.poseLockingTime = nbt.getInt("PoseLockingTime");
         if (CompoundTagUtils.containsShort(nbt, "LockedPose")) {
@@ -211,8 +195,14 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
 
     @Override
     public void onSyncedDataUpdated(CapabilityEntityData<?> data) {
-        if (data.equals(USING_CAMERA_MODE))
+        if (data.equals(USING_CAMERA_MODE))  {
+            boolean lastFreeze = isVanillaCameraFreezing;
             this.restoreCameraFlagsToFields();
+            if (isVanillaCameraFreezing() && !lastFreeze) {
+                ClientWrapped.cameraFreeze(this);
+            }
+            CameraUtils.setIsVanillaCameraFreezing(this.getEntity(), this.isVanillaCameraFreezing());
+        }
         else if (data.equals(OVERRIDE_ABILITIES)) {
             this.restoreAbilityFlagsToFields();
             if (this.getEntity() instanceof Player player) {
@@ -233,6 +223,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
             } else {
                 CameraUtils.getInstance().unlockOriginYRot();
             }
+        } else if (data.equals(ORIGIN_POS)) {
+            Optional<Vector3f> pos = this.getOriginPos();
+            pos.ifPresent(vector3f -> CameraUtils.getInstance().storeOriginPos(vector3f.x, vector3f.y, vector3f.z));
         }
     }
 
@@ -241,7 +234,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         if (entity instanceof Player player) {
             if (this.dataManager.isDirty()) {
                 this.restoreCameraFlagsToFields();
-                this.restoreCameraFlagsToFields();
+                this.restoreAbilityFlagsToFields();
             }
             this.inputCooldowns.tick(player);
             if (entity.level().isClientSide) {
@@ -462,10 +455,16 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     public Optional<Float> getLockedCameraOriginYRot() {
         return this.dataManager.getValue(LOCKED_CAMERA_ORIGIN_Y_ROT);
     }
+    public Optional<Vector3f> getOriginPos() {
+        return this.dataManager.getValue(ORIGIN_POS);
+    }
+    public void setOriginPos(Vector3f pos) {
+        Optional<Vector3f> v = pos == null ? Optional.empty() : Optional.of(pos);
+        this.dataManager.setValue(ORIGIN_POS, v);
+    }
     public int getAbilityFlags() {
         return this.dataManager.getValue(OVERRIDE_ABILITIES);
     }
-
     public int getAbilityFlying() {
         return abilityFlying;
     }

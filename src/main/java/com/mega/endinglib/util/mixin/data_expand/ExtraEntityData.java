@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Entity;
 
 public class ExtraEntityData {
     private final Entity entity;
+    private int tickCount = 1;
     public boolean isFrozen;
     private long interpolationStartClientTick = -2147483648L;
     private int interpolationDuration = 1;
@@ -31,20 +32,21 @@ public class ExtraEntityData {
     public void tick() {
     }
     public void onRenderScaleUpdate() {
-        interpolationStartClientTick = entity.tickCount;
+        interpolationStartClientTick = tickCount;
         if (!this.hasCustomRenderScale) {
             this.scaleXOld = this.scaleYOld = this.scaleZOld = 1.0f;
         }
     }
     public void forceTick() {
-        if (entity.tickCount - this.interpolationStartClientTick > interpolationDuration)
+        if (tickCount- this.interpolationStartClientTick > interpolationDuration)
             CommonProxy.getEntityCapOptional(entity).ifPresent(capability -> {
                 capability.getRenderScale().ifPresent(scale -> {
                     this.scaleXOld = scale.x;
                     this.scaleYOld = scale.y;
                     this.scaleZOld = scale.z;
                 });
-            });
+            }); 
+        tickCount++;
     }
     public float getScaleX(float x, float partialTicks) {
         if (isFrozen) partialTicks = TimeContext.safeClientFrameTime();

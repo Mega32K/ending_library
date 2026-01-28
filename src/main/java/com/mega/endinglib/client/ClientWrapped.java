@@ -14,6 +14,7 @@ import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.client.reloadable.StaticCameraAnimationReloadListener;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
+import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.CommandsEvent;
 import com.mega.endinglib.common.command.ShaderCommand;
 import com.mega.endinglib.common.data.DynamicEffectData;
@@ -100,6 +101,10 @@ public class ClientWrapped {
     public static float frameTicks() {
         return Minecraft.getInstance().getFrameTime();
     }
+    public static void cameraFreeze(EndingLibraryPlayerCapability capability) {
+        if (CameraUtils.getInstance() instanceof ELCameraManager cameraManager)
+            cameraManager.freeze(capability);
+    }
     public static void executeAction(CameraPacketAction action) {
         switch (action) {
             case OPEN_CAMERA_BENCH_SCREEN -> Minecraft.getInstance().setScreen(new CameraModifyScreen());
@@ -124,6 +129,7 @@ public class ClientWrapped {
                 Minecraft.getInstance().options.keyRight.setDown(false);
                 StaticCameraAnimationReloadListener.INSTANCE.onResourceManagerReload(Minecraft.getInstance().getResourceManager());
             });
+            case SHOULD_STORE_CAMERA_ORIGIN_POS -> CameraUtils.setShouldStoreOriginPos();
         }
     }
     public static void executeCamera(S2CCameraAnimationNoticePacket.Type type, ModifierType modifierType, Args args) {

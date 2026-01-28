@@ -4,6 +4,7 @@ import com.mega.endinglib.client.ClientWrapped;
 import net.minecraftforge.common.IExtensibleEnum;
 
 public enum CameraPacketAction {
+    SHOULD_STORE_CAMERA_ORIGIN_POS,
     OPEN_CAMERA_BENCH_SCREEN,
     FIRST_PERSON_CAMERA,
     THIRD_PERSON_CAMERA,

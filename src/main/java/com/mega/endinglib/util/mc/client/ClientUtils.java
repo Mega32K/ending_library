@@ -1,6 +1,7 @@
 package com.mega.endinglib.util.mc.client;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.common.data.ClientDynamicKeyMapping;
@@ -190,6 +191,7 @@ public class ClientUtils {
             synchronized (disabledOverlays) {
                 ClientUtils.disabledOverlays.clear();
             }
+            CameraUtils.onDisconnect();
             ClientUtils.disabledInputPermissions = EnumSet.noneOf(InputOperations.class);
             //MinecraftExtra.of(mc).setELCameraManager(new ELCameraManager(mc, mc.gameRenderer, mc.gameRenderer.getMainCamera()));
         });

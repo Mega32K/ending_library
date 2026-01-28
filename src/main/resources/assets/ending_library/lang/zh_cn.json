@@ -74,6 +74,7 @@
   "commands.endinglib.message.action.disable_shader": "§7禁用光影",
   "commands.endinglib.message.action.toggle_shader": "§7开/关光影",
   "commands.endinglib.message.action.reload_camera_animations": "§7重载客户端相机动画",
+  "commands.endinglib.message.action.should_store_camera_origin_pos": "§7通知存储相机原坐标",
 
   "commands.endinglib.message.camera.camera_enable": "§7为%s§a启用§7自定义相机模式",
   "commands.endinglib.message.camera.camera_disable": "§7为%s§c关闭§7自定义相机模式",

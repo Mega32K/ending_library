@@ -1,30 +1,21 @@
 package com.mega.endinglib.client.advanced;
 
-import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.camera.CameraModifier;
 import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.CameraValueInstance;
 import com.mega.endinglib.api.client.camera.ICameraManager;
-import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
-import com.mega.endinglib.api.data.CompoundTagUtils;
-import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.ClientContext;
+import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
-import com.mega.endinglib.mixin.camera.OptionsMixin;
-import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Objects;
@@ -100,7 +91,8 @@ public class ELCameraManager implements ICameraManager {
     public Minecraft getMinecraft() {
         return minecraft;
     }
-
+    public void onDisconnect() {
+    }
     public void oldUpdate() {
         this.cameraType = minecraft.options.getCameraType();
         this.xOld = this.x.getValue();
@@ -124,11 +116,14 @@ public class ELCameraManager implements ICameraManager {
         this.vanillaFovNeedsToFreeze = true;
         this.vanillaAngelsNeedsToFreeze = true;
         this.vanillaZoomNeedsToFreeze = true;
-        this.shouldStoreOriginPos = true;
     }
 
     public void updateModifier() {
 
+    }
+    public void freeze(EndingLibraryPlayerCapability capability) {
+        if (capability.getEntity() != minecraft.player) return;
+        CameraUtils.getInstance().onFreezingMode(capability);
     }
 
     public void tick(EndingLibraryPlayerCapability capability) {
@@ -149,14 +144,8 @@ public class ELCameraManager implements ICameraManager {
         this.zoomOffset.tickAnimations();
         this.fovOffset.tickAnimations();
         this.raycastOffset.tickAnimations();
-
         CameraUtils.isUsingCustomCamera = capability.isUsingCustomCamera();
-        {
-            if (!CameraUtils.isVanillaCameraFreezing && capability.isVanillaCameraFreezing()) {
-                CameraUtils.getInstance().onFreezingMode(capability);
-            }
-            CameraUtils.isVanillaCameraFreezing = capability.isVanillaCameraFreezing();
-        }
+
         CameraUtils.followPosition = capability.isFollowPosition();
         capability.getCameraAvailableArea()
                 .ifPresentOrElse(
@@ -220,12 +209,6 @@ public class ELCameraManager implements ICameraManager {
         this.originY = y;
         this.originZ = z;
         this.shouldStoreOriginPos = false;
-        if (minecraft.player != null)
-            CommonProxy.getCameraCapOptional(minecraft.player).ifPresent(cap -> {
-                CompoundTag tag = new CompoundTag();
-                CompoundTagUtils.putVector3f(tag, "CameraOriginPos", new Vec3(x, y, z).toVector3f());
-                cap.sync(tag, Dist.CLIENT, CapabilitySyncType.CLIENT_OPTIONS, minecraft.player);
-            });
     }
 
     @Override

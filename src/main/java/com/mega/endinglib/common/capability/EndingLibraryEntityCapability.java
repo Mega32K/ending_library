@@ -14,6 +14,7 @@ import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntityData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.MobType;

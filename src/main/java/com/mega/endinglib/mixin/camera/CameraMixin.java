@@ -4,13 +4,17 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
+import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.client.camera.CameraUtils;
 import com.mega.endinglib.api.client.camera.ICameraManager;
+import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.api.event.render.CameraPosEvent;
 import com.mega.endinglib.client.screen.camera.CameraModifyScreen;
 import com.mega.endinglib.common.init.ModAttributes;
+import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,6 +22,7 @@ import net.minecraft.world.entity.monster.Giant;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -64,10 +69,20 @@ public abstract class CameraMixin {
                 float partial = partialTicks.get();
                 if (CameraUtils.isUsingCustomCamera()) {
                     ICameraManager manager = CameraUtils.getInstance();
-                    if (CameraUtils.getInstance().shouldStoreOriginPos()) {
-                        CameraUtils.getInstance().storeOriginPos(x, y, z);
-                    }
                     if (CameraUtils.isVanillaCameraFreezing() && !CameraUtils.isFollowPosition()) {
+                        if (CameraUtils.getInstance().shouldStoreOriginPos()) {
+                            CameraUtils.getInstance().storeOriginPos(x, y, z);
+                            if (Minecraft.getInstance().player != null) {
+                                double finalX1 = x;
+                                double finalY1 = y;
+                                double finalZ1 = z;
+                                CommonProxy.getCameraCapOptional(Minecraft.getInstance().player).ifPresent(cap -> {
+                                    CompoundTag tag = new CompoundTag();
+                                    CompoundTagUtils.putVector3f(tag, "CameraOriginPos", new Vec3(finalX1, finalY1, finalZ1).toVector3f());
+                                    cap.sync(tag, Dist.CLIENT, CapabilitySyncType.CLIENT_OPTIONS, Minecraft.getInstance().player);
+                                });
+                            }
+                        }
                         x = manager.getOriginX();
                         y = manager.getOriginY();
                         z = manager.getOriginZ();

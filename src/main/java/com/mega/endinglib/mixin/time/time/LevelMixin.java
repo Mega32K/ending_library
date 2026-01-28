@@ -37,8 +37,8 @@ public abstract class LevelMixin implements LevelEC {
         ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
         if (eed.isFrozen) {
             ci.cancel();
-            eed.forceTick();
         }
+        eed.forceTick();
     }
 
     @Override

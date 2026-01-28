@@ -185,6 +185,16 @@ public class CompoundTagUtils {
         floats.add(FloatTag.valueOf(v3.z));
         nbt.put(key, floats);
     }
+    @Nullable
+    public static Vector3f getVector3fN(CompoundTag nbt, String key) {
+        if (CompoundTagUtils.containsListTag(nbt, key)) {
+            ListTag floats = nbt.getList(key, Tag.TAG_FLOAT);
+            if (floats.size() == 3) {
+                return new Vector3f(floats.getFloat(0), floats.getFloat(1), floats.getFloat(2));
+            }
+        }
+        return null;
+    }
     public static Vector3f getVector3f(CompoundTag nbt, String key) {
         if (CompoundTagUtils.containsListTag(nbt, key)) {
             ListTag floats = nbt.getList(key, Tag.TAG_FLOAT);

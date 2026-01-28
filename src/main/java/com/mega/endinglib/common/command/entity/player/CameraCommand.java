@@ -7,9 +7,7 @@ import com.mega.endinglib.common.capability.EndingLibraryPlayerCapability;
 import com.mega.endinglib.common.command.argument.*;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.camera.S2CBuildAnimationOperationPacket;
-import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraEntityPacket;
-import com.mega.endinglib.common.network.s2c.camera.S2CSetCameraOriginRotationPacket;
+import com.mega.endinglib.common.network.s2c.camera.*;
 import com.mega.endinglib.common.network.s2c.camera.clientload.S2CCameraAnimationNoticePacket;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.java.Args;
@@ -500,7 +498,13 @@ public class CameraCommand {
     }
 
     private static int freezeOrigin(CommandSourceStack stack, ServerPlayer player, boolean flag) {
-        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.setVanillaCameraFreezing(flag));
+        CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+            boolean lastFrozen = capability.isVanillaCameraFreezing();
+            capability.setVanillaCameraFreezing(flag);
+            if (!lastFrozen && flag) {
+                PacketHandler.sendToPlayer(new S2CClientActionPacket(CameraPacketAction.SHOULD_STORE_CAMERA_ORIGIN_POS), player);
+            }
+        });
         sendModifyMessage(stack, player);
         return 0;
     }
