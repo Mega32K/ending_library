@@ -124,6 +124,7 @@
     "accessor.AccessorGameRenderer",
     "accessor.AccessorGui",
     "accessor.AccessorGuiGraphics",
+    "accessor.AccessorHumanoidModel",
     "accessor.AccessorItemInHandLayer",
     "accessor.AccessorItemInHandRenderer",
     "accessor.AccessorKeyMapping",
