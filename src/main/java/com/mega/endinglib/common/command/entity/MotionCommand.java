@@ -10,7 +10,9 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.commands.TeleportCommand;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -47,6 +49,9 @@ public class MotionCommand {
         }
         Vec3 motion = vec3;
         entity.setDeltaMovement(motion);
+        if (entity instanceof ServerPlayer player) {
+            player.connection.send(new ClientboundSetEntityMotionPacket(player));
+        }
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.set", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
         return (int) (motion.length() * 1000);
     }
@@ -59,6 +64,9 @@ public class MotionCommand {
         }
         Vec3 motion = vec3;
         entity.push(motion.x, motion.y, motion.z);
+        if (entity instanceof ServerPlayer player) {
+            player.connection.send(new ClientboundSetEntityMotionPacket(player));
+        }
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.push", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
         return (int) (motion.length() * 1000);
     }
