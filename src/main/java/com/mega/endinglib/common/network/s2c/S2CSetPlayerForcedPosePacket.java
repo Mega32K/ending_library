@@ -1,6 +1,7 @@
 package com.mega.endinglib.common.network.s2c;
 
 import com.mega.endinglib.client.ClientWrapped;
+import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Pose;
 import net.minecraftforge.network.NetworkDirection;
@@ -33,6 +34,7 @@ public class S2CSetPlayerForcedPosePacket {
 
     static void handle0(S2CSetPlayerForcedPosePacket packet, Supplier<NetworkEvent.Context> context) {
         if (context.get().getDirection() == NetworkDirection.PLAY_TO_CLIENT) {
+            CommonProxy.getCameraCapOptional(ClientWrapped.clientPlayer()).ifPresent(capability -> capability.lockedPose = packet.pose);
             ClientWrapped.clientPlayer().setForcedPose(packet.pose);
         }
     }

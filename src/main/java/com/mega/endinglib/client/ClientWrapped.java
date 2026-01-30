@@ -116,8 +116,10 @@ public class ClientWrapped {
             case MOUSE_RELEASE -> Minecraft.getInstance().mouseHandler.releaseMouse();
             case FORCED_POSE_CLEAR -> {
                 Player player = clientPlayer();
-                if (player != null)
+                if (player != null) {
+                    CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.lockedPose = null);
                     player.setForcedPose(null);
+                }
             }
             case RELOAD_RESOURCES_PACK -> Minecraft.getInstance().execute(()->{
                 Minecraft.getInstance().options.keyAttack.setDown(false);

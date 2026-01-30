@@ -3,6 +3,7 @@ package com.mega.endinglib.mixin.capability;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntityData;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -124,5 +126,13 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     @WrapWithCondition(method = "setYRot", at = @At(value = "FIELD", target = "Lnet/minecraft/world/entity/Entity;yRot:F", opcode = Opcodes.PUTFIELD))
     private boolean lockedYRot(Entity entity, float xRot) {
         return !this.endingLibrary$injectedExtraEntityData.lockedYRot;
+    }
+    @Inject(method = "getPose", at = @At("HEAD"), cancellable = true)
+    private void forcePose(CallbackInfoReturnable<Pose> cir) {
+        if (((Entity) (Object)this) instanceof Player p)
+            CommonProxy.getCameraCapOptional(p).ifPresent(capability -> {
+                if (capability.lockedPose != null)
+                    cir.setReturnValue(capability.lockedPose);
+            });
     }
 }

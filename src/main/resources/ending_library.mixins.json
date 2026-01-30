@@ -80,7 +80,6 @@
     "advanced.data_expand.component.tool.ShearsItemMixin",
     "advanced.data_expand.component.tool.SwordItemMixin",
     "advanced.data_expand.component.tool.TridentItemMixin",
-    "advanced.data_expand.pose.PlayerMixin",
     "advanced.food.FoodDataMixin",
     "advanced.function.CommandFunctionMixin",
     "advanced.function.FunctionCommandMixin",
