@@ -15,6 +15,7 @@ import net.minecraft.server.commands.TeleportCommand;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -44,8 +45,7 @@ public class MotionCommand {
     private static int motion(CommandSourceStack stack, Entity entity, Vec3 vec3, boolean relative) {
         entity.hurtMarked = true;
         if (relative) {
-            vec3 = relative(stack.getRotation().x, stack.getRotation().y, vec3);
-            vec3 = new Vec3(-vec3.z, vec3.y, vec3.x);
+            vec3 = relative(stack, vec3);
         }
         Vec3 motion = vec3;
         entity.setDeltaMovement(motion);
@@ -59,8 +59,7 @@ public class MotionCommand {
     private static int push(CommandSourceStack stack, Entity entity, Vec3 vec3, boolean relative) {
         entity.hurtMarked = true;
         if (relative) {
-            vec3 = relative(stack.getRotation().x, stack.getRotation().y, vec3);
-            vec3 = new Vec3(-vec3.z, vec3.y, vec3.x);
+            vec3 = relative(stack, vec3);
         }
         Vec3 motion = vec3;
         entity.push(motion.x, motion.y, motion.z);
@@ -70,22 +69,20 @@ public class MotionCommand {
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.motion.push", entity.getDisplayName(), LoreHelper.vec3(motion)), false);
         return (int) (motion.length() * 1000);
     }
-
-    private static Vec3 relative(float xRot, float yRot, Vec3 origin) {
-        double x = origin.x;
-        double y = origin.y;
-        double z = origin.z;
-        Quaternionf rotation = new Quaternionf(0.0F, 0.0F, 0.0F, 1.0F);
-        rotation.rotationYXZ(-xRot * Mth.DEG_TO_RAD, yRot * Mth.DEG_TO_RAD, 0.0F);
-        Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
-        Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
-        Vector3f left = new Vector3f(1.0F, 0.0F, 0.0F);
-        forwards.set(0.0F, 0.0F, 1.0F).rotate(rotation);
-        up.set(0.0F, 1.0F, 0.0F).rotate(rotation);
-        left.set(1.0F, 0.0F, 0.0F).rotate(rotation);
-        double d0 = (double) forwards.x() * x + (double) up.x() * y + (double) left.x() * z;
-        double d1 = (double) forwards.y() * x + (double) up.y() * y + (double) left.y() * z;
-        double d2 = (double) forwards.z() * x + (double) up.z() * y + (double) left.z() * z;
+    public static Vec3 relative(CommandSourceStack sourceStack, Vec3 motion) {
+        Vec2 vec2 = sourceStack.getRotation();
+        float f = Mth.cos((vec2.y + 90.0F) * ((float)Math.PI / 180F));
+        float f1 = Mth.sin((vec2.y + 90.0F) * ((float)Math.PI / 180F));
+        float f2 = Mth.cos(-vec2.x * ((float)Math.PI / 180F));
+        float f3 = Mth.sin(-vec2.x * ((float)Math.PI / 180F));
+        float f4 = Mth.cos((-vec2.x + 90.0F) * ((float)Math.PI / 180F));
+        float f5 = Mth.sin((-vec2.x + 90.0F) * ((float)Math.PI / 180F));
+        Vec3 vec31 = new Vec3((double)(f * f2), (double)f3, (double)(f1 * f2));
+        Vec3 vec32 = new Vec3((double)(f * f4), (double)f5, (double)(f1 * f4));
+        Vec3 vec33 = vec31.cross(vec32).scale(-1.0D);
+        double d0 = vec31.x * motion.z + vec32.x * motion.y + vec33.x * motion.x;
+        double d1 = vec31.y * motion.z + vec32.y * motion.y + vec33.y * motion.x;
+        double d2 = vec31.z * motion.z + vec32.z * motion.y + vec33.z * motion.x;
         return new Vec3(d0, d1, d2);
     }
 }
