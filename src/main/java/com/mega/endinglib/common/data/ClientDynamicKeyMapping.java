@@ -40,6 +40,7 @@ public class ClientDynamicKeyMapping {
        k.listenerFlags = byteBuf.readByte();
        return k;
     });
+    public boolean lastDown;
     public ResourceLocation id;
     public boolean disableWhenScreen;
     public boolean disableWhenOverlay;

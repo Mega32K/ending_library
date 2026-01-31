@@ -98,6 +98,12 @@ public class ClientEventHandler {
             for (var entry : ClientUtils.DYNAMIC_KEYS.entrySet()) {
                 ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
                 KeyMapping keyMapping = entry.getValue();
+                if ((!screenNull && dynamicKeyMapping.disableWhenScreen) || (!overlayNull && dynamicKeyMapping.disableWhenOverlay)) {
+                    if (dynamicKeyMapping.lastDown) {
+                        if (dynamicKeyMapping.releaseCommand())
+                            PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Release(dynamicKeyMapping.getId()));
+                    }
+                }
                 if (!screenNull && dynamicKeyMapping.disableWhenScreen) continue;
                 if (!overlayNull && dynamicKeyMapping.disableWhenOverlay) continue;
                 if (dynamicKeyMapping.clickCommand()) {
@@ -108,6 +114,7 @@ public class ClientEventHandler {
                     if (keyMapping.isDown() && clientTick % dynamicKeyMapping.downDelay == 0)
                         PacketHandler.sendToServer(new C2SDynamicKeyOperationPacket.Down(dynamicKeyMapping.getId()));
                 }
+                dynamicKeyMapping.lastDown = keyMapping.isDown();
             }
         }
     }

@@ -129,6 +129,7 @@
     "accessor.AccessorItemInHandRenderer",
     "accessor.AccessorKeyMapping",
     "accessor.AccessorLevelRenderer",
+    "accessor.AccessorLivingEntityRenderer",
     "accessor.AccessorMC",
     "accessor.AccessorMcTimer",
     "accessor.AccessorModelPart",
