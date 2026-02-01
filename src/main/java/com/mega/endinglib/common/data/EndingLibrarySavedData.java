@@ -183,9 +183,7 @@ public class EndingLibrarySavedData extends SavedData {
         }
         if (!this.disabledDynamicKeyMappings.isEmpty()) {
             ListTag listTag = new ListTag();
-            if (!listTag.isEmpty()) {
-                listTag.addAll(this.disabledDynamicKeyMappings.stream().map(StringTag::valueOf).toList());
-            }
+            listTag.addAll(this.disabledDynamicKeyMappings.stream().map(StringTag::valueOf).toList());
             compoundTag.put("DisabledDynamicKeySetting", listTag);
         }
         if (!this.userDynamicKeySetting.isEmpty()) {
