@@ -252,7 +252,7 @@ public class ClientUtils {
             Vec3 direction = calculateDirection(screenX, screenY, viewportWidth, viewportHeight, cameraFov());
 
             end = start.add(direction.scale(128.0D));
-            BlockHitResult hitResult = getBlockHitResultFromMouse(focusedEntity, start, end);
+            BlockHitResult hitResult = getBlockHitResultFromMouse(focusedEntity, start, end, ClipContext.Block.OUTLINE);
             EntityHitResult entityHitResult = RaycastHelper.findCrosshairTarget(focusedEntity, start, end, 128D);
             if (entityHitResult != null && entityHitResult.getEntity().distanceToSqr(start.x, start.y, start.z) <= hitResult.getBlockPos().distToCenterSqr(start.x, start.y, start.z)) {
 
@@ -271,8 +271,8 @@ public class ClientUtils {
         }, CLIENT_TEST_POOL);
     }
 
-    private static BlockHitResult getBlockHitResultFromMouse(Entity focusedEntity, Vec3 start, Vec3 end) {
-        return focusedEntity.level().clip(new ClipContext(start, end, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, focusedEntity));
+    private static BlockHitResult getBlockHitResultFromMouse(Entity focusedEntity, Vec3 start, Vec3 end, ClipContext.Block blockContext) {
+        return focusedEntity.level().clip(new ClipContext(start, end, blockContext, ClipContext.Fluid.NONE, focusedEntity));
     }
 
     public static Set<InputOperations> getDisabledInputPermissions() {
