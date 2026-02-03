@@ -5,6 +5,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.*;
 
@@ -43,7 +44,7 @@ public class RaycastHelper {
         Vec3 direction = camera.getLookAngle();
         Vec3 end = start.add(direction.scale(maxDistance));
         double e = Mth.square(maxDistance);
-        HitResult hitResult = camera.pick(maxDistance, 1.0F, false);
+        HitResult hitResult = pickCollider(camera,maxDistance, 1.0F, false);
         double f = hitResult.getLocation().distanceToSqr(start);
         if (hitResult.getType() != HitResult.Type.MISS) {
             e = f;
@@ -56,7 +57,12 @@ public class RaycastHelper {
         }, e);
         return entityHitResult != null && entityHitResult.getLocation().distanceToSqr(start) < f ? ensureTargetInRange(entityHitResult, start, maxDistance) : ensureTargetInRange(hitResult, start, maxDistance);
     }
-
+    public static HitResult pickCollider(Entity entity, double p_19908_, float p_19909_, boolean p_19910_) {
+        Vec3 vec3 = entity.getEyePosition(p_19909_);
+        Vec3 vec31 = entity.getViewVector(p_19909_);
+        Vec3 vec32 = vec3.add(vec31.x * p_19908_, vec31.y * p_19908_, vec31.z * p_19908_);
+        return entity.level().clip(new ClipContext(vec3, vec32, ClipContext.Block.COLLIDER, p_19910_ ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, entity));
+    }
     private static HitResult ensureTargetInRange(HitResult hitResult, Vec3 cameraPos, double interactionRange) {
         Vec3 Vec3 = hitResult.getLocation();
         if (!Vec3.closerThan(cameraPos, interactionRange)) {

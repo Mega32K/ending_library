@@ -25,6 +25,7 @@
     "accessor.AccessorEntity",
     "accessor.AccessorEntitySelector",
     "accessor.AccessorItemCooldowns",
+    "accessor.AccessorItemEntity",
     "accessor.AccessorLivingEntity",
     "accessor.AccessorMob",
     "accessor.AccessorMobEffectInstance",

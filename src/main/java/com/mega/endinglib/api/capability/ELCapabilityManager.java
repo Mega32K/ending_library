@@ -104,6 +104,8 @@ public class ELCapabilityManager {
         Set<EntitySyncCapabilityBase> capabilityBases = getCaps(player);
         if (!capabilityBases.isEmpty()) {
             capabilityBases.forEach(data -> {
+                if (!player.level().isClientSide)
+                    data.dataManager.dirtyAllNotInitValue();
                 if (canUseSync(data, CapabilitySyncType.PLAYER_LOGGED_IN)) {
                     data.sync(new CompoundTag(), distFromLevel(player.level()), CapabilitySyncType.PLAYER_LOGGED_IN, player);
                 }
