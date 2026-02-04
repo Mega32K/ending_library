@@ -10,6 +10,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.CrudeIncrementalIntIdentityHashBiMap;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -124,6 +125,8 @@ public class CapabilityDataSerializers {
     public static final CapabilityDataSerializer<Vector4f> VEC4F = CapabilityDataSerializer.simple(F_VEC4F_WRITER, F_VEC4F_READER, CompoundTagUtils::putVector4f, CompoundTagUtils::getVector4f);
     public static final CapabilityDataSerializer<Optional<Vector4f>> OPTIONAL_VEC4F = CapabilityDataSerializer.optional(F_VEC4F_WRITER, F_VEC4F_READER, CompoundTagUtils::putVector4f, CompoundTagUtils::getVector4f);
     public static final CapabilityDataSerializer<Easing> EASING = CapabilityDataSerializer.simple(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Easing.class), CompoundTagUtils::putEasing, CompoundTagUtils::getEasing);
+    public static final CapabilityDataSerializer<Pose> POSE = CapabilityDataSerializer.simple(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Pose.class), CompoundTagUtils::putPose, CompoundTagUtils::getPose);
+    public static final CapabilityDataSerializer<Optional<Pose>> OPTIONAL_POSE = CapabilityDataSerializer.optional(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Pose.class), CompoundTagUtils::putPose, CompoundTagUtils::getPose);
     private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
 
     static {
@@ -154,6 +157,8 @@ public class CapabilityDataSerializers {
         registerSerializer(VEC4F);
         registerSerializer(OPTIONAL_VEC4F);
         registerSerializer(EASING);
+        registerSerializer(POSE);
+        registerSerializer(OPTIONAL_POSE);
     }
 
     public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {

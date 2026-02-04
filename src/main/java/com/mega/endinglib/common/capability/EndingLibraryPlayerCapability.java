@@ -14,11 +14,9 @@ import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.client.advanced.ELServerCameraManager;
 import com.mega.endinglib.common.command.entity.player.PersonalRuleCommand;
-import com.mega.endinglib.common.command.entity.player.PoseCommand;
 import com.mega.endinglib.common.data.InputCooldowns;
 import com.mega.endinglib.common.data.InputOperations;
 import com.mega.endinglib.common.network.PacketHandler;
-import com.mega.endinglib.common.network.s2c.S2CSetPlayerForcedPosePacket;
 import com.mega.endinglib.common.network.s2c.camera.CameraPacketAction;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraAnimationSetPacket;
 import com.mega.endinglib.common.network.s2c.camera.S2CCameraModifierSetPacket;
@@ -75,10 +73,10 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
      */
     public final CapabilityEntityData<Integer> OVERRIDE_ABILITIES = this.dataManager.define(16, "overrideAbilities", 0, CapabilityDataSerializers.INT);
     public final CapabilityEntityData<Optional<Vector3f>> ORIGIN_POS = this.dataManager.define(17, "originPos", Optional.empty(), CapabilityDataSerializers.OPTIONAL_VEC3F);
+    public final CapabilityEntityData<Optional<Pose>> LOCKED_POSE = this.dataManager.define(18, "lockedPose", Optional.empty(), CapabilityDataSerializers.OPTIONAL_POSE);
     protected final InputCooldowns inputCooldowns = new InputCooldowns();
     public short cameraType = -1;
     public int poseLockingTime;
-    public @Nullable Pose lockedPose;
     public ELServerCameraManager cameraDataManager = new ELServerCameraManager();
     private boolean isUsingCustomCamera;
     private boolean isVanillaCameraFreezing;
@@ -167,8 +165,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         }
         if (this.poseLockingTime > 0)
             nbt.putInt("PoseLockingTime", poseLockingTime);
-        if (this.lockedPose != null)
-            nbt.putShort("LockedPose", (short) this.lockedPose.ordinal());
     }
 
     @Override
@@ -178,13 +174,6 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
             this.cameraType = nbt.getShort("CameraType");
         if (CompoundTagUtils.containsInt(nbt, "PoseLockingTime"))
             this.poseLockingTime = nbt.getInt("PoseLockingTime");
-        if (CompoundTagUtils.containsShort(nbt, "LockedPose")) {
-            try {
-                this.lockedPose = Pose.class.getEnumConstants()[nbt.getShort("LockedPose")];
-            } catch (Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        }
         if (!this.USING_CAMERA_MODE.isInitValue())
             this.restoreCameraFlagsToFields();
         if (!this.OVERRIDE_ABILITIES.isInitValue()) {
@@ -228,6 +217,18 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
         } else if (data.equals(ORIGIN_POS)) {
             Optional<Vector3f> pos = this.getOriginPos();
             pos.ifPresent(vector3f -> CameraUtils.getInstance().storeOriginPos(vector3f.x, vector3f.y, vector3f.z));
+        } else if (data.equals(LOCKED_POSE)) {
+            if (this.getEntity() instanceof Player player) {
+                this.getLockedPose().ifPresent(pose -> {
+                    player.setPose(pose);
+                    player.setForcedPose(pose);
+                });
+                if (this.getLockedPose().isEmpty()) {
+                    player.setPose(Pose.STANDING);
+                    player.refreshDimensions();
+                    player.setForcedPose(null);
+                }
+            }
         }
     }
 
@@ -239,6 +240,17 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                 this.restoreAbilityFlagsToFields();
             }
             this.inputCooldowns.tick(player);
+
+            this.getLockedPose().ifPresent(lockedPose -> {
+                if (player.getPose() != lockedPose)
+                    player.setPose(lockedPose);
+                if (player.getForcedPose() != lockedPose) {
+                    player.setForcedPose(lockedPose);
+                }
+                if (!player.level().isClientSide)
+                    if (this.poseLockingTime <= 0)
+                        this.setLockedPose(null);
+            });
             if (entity.level().isClientSide) {
             } else if (player instanceof ServerPlayer sp) {
                 if (this.isUsingCustomCamera) {
@@ -252,17 +264,11 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                     }
                 }
                 if (this.poseLockingTime > 0) {
-                    if (this.lockedPose != null) {
-                        if (sp.getForcedPose() != this.lockedPose) {
-                            this.lockedPose(this.lockedPose, this.poseLockingTime, sp);
-                        }
-                    }
                     this.poseLockingTime--;
                     if (this.poseLockingTime <= 0) {
-                        PacketHandler.sendToPlayer(new S2CClientActionPacket(CameraPacketAction.FORCED_POSE_CLEAR), sp);
                         if (player.getForcedPose() != null)
                             player.setForcedPose(null);
-                        this.lockedPose = null;
+                        player.setPose(Pose.STANDING);
                     }
                 }
             }
@@ -403,17 +409,19 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
     }
     public void lockedPose(Pose pose, int time, ServerPlayer serverPlayer) {
         this.poseLockingTime = time;
-        this.lockedPose = pose;
+        setLockedPose(pose);
         serverPlayer.setPose(pose);
         serverPlayer.setForcedPose(pose);
-        PacketHandler.sendToPlayer(new S2CSetPlayerForcedPosePacket(pose), serverPlayer);
     }
     public void unlockPose(ServerPlayer serverPlayer) {
         this.poseLockingTime = 0;
-        this.lockedPose = null;
-        if (serverPlayer.getForcedPose() != null)
-            serverPlayer.setForcedPose(null);
-        PacketHandler.sendToPlayer(new S2CClientActionPacket(CameraPacketAction.FORCED_POSE_CLEAR), serverPlayer);
+        setLockedPose(null);
+    }
+    public Optional<Pose> getLockedPose() {
+        return this.dataManager.getValue(LOCKED_POSE);
+    }
+    public void setLockedPose(Pose pose) {
+        this.dataManager.setValue(LOCKED_POSE, Optional.ofNullable(pose));
     }
     public InputCooldowns getInputCooldowns() {
         return inputCooldowns;

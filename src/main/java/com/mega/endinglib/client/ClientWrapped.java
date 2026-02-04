@@ -117,7 +117,6 @@ public class ClientWrapped {
             case FORCED_POSE_CLEAR -> {
                 Player player = clientPlayer();
                 if (player != null) {
-                    CommonProxy.getCameraCapOptional(player).ifPresent(capability -> capability.lockedPose = null);
                     player.setForcedPose(null);
                 }
             }

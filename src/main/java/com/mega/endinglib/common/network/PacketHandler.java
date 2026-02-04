@@ -72,7 +72,6 @@ public class PacketHandler {
         INSTANCE.registerMessage(id(), S2CListSetRotationPacket.class, S2CListSetRotationPacket::encode, S2CListSetRotationPacket::decode, S2CListSetRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CMapSetRotationPacket.class, S2CMapSetRotationPacket::encode, S2CMapSetRotationPacket::decode, S2CMapSetRotationPacket::handle);
         INSTANCE.registerMessage(id(), S2CMouseControlPacket.class, S2CMouseControlPacket::encode, S2CMouseControlPacket::decode, S2CMouseControlPacket::handle);
-        INSTANCE.registerMessage(id(), S2CSetPlayerForcedPosePacket.class, S2CSetPlayerForcedPosePacket::encode, S2CSetPlayerForcedPosePacket::decode, S2CSetPlayerForcedPosePacket::handle);
         INSTANCE.registerMessage(id(), S2CDisabledInputPermissionsPacket.class, S2CDisabledInputPermissionsPacket::encode, S2CDisabledInputPermissionsPacket::decode, S2CDisabledInputPermissionsPacket::handle);
         INSTANCE.registerMessage(id(), S2CInputOperationPacket.class, S2CInputOperationPacket::encode, S2CInputOperationPacket::decode, S2CInputOperationPacket::handle);
         INSTANCE.registerMessage(id(), S2CInputCooldownPacket.class, S2CInputCooldownPacket::encode, S2CInputCooldownPacket::decode, S2CInputCooldownPacket::handle);

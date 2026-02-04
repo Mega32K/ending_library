@@ -131,8 +131,7 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     private void forcePose(CallbackInfoReturnable<Pose> cir) {
         if (((Entity) (Object)this) instanceof Player p)
             CommonProxy.getCameraCapOptional(p).ifPresent(capability -> {
-                if (capability.lockedPose != null)
-                    cir.setReturnValue(capability.lockedPose);
+                capability.getLockedPose().ifPresent(cir::setReturnValue);
             });
     }
 }

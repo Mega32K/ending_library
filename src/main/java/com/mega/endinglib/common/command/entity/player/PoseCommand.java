@@ -62,6 +62,8 @@ public class PoseCommand {
         int size = serverPlayers.size();
         for (ServerPlayer player : serverPlayers) {
             CommonProxy.getCameraCapOptional(player).ifPresent(capability -> {
+                if (lockingTime > 0)
+                    player.setPose(pose);
                 capability.lockedPose(pose, (int) (lockingTime * 20), player);
             });
         }

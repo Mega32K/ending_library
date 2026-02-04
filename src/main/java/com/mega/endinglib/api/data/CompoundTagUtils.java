@@ -13,6 +13,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
@@ -235,6 +236,15 @@ public class CompoundTagUtils {
             return Easing.class.getEnumConstants()[nbt.getInt(key)];
         }
         return Easing.LINEAR;
+    }
+    public static void putPose(CompoundTag nbt, String key, Pose pose) {
+        nbt.putInt(key, pose.ordinal());
+    }
+    public static Pose getPose(CompoundTag nbt, String key) {
+        if (CompoundTagUtils.containsInt(nbt, key)) {
+            return Pose.class.getEnumConstants()[nbt.getInt(key)];
+        }
+        return Pose.STANDING;
     }
     public static boolean getIntFlag(int flagData, int mask) {
         return (flagData & mask) != 0;
