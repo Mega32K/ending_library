@@ -24,6 +24,7 @@ public class TextDisplayCapability extends EntitySyncCapabilityBase {
     public final CapabilityEntityData<Integer> ANIM_COLOR = this.dataManager.define(0, "animColor", -1, CapabilityDataSerializers.INT);
     public final CapabilityEntityData<Integer> ANIM_COLOR_DURATION = this.dataManager.define(1, "animColorDuration", -1, CapabilityDataSerializers.INT);
     public final CapabilityEntityData<Integer> ANIM_TIME = this.dataManager.define(2, "animTime", 0, CapabilityDataSerializers.INT);
+    public final CapabilityEntityData<Boolean> FORCE_DISPLAY = this.dataManager.define(3, "forceDisplay", false, CapabilityDataSerializers.BOOLEAN);
     public Vector3f originColor = new Vector3f(1.0F);
     public Vector3f animColor = new Vector3f(1.0F);
     public int colorAnimStart;
@@ -109,5 +110,11 @@ public class TextDisplayCapability extends EntitySyncCapabilityBase {
     }
     public void setAnimTime(int t) {
         this.dataManager.setValue(this.ANIM_TIME, t);
+    }
+    public void setForceDisplay(boolean b) {
+        this.dataManager.setValue(FORCE_DISPLAY, b);
+    }
+    public boolean forceDisplay() {
+        return this.dataManager.getValue(FORCE_DISPLAY);
     }
 }

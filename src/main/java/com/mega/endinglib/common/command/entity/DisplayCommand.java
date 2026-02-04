@@ -7,6 +7,7 @@ import com.mega.endinglib.common.command.argument.TextColorArgument;
 import com.mega.endinglib.common.config.CommandConfig;
 import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.util.mixin.data_expand.ExtraDisplayEntity;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -22,6 +23,7 @@ import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DisplayCommand {
@@ -37,6 +39,12 @@ public class DisplayCommand {
                         )
                         .then(Commands.literal("dispatch")
                                 .then(Commands.literal("text")
+                                        .then(Commands.literal("forceDisplay")
+                                                .then(Commands.argument("value", BoolArgumentType.bool())
+                                                        .executes(context -> Text.setForceDisplay(context.getSource(), EntityArgument.getEntity(context, "target"), BoolArgumentType.getBool(context, "value")))
+                                                )
+                                                .executes(context -> Text.getForceDisplay(context.getSource(), EntityArgument.getEntity(context, "target")))
+                                        )
                                         .then(Commands.literal("colorAnim")
                                                 .then(Commands.argument("newColor", TextColorArgument.color())
                                                         .then(Commands.argument("duration", IntegerArgumentType.integer(0))
@@ -100,6 +108,30 @@ public class DisplayCommand {
                     sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.color_anim.get", LoreHelper.number(value.get(), ChatFormatting.GOLD)), false);
                 });
                 return value.get();
+            }
+        }
+        private static int setForceDisplay(CommandSourceStack sourceStack, Entity entity, boolean b) throws CommandSyntaxException {
+            if (!(entity instanceof Display.TextDisplay))
+                throw NOT_TEXT_DISPLAY_ENTITY.create(entity.getDisplayName());
+            else {
+                Display.TextDisplay display = (Display.TextDisplay) entity;
+                CommonProxy.getTextCapOptional(display).ifPresent(capability -> {
+                    capability.setForceDisplay(b);
+                    sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.force_display.set", LoreHelper.bool(b)), false);
+                });
+                return b ? 1 : 0;
+            }
+        }
+        private static int getForceDisplay(CommandSourceStack sourceStack, Entity entity) throws CommandSyntaxException {
+            if (!(entity instanceof Display.TextDisplay))
+                throw NOT_TEXT_DISPLAY_ENTITY.create(entity.getDisplayName());
+            else {
+                AtomicBoolean value = new AtomicBoolean(false);
+                CommonProxy.getTextCapOptional(entity).ifPresent(capability -> {
+                    value.set(capability.forceDisplay());
+                    sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.force_display.get", LoreHelper.bool(value.get())), false);
+                });
+                return value.get() ? 1 : 0;
             }
         }
     }

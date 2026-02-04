@@ -254,6 +254,8 @@
   "commands.endinglib.message.display.text.color_anim.error.color": "文本颜色不合法",
   "commands.endinglib.message.display.text.color_anim.set": "§7已将文本的颜色转变动画的颜色设为 %s§7,转变时长设为 %s",
   "commands.endinglib.message.display.text.color_anim.get": "§7文本的颜色转变颜色为 %s",
+  "commands.endinglib.message.display.text.force_display.set": "§7已将文本展示实体的 强制显示属性 设为 %s",
+  "commands.endinglib.message.display.text.force_display.get": "§7文本展示实体的 强制显示属性 为 %s",
 
   "commands.endinglib.message.abilities.get": "%s§7当前的原版覆盖能力 %s §7为:%s",
   "commands.endinglib.message.abilities.set": "已将%s§7当前的原版覆盖能力 %s §7设为:%s",
