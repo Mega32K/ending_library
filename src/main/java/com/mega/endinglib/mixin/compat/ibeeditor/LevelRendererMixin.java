@@ -1,6 +1,7 @@
 package com.mega.endinglib.mixin.compat.ibeeditor;
 
 import com.github.franckyi.guapi.base.ScreenHandlerImpl;
+import com.mega.endinglib.util.annotation.ModDependsMixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
+@ModDependsMixin("ibeeditor")
 public abstract class LevelRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 

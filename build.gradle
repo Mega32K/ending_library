@@ -95,13 +95,13 @@ minecraft {
         }
 
         client {
-            jvmArg "-XX:+AllowEnhancedClassRedefinition"
+            jvmArg "-XX:+AllowEnhancedClassRedefinition -Dmixin.hotSwap=true"
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         server {
-            jvmArg "-XX:+AllowEnhancedClassRedefinition"
+            jvmArg "-XX:+AllowEnhancedClassRedefinition -Dmixin.hotSwap=true"
             property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
         }
@@ -128,7 +128,6 @@ mixin {
 
     config "${mod_id}.mixins.json"
     hotSwap = true
-    hotSwap
 
     dumpTargetOnFailure = true
     quiet

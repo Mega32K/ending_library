@@ -225,9 +225,9 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                 });
                 if (this.getLockedPose().isEmpty()) {
                     player.setPose(Pose.STANDING);
-                    player.refreshDimensions();
                     player.setForcedPose(null);
                 }
+                player.refreshDimensions();
             }
         }
     }
@@ -248,8 +248,11 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                     player.setForcedPose(lockedPose);
                 }
                 if (!player.level().isClientSide)
-                    if (this.poseLockingTime <= 0)
+                    if (this.poseLockingTime <= 0) {
                         this.setLockedPose(null);
+                        player.setPose(Pose.STANDING);
+                        player.refreshDimensions();
+                    }
             });
             if (entity.level().isClientSide) {
             } else if (player instanceof ServerPlayer sp) {
