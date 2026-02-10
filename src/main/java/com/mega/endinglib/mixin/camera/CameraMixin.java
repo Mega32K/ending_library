@@ -116,8 +116,12 @@ public abstract class CameraMixin {
                     double xRelative = manager.getXRelative(partial);
                     double yRelative = manager.getYRelative(partial);
                     double zRelative = manager.getZRelative(partial);
-                    if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0)
+                    if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0) {
                         this.move(zRelative, yRelative, -xRelative);
+                        x = this.position.x;
+                        y = this.position.y;
+                        z = this.position.z;
+                    }
                 }
                 @SuppressWarnings("DataFlowIssue") CameraPosEvent event = new CameraPosEvent.Pre(Minecraft.getInstance().gameRenderer, ((Camera) (Object)this), partial, x, y, z);
                 MinecraftForge.EVENT_BUS.post(event);
