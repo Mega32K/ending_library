@@ -25,6 +25,8 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import org.joml.Vector3f;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,12 +48,16 @@ public abstract class CameraMixin {
     @Shadow
     protected abstract void setRotation(float p_90573_, float p_90574_);
 
-    @Shadow
-    protected abstract void move(double p_90569_, double p_90570_, double p_90571_);
 
     @Shadow protected abstract double getMaxZoom(double p_90567_);
 
     @Shadow private Entity entity;
+
+    @Shadow @Final private Vector3f forwards;
+
+    @Shadow @Final private Vector3f up;
+
+    @Shadow @Final private Vector3f left;
 
     @WrapWithCondition(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V"))
     private boolean replaceWhenCustomMode(Camera camera, double x, double y, double z) {
@@ -117,10 +123,12 @@ public abstract class CameraMixin {
                     double yRelative = manager.getYRelative(partial);
                     double zRelative = manager.getZRelative(partial);
                     if (Double.compare(xRelative, 0D) != 0 || Double.compare(yRelative, 0D) != 0 || Double.compare(zRelative, 0D) != 0) {
-                        this.move(zRelative, yRelative, -xRelative);
-                        x = this.position.x;
-                        y = this.position.y;
-                        z = this.position.z;
+                        double d0 = (double)this.forwards.x() * zRelative + (double)this.up.x() * yRelative + (double)this.left.x() * -xRelative;
+                        double d1 = (double)this.forwards.y() * zRelative + (double)this.up.y() * yRelative + (double)this.left.y() * -xRelative;
+                        double d2 = (double)this.forwards.z() * zRelative + (double)this.up.z() * yRelative + (double)this.left.z() * -xRelative;
+                        x += d0;
+                        y += d1;
+                        z += d2;
                     }
                 }
                 @SuppressWarnings("DataFlowIssue") CameraPosEvent event = new CameraPosEvent.Pre(Minecraft.getInstance().gameRenderer, ((Camera) (Object)this), partial, x, y, z);

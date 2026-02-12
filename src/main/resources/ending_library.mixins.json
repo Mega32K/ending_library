@@ -139,6 +139,7 @@
     "accessor.AccessorPostChain",
     "accessor.AccessorUniform",
     "advanced.client.LevelRendererMixin",
+    "advanced.client.PlayerRendererMixin",
     "advanced.client.PostPassMixin",
     "advanced.client.ShaderInstanceMixin",
     "advanced.client.VertexBufferMixin",

@@ -85,4 +85,6 @@ public interface AccessorLivingEntity {
     void setLastDamageStamp(long lastDamageStamp);
     @Invoker
     void callSpawnItemParticles(ItemStack p_21061_, int p_21062_);
+    @Accessor
+    void setAttackStrengthTicker(int strength);
 }
