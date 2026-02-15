@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class ELServerCameraManager implements ICameraManager {
-    public CameraType cameraType = CameraType.FIRST_PERSON;
     public final CameraValueInstance x = new CameraValueInstance();
     public final CameraValueInstance y = new CameraValueInstance();
     public final CameraValueInstance z = new CameraValueInstance();

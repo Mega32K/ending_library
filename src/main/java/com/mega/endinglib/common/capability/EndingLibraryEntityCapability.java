@@ -104,6 +104,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
                 if (hitboxOptional.isEmpty()) {
                     ExtraEntity.of(entity).endingLibrary$setCapHitbox(null);
                 }
+                entity.refreshDimensions();
                 entity.setBoundingBox(((AccessorEntity) entity).invokeMakeBoundingBox());
             }
         } else if (data.equals(RENDER_SCALE)) {

@@ -40,4 +40,6 @@ public interface AccessorEntity {
     EntityDimensions getDimensions();
     @Invoker
     void invokeTeleportPassengers();
+    @Invoker
+    Vec3 invokeCalculateViewVector(float p_20172_, float p_20173_);
 }
