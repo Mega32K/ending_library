@@ -9,4 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AccessorMC {
     @Accessor
     FontManager getFontManager();
+    @Accessor
+    void setRightClickDelay(int delay);
 }

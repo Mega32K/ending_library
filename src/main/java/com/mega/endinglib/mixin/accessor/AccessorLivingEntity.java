@@ -96,4 +96,6 @@ public interface AccessorLivingEntity {
     void setSkipDropExperience(boolean skip);
     @Accessor
     boolean isSkipDropExperience();
+    @Invoker
+    void callHurtArmor(DamageSource p_21122_, float p_21123_);
 }

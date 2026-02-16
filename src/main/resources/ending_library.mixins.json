@@ -140,6 +140,7 @@
     "accessor.AccessorPlayerModel",
     "accessor.AccessorPostChain",
     "accessor.AccessorRenderStateShared",
+    "accessor.AccessorShaderInstance",
     "accessor.AccessorUniform",
     "advanced.client.LevelRendererMixin",
     "advanced.client.PlayerRendererMixin",
