@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.accessor;
 
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -17,6 +18,10 @@ import java.util.Map;
 
 @Mixin(LivingEntity.class)
 public interface AccessorLivingEntity {
+    @Accessor
+    static EntityDataAccessor<Float> getDATA_HEALTH_ID() {
+        throw new AssertionError("Mixin Failed");
+    }
     @Invoker
     void callOnEffectAdded(MobEffectInstance effectInstance, @Nullable Entity owner);
 
@@ -87,4 +92,8 @@ public interface AccessorLivingEntity {
     void callSpawnItemParticles(ItemStack p_21061_, int p_21062_);
     @Accessor
     void setAttackStrengthTicker(int strength);
+    @Accessor
+    void setSkipDropExperience(boolean skip);
+    @Accessor
+    boolean isSkipDropExperience();
 }

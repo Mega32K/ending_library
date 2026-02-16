@@ -18,6 +18,8 @@ public interface AccessorSynchedEntityData {
 
     @Accessor("isDirty")
     boolean isDirtyNow();
+    @Accessor
+    void setIsDirty(boolean dirty);
 
     @Accessor
     ReadWriteLock getLock();

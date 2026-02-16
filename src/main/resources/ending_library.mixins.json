@@ -137,6 +137,7 @@
     "accessor.AccessorOptions",
     "accessor.AccessorPlayerModel",
     "accessor.AccessorPostChain",
+    "accessor.AccessorRenderStateShared",
     "accessor.AccessorUniform",
     "advanced.client.LevelRendererMixin",
     "advanced.client.PlayerRendererMixin",
