@@ -113,11 +113,11 @@
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
     </key>
     <key name="MoveMembersDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.common.config.CommonConfig" />
       <recent name="com.mega.endinglib.api.client.cmc.ClientLoreHelper" />
       <recent name="com.mega.endinglib.util.SafeClass" />
       <recent name="com.mega.endinglib.api.item.consume.ConsumeManager" />
       <recent name="com.mega.endinglib.api.item.component.MergedComponentMap" />
-      <recent name="com.mega.endinglib.common.config.ClientConfig" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="com.mega.endinglib.api.event" />
@@ -136,7 +136,7 @@
       <recent name="com.mega.endinglib.mixin.capability" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
     <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
       <module name="com.mega.CosmicLib.main" />
@@ -240,8 +240,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [runClient]" />
+        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [assemble]" />
         <item itemvalue="应用程序.MinecraftInstHandler" />
       </list>

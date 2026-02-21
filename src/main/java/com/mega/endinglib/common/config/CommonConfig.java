@@ -11,9 +11,12 @@ public class CommonConfig {
     public static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
     public static final ForgeConfigSpec SPEC;
     private static final ForgeConfigSpec.ConfigValue<Boolean> TIME_STOP;
+    static final ForgeConfigSpec.ConfigValue<Integer> MAX_EDIT_LENGTH;
     public static boolean enableTS = true;
+    public static int max_edit_length;
 
     static {
+        MAX_EDIT_LENGTH = BUILDER.comment("Set Edit box max length(for example in Chat Screen).").define("maxEditLength", 512);
         TIME_STOP = BUILDER.comment("if false, disable the \"time stop\" settings").define("enableTimeStop", true);
         SPEC = BUILDER.build();
     }
@@ -25,6 +28,7 @@ public class CommonConfig {
 
     public static void update() {
         if (SPEC.isLoaded()) {
+            max_edit_length = MAX_EDIT_LENGTH.get();
             enableTS = TIME_STOP.get();
         }
     }

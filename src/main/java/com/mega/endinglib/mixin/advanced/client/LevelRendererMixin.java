@@ -1,17 +1,9 @@
 package com.mega.endinglib.mixin.advanced.client;
 
 import com.mega.endinglib.api.client.levelevent.LevelEventManager;
-import com.mega.endinglib.util.mixin.data_expand.ExtraShaderInstance;
-import com.mega.endinglib.util.time.TimeContext;
-import com.mojang.blaze3d.Blaze3D;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
