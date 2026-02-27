@@ -1,9 +1,12 @@
 package com.mega.endinglib.util.asm;
 
 import com.mega.endinglib.coremod.forge.IClassProcessor;
+import com.mega.endinglib.util.EarlyConfig;
 import com.mega.endinglib.util.MCMapping;
 import com.mega.endinglib.util.asm.injection.InjectionFinder;
+import com.mega.endinglib.util.mixin.ApplyCheckMixinConfigPlugin;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
+import net.bettercombat.mixin.client.MinecraftClientInject;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
@@ -27,8 +30,14 @@ public class NormalCoremodProcessor implements IClassProcessor {
     public static final int SCOREBOARD_MAX_DISPLAY_OBJECTIVE_COUNT_EXPAND = 16;
     @Override
     public void processClass(ILaunchPluginService.Phase phase, ClassNode classNode, Type classType, AtomicBoolean shouldWrite) {
+        String name = classNode.name;
+        if (phase == ILaunchPluginService.Phase.BEFORE) {
+            if ("net.bettercombat.mixin.client.MinecraftClientInject".equals(name)) {
+                ApplyCheckMixinConfigPlugin.clearMixinClass(classNode);
+                shouldWrite.set(true);
+            }
+        }
         if (phase == ILaunchPluginService.Phase.AFTER) {
-            String name = classNode.name;
             if (isUnsupportModifyingClass(name))
                 return;
             /*
@@ -340,7 +349,9 @@ public class NormalCoremodProcessor implements IClassProcessor {
                         });
                     }
                 });
-            } else if ("net/minecraft/world/inventory/LoomMenu".equals(classNode.name)) {
+            }
+            /*
+            else if ("net/minecraft/world/inventory/LoomMenu".equals(classNode.name)) {
                 classNode.methods.forEach(methodNode -> {
                     if (MCMapping.AbstractContainerMenu$METHOD$quickMoveStack.equalsMethodNode(methodNode)) {
                         methodNode.instructions.forEach(insnNode -> {
@@ -358,7 +369,9 @@ public class NormalCoremodProcessor implements IClassProcessor {
                         });
                     }
                 });
-            } else if (MINECRAFT_CLASS.equals(classNode.name)) {
+            }
+             */
+            else if (MINECRAFT_CLASS.equals(classNode.name)) {
                 classNode.methods.forEach(methodNode -> {
                     if (MCMapping.Minecraft$METHOD$handleKeybinds.equalsMethodNode(methodNode)) {
                         InsnList instructions = methodNode.instructions;

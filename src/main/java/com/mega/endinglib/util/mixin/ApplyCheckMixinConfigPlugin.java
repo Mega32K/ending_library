@@ -45,4 +45,15 @@ public abstract class ApplyCheckMixinConfigPlugin implements IMixinConfigPlugin 
         }
         return atomicBoolean.get();
     }
+    public static void clearMixinClass(ClassNode classNode) {
+        if (classNode.methods != null)
+            classNode.methods.clear();
+        if (classNode.fields != null)
+            classNode.fields.clear();
+        if (classNode.interfaces != null)
+            classNode.interfaces.clear();
+        if (classNode.invisibleAnnotations != null) {
+            classNode.invisibleAnnotations.removeIf(n -> !n.desc.equals("Lorg/spongepowered/asm/mixin/Mixin;"));
+        }
+    }
 }
