@@ -148,13 +148,10 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
             }
         this.syncData(toWrite, from, type, entity);
         if (from == Dist.DEDICATED_SERVER) {
-            if (level instanceof ServerLevel serverLevel) {
-                PacketHandler.sendToSeen(
-                        this.createPacket(this.getRegistryName().toString(), toWrite, from, type, entity.getId()),
-                        entity,
-                        serverLevel
-                );
-            }
+            PacketHandler.sendToSeen(
+                    this.createPacket(this.getRegistryName().toString(), toWrite, from, type, entity.getId()),
+                    entity
+            );
         } else if (from == Dist.CLIENT) {
             PacketHandler.sendToServer(
                     this.createPacket(this.getRegistryName().toString(), toWrite, from, type, entity.getId()));

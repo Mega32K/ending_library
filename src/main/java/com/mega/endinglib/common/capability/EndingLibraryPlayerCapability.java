@@ -116,7 +116,7 @@ public class EndingLibraryPlayerCapability extends EntitySyncCapabilityBase {
                     this.USING_CAMERA_MODE.setDirty(true);
                     Map<ModifierType, Collection<CameraKeyframeAnimation>> map = this.cameraDataManager.createAllAnimMap();
                     if (!map.isEmpty())
-                        PacketHandler.sendToSeen(new S2CCameraAnimationSetPacket(map), player, player.serverLevel());
+                        PacketHandler.sendToSeen(new S2CCameraAnimationSetPacket(map), player);
                     if (this.cameraType > -1)
                         toWrite.putShort("CameraType", this.cameraType);
                 }

@@ -121,19 +121,8 @@ public class PacketHandler {
     public static <MSG> void sendToEntity(MSG message, LivingEntity entity) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
     }
-    public static <MSG> void sendToSeen(MSG message, Entity entity, ServerLevel serverLevel) {
-        AccessorChunkMap chunkMapAccessor = (AccessorChunkMap) serverLevel.getChunkSource().chunkMap;
-        ChunkMap.TrackedEntity trackedEntity = chunkMapAccessor.getEntityMap().get(entity.getId());
-        boolean hasSelf = false;
-        if (trackedEntity != null) {
-            for (ServerPlayerConnection connection : ((AccessorTrackedEntity) trackedEntity).getSeenBy()) {
-                PacketHandler.sendToPlayer(message, connection.getPlayer());
-                if (entity == connection.getPlayer())
-                    hasSelf = true;
-            }
-        }
-        if (!hasSelf && entity instanceof ServerPlayer player)
-            PacketHandler.sendToPlayer(message, player);
+    public static <MSG> void sendToSeen(MSG message, Entity entity) {
+        INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(()-> entity), message);
     }
     public static <MSG> void sendToCommandSourcePlayer(MSG msg, CommandSourceStack sourceStack) {
         if (sourceStack.isPlayer())

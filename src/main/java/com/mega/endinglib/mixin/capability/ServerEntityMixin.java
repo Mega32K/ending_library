@@ -98,7 +98,7 @@ public abstract class ServerEntityMixin {
                 }
             }
             if (dirtyValues != null && !dirtyValues.isEmpty())
-                PacketHandler.sendToSeen(new S2CCapabilitySeenByDataPacket(this.entity.getId(), dirtyValues), entity, this.level);
+                PacketHandler.sendToSeen(new S2CCapabilitySeenByDataPacket(this.entity.getId(), dirtyValues), entity);
         }
     }
 }

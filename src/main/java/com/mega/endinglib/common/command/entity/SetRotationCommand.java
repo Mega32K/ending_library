@@ -80,7 +80,7 @@ public class SetRotationCommand {
                         i++;
                         entity.setXRot(rotation.x);
                         entity.setYRot(rotation.y);
-                        PacketHandler.sendToSeen(new S2CSetRotationPacket(rotation.x, rotation.y, entity.getId()), entity, stack.getLevel());
+                        PacketHandler.sendToSeen(new S2CSetRotationPacket(rotation.x, rotation.y, entity.getId()), entity);
                         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.setRot", entity.getDisplayName(), LoreHelper.vec2(rotation)), false);
                     }
                 }
@@ -136,7 +136,7 @@ public class SetRotationCommand {
                         Vec2 vec2 = rotationF.apply(entity, origin);
                         entity.setXRot(vec2.x);
                         entity.setYRot(vec2.y);
-                        PacketHandler.sendToSeen(new S2CSetRotationPacket(vec2.x, vec2.y, entity.getId()), entity, stack.getLevel());
+                        PacketHandler.sendToSeen(new S2CSetRotationPacket(vec2.x, vec2.y, entity.getId()), entity);
                         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.addRot", entity.getDisplayName(), LoreHelper.vec2(origin)), false);
                     }
                 }
