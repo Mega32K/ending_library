@@ -95,13 +95,13 @@ minecraft {
         }
 
         client {
-            jvmArg "-XX:+AllowEnhancedClassRedefinition -Dmixin.hotSwap=true"
+            jvmArg "-XX:+AllowEnhancedClassRedefinition"
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
         }
 
         server {
-            jvmArg "-XX:+AllowEnhancedClassRedefinition -Dmixin.hotSwap=true"
+            jvmArg "-XX:+AllowEnhancedClassRedefinition"
             property 'forge.enabledGameTestNamespaces', mod_id
             args '--nogui'
         }

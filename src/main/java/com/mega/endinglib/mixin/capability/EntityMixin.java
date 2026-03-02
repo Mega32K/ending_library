@@ -58,13 +58,13 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     @Override
     public void endingLibrary$setCapEntityDimensions(EntityDimensions capEntityDimensions) {
         this.endingLibrary$capEntityDimensions = capEntityDimensions;
-        this.bb = this.makeBoundingBox();
+        this.bb = makeBoundingBox();
     }
 
     @Override
     public void endingLibrary$setCapHitbox(AABB hitbox) {
         this.endingLibrary$capHitbox = hitbox;
-        this.bb = this.makeBoundingBox();
+        this.bb = hitbox == null ? this.makeBoundingBox() : hitbox.move(position);
     }
 
     @Override
@@ -106,6 +106,14 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
         }
         this.endingLibrary$injectedExtraEntityData.tick();
     }
+    @Inject(method = "setBoundingBox", at = @At("TAIL"))
+    private void setCapBoundingBox(AABB p_20012_, CallbackInfo ci) {
+        if (this.endingLibrary$capHitbox != null) {
+            this.bb = this.endingLibrary$capHitbox.move(position);
+        } else if (this.endingLibrary$capEntityDimensions != null) {
+            this.bb = this.endingLibrary$capEntityDimensions.makeBoundingBox(this.position);
+        }
+    }
     @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
     private void getDimensions(Pose p_19975_, CallbackInfoReturnable<EntityDimensions> cir) {
         if (this.endingLibrary$capEntityDimensions != null)
@@ -130,8 +138,6 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     @Inject(method = "getPose", at = @At("HEAD"), cancellable = true)
     private void forcePose(CallbackInfoReturnable<Pose> cir) {
         if (((Entity) (Object)this) instanceof Player p)
-            CommonProxy.getCameraCapOptional(p).ifPresent(capability -> {
-                capability.getLockedPose().ifPresent(cir::setReturnValue);
-            });
+            CommonProxy.getCameraCapOptional(p).ifPresent(capability -> capability.getLockedPose().ifPresent(cir::setReturnValue));
     }
 }
