@@ -114,6 +114,14 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
             this.bb = this.endingLibrary$capEntityDimensions.makeBoundingBox(this.position);
         }
     }
+    @Inject(method = "refreshDimensions", at = @At("TAIL"))
+    private void setCapDimensions(CallbackInfo ci) {
+        if (endingLibrary$capEntityDimensions != null) {
+            if (this.dimensions != endingLibrary$capEntityDimensions) {
+                this.dimensions = endingLibrary$capEntityDimensions;
+            }
+        }
+    }
     @Inject(method = "getDimensions", at = @At("HEAD"), cancellable = true)
     private void getDimensions(Pose p_19975_, CallbackInfoReturnable<EntityDimensions> cir) {
         if (this.endingLibrary$capEntityDimensions != null)
