@@ -38,6 +38,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.kosmx.playerAnim.api.TransformType;
+import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
 import dev.kosmx.playerAnim.api.layered.ModifierLayer;
@@ -257,7 +258,7 @@ public class ClientWrapped {
         if (animation != null) {
             KeyframeAnimation animation1 = PlayerAnimationRegistry.getAnimation(identifier);
             if (animation1 != null)
-                animation.setAnimation(new KeyframeAnimationPlayer(animation1));
+                animation.setAnimation(new KeyframeAnimationPlayer(animation1).setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL));
         }
     }
     @SuppressWarnings("unchecked")
@@ -272,7 +273,7 @@ public class ClientWrapped {
                     protected float getAlpha(String modelName, TransformType type, float progress) {
                         return easing.calculate(progress);
                     }
-                }, new KeyframeAnimationPlayer(animation1));
+                }, new KeyframeAnimationPlayer(animation1).setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL));
             }
         }
     }
