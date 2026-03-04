@@ -21,8 +21,7 @@ public abstract class MouseHandlerMixin {
 
     @Inject(
             method = "turnPlayer",
-            at = @At(value = "FIELD", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER, target = "Lnet/minecraft/client/MouseHandler;lastMouseEventTime:D"),
-            cancellable = true
+            at = @At("RETURN")
     )
     private void disableTurnAbility(CallbackInfo ci) {
         if (this.minecraft.isWindowActive()) {
@@ -33,7 +32,6 @@ public abstract class MouseHandlerMixin {
                             player.setXRot(ClientUtils.getMousePointToRot()[0]);
                             player.setYRot(ClientUtils.getMousePointToRot()[1]);
                             player.turn(0, 0);
-                            ci.cancel();
                     }
                 });
             }
