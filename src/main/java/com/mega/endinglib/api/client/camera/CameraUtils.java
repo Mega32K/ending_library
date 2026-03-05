@@ -6,6 +6,7 @@ import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.proxy.CommonProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
@@ -42,8 +43,10 @@ public class CameraUtils {
     }
 
     public static boolean canChangeCameraType() {
+        Player p = ClientWrapped.clientPlayer();
+        if (p == null) return false;
         AtomicBoolean atomicBoolean = new AtomicBoolean(true);
-        CommonProxy.getCameraCapOptional(ClientWrapped.clientPlayer()).ifPresent(cap -> atomicBoolean.set(!cap.isCameraPersonLocked()));
+        CommonProxy.getCameraCapOptional(p).ifPresent(cap -> atomicBoolean.set(!cap.isCameraPersonLocked()));
         return atomicBoolean.get();
     }
     public static void onDisconnect() {
