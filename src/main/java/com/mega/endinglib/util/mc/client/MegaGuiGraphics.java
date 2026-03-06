@@ -385,7 +385,7 @@ public class MegaGuiGraphics extends GuiGraphics {
     }
     void innerBlit(ResourceLocation texture, float x, float endX, float y, float endY, float depth, float u0, float u1, float v0, float v1, float r, float g, float b, float a) {
         RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         Matrix4f matrix4f = this.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
