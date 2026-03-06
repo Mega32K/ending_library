@@ -388,7 +388,7 @@ public class MegaGuiGraphics extends GuiGraphics {
         RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         Matrix4f matrix4f = this.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         bufferbuilder.vertex(matrix4f, x, y, depth).color(r, g, b, a).uv(u0, v0).endVertex();
         bufferbuilder.vertex(matrix4f, x, endY, depth).color(r, g, b, a).uv(u0, v1).endVertex();
         bufferbuilder.vertex(matrix4f, endX, endY, depth).color(r, g, b, a).uv(u1, v1).endVertex();
@@ -412,7 +412,7 @@ public class MegaGuiGraphics extends GuiGraphics {
         RenderSystem.setShader(shaderGetter);
         Matrix4f matrix4f = this.pose().last().pose();
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX);
         bufferbuilder.vertex(matrix4f, x, y, depth).color(r, g, b, a).uv(u0, v0).endVertex();
         bufferbuilder.vertex(matrix4f, x, endY, depth).color(r, g, b, a).uv(u0, v1).endVertex();
         bufferbuilder.vertex(matrix4f, endX, endY, depth).color(r, g, b, a).uv(u1, v1).endVertex();
