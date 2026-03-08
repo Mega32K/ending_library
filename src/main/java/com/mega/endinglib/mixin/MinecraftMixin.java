@@ -1,11 +1,14 @@
 package com.mega.endinglib.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mega.endinglib.api.client.MinecraftExtra;
 import com.mega.endinglib.client.advanced.ELCameraManager;
 import com.mega.endinglib.proxy.ClientProxy;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.main.GameConfig;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,6 +23,7 @@ public abstract class MinecraftMixin implements MinecraftExtra {
     @Shadow
     @Final
     public GameRenderer gameRenderer;
+    @Shadow private static Minecraft instance;
     @Unique
     ELCameraManager endingLibrary$cameraManager;
 
@@ -44,5 +48,10 @@ public abstract class MinecraftMixin implements MinecraftExtra {
     private void close(CallbackInfo ci) {
         ClientProxy.SERVICE.shutdown();
         ClientUtils.CLIENT_TEST_POOL.shutdown();
+    }
+    @WrapOperation(method = "handleKeybinds", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isUsingItem()Z"))
+    private boolean avoidNprPlayerUsing(LocalPlayer instance, Operation<Boolean> original) {
+        if (instance == null) return false;
+        return original.call(instance);
     }
 }
