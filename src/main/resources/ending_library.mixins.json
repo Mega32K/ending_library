@@ -182,6 +182,7 @@
     "capability.display.TextDisplayRendererMixin",
     "compat.bettercombat.MinecraftClientInject",
     "compat.ibeeditor.LevelRendererMixin",
+    "event.EntityRendererDispatcherMixin",
     "ironspellbook.ZapParticleTypeMixin",
     "personal_rule.AbstractClientPlayerMixin",
     "personal_rule.EntityRendererDispatcherMixin",
