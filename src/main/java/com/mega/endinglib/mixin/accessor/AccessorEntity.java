@@ -3,6 +3,7 @@ package com.mega.endinglib.mixin.accessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -42,4 +43,8 @@ public interface AccessorEntity {
     void invokeTeleportPassengers();
     @Invoker
     Vec3 invokeCalculateViewVector(float p_20172_, float p_20173_);
+    @Invoker
+    Vec3 invokeMaybeBackOffFromEdge(Vec3 p_20019_, MoverType p_20020_);
+    @Invoker
+    Vec3 invokeCollide(Vec3 p_20273_);
 }

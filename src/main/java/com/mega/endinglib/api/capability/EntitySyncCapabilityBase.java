@@ -96,6 +96,7 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
      * 默认的Holder
      */
     public final LazyOptional<EntitySyncCapabilityBase> holder = LazyOptional.of(() -> this);
+    private Capability<EntitySyncCapabilityBase> capability = null;
     /**
      * 能力数据管理器
      */
@@ -209,7 +210,9 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        Capability<EntitySyncCapabilityBase> capability = ELCapabilityManager.getCapability(this.getRegistryName().toString());
+        if (capability == null) {
+            capability = ELCapabilityManager.getCapability(this.getRegistryName().toString());
+        }
         return capability.orEmpty(cap, this.holder);
     }
 
