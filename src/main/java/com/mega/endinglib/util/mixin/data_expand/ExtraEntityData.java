@@ -50,7 +50,7 @@ public class ExtraEntityData {
         }
     }
     public void forceTick() {
-        if (tickCount- this.interpolationStartClientTick > interpolationDuration)
+        if (tickCount - this.interpolationStartClientTick > interpolationDuration)
             CommonProxy.getEntityCapOptional(entity).ifPresent(capability -> {
                 capability.getRenderScale().ifPresent(scale -> {
                     this.scaleXOld = scale.x;

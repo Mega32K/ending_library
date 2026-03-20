@@ -39,7 +39,7 @@ public class C2SScreenEffectStatusPacket {
     static void handle0(C2SScreenEffectStatusPacket packet, Supplier<NetworkEvent.Context> context) {
         ServerPlayer serverPlayer = context.get().getSender();
         if (serverPlayer != null) {
-            EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(serverPlayer.server);
+            EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(serverPlayer.server);
             savedData.disableDynamicEffect(serverPlayer, packet.name);
         }
     }

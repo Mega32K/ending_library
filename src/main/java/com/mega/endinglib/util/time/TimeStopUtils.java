@@ -29,17 +29,18 @@ public class TimeStopUtils {
         if (level == null) return false;
         if (level.isClientSide) {
             return ((ClientLevelExpandedContext) ((LevelEC) level).endinglib$levelECData()).isCurrentTS();
-        } else
-            return ((ServerEC) ((ServerLevel) level).getServer()).endinglib$serverECData().timeStopDimensions.contains(level.dimension());
+        } else if (level instanceof ServerLevel serverLevel)
+            return ((ServerEC) serverLevel.getServer()).endinglib$serverECData().getTimeStopSavedData().dimensions.contains(level.dimension().location());
+        return false;
     }
 
     public static boolean canMove(Entity entity) {
         if (entity instanceof Player player) {
             if (player.isCreative() || player.isSpectator())
                 return true;
-            else return TimeStopEntityData.getTimeStopCount(player) > 0;
+            else return TimeStopEntityData.canMove(player);
         } else if (entity instanceof LivingEntity living)
-            return TimeStopEntityData.getTimeStopCount(living) > 0;
+            return TimeStopEntityData.canMove(living);
         return false;
     }
 

@@ -91,7 +91,7 @@ public class CommandTask extends ServerTask {
         if (flag) {
             CommandScheduleEntry entry = this.getCommand();
             if (entry != null) {
-                EndingLibrarySavedData.readOrCreate(server).removeCommandTask(this);
+                EndingLibrarySavedData.getInstance(server).removeCommandTask(this);
             }
         }
     }

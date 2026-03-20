@@ -64,7 +64,7 @@ public class InputCommand {
                 );
     }
     private static int permission(CommandSourceStack sourceStack, ServerPlayer serverPlayer, InputOperations operations) {
-        EndingLibrarySavedData data = EndingLibrarySavedData.readOrCreate(serverPlayer.server);
+        EndingLibrarySavedData data = EndingLibrarySavedData.getInstance(serverPlayer.server);
         EnumSet<InputOperations> permissions = data.getOrPutPlayerDisabledPermissions(serverPlayer);
         boolean flag = permissions.contains(operations);
         sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.input.permission",
@@ -75,7 +75,7 @@ public class InputCommand {
         return flag ? 1 : 0;
     }
     private static int setPermission(CommandSourceStack sourceStack, ServerPlayer serverPlayer, InputOperations operations, boolean flag) {
-        EndingLibrarySavedData data = EndingLibrarySavedData.readOrCreate(serverPlayer.server);
+        EndingLibrarySavedData data = EndingLibrarySavedData.getInstance(serverPlayer.server);
         if (flag) {
             data.removeDisabledPermission(serverPlayer, operations);
             sourceStack.sendSuccess(() -> Component.translatable("commands.endinglib.message.input.permission.enable",

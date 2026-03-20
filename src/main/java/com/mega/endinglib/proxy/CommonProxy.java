@@ -15,6 +15,7 @@ import com.mega.endinglib.common.command.gamerule.EndingLibraryGameRules;
 import com.mega.endinglib.common.init.ModAttributes;
 import com.mega.endinglib.common.init.ModCommandArgumentTypes;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.world.entity.Display;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +53,7 @@ public class CommonProxy implements ModProxy {
     public static LazyOptional<EndingLibraryEntityCapability> getEntityCapOptional(Entity entity) {
         return entity.getCapability(ENTITY_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryEntityCapability.NAME.toString())));
     }
-    public static LazyOptional<TextDisplayCapability> getTextCapOptional(Entity entity) {
+    public static LazyOptional<TextDisplayCapability> getTextCapOptional(Display.TextDisplay entity) {
         return entity.getCapability(TEXT_CAP.orElse(ELCapabilityManager.getCapability(TextDisplayCapability.NAME.toString())));
     }
     public void commonSetup(final FMLCommonSetupEvent event) {

@@ -30,10 +30,9 @@ public class ServerLevelExpandedContext extends LevelExpandedContext {
     @Override
     public void tickHead(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         ServerLevel serverLevel = (ServerLevel) level;
-        EndingLibrarySavedData.readOrCreate(serverLevel.getServer());
         if (TimeStopUtils.isTimeStop) {
             AccessorServerLevel accessor = (AccessorServerLevel) serverLevel;
-            boolean can = serverEC().timeStopDimensions.contains(serverLevel.dimension());
+            boolean can = serverEC().getTimeStopSavedData().dimensions.contains(serverLevel.dimension().location());
             if (can) {
                 ProfilerFiller profilerfiller = serverLevel.getProfiler();
                 if (Util.getMillis() % 60000 == 0) {

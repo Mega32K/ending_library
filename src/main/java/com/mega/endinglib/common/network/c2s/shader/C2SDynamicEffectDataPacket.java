@@ -38,7 +38,7 @@ public class C2SDynamicEffectDataPacket {
     static void handle0(C2SDynamicEffectDataPacket packet, Supplier<NetworkEvent.Context> context) {
         ServerPlayer serverPlayer = context.get().getSender();
         if (serverPlayer != null) {
-            EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(serverPlayer.server);
+            EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(serverPlayer.server);
             if (packet.create) {
                 savedData.createDynamicEffect(serverPlayer, packet.data);
             } else {

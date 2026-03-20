@@ -6,6 +6,7 @@ import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import com.mega.endinglib.api.data.CompoundTagUtils;
+import com.mega.endinglib.common.command.entity.DataCommand;
 import com.mega.endinglib.mixin.accessor.HoglinAiAccessor;
 import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.mixin.data_expand.ExtraLivingEntity;
@@ -28,9 +29,11 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
+    public final CapabilityEntityData<Boolean> TIME_STOP_CAN_MOVE = this.dataManager.defineWithoutSerialization(0, false, CapabilityDataSerializers.BOOLEAN);
     public @Nullable UUID forcedTargetID;
     public @Nullable LivingEntity forcedTarget;
     public int navigationMaxTimeout = -1;
+    private int timeStopCount = 0;
     public static final ResourceLocation NAME = SafeClass.loc("endinglib_living_cap");
     @Override
     public ResourceLocation getRegistryName() {
@@ -66,6 +69,8 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
             nbt.putUUID("ForcedTarget", this.forcedTargetID);
         if (this.navigationMaxTimeout > 0)
             nbt.putInt("NavigationMaxTimeout", this.navigationMaxTimeout);
+        if (this.timeStopCount != 0)
+            nbt.putInt("TimeStopCount", this.timeStopCount);
     }
 
     @Override
@@ -74,6 +79,9 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
             this.forcedTargetID = nbt.getUUID("ForcedTarget");
         if (CompoundTagUtils.containsInt(nbt, "NavigationMaxTimeout"))
             this.navigationMaxTimeout = nbt.getInt("NavigationMaxTimeout");
+        if (CompoundTagUtils.containsInt(nbt, "TimeStopCount"))
+            this.timeStopCount = nbt.getInt("TimeStopCount");
+        this.setTimeStopCanMove(this.timeStopCount > 0);
     }
 
     @Override
@@ -131,5 +139,20 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
         } else if (mob instanceof Hoglin hoglin) {
             HoglinAiAccessor.callSetAttackTarget(hoglin, target);
         }
+    }
+    public boolean canMoveWhenTimeStop() {
+        return dataManager.getValue(TIME_STOP_CAN_MOVE);
+    }
+    public void setTimeStopCanMove(boolean value) {
+        this.dataManager.setValue(TIME_STOP_CAN_MOVE, value);
+    }
+
+    public int getTimeStopCount() {
+        return timeStopCount;
+    }
+
+    public void setTimeStopCount(int timeStopCount) {
+        this.timeStopCount = timeStopCount;
+        this.setTimeStopCanMove(timeStopCount > 0);
     }
 }

@@ -40,7 +40,7 @@ public class C2SSetKeyPacket {
         if (context.get().getDirection() == NetworkDirection.PLAY_TO_SERVER) {
             ServerPlayer player = context.get().getSender();
             if (player != null) {
-                EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(player.server);
+                EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(player.server);
                 savedData.addUserKeySetting(player, packet.id, packet.keyValue);
             }
         }

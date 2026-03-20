@@ -253,7 +253,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
         }
     }
     public void setRenderScale(Vector3f scale) {
-        this.setRenderScale(Optional.of(scale));
+        this.setRenderScale(Optional.ofNullable(scale));
     }
     public void setRenderScale(Optional<Vector3f> scale) {
         this.dataManager.setValue(RENDER_SCALE, scale);

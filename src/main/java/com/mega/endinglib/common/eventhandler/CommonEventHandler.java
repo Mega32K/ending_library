@@ -52,7 +52,7 @@ public class CommonEventHandler {
     public static void onDatapackSync(OnDatapackSyncEvent event) {
         boolean isSendToSingle = event.getPlayer() != null;
         if (isSendToSingle)  {
-            EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(event.getPlayer().server);
+            EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(event.getPlayer().server);
             ServerPlayer player = event.getPlayer();
             if (!DynamicKeyMappingReloadListener.DYNAMIC_KEYS.isEmpty()) {
                 PacketHandler.sendToPlayer(new S2CDynamicKeyMappingSyncPacket(DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
@@ -62,7 +62,7 @@ public class CommonEventHandler {
                         .toList(), savedData.getDynamicKeySetting(player)), player);
             }
         } else {
-            EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(event.getPlayerList().getServer());
+            EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(event.getPlayerList().getServer());
             syncDynamicKeyMappings(savedData, event.getPlayers());
         }
     }
@@ -129,7 +129,7 @@ public class CommonEventHandler {
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             MinecraftServer server = serverPlayer.server;
-            EndingLibrarySavedData data = EndingLibrarySavedData.readOrCreate(server);
+            EndingLibrarySavedData data = EndingLibrarySavedData.getInstance(server);
             EnumSet<InputOperations> permissions = data.getOrPutPlayerDisabledPermissions(serverPlayer);
             //可以排除empty情况发包,client utils那边在推出存档后会自动清数据
             if (!permissions.isEmpty())

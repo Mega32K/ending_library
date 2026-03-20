@@ -19,6 +19,6 @@ public abstract class DisplayMixin extends Entity{
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo ci) {
-        CommonProxy.getTextCapOptional(this).ifPresent((data) -> data.update((Entity) (Object) this));
+        CommonProxy.getTextCapOptional((Display.TextDisplay) (Object)this).ifPresent((data) -> data.update((Entity) (Object) this));
     }
 }

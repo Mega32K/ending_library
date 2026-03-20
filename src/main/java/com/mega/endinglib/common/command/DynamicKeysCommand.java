@@ -24,7 +24,7 @@ public class DynamicKeysCommand {
                 .then(Commands.literal("enable")
                         .then(Commands.argument("id", ResourceLocationArgument.id())
                                 .suggests((context, builder) -> {
-                                    EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(context.getSource().getServer());
+                                    EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(context.getSource().getServer());
                                     return SharedSuggestionProvider.suggest(DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
                                             .stream()
                                             .filter(savedData::isKeyMappingDisabled)
@@ -37,7 +37,7 @@ public class DynamicKeysCommand {
                 .then(Commands.literal("disable")
                         .then(Commands.argument("id", ResourceLocationArgument.id())
                                 .suggests((context, builder) -> {
-                                    EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(context.getSource().getServer());
+                                    EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(context.getSource().getServer());
                                     return SharedSuggestionProvider.suggest(DynamicKeyMappingReloadListener.DYNAMIC_KEYS.values()
                                             .stream()
                                             .filter(savedData::isKeyMappingEnabled)
@@ -53,20 +53,20 @@ public class DynamicKeysCommand {
     }
     private static int enable(CommandSourceStack sourceStack, ResourceLocation id) {
         MinecraftServer server = sourceStack.getServer();
-        int result = EndingLibrarySavedData.readOrCreate(server).enableDynamicKeyMapping(id) ? 1 : 0;
+        int result = EndingLibrarySavedData.getInstance(server).enableDynamicKeyMapping(id) ? 1 : 0;
         if (result == 1)
             sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.dynamic_key.enable", LoreHelper.wrap(LoreHelper.withCopy(Component.literal(id.toString()).withStyle(ChatFormatting.GREEN), id.toString()))), false);
         return result;
     }
     private static int disable(CommandSourceStack sourceStack, ResourceLocation id) {
         MinecraftServer server = sourceStack.getServer();
-        int result = EndingLibrarySavedData.readOrCreate(server).disableDynamicKeyMapping(id) ? 1 : 0;
+        int result = EndingLibrarySavedData.getInstance(server).disableDynamicKeyMapping(id) ? 1 : 0;
         if (result == 1)
             sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.dynamic_key.disable", LoreHelper.wrap(LoreHelper.withCopy(Component.literal(id.toString()).withStyle(ChatFormatting.GREEN), id.toString()))), false);
         return result;
     }
     private static int sync(CommandSourceStack sourceStack) {
-        EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(sourceStack.getServer());
+        EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(sourceStack.getServer());
         int r = CommonEventHandler.syncDynamicKeyMappings(savedData, sourceStack.getServer().getPlayerList().getPlayers());
         sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.dynamic_key.sync"), false);
         return r;

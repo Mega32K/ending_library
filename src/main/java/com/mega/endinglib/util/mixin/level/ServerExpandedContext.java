@@ -8,8 +8,8 @@ import com.mega.endinglib.common.network.s2c.S2CDisabledOverlaysPacket;
 import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPacket;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -19,15 +19,27 @@ import java.util.*;
 
 public class ServerExpandedContext {
     public final MinecraftServer server;
-    public final Set<ResourceKey<Level>> timeStopDimensions = new ObjectOpenHashSet<>();
+    private EndingLibrarySavedData endingLibrarySavedData = null;
+    private TimeStopSavedData timeStopSavedData = null;
     public ServerExpandedContext(MinecraftServer server) {
         this.server = server;
+    }
+
+    public EndingLibrarySavedData getEndingLibrarySavedData() {
+        if (this.endingLibrarySavedData == null)
+            this.endingLibrarySavedData = EndingLibrarySavedData.readOrCreate(server);
+        return endingLibrarySavedData;
+    }
+
+    public TimeStopSavedData getTimeStopSavedData() {
+        if (this.timeStopSavedData == null)
+            this.timeStopSavedData = TimeStopSavedData.readOrCreate(server);
+        return timeStopSavedData;
     }
 
     public void update() {
         PlayerList playerList = this.server.getPlayerList();
         if (playerList.getPlayerCount() > 0) {
-            EndingLibrarySavedData endingLibrarySavedData = EndingLibrarySavedData.readOrCreate(server);
             Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> permissionsToUpdate = endingLibrarySavedData.packDisabledPermissionsData();
             if (permissionsToUpdate != null && !permissionsToUpdate.isEmpty()) {
                 for (var entry : permissionsToUpdate.reference2ReferenceEntrySet()) {
@@ -43,12 +55,6 @@ public class ServerExpandedContext {
                     }
                 }
             }
-        }
-        synchronized (timeStopDimensions) {
-            timeStopDimensions.clear();
-            List<ResourceKey<Level>> list = TimeStopSavedData.readOrCreate(server).asResourceKeys();
-            if (list != null)
-                timeStopDimensions.addAll(list);
         }
     }
 }

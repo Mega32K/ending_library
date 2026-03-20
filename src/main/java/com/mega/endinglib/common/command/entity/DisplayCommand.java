@@ -99,11 +99,11 @@ public class DisplayCommand {
             }
         }
         private static int getColorAnim(CommandSourceStack sourceStack, Entity entity) throws CommandSyntaxException {
-            if (!(entity instanceof Display.TextDisplay))
+            if (!(entity instanceof Display.TextDisplay textDisplay))
                 throw NOT_TEXT_DISPLAY_ENTITY.create(entity.getDisplayName());
             else {
                 AtomicInteger value = new AtomicInteger(-1);
-                CommonProxy.getTextCapOptional(entity).ifPresent(capability -> {
+                CommonProxy.getTextCapOptional(textDisplay).ifPresent(capability -> {
                     value.set(capability.getAnimColor());
                     sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.color_anim.get", LoreHelper.number(value.get(), ChatFormatting.GOLD)), false);
                 });
@@ -123,11 +123,11 @@ public class DisplayCommand {
             }
         }
         private static int getForceDisplay(CommandSourceStack sourceStack, Entity entity) throws CommandSyntaxException {
-            if (!(entity instanceof Display.TextDisplay))
+            if (!(entity instanceof Display.TextDisplay textDisplay))
                 throw NOT_TEXT_DISPLAY_ENTITY.create(entity.getDisplayName());
             else {
                 AtomicBoolean value = new AtomicBoolean(false);
-                CommonProxy.getTextCapOptional(entity).ifPresent(capability -> {
+                CommonProxy.getTextCapOptional(textDisplay).ifPresent(capability -> {
                     value.set(capability.forceDisplay());
                     sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.display.text.force_display.get", LoreHelper.bool(value.get())), false);
                 });

@@ -75,7 +75,7 @@ public class ScheduleCommand {
         list.add(command);
         CommandTask task = new CommandTask(new CommandScheduleEntry(new WrappedCSSBuilder(stack), list, name.toString(), wait), stack.getServer());
         task.addToManager();
-        EndingLibrarySavedData.readOrCreate(stack.getServer()).addCommandTask(task);
+        EndingLibrarySavedData.getInstance(stack.getServer()).addCommandTask(task);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.schedule.create"), false);
         return wait;
     }
@@ -84,7 +84,7 @@ public class ScheduleCommand {
         LinkedList<String> list = new LinkedList<>(commandLines);
         CommandTask task = new CommandTask(new CommandScheduleEntry(new WrappedCSSBuilder(stack), list, name.toString(), wait), stack.getServer());
         task.addToManager();
-        EndingLibrarySavedData.readOrCreate(stack.getServer()).addCommandTask(task);
+        EndingLibrarySavedData.getInstance(stack.getServer()).addCommandTask(task);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.schedule.create"), false);
         return wait;
     }

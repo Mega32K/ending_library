@@ -97,9 +97,7 @@ public enum MCMapping implements IExtensibleEnum {
         return new MethodInsnNode(opcode, owner, this.get(), this.desc);
     }
     public static boolean isDevelopmentEnvironment() {
-        Path projectDir = Paths.get(System.getProperty("user.dir")).getParent();
-        return Files.exists(projectDir.resolve(".gradle")) &&
-                Files.exists(projectDir.resolve("build"));
+        return Boolean.getBoolean("FORGE_DEV");
     }
 
     public String get() {

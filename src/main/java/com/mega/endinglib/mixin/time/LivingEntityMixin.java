@@ -22,11 +22,6 @@ public abstract class LivingEntityMixin extends Entity {
         super(p_19870_, p_19871_);
     }
 
-    @Inject(method = "<clinit>", at = @At("TAIL"))
-    private static void clinit(CallbackInfo ci) {
-        TimeStopEntityData.TIME_STOP_COUNT = SynchedEntityData.defineId(LivingEntity.class, EntityDataSerializers.INT);
-    }
-
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(EntityType<? extends LivingEntity> p_20966_, Level p_20967_, CallbackInfo ci) {
         /*
@@ -40,27 +35,6 @@ public abstract class LivingEntityMixin extends Entity {
             System.exit(-1);
         }
          */
-    }
-
-    @Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
-    private void readAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-        if (tag.contains(TimeStopEntityData.TIME_STOP_COUNT_NAME, 99)) {
-            LivingEntity o = (LivingEntity) (Object) this;
-            TimeStopEntityData.setTimeStopCount(o, tag.getInt(TimeStopEntityData.TIME_STOP_COUNT_NAME));
-        }
-    }
-
-    @Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
-    private void addAdditionalSaveData(CompoundTag tag, CallbackInfo ci) {
-        if (tag.contains(TimeStopEntityData.TIME_STOP_COUNT_NAME, 99)) {
-            LivingEntity o = (LivingEntity) (Object) this;
-            tag.putInt(TimeStopEntityData.TIME_STOP_COUNT_NAME, TimeStopEntityData.getTimeStopCount(o));
-        }
-    }
-
-    @Inject(method = "defineSynchedData", at = @At("HEAD"))
-    private void defineSynchedData(CallbackInfo ci) {
-        this.entityData.define(TimeStopEntityData.TIME_STOP_COUNT, 0);
     }
 
     @Inject(method = "tick", at = @At("HEAD"))

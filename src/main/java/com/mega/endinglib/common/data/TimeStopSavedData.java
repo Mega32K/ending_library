@@ -1,5 +1,6 @@
 package com.mega.endinglib.common.data;
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,7 +18,7 @@ import java.util.Set;
 
 public class TimeStopSavedData extends SavedData {
     public MinecraftServer server;
-    public Set<ResourceLocation> dimensions = new HashSet<>();
+    public Set<ResourceLocation> dimensions = new ObjectOpenHashSet<>();
 
     public static TimeStopSavedData create(CompoundTag tag) {
         TimeStopSavedData data = new TimeStopSavedData();
@@ -61,10 +62,6 @@ public class TimeStopSavedData extends SavedData {
     public void removeTsDimension(ResourceKey<Level> dimension) {
         dimensions.remove(dimension.location());
         setDirty();
-    }
-
-    public @Nullable List<ResourceKey<Level>> asResourceKeys() {
-        return dimensions.stream().map(r -> ResourceKey.create(Registries.DIMENSION, r)).toList();
     }
 
     public @Nullable List<ServerLevel> asServerLevel(MinecraftServer server) {

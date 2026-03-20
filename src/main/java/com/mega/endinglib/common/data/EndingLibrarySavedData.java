@@ -3,6 +3,7 @@ package com.mega.endinglib.common.data;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.api.server.CommandTask;
+import com.mega.endinglib.util.mixin.level.ServerEC;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.nbt.*;
@@ -19,7 +20,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class EndingLibrarySavedData extends SavedData {
-    private final ReadWriteLock LOCK = new ReentrantReadWriteLock();
     public List<CommandTask> commandTasks = Collections.synchronizedList(new ObjectArrayList<>());
     private final Object2ObjectOpenHashMap<UUID, Object2IntMap<ResourceLocation>> userDynamicKeySetting = new Object2ObjectOpenHashMap<>();
     private final Object2ObjectOpenHashMap<UUID, EnumSet<InputOperations>> playersDisabledInputPermissions = new Object2ObjectOpenHashMap<>();
@@ -39,6 +39,9 @@ public class EndingLibrarySavedData extends SavedData {
         EndingLibrarySavedData data = server.overworld().getDataStorage().computeIfAbsent(tag-> load(tag,server), EndingLibrarySavedData::new, "endinglib_saved_data");
         data.server = server;
         return data;
+    }
+    public static EndingLibrarySavedData getInstance(MinecraftServer server) {
+        return ((ServerEC) server).endinglib$serverECData().getEndingLibrarySavedData();
     }
 
     public static EndingLibrarySavedData load(CompoundTag tag, MinecraftServer server) {
@@ -374,28 +377,23 @@ public class EndingLibrarySavedData extends SavedData {
         }
     }
     public @Nullable Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> packDisabledPermissionsData() {
-        LOCK.writeLock().lock();
-        try {
-            Set<UUID> dirtyPlayerIDs = this.dirtyPlayerIDs;
-            if (dirtyPlayerIDs.isEmpty())
-                return null;
-            Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> data = new Reference2ReferenceOpenHashMap<>(dirtyPlayerIDs.size());
-            for (UUID uuid : dirtyPlayerIDs) {
-                if (server.getPlayerList().getPlayer(uuid) == null)
-                    continue;
-                EnumSet<InputOperations> readSet = this.playersDisabledInputPermissions.get(uuid);
-                if (readSet != null) {
-                    data.put(uuid, EnumSet.copyOf(readSet));
-                } else {
-                    data.put(uuid, EnumSet.noneOf(InputOperations.class));
-                }
+        Set<UUID> dirtyPlayerIDs = this.dirtyPlayerIDs;
+        if (dirtyPlayerIDs.isEmpty())
+            return null;
+        Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> data = new Reference2ReferenceOpenHashMap<>(dirtyPlayerIDs.size());
+        for (UUID uuid : dirtyPlayerIDs) {
+            if (server.getPlayerList().getPlayer(uuid) == null)
+                continue;
+            EnumSet<InputOperations> readSet = this.playersDisabledInputPermissions.get(uuid);
+            if (readSet != null) {
+                data.put(uuid, EnumSet.copyOf(readSet));
+            } else {
+                data.put(uuid, EnumSet.noneOf(InputOperations.class));
             }
-            for (UUID uuid : data.keySet())
-                this.dirtyPlayerIDs.remove(uuid);
-            return data;
-        } finally {
-            LOCK.writeLock().unlock();
         }
+        for (UUID uuid : data.keySet())
+            this.dirtyPlayerIDs.remove(uuid);
+        return data;
     }
 
     public ObjectOpenHashSet<String> getDisabledDynamicKeyMappings() {
@@ -423,12 +421,7 @@ public class EndingLibrarySavedData extends SavedData {
     }
 
     public Set<UUID> getDirtyOverlayPlayerIDs() {
-        LOCK.readLock().lock();
-        try {
-            return dirtyOverlayPlayerIDs;
-        } finally {
-            LOCK.readLock().unlock();
-        }
+        return dirtyOverlayPlayerIDs;
     }
 
     public Set<ResourceLocation> getOrPutPlayerDisabledOverlays(Player player) {
@@ -444,40 +437,25 @@ public class EndingLibrarySavedData extends SavedData {
         }
     }
     public boolean addDisabledOverlay(ServerPlayer player, ResourceLocation id) {
-        LOCK.writeLock().lock();
-        try {
-            if (this.getOrPutPlayerDisabledOverlays(player).add(id)) {
-                this.dirtyOverlayPlayerIDs.add(player.getUUID());
-                this.setDirty();
-                return true;
-            }
-        } finally {
-            LOCK.writeLock().unlock();
+        if (this.getOrPutPlayerDisabledOverlays(player).add(id)) {
+            this.dirtyOverlayPlayerIDs.add(player.getUUID());
+            this.setDirty();
+            return true;
         }
         return false;
     }
     public boolean removeDisabledOverlay(ServerPlayer player, ResourceLocation id) {
-        LOCK.writeLock().lock();
-        try {
-            if (this.getOrPutPlayerDisabledOverlays(player).remove(id)) {
-                this.dirtyOverlayPlayerIDs.add(player.getUUID());
-                this.setDirty();
-                return true;
-            }
-        } finally {
-            LOCK.writeLock().unlock();
+        if (this.getOrPutPlayerDisabledOverlays(player).remove(id)) {
+            this.dirtyOverlayPlayerIDs.add(player.getUUID());
+            this.setDirty();
+            return true;
         }
         return false;
     }
     public Set<ResourceLocation> packDisabledOverlaysPacket(ServerPlayer player) {
-        LOCK.writeLock().lock();
-        try {
-            Set<ResourceLocation> data = this.playersDisabledOverlays.get(player.getUUID());
-            if (data == null) data = new ObjectOpenHashSet<>();
-            this.dirtyPlayerIDs.remove(player.getUUID());
-            return data;
-        } finally {
-            LOCK.writeLock().unlock();
-        }
+        Set<ResourceLocation> data = this.playersDisabledOverlays.get(player.getUUID());
+        if (data == null) data = new ObjectOpenHashSet<>();
+        this.dirtyPlayerIDs.remove(player.getUUID());
+        return data;
     }
 }

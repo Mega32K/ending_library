@@ -124,7 +124,7 @@ public class ShaderCommand {
     }
     private static int status(CommandSourceStack sourceStack, ServerPlayer player, String name, boolean using) {
         PacketHandler.sendToPlayer(new S2CScreenEffectStatusPacket(name, using), player);
-        EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(sourceStack.getServer());
+        EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(sourceStack.getServer());
         if (using) {
             savedData.enableDynamicEffect(player, name);
         } else {

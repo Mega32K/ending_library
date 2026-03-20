@@ -46,7 +46,7 @@ public class OverlayCommand {
     }
     private static int enable(CommandSourceStack sourceStack, ServerPlayer player, ResourceLocation id) {
         MinecraftServer server = sourceStack.getServer();
-        EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(server);
+        EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(server);
         int result = savedData.removeDisabledOverlay(player, id) ? 1 : 0;
         if (result == 1) {
             sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.overlay.display.enable", player.getDisplayName(), Component.literal(id.toString()).withStyle(ChatFormatting.GREEN)), false);
@@ -55,7 +55,7 @@ public class OverlayCommand {
     }
     private static int disable(CommandSourceStack sourceStack, ServerPlayer player, ResourceLocation id) {
         MinecraftServer server = sourceStack.getServer();
-        EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(server);
+        EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(server);
         int result = savedData.addDisabledOverlay(player, id) ? 1 : 0;
         if (result == 1) {
             sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.overlay.display.disable", player.getDisplayName(), Component.literal(id.toString()).withStyle(ChatFormatting.GREEN)), false);
@@ -64,7 +64,7 @@ public class OverlayCommand {
     }
     private static int list(CommandSourceStack sourceStack, ServerPlayer player) {
         MinecraftServer server = sourceStack.getServer();
-        EndingLibrarySavedData savedData = EndingLibrarySavedData.readOrCreate(server);
+        EndingLibrarySavedData savedData = EndingLibrarySavedData.getInstance(server);
         Set<ResourceLocation> set = savedData.getOrPutPlayerDisabledOverlays(player);
         if (!set.isEmpty())
             sourceStack.sendSuccess(()-> Component.translatable("commands.endinglib.message.overlay.display.list", player.getDisplayName()), false);
