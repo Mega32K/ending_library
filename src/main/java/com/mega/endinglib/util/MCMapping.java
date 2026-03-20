@@ -1,15 +1,11 @@
 package com.mega.endinglib.util;
 
 import net.minecraftforge.common.IExtensibleEnum;
-import org.objectweb.asm.Opcodes;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public enum MCMapping implements IExtensibleEnum {
     Entity$METHOD$isPickable("isPickable", "m_6087_", "()Z"),
@@ -97,9 +93,7 @@ public enum MCMapping implements IExtensibleEnum {
         return new MethodInsnNode(opcode, owner, this.get(), this.desc);
     }
     public static boolean isDevelopmentEnvironment() {
-        Path projectDir = Paths.get(System.getProperty("user.dir")).getParent();
-        return Files.exists(projectDir.resolve(".gradle")) &&
-                Files.exists(projectDir.resolve("build"));
+        return !FMLLoader.isProduction();
     }
 
     public String get() {
