@@ -2,6 +2,7 @@ package com.mega.endinglib.api.capability.syncher;
 
 import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.api.data.CompoundTagUtils;
+import com.mega.endinglib.util.java.short4.Short4;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
@@ -45,7 +46,8 @@ public class CapabilityDataSerializers {
         byteBuf.writeFloat(vector4f.y);
         byteBuf.writeFloat(vector4f.z);
         byteBuf.writeFloat(vector4f.w);
-    };public static final FriendlyByteBuf.Reader<EntityDimensions> F_ENTITY_DIMENSIONS_READER = byteBuf -> new EntityDimensions(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readBoolean());
+    };
+    public static final FriendlyByteBuf.Reader<EntityDimensions> F_ENTITY_DIMENSIONS_READER = byteBuf -> new EntityDimensions(byteBuf.readFloat(), byteBuf.readFloat(), byteBuf.readBoolean());
     public static final CapabilityDataSerializer<Byte> BYTE = CapabilityDataSerializer.simple((p_238118_, p_238119_) -> p_238118_.writeByte(p_238119_), FriendlyByteBuf::readByte, CompoundTag::putByte, CompoundTag::getByte);
     public static final CapabilityDataSerializer<Integer> INT = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt, CompoundTag::putInt, CompoundTag::getInt);
     public static final CapabilityDataSerializer<Long> LONG = CapabilityDataSerializer.simple(FriendlyByteBuf::writeVarLong, FriendlyByteBuf::readVarLong, CompoundTag::putLong, CompoundTag::getLong);
@@ -127,6 +129,8 @@ public class CapabilityDataSerializers {
     public static final CapabilityDataSerializer<Easing> EASING = CapabilityDataSerializer.simple(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Easing.class), CompoundTagUtils::putEasing, CompoundTagUtils::getEasing);
     public static final CapabilityDataSerializer<Pose> POSE = CapabilityDataSerializer.simple(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Pose.class), CompoundTagUtils::putPose, CompoundTagUtils::getPose);
     public static final CapabilityDataSerializer<Optional<Pose>> OPTIONAL_POSE = CapabilityDataSerializer.optional(FriendlyByteBuf::writeEnum, bb -> bb.readEnum(Pose.class), CompoundTagUtils::putPose, CompoundTagUtils::getPose);
+    public static final CapabilityDataSerializer<Short4> SHORT4 = CapabilityDataSerializer.simple(Short4.F_SHORT4_WRITER, Short4.F_SHORT4_READER, CompoundTagUtils::putShort4, CompoundTagUtils::getShort4);
+    public static final CapabilityDataSerializer<Optional<Short4>> OPTIONAL_SHORT4 = CapabilityDataSerializer.optional(Short4.F_SHORT4_WRITER, Short4.F_SHORT4_READER, CompoundTagUtils::putShort4, CompoundTagUtils::getShort4);
     private static final CrudeIncrementalIntIdentityHashBiMap<CapabilityDataSerializer<?>> SERIALIZERS = CrudeIncrementalIntIdentityHashBiMap.create(16);
 
     static {
@@ -159,6 +163,8 @@ public class CapabilityDataSerializers {
         registerSerializer(EASING);
         registerSerializer(POSE);
         registerSerializer(OPTIONAL_POSE);
+        registerSerializer(SHORT4);
+        registerSerializer(OPTIONAL_SHORT4);
     }
 
     public static void registerSerializer(CapabilityDataSerializer<?> p_135051_) {

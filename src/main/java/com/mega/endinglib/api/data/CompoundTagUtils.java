@@ -1,6 +1,8 @@
 package com.mega.endinglib.api.data;
 
 import com.mega.endinglib.api.client.Easing;
+import com.mega.endinglib.util.java.short4.Short4;
+import com.mega.endinglib.util.java.short4.Short4Packer;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import io.netty.handler.codec.DecoderException;
 import it.unimi.dsi.fastutil.bytes.ByteConsumer;
@@ -78,6 +80,9 @@ public class CompoundTagUtils {
         return nbt.contains(key, Tag.TAG_LONG_ARRAY);
     }
 
+    public static boolean containsShort4(CompoundTag nbt, String key) {
+        return nbt.contains(key, Tag.TAG_LONG);
+    }
     public static <T> void putOptional(CompoundTag nbt, String key, Optional<T> optional, CompoundTagWriter<T> writer) {
         CompoundTag tag = new CompoundTag();
         if (optional.isPresent()) {
@@ -293,5 +298,22 @@ public class CompoundTagUtils {
         for (T t : list)
             listTag.add(writer.apply(t));
         nbt.put(key, listTag);
+    }
+    public static void putShort4(CompoundTag nbt, String key, short a, short b, short c, short d) {
+        nbt.putLong(key, Short4Packer.pack(a, b, c, d));
+    }
+
+    public static void putShort4(CompoundTag nbt, String key, Short4 short4) {
+        putShort4(nbt, key, short4.a(), short4.b(), short4.c(), short4.d());
+    }
+
+    public static Short4 getShort4(CompoundTag tag, String key) {
+        long packed = tag.getLong(key);
+        return new Short4(
+                Short4Packer.unpackA(packed),
+                Short4Packer.unpackB(packed),
+                Short4Packer.unpackC(packed),
+                Short4Packer.unpackD(packed)
+        );
     }
 }

@@ -39,7 +39,7 @@ public class ServerExpandedContext {
 
     public void update() {
         PlayerList playerList = this.server.getPlayerList();
-        if (playerList.getPlayerCount() > 0) {
+        if (!playerList.getPlayers().isEmpty()) {
             Reference2ReferenceOpenHashMap<UUID, EnumSet<InputOperations>> permissionsToUpdate = endingLibrarySavedData.packDisabledPermissionsData();
             if (permissionsToUpdate != null && !permissionsToUpdate.isEmpty()) {
                 for (var entry : permissionsToUpdate.reference2ReferenceEntrySet()) {
