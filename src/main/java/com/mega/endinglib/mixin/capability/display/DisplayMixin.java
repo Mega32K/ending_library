@@ -12,13 +12,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Display.class)
-public abstract class DisplayMixin extends Entity{
+public abstract class DisplayMixin extends Entity {
     public DisplayMixin(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo ci) {
-        CommonProxy.getTextCapOptional((Display.TextDisplay) (Object)this).ifPresent((data) -> data.update((Entity) (Object) this));
+        if ((Object)this instanceof Display.TextDisplay textDisplay)
+            CommonProxy.getTextCapOptional(textDisplay).ifPresent((data) -> data.update(textDisplay));
     }
 }
