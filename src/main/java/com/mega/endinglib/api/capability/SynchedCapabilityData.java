@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 public class SynchedCapabilityData {
     private final EntitySyncCapabilityBase capability;
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    //private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Int2ObjectOpenHashMap<CapabilityEntityData<?>> DEFINED_DATA = new Int2ObjectOpenHashMap<>();
     private final AtomicBoolean anyOfDirty = new AtomicBoolean(false);
     public SynchedCapabilityData(EntitySyncCapabilityBase capability) {
@@ -78,11 +78,11 @@ public class SynchedCapabilityData {
     }
 
     public <T> T getValue(CapabilityEntityData<T> c) {
-        this.lock.readLock().lock();
+        //this.lock.readLock().lock();
         try {
             return c.getValue();
         } finally {
-            this.lock.readLock().unlock();
+        //    this.lock.readLock().unlock();
         }
     }
 
@@ -91,7 +91,7 @@ public class SynchedCapabilityData {
     }
 
     public <T> void setValue(CapabilityEntityData<T> c, T value, boolean assertChanged) {
-        this.lock.writeLock().lock();
+        //this.lock.writeLock().lock();
         try {
             if (assertChanged || ObjectUtils.notEqual(value, c.getValue())) {
                 c.setValue(value);
@@ -99,37 +99,37 @@ public class SynchedCapabilityData {
                 this.anyOfDirty.set(true);
             }
         } finally {
-            this.lock.writeLock().unlock();
+        //    this.lock.writeLock().unlock();
         }
     }
 
     public void forEachRead(Consumer<CapabilityEntityData<?>> consumer) {
-        this.lock.readLock().lock();
+        //this.lock.readLock().lock();
         try {
             for (CapabilityEntityData<?> capabilityEntityData : this.DEFINED_DATA.values()) {
                 if (capabilityEntityData == null) continue;
                 consumer.accept(capabilityEntityData);
             }
         } finally {
-            this.lock.readLock().unlock();
+        //    this.lock.readLock().unlock();
         }
     }
 
     public void forEachWrite(Consumer<CapabilityEntityData<?>> consumer) {
-        this.lock.writeLock().lock();
+        //this.lock.writeLock().lock();
         try {
             for (CapabilityEntityData<?> capabilityEntityData : this.DEFINED_DATA.values()) {
                 if (capabilityEntityData == null) continue;
                 consumer.accept(capabilityEntityData);
             }
         } finally {
-            this.lock.writeLock().unlock();
+        //    this.lock.writeLock().unlock();
         }
     }
     @Nullable
     public List<CapabilityEntityData<?>> getNonDefaultValues() {
         List<CapabilityEntityData<?>> list = null;
-        this.lock.readLock().lock();
+        //this.lock.readLock().lock();
 
         for(CapabilityEntityData<?> capabilityEntityData : this.DEFINED_DATA.values()) {
             if (!capabilityEntityData.isInitValue()) {
@@ -141,7 +141,7 @@ public class SynchedCapabilityData {
             }
         }
 
-        this.lock.readLock().unlock();
+        //this.lock.readLock().unlock();
         return list;
     }
     @SuppressWarnings("unchecked")
@@ -150,7 +150,7 @@ public class SynchedCapabilityData {
     }
 
     public void assignValues(List<CapabilityEntityData<?>> capabilityEntityDataList) {
-        this.lock.writeLock().lock();
+        //this.lock.writeLock().lock();
 
         try {
             for (CapabilityEntityData<?> dataFrom : capabilityEntityDataList) {
@@ -161,34 +161,34 @@ public class SynchedCapabilityData {
                 }
             }
         } finally {
-            this.lock.writeLock().unlock();
+        //    this.lock.writeLock().unlock();
         }
     }
 
     @Deprecated
     public void dirtyAll() {
         this.anyOfDirty.set(true);
-        this.lock.writeLock().lock();
+        //this.lock.writeLock().lock();
         try {
             for (CapabilityEntityData<?> ced : DEFINED_DATA.values())
                 ced.setDirty(true);
         } finally {
-            this.lock.writeLock().unlock();
+        //    this.lock.writeLock().unlock();
         }
     }
     public void dirtySingle(CapabilityEntityData<?> ced) {
         if (!ced.isDirty()) {
             this.anyOfDirty.set(true);
-            this.lock.writeLock().lock();
+            //this.lock.writeLock().lock();
             try {
                 ced.setDirty(true);
             } finally {
-                this.lock.writeLock().unlock();
+            //    this.lock.writeLock().unlock();
             }
         }
     }
     public void dirtyAllNoneInitValue() {
-        this.lock.writeLock().lock();
+        //this.lock.writeLock().lock();
         try {
             for (CapabilityEntityData<?> ced : DEFINED_DATA.values()) {
                 //System.out.printf("Init:%s, Current:%s%n", ced.getInitValue(), ced.getValue());
@@ -198,14 +198,14 @@ public class SynchedCapabilityData {
                 }
             }
         } finally {
-            this.lock.writeLock().unlock();
+        //    this.lock.writeLock().unlock();
         }
     }
 
     public List<CapabilityEntityData<?>> packData() {
         List<CapabilityEntityData<?>> list = new ObjectArrayList<>();
         if (this.anyOfDirty.get()) {
-            this.lock.readLock().lock();
+            //this.lock.readLock().lock();
             try {
                 for (CapabilityEntityData<?> element : this.DEFINED_DATA.values()) {
                     if (element.isDirty()) {
@@ -215,7 +215,7 @@ public class SynchedCapabilityData {
                 }
             } finally {
                 this.anyOfDirty.set(false);
-                this.lock.readLock().unlock();
+            //    this.lock.readLock().unlock();
             }
         }
         return list;
