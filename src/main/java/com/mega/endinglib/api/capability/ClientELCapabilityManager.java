@@ -12,7 +12,7 @@ public class ClientELCapabilityManager {
     @SubscribeEvent
     public static void playerLoggedInEvent(ClientPlayerNetworkEvent.LoggingIn event) {
         Player player = event.getPlayer();
-        ELCapabilityManager.CAPABILITY_MAP.values().forEach(cap -> player.getCapability(cap).ifPresent((data) -> {
+        IEntityAutoCap.of(player).endinglib$getAutoCaps().forEach(cap -> cap.ifPresent(data -> {
             if (ELCapabilityManager.canUseSync(data, CapabilitySyncType.PLAYER_LOGGED_IN)) {
                 data.sync(new CompoundTag(), ELCapabilityManager.distFromLevel(player.level()), CapabilitySyncType.PLAYER_LOGGED_IN, player);
             }

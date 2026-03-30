@@ -2,6 +2,8 @@ package com.mega.endinglib.proxy;
 
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.ELCapabilityManager;
+import com.mega.endinglib.api.capability.annotation.AutoCapGetter;
+import com.mega.endinglib.api.capability.annotation.AutoCapManager;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.common.capability.EndingLibraryEntityCapability;
 import com.mega.endinglib.common.capability.EndingLibraryLivingCapability;
@@ -29,6 +31,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod.EventBusSubscriber
+@AutoCapManager
 public class CommonProxy implements ModProxy {
     public static LazyOptional<Capability<EndingLibraryPlayerCapability>> PLAYER_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()));
     public static LazyOptional<Capability<EndingLibraryLivingCapability>> LIVING_CAP = LazyOptional.of(() -> ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString()));
@@ -41,18 +44,23 @@ public class CommonProxy implements ModProxy {
         modBus.addListener(this::addAttributes);
     }
 
+    @AutoCapGetter(EndingLibraryPlayerCapability.class)
     public static EndingLibraryPlayerCapability getCameraCap(Player player) {
         return player.getCapability(PLAYER_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString()))).orElseThrow(NullPointerException::new);
     }
+    @AutoCapGetter(EndingLibraryPlayerCapability.class)
     public static LazyOptional<EndingLibraryPlayerCapability> getCameraCapOptional(Player player) {
         return player.getCapability(PLAYER_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryPlayerCapability.NAME.toString())));
     }
+    @AutoCapGetter(EndingLibraryLivingCapability.class)
     public static LazyOptional<EndingLibraryLivingCapability> getLivingCapOptional(LivingEntity livingEntity) {
         return livingEntity.getCapability(LIVING_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryLivingCapability.NAME.toString())));
     }
+    @AutoCapGetter(EndingLibraryEntityCapability.class)
     public static LazyOptional<EndingLibraryEntityCapability> getEntityCapOptional(Entity entity) {
         return entity.getCapability(ENTITY_CAP.orElse(ELCapabilityManager.getCapability(EndingLibraryEntityCapability.NAME.toString())));
     }
+    @AutoCapGetter(TextDisplayCapability.class)
     public static LazyOptional<TextDisplayCapability> getTextCapOptional(Display.TextDisplay entity) {
         return entity.getCapability(TEXT_CAP.orElse(ELCapabilityManager.getCapability(TextDisplayCapability.NAME.toString())));
     }

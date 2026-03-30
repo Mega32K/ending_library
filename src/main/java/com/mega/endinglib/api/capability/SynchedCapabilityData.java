@@ -5,11 +5,9 @@ import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.syncher.SynchedEntityData;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -189,7 +187,7 @@ public class SynchedCapabilityData {
             }
         }
     }
-    public void dirtyAllNotInitValue() {
+    public void dirtyAllNoneInitValue() {
         this.lock.writeLock().lock();
         try {
             for (CapabilityEntityData<?> ced : DEFINED_DATA.values()) {

@@ -22,14 +22,12 @@ public abstract class EntityRenderDispatcherMixin {
     private <T extends Entity> void wrapOriginalRender(EntityRenderer<? extends T> instance, T entity, float p_114486_, float pTicks, PoseStack poseStack, MultiBufferSource p_114489_, int p_114490_, Operation<Void> original) {
         ExtraEntityData data = ExtraEntity.of(entity).endinglib$getExtraEntityData();
         if (data.hasCustomRenderScale) {
-            CommonProxy.getEntityCapOptional(entity).ifPresent(cap -> {
-                cap.getRenderScale().ifPresent(scale -> {
-                    poseStack.pushPose(); 
-                    poseStack.scale(data.getScaleX(scale.x, pTicks), data.getScaleY(scale.y, pTicks), data.getScaleZ(scale.z, pTicks));
-                    original.call(instance, entity, p_114486_, pTicks, poseStack, p_114489_, p_114490_);
-                    poseStack.popPose();
-                });
-            });
+            if (data.renderScale != null) {
+                poseStack.pushPose();
+                poseStack.scale(data.getScaleX(pTicks), data.getScaleY(pTicks), data.getScaleZ(pTicks));
+                original.call(instance, entity, p_114486_, pTicks, poseStack, p_114489_, p_114490_);
+                poseStack.popPose();
+            }
         } else {
             original.call(instance, entity, p_114486_, pTicks, poseStack, p_114489_, p_114490_);
         }

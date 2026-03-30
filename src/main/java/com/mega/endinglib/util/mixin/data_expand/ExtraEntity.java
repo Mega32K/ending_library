@@ -8,6 +8,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.phys.AABB;
 
+import java.util.Collection;
+
 public interface ExtraEntity {
     static ExtraEntity of(Entity entity) {
         return (ExtraEntity) entity;
@@ -19,7 +21,7 @@ public interface ExtraEntity {
     void endingLibrary$setCapEntityDimensions(EntityDimensions capEntityDimensions);
     AABB endingLibrary$getCapHitbox();
     void endingLibrary$setCapHitbox(AABB hitbox);
-    ObjectSet<EntitySyncCapabilityBase> endinglib$Caps();
-    void makeEndinglibCaps(ObjectSet<EntitySyncCapabilityBase> caps);
+    EntitySyncCapabilityBase[] endinglib$Caps();
+    void makeEndinglibCaps(Collection<EntitySyncCapabilityBase> caps);
     ExtraEntityData endinglib$getExtraEntityData();
 }

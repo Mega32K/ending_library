@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExtraEntityData {
@@ -35,6 +36,7 @@ public class ExtraEntityData {
     public byte pushable;
     public byte pickable;
     public byte canBeCollideWith;
+    public Vector3f renderScale;
     public ResourceLocation customModelTexture = null;
     //@Nullable
     //public Vector4f customShaderColor = null;
@@ -43,37 +45,36 @@ public class ExtraEntityData {
     }
     public void tick() {
     }
-    public void onRenderScaleUpdate() {
+    public void onRenderScaleUpdate(Vector3f renderScale) {
         interpolationStartClientTick = tickCount;
         if (!this.hasCustomRenderScale) {
             this.scaleXOld = this.scaleYOld = this.scaleZOld = 1.0f;
         }
+        this.renderScale = renderScale;
     }
     public void forceTick() {
-        if (tickCount - this.interpolationStartClientTick > interpolationDuration)
-            CommonProxy.getEntityCapOptional(entity).ifPresent(capability -> {
-                capability.getRenderScale().ifPresent(scale -> {
-                    this.scaleXOld = scale.x;
-                    this.scaleYOld = scale.y;
-                    this.scaleZOld = scale.z;
-                });
-            });
+        if (tickCount - this.interpolationStartClientTick > interpolationDuration && this.hasCustomRenderScale)
+            if (this.renderScale != null) {
+                this.scaleXOld = renderScale.x;
+                this.scaleYOld = renderScale.y;
+                this.scaleZOld = renderScale.z;
+            }
         tickCount++;
         if (entity instanceof Display.TextDisplay display) {
             CommonProxy.getTextCapOptional(display).ifPresent(cap-> cap.forceTick(display));
         }
     }
-    public float getScaleX(float x, float partialTicks) {
+    public float getScaleX(float partialTicks) {
         if (isFrozen) partialTicks = TimeContext.safeClientFrameTime();
-        return Mth.lerp(calculateInterpolationProgress(partialTicks), this.scaleXOld, x);
+        return Mth.lerp(calculateInterpolationProgress(partialTicks), this.scaleXOld, this.renderScale.x);
     }
-    public float getScaleY(float y, float partialTicks) {
+    public float getScaleY(float partialTicks) {
         if (isFrozen) partialTicks = TimeContext.safeClientFrameTime();
-        return Mth.lerp(calculateInterpolationProgress(partialTicks), this.scaleYOld, y);
+        return Mth.lerp(calculateInterpolationProgress(partialTicks), this.scaleYOld, this.renderScale.y);
     }
-    public float getScaleZ(float z, float partialTicks) {
+    public float getScaleZ(float partialTicks) {
         if (isFrozen) partialTicks = TimeContext.safeClientFrameTime();
-        return Mth.lerp(calculateInterpolationProgress(partialTicks), this.scaleZOld, z);
+        return Mth.lerp(calculateInterpolationProgress(partialTicks), this.scaleZOld, this.renderScale.z);
     }
 
     public void setInterpolationDuration(int interpolationDuration) {

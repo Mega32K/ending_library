@@ -50,17 +50,14 @@ public abstract class ServerEntityMixin {
     private final Queue<S2CCapabilitySeenByDataPacket> seenByQueue = Queues.newArrayDeque();
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(ServerLevel p_8528_, Entity entity, int p_8530_, boolean p_8531_, Consumer<Packet<?>> p_8532_, CallbackInfo ci) {
-        ObjectSet<EntitySyncCapabilityBase> caps = ELCapabilityManager.getCaps(entity);
-        int sizeOfCaps = caps.size();
-        if (sizeOfCaps > 0) {
-            caps.forEach(capability -> {
-                List<CapabilityEntityData<?>> l = capability.getDataManager().getNonDefaultValues();
-                if (l != null) {
-                    if (endinglib$trackedCapDataValues == null)
-                        endinglib$trackedCapDataValues = new Object2ObjectOpenHashMap<>(sizeOfCaps);
-                    endinglib$trackedCapDataValues.put(capability.getRegistryName().toString(), l);
-                }
-            });
+        EntitySyncCapabilityBase[] caps = ELCapabilityManager.getCaps(entity);
+        for (EntitySyncCapabilityBase capability : caps) {
+            List<CapabilityEntityData<?>> l = capability.getDataManager().getNonDefaultValues();
+            if (l != null) {
+                if (endinglib$trackedCapDataValues == null)
+                    endinglib$trackedCapDataValues = new Object2ObjectOpenHashMap<>(caps.length);
+                endinglib$trackedCapDataValues.put(capability.getRegistryName().toString(), l);
+            }
         }
     }
     @Inject(method = "sendPairingData", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V", shift = At.Shift.AFTER, ordinal = 0))
@@ -76,8 +73,8 @@ public abstract class ServerEntityMixin {
     }
     @Inject(method = "sendChanges", at = @At("HEAD"))
     private void tickCheckCapData(CallbackInfo ci) {
-        ObjectSet<EntitySyncCapabilityBase> caps = ELCapabilityManager.getCaps(entity);
-        int sizeOfCaps = caps.size();
+        EntitySyncCapabilityBase[] caps = ELCapabilityManager.getCaps(entity);
+        int sizeOfCaps = caps.length;
         if (sizeOfCaps > 0) {
             Map<String, List<CapabilityEntityData<?>>> dirtyValues = null;
             for (EntitySyncCapabilityBase capability : caps) {

@@ -28,7 +28,7 @@ public abstract class GameRendererMixin {
         Player player = ClientWrapped.clientPlayer();
         if (player != null && player.isAlive()) {
             CommonProxy.getCameraCapOptional(player).ifPresent(cap -> {
-                f.setValue(original * CommonProxy.getCameraCap(player).getWalkingViewMultiplier());
+                f.setValue(original * cap.getWalkingViewMultiplier());
             });
         }
         return f.getValue();
@@ -40,7 +40,7 @@ public abstract class GameRendererMixin {
         Player player = ClientWrapped.clientPlayer();
         if (player != null && original instanceof Double d && player.isAlive()) {
             CommonProxy.getCameraCapOptional(player).ifPresent(cap -> {
-                object.setValue(MUtils.objectForced((double) (d * CommonProxy.getCameraCap(player).getHurtViewMultiplier())));
+                object.setValue(MUtils.objectForced((double) (d * cap.getHurtViewMultiplier())));
             });
         }
         return object.getValue();

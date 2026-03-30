@@ -111,7 +111,7 @@ public class EndingLibraryEntityCapability extends EntitySyncCapabilityBase {
             if (entity != null) {
                 ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
                 eed.hasCustomRenderScale = this.getRenderScale().isPresent();
-                eed.onRenderScaleUpdate();
+                eed.onRenderScaleUpdate(this.getRenderScale().isPresent() ? this.getRenderScale().get() : null);
             }
         } else if (data.equals(RENDER_SCALE_EASING)) {
             if (entity != null) {

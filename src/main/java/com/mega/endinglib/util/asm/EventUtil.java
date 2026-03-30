@@ -1,5 +1,7 @@
 package com.mega.endinglib.util.asm;
 
+import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
+import com.mega.endinglib.api.capability.IEntityAutoCap;
 import com.mega.endinglib.api.item.component.DataComponents;
 import com.mega.endinglib.api.item.component.ItemComponentManager;
 import com.mega.endinglib.api.item.component.type.*;
@@ -24,12 +26,17 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.extensions.IForgeItemStack;
+import net.minecraftforge.common.util.LazyOptional;
 
 @SuppressWarnings("unused")
 public class EventUtil {
     public static long getMillis(long src) {
         return TimeContext.Both.timeStopModifyMillis;
+    }
+    public static LazyOptional<EntitySyncCapabilityBase> fastEntityGetCapability(Entity entity, Capability<?> capability, Class<EntitySyncCapabilityBase> klass) {
+        return IEntityAutoCap.of(entity).endinglib$getAutoCap(klass);
     }
     public static boolean canElytraFly(IForgeItemStack stack) {
         if (stack instanceof ItemStack itemStack) {
