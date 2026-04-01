@@ -12,6 +12,6 @@ public abstract class CapabilityProviderMixin {
     @Inject(method = "invalidateCaps", at = @At("TAIL"), remap = false)
     private void entityAutoCapsInvalidate(CallbackInfo ci) {
         if ((Object)this instanceof IEntityAutoCap cap)
-            cap.endinglib$clearAllAutoCaps();
+            cap.endinglib$clearAutoCaps();
     }
 }
