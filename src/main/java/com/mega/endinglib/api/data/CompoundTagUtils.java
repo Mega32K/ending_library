@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -348,6 +349,6 @@ public class CompoundTagUtils {
             CompoundTag kvData = dataTag.getCompound(i);
             map.put(keyReader.apply(kvData, "key"), valueReader.apply(kvData, "value"));
         }
-        return map;
+        return Collections.unmodifiableMap(map);
     }
 }
