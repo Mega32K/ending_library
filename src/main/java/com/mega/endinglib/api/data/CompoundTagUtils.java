@@ -1,11 +1,13 @@
 package com.mega.endinglib.api.data;
 
+import com.google.common.collect.Maps;
 import com.mega.endinglib.api.client.Easing;
 import com.mega.endinglib.util.java.short4.Short4;
 import com.mega.endinglib.util.java.short4.Short4Packer;
 import com.mega.endinglib.util.mc.codec.Codecs;
 import io.netty.handler.codec.DecoderException;
 import it.unimi.dsi.fastutil.bytes.ByteConsumer;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
@@ -23,6 +25,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
@@ -82,6 +85,9 @@ public class CompoundTagUtils {
 
     public static boolean containsShort4(CompoundTag nbt, String key) {
         return nbt.contains(key, Tag.TAG_LONG);
+    }
+    public static boolean containsMap(CompoundTag nbt, String key) {
+        return nbt.contains(key, Tag.TAG_COMPOUND);
     }
     public static <T> void putOptional(CompoundTag nbt, String key, Optional<T> optional, CompoundTagWriter<T> writer) {
         CompoundTag tag = new CompoundTag();
@@ -315,5 +321,33 @@ public class CompoundTagUtils {
                 Short4Packer.unpackC(packed),
                 Short4Packer.unpackD(packed)
         );
+    }
+    public static <K, V> void putMap(CompoundTag nbt, String key, Map<K, V> map, CompoundTagWriter<K> keyWriter, CompoundTagWriter<V> valueWriter) {
+        CompoundTag mapTag = new CompoundTag();
+        mapTag.putInt("Size", map.size());
+        ListTag dataTag = new ListTag();
+        for (var entry : map.entrySet()) {
+            CompoundTag singleEntryTag = new CompoundTag();
+            keyWriter.accept(singleEntryTag, "key", entry.getKey());
+            valueWriter.accept(singleEntryTag, "value", entry.getValue());
+            dataTag.add(singleEntryTag);
+        }
+        mapTag.put("Data", dataTag);
+        nbt.put(key, mapTag);
+    }
+    public static <K, V> Map<K, V> getMap(CompoundTag tag, String key, CompoundTagReader<K> keyReader, CompoundTagReader<V> valueReader) {
+        if (!CompoundTagUtils.containsMap(tag, key))
+            return Map.of();
+        CompoundTag mapTag = tag.getCompound(key);
+        int size = mapTag.getInt("Size");
+        if (size <= 0)
+            return Map.of();
+        ListTag dataTag = tag.getList("Data", Tag.TAG_COMPOUND);
+        Map<K, V> map = new Object2ObjectOpenHashMap<>(size);
+        for (int i=0;i<size;i++) {
+            CompoundTag kvData = dataTag.getCompound(i);
+            map.put(keyReader.apply(kvData, "key"), valueReader.apply(kvData, "value"));
+        }
+        return map;
     }
 }
