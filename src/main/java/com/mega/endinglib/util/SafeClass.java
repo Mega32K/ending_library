@@ -14,6 +14,7 @@ public class SafeClass {
     private static int irisLoaded = -1;
     private static int kubejs_loaded = -1;
     private static int ibeeditor_loaded = -1;
+    private static int legendary_tooltips_loaded = -1;
     public static int yearDay() {
         if (yearDate == 0) {
             yearDate = Integer.parseInt(String.format("%s%s", date.getMonth() + 1, date.getDate()));
@@ -44,6 +45,13 @@ public class SafeClass {
             irisLoaded = ModList.get().isLoaded("oculus") ? 1 : 2;
         }
         return irisLoaded == 1;
+    }
+
+    public static boolean isLegendaryTooltipsLoaded() {
+        if (legendary_tooltips_loaded == -1) {
+            legendary_tooltips_loaded = ModList.get().isLoaded("legendarytooltips") ? 1 : 2;
+        }
+        return legendary_tooltips_loaded == 1;
     }
 
     public static boolean usingShaderPack() {

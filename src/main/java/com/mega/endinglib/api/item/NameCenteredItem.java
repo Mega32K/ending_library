@@ -16,7 +16,7 @@ public class NameCenteredItem extends Item {
     @Override
     public @NotNull Component getName(@NotNull ItemStack p_41458_) {
         Component component = super.getName(p_41458_);
-        if (!SafeClass.isModernUILoaded() && this.shouldCenteredName(p_41458_)) {
+        if (!SafeClass.isModernUILoaded() && !SafeClass.isLegendaryTooltipsLoaded() && this.shouldCenteredName(p_41458_)) {
             if (component instanceof MutableComponent mc)
                 return mc.withStyle(TextColorUtils.MIDDLE);
         }
