@@ -46,6 +46,13 @@ public class ELCapabilityManager {
     @SubscribeEvent
     public static void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
+        if (entity instanceof Player) {
+            try {
+                System.out.println(entity.getClass());
+            }catch (Throwable t) {
+                t.printStackTrace();
+            }
+        }
         ObjectArrayList<EntitySyncCapabilityBase> endinglibCaps = null;
         for (String registryName : CAPABILITY_SUPPLIER_MAP.keySet()) {
             if (endinglibCaps == null) endinglibCaps = new ObjectArrayList<>();

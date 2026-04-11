@@ -113,6 +113,7 @@
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\java\com\mega\endinglib\mixin\advanced\client\" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources" />
     </key>
@@ -310,6 +311,17 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/ELCapabilityManager.java</url>
+          <line>50</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

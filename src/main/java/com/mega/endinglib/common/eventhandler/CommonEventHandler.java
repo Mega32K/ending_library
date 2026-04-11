@@ -12,6 +12,7 @@ import com.mega.endinglib.common.network.s2c.input.S2CDisabledInputPermissionsPa
 import com.mega.endinglib.common.network.s2c.key.S2CDynamicKeyMappingSyncPacket;
 import com.mega.endinglib.common.network.s2c.shader.S2CDynamicEffectReadPacket;
 import com.mega.endinglib.common.network.s2c.timestop.TimeStopSkillPacket;
+import com.mega.endinglib.proxy.CommonProxy;
 import com.mega.endinglib.server.resource.DynamicKeyMappingReloadListener;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
@@ -85,6 +86,7 @@ public class CommonEventHandler {
     public static void onPlayerPreTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             if (!event.player.level().isClientSide) {
+                CommonProxy.getCameraCapOptional(event.player).ifPresent(cap -> System.out.println(1));
                 float extra = ModAttributes.getExhaustion(event.player);
                 if (extra > 0F)
                     event.player.causeFoodExhaustion(extra);
