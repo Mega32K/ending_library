@@ -86,7 +86,6 @@ public class CommonEventHandler {
     public static void onPlayerPreTick(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             if (!event.player.level().isClientSide) {
-                CommonProxy.getCameraCapOptional(event.player).ifPresent(cap -> System.out.println(1));
                 float extra = ModAttributes.getExhaustion(event.player);
                 if (extra > 0F)
                     event.player.causeFoodExhaustion(extra);

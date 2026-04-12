@@ -35,8 +35,31 @@ public class EventUtil {
     public static long getMillis(long src) {
         return TimeContext.Both.timeStopModifyMillis;
     }
+    /**
+     * Fast path for entity capability lookup used by ASM-rewritten getters.
+     * <p>
+     * It first reads the per-entity auto-cap cache. If the cache misses, it falls back to
+     * Forge's native {@code Entity#getCapability} result and writes it back into the cache.<br>
+     * This fallback prevents stale-cache regressions after lifecycle transitions (for example
+     * player dimension changes) where caps can be invalidated and rebuilt.
+     */
     public static LazyOptional<EntitySyncCapabilityBase> fastEntityGetCapability(Entity entity, Capability<?> capability, Class<EntitySyncCapabilityBase> klass) {
-        return IEntityAutoCap.of(entity).endinglib$getAutoCap(klass);
+        IEntityAutoCap autoCap = IEntityAutoCap.of(entity);
+        LazyOptional<EntitySyncCapabilityBase> cached = autoCap.endinglib$getAutoCap(klass);
+        if (cached.isPresent()) {
+            return cached;
+        }
+        if (capability == null) {
+            return LazyOptional.empty();
+        }
+
+        LazyOptional<EntitySyncCapabilityBase> fallback = entity.getCapability((Capability<EntitySyncCapabilityBase>) capability).cast();
+        fallback.ifPresent(instance -> {
+            if (klass.isInstance(instance)) {
+                autoCap.endinglib$putAutoCap(klass, instance);
+            }
+        });
+        return fallback;
     }
     public static boolean canElytraFly(IForgeItemStack stack) {
         if (stack instanceof ItemStack itemStack) {

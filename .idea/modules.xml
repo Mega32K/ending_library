@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CollapsingWorld.System-e.EndingLibrary.CosmicLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/CollapsingWorld.System-e.EndingLibrary.CosmicLib.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CosmicLib.main.iml" filepath="$PROJECT_DIR$/.idea/modules/CosmicLib.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/CosmicLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/CosmicLib.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/EndingLibrary.CosmicLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/EndingLibrary.CosmicLib.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/System-e.EndingLibrary.CosmicLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/System-e.EndingLibrary.CosmicLib.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.mega.endinglib.CosmicLib.main.iml" filepath="$PROJECT_DIR$/.idea/modules/com.mega.endinglib.CosmicLib.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/com.mega.endinglib.CosmicLib.test.iml" filepath="$PROJECT_DIR$/.idea/modules/com.mega.endinglib.CosmicLib.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/EndingLibrary.main.iml" filepath="$PROJECT_DIR$/.idea/modules/EndingLibrary.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/EndingLibrary.test.iml" filepath="$PROJECT_DIR$/.idea/modules/EndingLibrary.test.iml" />
     </modules>
   </component>
 </project>

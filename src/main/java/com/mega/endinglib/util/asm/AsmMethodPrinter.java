@@ -9,9 +9,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 import java.util.*;
 
-/**
- * 将 ASM 的 MethodNode 渲染成接近 Java 源码的方法声明（不含 instructions）。
- */
+
 public final class AsmMethodPrinter {
 
     private AsmMethodPrinter() {}
@@ -23,22 +21,18 @@ public final class AsmMethodPrinter {
 
         StringBuilder sb = new StringBuilder();
 
-        // 1) 方法注解
         appendAnnotations(sb, mn.visibleAnnotations, "");
         appendAnnotations(sb, mn.invisibleAnnotations, "");
 
-        // 2) 修饰符
         String modifiers = buildMethodModifiers(mn.access, ownerIsInterface, ownerIsAnnotation, "<init>".equals(mn.name));
         if (!modifiers.isEmpty()) {
             sb.append(modifiers).append(' ');
         }
 
-        // 3) 泛型签名（原样注释展示）
         if (mn.signature != null) {
             sb.append("/*signature=").append(mn.signature).append("*/ ");
         }
 
-        // 4) 名称 + 参数 + 返回值
         Type mt = Type.getMethodType(mn.desc);
         Type ret = mt.getReturnType();
         Type[] args = mt.getArgumentTypes();
@@ -62,21 +56,18 @@ public final class AsmMethodPrinter {
                     .append(')');
         }
 
-        // 5) throws
         if (mn.exceptions != null && !mn.exceptions.isEmpty()) {
             StringJoiner tj = new StringJoiner(", ");
-            for (String ex : (List<String>) mn.exceptions) {
+            for (String ex : mn.exceptions) {
                 tj.add(ex.replace('/', '.'));
             }
             sb.append(" throws ").append(tj);
         }
 
-        // 6) 注解方法默认值（仅 annotation type 内有意义）
         if (mn.annotationDefault != null) {
             sb.append(" default ").append(annotationValueToString(mn.annotationDefault));
         }
 
-        // 7) 结尾（不打印方法体）
         sb.append(';');
 
         return sb.toString();
@@ -85,12 +76,10 @@ public final class AsmMethodPrinter {
     private static String buildMethodModifiers(int access, boolean ownerIsInterface, boolean ownerIsAnnotation, boolean isCtor) {
         List<String> out = new ArrayList<>();
 
-        // 访问级别
         if ((access & Opcodes.ACC_PUBLIC) != 0) out.add("public");
         else if ((access & Opcodes.ACC_PROTECTED) != 0) out.add("protected");
         else if ((access & Opcodes.ACC_PRIVATE) != 0) out.add("private");
 
-        // 接口/注解中的方法：abstract 通常隐含；但 default/static/private 在 Java8+ 可出现
         boolean isAbstract = (access & Opcodes.ACC_ABSTRACT) != 0;
         boolean isStatic = (access & Opcodes.ACC_STATIC) != 0;
         boolean isFinal = (access & Opcodes.ACC_FINAL) != 0;
@@ -113,7 +102,6 @@ public final class AsmMethodPrinter {
         boolean isStatic = (mn.access & Opcodes.ACC_STATIC) != 0;
         boolean isVarArgs = (mn.access & Opcodes.ACC_VARARGS) != 0;
 
-        // 参数槽位 index：实例方法从1开始，静态从0开始
         int slot = isStatic ? 0 : 1;
         Map<Integer, String> lvtNameBySlot = buildLvtParamNameMap(mn);
 
@@ -135,16 +123,11 @@ public final class AsmMethodPrinter {
         return sj.toString();
     }
 
-    /**
-     * 从 localVariables 中提取参数名映射：slot -> name
-     * 说明：若无调试信息，可能为空。
-     */
     private static Map<Integer, String> buildLvtParamNameMap(MethodNode mn) {
         Map<Integer, String> map = new HashMap<>();
         if (mn.localVariables == null) return map;
 
-        for (LocalVariableNode lv : (List<LocalVariableNode>) mn.localVariables) {
-            // 简单策略：同一 slot 首次出现的名字用于参数显示
+        for (LocalVariableNode lv : mn.localVariables) {
             map.putIfAbsent(lv.index, lv.name);
         }
         return map;
