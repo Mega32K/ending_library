@@ -41,5 +41,15 @@
       <option name="name" value="Iron's Maven - Release" />
       <option name="url" value="https://code.redspace.io/releases" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="Mojang Meta" />
+      <option name="name" value="Mojang Meta" />
+      <option name="url" value="https://maven.neoforged.net/mojang-meta/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="NeoForged Releases" />
+      <option name="name" value="NeoForged Releases" />
+      <option name="url" value="https://maven.neoforged.net/releases/" />
+    </remote-repository>
   </component>
 </project>
