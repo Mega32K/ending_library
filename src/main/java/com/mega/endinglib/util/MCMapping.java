@@ -1,5 +1,7 @@
 package com.mega.endinglib.util;
 
+import cpw.mods.modlauncher.Launcher;
+import cpw.mods.modlauncher.api.IEnvironment;
 import net.minecraftforge.common.IExtensibleEnum;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -10,6 +12,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 public enum MCMapping implements IExtensibleEnum {
     ICapabilityProvider$METHOD$getCapability1("getCapability", "getCapability", "(Lnet/minecraftforge/common/capabilities/Capability;)Lnet/minecraftforge/common/util/LazyOptional;"),
@@ -103,16 +106,38 @@ public enum MCMapping implements IExtensibleEnum {
      * Only uses JVM/system properties that are available very early in the launch lifecycle.
      */
     public static boolean isDevelopmentEnvironment() {
+        Boolean launcherResult = getLaunchTargetDevState();
+        if (launcherResult != null) {
+            return launcherResult;
+        }
         return Boolean.getBoolean("fml.deobfuscatedEnvironment")
                 || Boolean.getBoolean("FORGE_DEV")
                 || isDevLaunchTarget(System.getProperty("launchTarget"));
+    }
+
+    private static Boolean getLaunchTargetDevState() {
+        try {
+            Launcher launcher = Launcher.INSTANCE;
+            if (launcher == null) {
+                return null;
+            }
+            String launchTarget = launcher.environment()
+                    .getProperty(IEnvironment.Keys.LAUNCHTARGET.get())
+                    .orElse(null);
+            if (launchTarget == null || launchTarget.isEmpty()) {
+                return null;
+            }
+            return isDevLaunchTarget(launchTarget);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     private static boolean isDevLaunchTarget(String launchTarget) {
         if (launchTarget == null || launchTarget.isEmpty()) {
             return false;
         }
-        String lowerTarget = launchTarget.toLowerCase(java.util.Locale.ROOT);
+        String lowerTarget = launchTarget.toLowerCase(Locale.ROOT);
         return lowerTarget.contains("dev");
     }
 
