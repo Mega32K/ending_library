@@ -343,7 +343,7 @@ public class CompoundTagUtils {
         int size = mapTag.getInt("Size");
         if (size <= 0)
             return Map.of();
-        ListTag dataTag = tag.getList("Data", Tag.TAG_LIST);
+        ListTag dataTag = mapTag.getList("Data", Tag.TAG_COMPOUND);
         Map<K, V> map = new Object2ObjectOpenHashMap<>(size);
         for (int i=0;i<size;i++) {
             CompoundTag kvData = dataTag.getCompound(i);
