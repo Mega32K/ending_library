@@ -44,7 +44,6 @@ public class CollisionHelper {
     }
 
 
-
     private static AABB createDetectionBox(AABB entityBox, DirectionArgument.Enum face) {
         double margin = 1.0E-5;
 
