@@ -97,8 +97,23 @@ public enum MCMapping implements IExtensibleEnum {
     public MethodInsnNode makeMIN(int opcode, String owner) {
         return new MethodInsnNode(opcode, owner, this.get(), this.desc);
     }
+
+    /**
+     * CoreMod-stage safe development-environment check.
+     * Only uses JVM/system properties that are available very early in the launch lifecycle.
+     */
     public static boolean isDevelopmentEnvironment() {
-        return Boolean.getBoolean("FORGE_DEV");
+        return Boolean.getBoolean("fml.deobfuscatedEnvironment")
+                || Boolean.getBoolean("FORGE_DEV")
+                || isDevLaunchTarget(System.getProperty("launchTarget"));
+    }
+
+    private static boolean isDevLaunchTarget(String launchTarget) {
+        if (launchTarget == null || launchTarget.isEmpty()) {
+            return false;
+        }
+        String lowerTarget = launchTarget.toLowerCase(java.util.Locale.ROOT);
+        return lowerTarget.contains("dev");
     }
 
     public String get() {
