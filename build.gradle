@@ -96,8 +96,16 @@ minecraft {
 
         client {
             jvmArg "-XX:+AllowEnhancedClassRedefinition"
+            args '--username', 'Mega32K'
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        client2 {
+            parent minecraft.runs.client
+            workingDirectory project.file('run-client2')
+            jvmArg "-XX:+AllowEnhancedClassRedefinition"
+            args '--username', 'Player2'
         }
 
         server {
@@ -242,4 +250,3 @@ repositories {
         url = "https://code.redspace.io/snapshots"
     }
 }
-
