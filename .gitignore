@@ -116,6 +116,9 @@ gradle-app.setting
 
 # Common working directory
 run/
+run-client1/
+run-client2/
+run-data/
 
 #Spyglass Extension(vsc) compat
 spyglass/
