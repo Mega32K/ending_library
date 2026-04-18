@@ -329,9 +329,13 @@ public class CompoundTagUtils {
         ListTag dataTag = new ListTag();
         for (var entry : map.entrySet()) {
             CompoundTag singleEntryTag = new CompoundTag();
-            keyWriter.accept(singleEntryTag, "key", entry.getKey());
-            valueWriter.accept(singleEntryTag, "value", entry.getValue());
-            dataTag.add(singleEntryTag);
+            K mKey = entry.getKey();
+            V mValue = entry.getValue();
+            if (mKey != null && mValue != null) {
+                keyWriter.accept(singleEntryTag, "key", mKey);
+                valueWriter.accept(singleEntryTag, "value", mValue);
+                dataTag.add(singleEntryTag);
+            }
         }
         mapTag.put("Data", dataTag);
         nbt.put(key, mapTag);
@@ -347,7 +351,14 @@ public class CompoundTagUtils {
         Map<K, V> map = new Object2ObjectOpenHashMap<>(size);
         for (int i=0;i<size;i++) {
             CompoundTag kvData = dataTag.getCompound(i);
-            map.put(keyReader.apply(kvData, "key"), valueReader.apply(kvData, "value"));
+            try {
+                K mKey = keyReader.apply(kvData, "key");
+                V mValue = valueReader.apply(kvData, "value");
+                if (mKey != null && mValue != null)
+                    map.put(mKey, mValue);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
         }
         return Collections.unmodifiableMap(map);
     }
