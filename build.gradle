@@ -96,15 +96,25 @@ minecraft {
 
         client {
             jvmArg "-XX:+AllowEnhancedClassRedefinition"
-            args '--username', 'Mega32K'
             // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        client0 {
+            parent minecraft.runs.client
+            workingDirectory project.file('run')
+            args '--username', 'Player0'
+        }
+
+        client1 {
+            parent minecraft.runs.client
+            workingDirectory project.file('run-client1')
+            args '--username', 'Player1'
         }
 
         client2 {
             parent minecraft.runs.client
             workingDirectory project.file('run-client2')
-            jvmArg "-XX:+AllowEnhancedClassRedefinition"
             args '--username', 'Player2'
         }
 

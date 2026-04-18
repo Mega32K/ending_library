@@ -43,7 +43,7 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="EndingLibrary" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
+                <item name="forgegradle runs" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -161,7 +161,7 @@
       <recent name="com.mega.endinglib.util.mixin.data_expand" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [runClient0]">
     <configuration name="Client" type="Application" factoryName="Application">
       <envs>
         <env name="MOD_CLASSES" value="ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\classes\java\main;ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main" />
@@ -184,19 +184,6 @@
       <option name="PROGRAM_PARAMETERS" value="@E:\\CollapsingWorld\\System-e\\EndingLibrary\\build\\moddev\\dataRunProgramArgs.txt" />
       <option name="VM_PARAMETERS" value="@E:\\CollapsingWorld\\System-e\\EndingLibrary\\build\\moddev\\dataRunVmArgs.txt -Dfml.modFolders=ending_library%%E:\\CollapsingWorld\\System-e\\EndingLibrary\\build\\classes\\java\\main;ending_library%%E:\\CollapsingWorld\\System-e\\EndingLibrary\\build\\resources\\main" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MinecraftInstHandler" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.mega.endinglib.util.hack.MinecraftInstHandler" />
-      <module name="com.mega.CosmicLib.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.mega.endinglib.util.hack.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -236,28 +223,6 @@
       <ForceTestExec>false</ForceTestExec>
       <method v="2" />
     </configuration>
-    <configuration name="EndingLibrary [assemble]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="assemble" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <ForceTestExec>false</ForceTestExec>
-      <method v="2" />
-    </configuration>
     <configuration name="EndingLibrary [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -280,7 +245,7 @@
       <ForceTestExec>false</ForceTestExec>
       <method v="2" />
     </configuration>
-    <configuration name="EndingLibrary [genIntellijRuns]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="EndingLibrary [runClient0]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -291,7 +256,51 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="genIntellijRuns" />
+            <option value="runClient0" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>false</ForceTestExec>
+      <method v="2" />
+    </configuration>
+    <configuration name="EndingLibrary [runClient1]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="runClient1" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>false</ForceTestExec>
+      <method v="2" />
+    </configuration>
+    <configuration name="EndingLibrary [runClient2]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value="runClient2" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -326,11 +335,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [build]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient0]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient1]" />
+        <item itemvalue="Gradle.EndingLibrary [runClient2]" />
         <item itemvalue="Gradle.EndingLibrary [runClient]" />
-        <item itemvalue="Gradle.EndingLibrary [genIntellijRuns]" />
-        <item itemvalue="Gradle.EndingLibrary [assemble]" />
-        <item itemvalue="应用程序.MinecraftInstHandler" />
+        <item itemvalue="Gradle.EndingLibrary [build]" />
       </list>
     </recent_temporary>
   </component>
