@@ -48,6 +48,12 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="EndingLibrary" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="EndingLibrary" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="forgegradle runs" type="c8890929:TasksNode$1" />
               </path>
             </expand>
@@ -179,7 +185,7 @@
       <recent name="com.mega.endinglib.util.mixin.data_expand" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [runClient0]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
     <configuration name="Client" type="Application" factoryName="Application">
       <envs>
         <env name="MOD_CLASSES" value="ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\classes\java\main;ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main" />
@@ -353,11 +359,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [runClient0]" />
         <item itemvalue="Gradle.EndingLibrary [runClient1]" />
         <item itemvalue="Gradle.EndingLibrary [runClient2]" />
         <item itemvalue="Gradle.EndingLibrary [runClient]" />
-        <item itemvalue="Gradle.EndingLibrary [build]" />
       </list>
     </recent_temporary>
   </component>
