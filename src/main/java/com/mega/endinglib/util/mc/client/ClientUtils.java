@@ -235,10 +235,6 @@ public class ClientUtils {
         float ndcX = clipPos.x / w;
         float ndcY = clipPos.y / w;
         boolean forceBorder = clipPos.w <= 0.0F || Math.abs(ndcX) > 1.0F || Math.abs(ndcY) > 1.0F;
-        if (clipPos.w <= 0.0F) {
-            ndcX = -ndcX;
-            ndcY = -ndcY;
-        }
         if (forceBorder) {
             float scale = Math.max(Math.abs(ndcX), Math.abs(ndcY));
             if (scale <= 0.00001F) {
