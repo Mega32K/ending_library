@@ -26,10 +26,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.*;
 import net.minecraftforge.client.gui.overlay.GuiOverlayManager;
 import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import org.joml.Matrix4f;
@@ -222,6 +219,39 @@ public class ClientUtils {
         Vector4f transformedDir = new Vector4f((float) rayDir.x, (float) rayDir.y, (float) rayDir.z, 0.0F);
         transformedDir.mul(rotationMatrix);
         return (new Vec3(transformedDir.x(), transformedDir.y(), transformedDir.z())).normalize();
+    }
+    /**
+     * 将世界坐标中的点通过关卡渲染使用的投影矩阵与模型视图矩阵转换为屏幕坐标。
+     *
+     * @param matrix {@code projection * modelView} 的组合矩阵
+     * @param worldPos 世界坐标中的位置点
+     * @param screenWidth 当前 GUI 层使用的屏幕宽度
+     * @param screenHeight 当前 GUI 层使用的屏幕高度
+     * @return 转换后的屏幕坐标；若点位于相机后方或超出屏幕范围，则会根据方向设置到屏幕边框上
+     */
+    public static Vec2 projectToScreen(Matrix4f matrix, Vec3 worldPos, int screenWidth, int screenHeight) {
+        Vector4f clipPos = matrix.transform(new Vector4f(worldPos.toVector3f(), 1.0F));
+        float w = Math.max(Math.abs(clipPos.w), 0.00001F);
+        float ndcX = clipPos.x / w;
+        float ndcY = clipPos.y / w;
+        boolean forceBorder = clipPos.w <= 0.0F || Math.abs(ndcX) > 1.0F || Math.abs(ndcY) > 1.0F;
+        if (clipPos.w <= 0.0F) {
+            ndcX = -ndcX;
+            ndcY = -ndcY;
+        }
+        if (forceBorder) {
+            float scale = Math.max(Math.abs(ndcX), Math.abs(ndcY));
+            if (scale <= 0.00001F) {
+                ndcX = 0.0F;
+                ndcY = 1.0F;
+            } else {
+                ndcX /= scale;
+                ndcY /= scale;
+            }
+        }
+        float screenX = Mth.clamp(screenWidth * ((ndcX + 1.0F) * 0.5F), 8.0F, screenWidth - 8.0F);
+        float screenY = Mth.clamp(screenHeight * (1.0F - (ndcY + 1.0F) * 0.5F), 8.0F, screenHeight - 8.0F);
+        return new Vec2(screenX, screenY);
     }
     public static double cameraFov() {
         return ((AccessorGameRenderer) mc.gameRenderer).callGetFov(mc.gameRenderer.getMainCamera(), mc.getPartialTick(), true);
