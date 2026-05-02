@@ -9,6 +9,7 @@ import com.mega.endinglib.api.item.component.type.*;
 import com.mega.endinglib.api.item.component.type.function.AttackEventComponent;
 import com.mega.endinglib.api.item.component.type.function.ReleaseUsingComponent;
 import com.mega.endinglib.api.item.component.type.function.UseEventComponent;
+import com.mega.endinglib.api.item.component.type.function.UseTickEventComponent;
 import com.mega.endinglib.common.WaitingRegistryAccessTask;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
 import com.mojang.serialization.DataResult;
@@ -181,9 +182,15 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "onUseTick", at = @At("HEAD"))
     private void componentUseTick(Level level, LivingEntity user, int remainingTicks, CallbackInfo ci) {
-        ConsumableComponent consumableComponent = this.componentManager.get(DataComponents.CONSUMABLE);
-        if (consumableComponent != null && consumableComponent.shouldSpawnParticlesAndPlaySounds(remainingTicks)) {
-            consumableComponent.spawnParticlesAndPlaySound(user, (ItemStack) (Object) this, 5);
+        if (level instanceof ServerLevel serverLevel) {
+            UseTickEventComponent useTickEventComponent = this.componentManager.get(DataComponents.USE_TICK_EVENT);
+            if (useTickEventComponent != null) {
+                useTickEventComponent.apply(serverLevel, user, user.getUsedItemHand(), remainingTicks);
+            }
+            ConsumableComponent consumableComponent = this.componentManager.get(DataComponents.CONSUMABLE);
+            if (consumableComponent != null && consumableComponent.shouldSpawnParticlesAndPlaySounds(remainingTicks)) {
+                consumableComponent.spawnParticlesAndPlaySound(user, (ItemStack) (Object) this, 5);
+            }
         }
     }
     @Inject(method = "getRarity", at = @At("HEAD"), cancellable = true)

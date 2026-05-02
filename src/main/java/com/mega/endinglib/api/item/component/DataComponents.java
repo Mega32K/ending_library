@@ -73,6 +73,7 @@ public class DataComponents extends ItemComponentManager {
     public static final ResourceLocation COM_TAGS = SafeClass.loc("tags");
     public static final ResourceLocation COM_ATTACK_EVENT = SafeClass.loc("function/attack_event");
     public static final ResourceLocation COM_USE_EVENT = SafeClass.loc("function/use_event");
+    public static final ResourceLocation COM_USE_TICK_EVENT = SafeClass.loc("function/use_tick_event");
     public static final ResourceLocation COM_RELEASE_USING = SafeClass.loc("function/release_event");
     public static final ResourceLocation COM_HURT_EVENT = SafeClass.loc("function/hurt_event");
     public static final ResourceLocation COM_SWING_EVENT = SafeClass.loc("function/swing_event");
@@ -249,6 +250,13 @@ public class DataComponents extends ItemComponentManager {
             builder -> builder
                     .codec(UseEventComponent.CODEC)
                     .registryName(COM_USE_EVENT)
+                    .rootTagType(TagEnum.SNBT)
+                    .build()
+    ));
+    public static final ItemComponentType<UseTickEventComponent> USE_TICK_EVENT = register(COM_USE_TICK_EVENT, ComponentTypeBuilder.create(
+            builder -> builder
+                    .codec(UseTickEventComponent.CODEC)
+                    .registryName(COM_USE_TICK_EVENT)
                     .rootTagType(TagEnum.SNBT)
                     .build()
     ));
