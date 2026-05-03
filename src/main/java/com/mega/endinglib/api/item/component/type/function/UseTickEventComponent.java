@@ -31,17 +31,17 @@ public record UseTickEventComponent(String command, Optional<InteractionHand> on
             ).apply(com, UseTickEventComponent::new)
     );
 
-    public void apply(ServerLevel serverLevel, LivingEntity user, InteractionHand hand, int timeLeft, Item item) {
+    public void apply(ServerLevel serverLevel, LivingEntity user, InteractionHand hand, int remainingTicks, Item item) {
         if (this.onlyInHand.isEmpty() || this.onlyInHand.get().equals(hand)) {
             if (user instanceof Player player)
                 if (player.getCooldowns().isOnCooldown(item)) return;
-            if (this.remainingRequiredMin.map(min -> timeLeft >= min).orElse(true)) {
-                if (this.remainingRequiredMax.map(max -> timeLeft <= max).orElse(true)) {
+            if (this.remainingRequiredMin.map(min -> remainingTicks >= min).orElse(true)) {
+                if (this.remainingRequiredMax.map(max -> remainingTicks <= max).orElse(true)) {
                     CommandSourceStack sourceStack = user.createCommandSourceStack().withMaximumPermission(minimumPermission);
                     ((AccessorCommandSourceStack) sourceStack).setSilent(silent);
                     serverLevel.getServer().getCommands().performPrefixedCommand(sourceStack, this.command);
+                    function.ifPresent(location -> this.apply(user, location, minimumPermission));
                 }
-                function.ifPresent(location -> this.apply(user, location, minimumPermission));
             }
         }
     }
