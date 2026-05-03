@@ -185,7 +185,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         if (level instanceof ServerLevel serverLevel) {
             UseTickEventComponent useTickEventComponent = this.componentManager.get(DataComponents.USE_TICK_EVENT);
             if (useTickEventComponent != null) {
-                useTickEventComponent.apply(serverLevel, user, user.getUsedItemHand(), remainingTicks);
+                useTickEventComponent.apply(serverLevel, user, user.getUsedItemHand(), remainingTicks, this.getItem());
             }
             ConsumableComponent consumableComponent = this.componentManager.get(DataComponents.CONSUMABLE);
             if (consumableComponent != null && consumableComponent.shouldSpawnParticlesAndPlaySounds(remainingTicks)) {
