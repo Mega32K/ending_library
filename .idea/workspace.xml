@@ -185,7 +185,7 @@
       <recent name="com.mega.endinglib.mixin.advanced" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [runClient0]">
     <configuration name="Client" type="Application" factoryName="Application">
       <envs>
         <env name="MOD_CLASSES" value="ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\classes\java\main;ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main" />
@@ -359,8 +359,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [runClient0]" />
+        <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [runClient1]" />
         <item itemvalue="Gradle.EndingLibrary [runClient2]" />
         <item itemvalue="Gradle.EndingLibrary [runClient]" />

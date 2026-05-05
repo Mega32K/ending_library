@@ -12,6 +12,8 @@ import com.mega.endinglib.api.item.component.type.function.UseEventComponent;
 import com.mega.endinglib.api.item.component.type.function.UseTickEventComponent;
 import com.mega.endinglib.common.WaitingRegistryAccessTask;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
+import com.mega.endinglib.util.mixin.data_expand.InjectCompoundTag;
+import com.mega.endinglib.util.mixin.data_expand.ItemStackComponentAPI;
 import com.mojang.serialization.DataResult;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -42,11 +44,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemStack {
+public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemStack, ItemStackComponentAPI {
     @Unique
     private boolean decodeFailed;
     @Shadow @Nullable private CompoundTag tag;
@@ -62,6 +65,8 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Shadow public abstract Item getItem();
 
     @Shadow public abstract CompoundTag getOrCreateTag();
+
+    @Shadow public abstract String toString();
 
     @Unique
     private ItemComponentManager componentManager = new ItemComponentManager((ItemStack) (Object)this, new MergedComponentMap(ComponentMap.EMPTY));
@@ -101,22 +106,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "<init>(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"))
     private void init0(CompoundTag p_41608_, CallbackInfo ci) {
-        if (this.tag != null) {
-            CompoundTag component = this.tag.getCompound(ItemComponentManager.HEAD);
-            if (!component.isEmpty()) {
-                DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
-                dr.result().ifPresent(map -> {
-                    ComponentChanges.Builder builder = ComponentChanges.builder(null);
-                    map.forEach(builder::add);
-                    this.componentManager.getComponents().setChanges(builder.build());
-                });
-                dr.error().ifPresent(err -> {
-                    this.decodeFailed = true;
-                    EndingLibrary.LOGGER.warn("ItemComponent decode error : {}", err.message());
-                    WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
-                });
-            }
-        }
+        this.endingLibrary$rebuildComponents();
     }
     @Inject(method = "copy", at = @At("RETURN"))
     private void copy(CallbackInfoReturnable<ItemStack> cir) {
@@ -128,6 +118,8 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             }
             if (!this.componentManager.getComponents().isEmpty())
                 ItemComponentManager.setComponentManager(stack, new ItemComponentManager(stack, this.componentManager.getComponents().copy()));
+            if (stack.getTag() != null)
+                InjectCompoundTag.of(stack.getTag()).setStoredOwner(stack);
         }
     }
     @Inject(method = "setTag", at = @At("HEAD"))
@@ -153,6 +145,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                     });
                 }
             }
+            InjectCompoundTag.of(component).setStoredOwner(this);
         }
     }
     @Inject(method = "removeTagKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;remove(Ljava/lang/String;)V", shift = At.Shift.AFTER))
@@ -250,6 +243,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             if (this.getUseDuration() <= 0 && resultHolder.getResult() != InteractionResult.FAIL) {
                 ItemComponentManager manager = ItemComponentManager.get(resultHolder.getObject());
                 cir.setReturnValue(InteractionResultHolder.success(manager.applyAfterUseComponentSideEffects(player, copied.get(), ItemComponentManager.ItemUseCondition.USE)));
+
             }
         }
     }
@@ -344,5 +338,31 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         List<TagKey<Item>> componentTags = this.componentManager.get(DataComponents.TAGS);
         if (componentTags != null)
             cir.setReturnValue(componentTags.stream());
+    }
+    @Inject(method = "getTag", at = @At("RETURN"))
+    private void setTagStoredOwner(CallbackInfoReturnable<CompoundTag> cir) {
+        InjectCompoundTag api = InjectCompoundTag.of(cir.getReturnValue());
+        if (!Objects.equals(api.getStoredOwner(), this))
+            api.setStoredOwner(this);
+    }
+    @Override
+    public void endingLibrary$rebuildComponents() {
+        if (this.tag != null) {
+            CompoundTag component = this.tag.getCompound(ItemComponentManager.HEAD);
+            if (!component.isEmpty()) {
+                DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
+                dr.result().ifPresent(map -> {
+                    ComponentChanges.Builder builder = ComponentChanges.builder(null);
+                    map.forEach(builder::add);
+                    this.componentManager.getComponents().setChanges(builder.build());
+                });
+                dr.error().ifPresent(err -> {
+                    this.decodeFailed = true;
+                    EndingLibrary.LOGGER.warn("ItemComponent decode error : {}", err.message());
+                    WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
+                });
+            }
+            InjectCompoundTag.of(this.tag).setStoredOwner(this);
+        }
     }
 }
