@@ -342,7 +342,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "getTag", at = @At("RETURN"))
     private void setTagStoredOwner(CallbackInfoReturnable<CompoundTag> cir) {
         InjectCompoundTag api = InjectCompoundTag.of(cir.getReturnValue());
-        if (!Objects.equals(api.getStoredOwner(), this))
+        if (api != null && !Objects.equals(api.getStoredOwner(), this))
             api.setStoredOwner(this);
     }
     @Override

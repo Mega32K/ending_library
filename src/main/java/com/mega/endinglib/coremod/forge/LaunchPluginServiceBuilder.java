@@ -39,8 +39,8 @@ public class LaunchPluginServiceBuilder {
 
     public LaunchPluginServiceBuilder processor(IClassProcessor classProcessor) {
         int length = classProcessors.length;
-        if (length >= 3)
-            throw new ArrayIndexOutOfBoundsException("Out of the max length(3) of the class processors.");
+        if (length >= 4)
+            throw new ArrayIndexOutOfBoundsException("Out of the max length(4) of the class processors.");
         classProcessors = Arrays.copyOf(classProcessors, classProcessors.length + 1);
         classProcessors[length] = classProcessor;
         return this;
@@ -53,6 +53,8 @@ public class LaunchPluginServiceBuilder {
             this.service = new LaunchPluginServiceImpl2(name, classProcessors[0], classProcessors[1]);
         else if (classProcessors.length == 3)
             this.service = new LaunchPluginServiceImpl3(name, classProcessors[0], classProcessors[1], classProcessors[2]);
+        else if (classProcessors.length == 4)
+            this.service = new LaunchPluginServiceImpl4(name, classProcessors[0], classProcessors[1], classProcessors[2], classProcessors[3]);
         LaunchPluginServiceBuilder.register(this);
         return service;
     }

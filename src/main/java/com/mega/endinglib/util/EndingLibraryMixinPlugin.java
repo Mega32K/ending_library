@@ -2,6 +2,7 @@ package com.mega.endinglib.util;
 
 import com.mega.endinglib.coremod.forge.LaunchPluginServiceBuilder;
 import com.mega.endinglib.util.asm.AnnotationCoremodProcessor;
+import com.mega.endinglib.util.asm.BugfixCoremodProcessor;
 import com.mega.endinglib.util.asm.MillisTimeRedirector;
 import com.mega.endinglib.util.asm.NormalCoremodProcessor;
 import com.mega.endinglib.util.mixin.ApplyCheckMixinConfigPlugin;
@@ -19,6 +20,7 @@ public class EndingLibraryMixinPlugin extends ApplyCheckMixinConfigPlugin {
         LaunchPluginServiceBuilder
                 .builder()
                 .name("EndingLibraryCore-Main")
+                .processor(BugfixCoremodProcessor.INSTANCE)
                 .processor(MillisTimeRedirector.INSTANCE)
                 .processor(NormalCoremodProcessor.INSTANCE)
                 .processor(AnnotationCoremodProcessor.INSTANCE)
