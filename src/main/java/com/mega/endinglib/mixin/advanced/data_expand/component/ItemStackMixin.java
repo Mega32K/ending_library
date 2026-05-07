@@ -12,6 +12,7 @@ import com.mega.endinglib.api.item.component.type.function.UseEventComponent;
 import com.mega.endinglib.api.item.component.type.function.UseTickEventComponent;
 import com.mega.endinglib.common.WaitingRegistryAccessTask;
 import com.mega.endinglib.util.mixin.data_expand.ExtraItemStackItf;
+import com.mega.endinglib.util.mixin.data_expand.ICompoundTagMergeCaller;
 import com.mega.endinglib.util.mixin.data_expand.InjectCompoundTag;
 import com.mega.endinglib.util.mixin.data_expand.ItemStackComponentAPI;
 import com.mojang.serialization.DataResult;
@@ -106,7 +107,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "<init>(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"))
     private void init0(CompoundTag p_41608_, CallbackInfo ci) {
-        this.endingLibrary$rebuildComponents();
+        this.endingLibrary$rebuildComponents(this.tag);
     }
     @Inject(method = "copy", at = @At("RETURN"))
     private void copy(CallbackInfoReturnable<ItemStack> cir) {
@@ -119,7 +120,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             if (!this.componentManager.getComponents().isEmpty())
                 ItemComponentManager.setComponentManager(stack, new ItemComponentManager(stack, this.componentManager.getComponents().copy()));
             if (stack.getTag() != null)
-                InjectCompoundTag.of(stack.getTag()).setStoredOwner(stack);
+                InjectCompoundTag.of(stack.getTag()).setStoredOwner(ItemStackComponentAPI.of(stack));
         }
     }
     @Inject(method = "setTag", at = @At("HEAD"))
@@ -346,9 +347,9 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             api.setStoredOwner(this);
     }
     @Override
-    public void endingLibrary$rebuildComponents() {
-        if (this.tag != null) {
-            CompoundTag component = this.tag.getCompound(ItemComponentManager.HEAD);
+    public void endingLibrary$rebuildComponents(CompoundTag tag) {
+        if (tag != null) {
+            CompoundTag component = tag.getCompound(ItemComponentManager.HEAD);
             if (!component.isEmpty()) {
                 DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                 dr.result().ifPresent(map -> {
@@ -362,7 +363,12 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                     WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
                 });
             }
-            InjectCompoundTag.of(this.tag).setStoredOwner(this);
+            InjectCompoundTag.of(tag).setStoredOwner(this);
         }
+    }
+
+    @Override
+    public void mergedTagCallOwnerOperation(CompoundTag mergedSrcTag) {
+        this.endingLibrary$rebuildComponents(mergedSrcTag);
     }
 }

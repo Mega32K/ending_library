@@ -15,6 +15,7 @@ public class CapabilityEntityData<T> {
     @NotNull
     private final CapabilityDataSerializer<T> serializer;
     private final String serializedName;
+    private boolean onlyTrackOwner;
     /**
      * 声明服务端数据已更新
      */
@@ -40,7 +41,10 @@ public class CapabilityEntityData<T> {
     public CapabilityEntityData(T defaultValue, int id, CapabilityDataSerializer<T> serializer) {
         this(defaultValue, id, serializer, "", false);
     }
-
+    public CapabilityEntityData<T> onlyTrackOwner() {
+        this.onlyTrackOwner = true;
+        return this;
+    }
     public void setDataManager(@Nullable SynchedCapabilityData dataManager) {
         this.dataManager = dataManager;
     }
@@ -57,6 +61,10 @@ public class CapabilityEntityData<T> {
     }
     void setValue(T value) {
         this.value = value;
+    }
+
+    public boolean isOnlyTrackOwner() {
+        return onlyTrackOwner;
     }
 
     public void write(CompoundTag nbt) {

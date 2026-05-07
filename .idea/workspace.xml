@@ -178,11 +178,11 @@
       <recent name="com.mega.endinglib.client.advanced" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.mega.endinglib.util.asm" />
+      <recent name="com.mega.endinglib.coremod.forge" />
       <recent name="com.mega.endinglib.api.item.component.type.function" />
       <recent name="com.mega.endinglib.api.capability.depracted" />
-      <recent name="com.mega.endinglib.util.asm" />
       <recent name="com.mega.endinglib.api.capability.annotation" />
-      <recent name="com.mega.endinglib.mixin.advanced" />
     </key>
   </component>
   <component name="RunManager" selected="Gradle.EndingLibrary [build]">

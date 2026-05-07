@@ -10,6 +10,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class EditBoxMixin {
     @ModifyVariable(method = "setMaxLength", at = @At(value = "LOAD", ordinal = 0), argsOnly = true)
     private int length(int length) {
-        return CommonConfig.max_edit_length;
+        return Math.max(CommonConfig.max_edit_length, length);
     }
 }

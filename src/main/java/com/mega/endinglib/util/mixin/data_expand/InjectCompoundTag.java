@@ -7,7 +7,7 @@ public interface InjectCompoundTag {
     static InjectCompoundTag of(CompoundTag compoundTag) {
         return (InjectCompoundTag) compoundTag;
     }
-    void setStoredOwner(Object owner);
+    void setStoredOwner(ICompoundTagMergeCaller owner);
     @Nullable
-    Object getStoredOwner();
+    ICompoundTagMergeCaller getStoredOwner();
 }
