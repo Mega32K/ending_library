@@ -146,7 +146,8 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
                     });
                 }
             }
-            InjectCompoundTag.of(component).setStoredOwner(this);
+            if (this.tag != null)
+                InjectCompoundTag.of(this.tag).setStoredOwner(this);
         }
     }
     @Inject(method = "removeTagKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;remove(Ljava/lang/String;)V", shift = At.Shift.AFTER))

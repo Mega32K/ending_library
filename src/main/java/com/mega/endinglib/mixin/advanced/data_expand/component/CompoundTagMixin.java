@@ -30,4 +30,9 @@ public abstract class CompoundTagMixin implements InjectCompoundTag {
         if (this.owner != null)
             this.owner.mergedTagCallOwnerOperation(cir.getReturnValue());
     }
+    @Inject(method = "copy()Lnet/minecraft/nbt/CompoundTag;", at =  @At("RETURN"))
+    private void shareStoredOwnerToCopied(CallbackInfoReturnable<CompoundTag> cir) {
+        if (this.owner != null)
+            InjectCompoundTag.of(cir.getReturnValue()).setStoredOwner(this.owner);
+    }
 }
