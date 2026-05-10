@@ -71,8 +71,8 @@
         <option value="Enum" />
         <option value="Record" />
         <option value="AnnotationType" />
-        <option value="Interface" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>
@@ -423,6 +423,17 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint type="java-line">
+          <url>jar://$PROJECT_DIR$/build/fg_cache/net/minecraftforge/forge/1.20.1-47.3.12_mapped_official_1.20.1/forge-1.20.1-47.3.12_mapped_official_1.20.1-sources.jar!/net/minecraft/world/level/storage/loot/functions/SetNbtFunction.java</url>
+          <line>27</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
