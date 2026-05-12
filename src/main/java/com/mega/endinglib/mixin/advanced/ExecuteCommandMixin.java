@@ -35,7 +35,7 @@ public abstract class ExecuteCommandMixin {
                 .then(Commands.literal("string")
                         .then(Commands.argument("scale", DoubleArgumentType.doubleArg())
                                 .then(Commands.argument("format", StringArgumentType.string())
-                                        .redirect(p_137094_, (p_180156_) -> storeData(p_180156_.getSource(), dataProvider.access(p_180156_), NbtPathArgument.getPath(p_180156_, "path"), (p_180165_) -> StringTag.valueOf(StringArgumentType.getString(p_180156_, "format").formatted(((int) ((double) p_180165_ * DoubleArgumentType.getDouble(p_180156_, "scale"))))), p_137096_))
+                                        .redirect(p_137094_, (p_180156_) -> storeData(p_180156_.getSource(), dataProvider.access(p_180156_), NbtPathArgument.getPath(p_180156_, "path"), (p_180165_) -> StringTag.valueOf(StringArgumentType.getString(p_180156_, "format").formatted(((double) p_180165_ * DoubleArgumentType.getDouble(p_180156_, "scale")))), p_137096_))
                                 )
                         )
                 )
