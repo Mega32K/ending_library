@@ -9,7 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyMappingLookup;
+import net.minecraftforge.client.settings.KeyModifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -22,6 +24,7 @@ public class ClientDynamicKeyMapping {
         byteBuf.writeUtf(k.translationKey);
         byteBuf.writeInt(k.defaultKey.getValue());
         byteBuf.writeInt(k.key != null ? k.key.getValue() : k.defaultKey.getValue());
+        byteBuf.writeEnum(k.keyModifier);
         byteBuf.writeUtf(k.categoryKey);
         byteBuf.writeInt(k.downDelay);
         byteBuf.writeByte(k.listenerFlags);
@@ -34,6 +37,7 @@ public class ClientDynamicKeyMapping {
                byteBuf.readUtf(),
                InputConstants.Type.KEYSYM.getOrCreate(byteBuf.readInt()),
                InputConstants.Type.KEYSYM.getOrCreate(byteBuf.readInt()),
+               byteBuf.readEnum(KeyModifier.class),
                byteBuf.readUtf(),
                byteBuf.readInt()
        );
@@ -48,16 +52,18 @@ public class ClientDynamicKeyMapping {
     public final InputConstants.Key defaultKey;
     @Nullable
     public InputConstants.Key key;
+    public KeyModifier keyModifier = KeyModifier.NONE;
     public String categoryKey;
     public int downDelay;
     public byte listenerFlags = (byte) 0;
-    public ClientDynamicKeyMapping(ResourceLocation id, boolean disableWhenScreen, boolean disableWhenOverlay, String translationKey, InputConstants.Key defaultKey, InputConstants.Key key, String categoryKey, int downDelay) {
+    public ClientDynamicKeyMapping(ResourceLocation id, boolean disableWhenScreen, boolean disableWhenOverlay, String translationKey, InputConstants.Key defaultKey, InputConstants.Key key, KeyModifier keyModifier, String categoryKey, int downDelay) {
         this.id = id;
         this.disableWhenScreen = disableWhenScreen;
         this.disableWhenOverlay = disableWhenOverlay;
         this.translationKey = translationKey;
         this.defaultKey = defaultKey;
         this.key = key;
+        this.keyModifier = keyModifier;
         this.categoryKey = categoryKey;
         this.downDelay = downDelay;
     }
@@ -133,7 +139,7 @@ public class ClientDynamicKeyMapping {
             }
             lookup.remove(originKey);
         }
-        KeyMapping keyMapping = new KeyMapping(this.translationKey, this.defaultKey.getValue(), this.categoryKey);
+        KeyMapping keyMapping = new KeyMapping(this.translationKey, KeyConflictContext.UNIVERSAL, this.keyModifier, InputConstants.Type.KEYSYM, this.defaultKey.getValue(), this.categoryKey);
         keyMapping.setKey(this.key != null ? this.key : this.defaultKey);
         lookup.remove(keyMapping);
         lookup.put(this.key, keyMapping);
