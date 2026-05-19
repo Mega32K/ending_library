@@ -1,5 +1,8 @@
 package com.mega.endinglib.mixin.time.time;
 
+import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
+import com.mega.endinglib.api.capability.IEntityAutoCap;
+import com.mega.endinglib.api.capability.IForceTickEntityCap;
 import com.mega.endinglib.api.entity.TimeStopEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntityData;
@@ -9,6 +12,7 @@ import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.util.LazyOptional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -34,6 +38,13 @@ public abstract class LevelMixin implements LevelEC {
                 return;
             }
         }
+        IEntityAutoCap entityAutoCap = IEntityAutoCap.of(entity);
+        if (entityAutoCap.endinglib$getAutoCaps() != null)
+            for (LazyOptional<EntitySyncCapabilityBase> cap : entityAutoCap.endinglib$getAutoCaps())
+                cap.ifPresent(data -> {
+                    if (data instanceof IForceTickEntityCap forceTickEntityCap)
+                        forceTickEntityCap.forceTick(entity);
+                });
         ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
         if (eed.isFrozen) {
             ci.cancel();

@@ -71,6 +71,27 @@ public class S2CCameraModifierSetPacket {
         }
     }
 
-    public record CameraSnapshot(ModifierType modifierType, double base, Collection<CameraModifier> modifiers) {
+    public static class CameraSnapshot {
+        public final ModifierType modifierType;
+        public final double base;
+        public final Collection<CameraModifier> modifiers;
+
+        public CameraSnapshot(ModifierType modifierType, double base, Collection<CameraModifier> modifiers) {
+            this.modifierType = modifierType;
+            this.base = base;
+            this.modifiers = modifiers;
+        }
+
+        public ModifierType modifierType() {
+            return modifierType;
+        }
+
+        public double base() {
+            return base;
+        }
+
+        public Collection<CameraModifier> modifiers() {
+            return modifiers;
+        }
     }
 }

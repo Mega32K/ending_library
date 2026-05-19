@@ -275,6 +275,10 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
      */
     protected void tick(Entity entity) {
     }
+    /**
+     * 每tick被能力持有的实体调用
+     * @param entity 能力持有实体
+     */
     public final void update(Entity entity) {
         this.entity = entity;
         this.tick(entity);

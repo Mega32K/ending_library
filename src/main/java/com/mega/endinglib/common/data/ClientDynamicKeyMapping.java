@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyMappingLookup;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -144,6 +145,9 @@ public class ClientDynamicKeyMapping {
         lookup.remove(keyMapping);
         lookup.put(this.key, keyMapping);
         return keyMapping;
+    }
+    public IKeyConflictContext getKeyConflictContext() {
+        return this.disableWhenScreen ? KeyConflictContext.IN_GAME : KeyConflictContext.UNIVERSAL;
     }
 
     @Override

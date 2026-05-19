@@ -63,7 +63,7 @@ public class ClientEventHandler {
             boolean overlayNull = Minecraft.getInstance().getOverlay() == null;
             ClientDynamicKeyMapping dynamicKeyMapping = entry.getKey();
             InputConstants.Key key = dynamicKeyMapping.key == null ? dynamicKeyMapping.defaultKey : dynamicKeyMapping.key;
-            if (event.getKey() == key.getValue()) {
+            if (event.getKey() == key.getValue() && (dynamicKeyMapping.keyModifier.isActive(dynamicKeyMapping.getKeyConflictContext()))) {
                 if (!screenNull && dynamicKeyMapping.disableWhenScreen) continue;
                 if (!overlayNull && dynamicKeyMapping.disableWhenOverlay) continue;
                 switch (event.getAction()) {

@@ -134,7 +134,8 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
         if (this.endinglib$autoCapByClass != null)
-            endinglib$autoCapByClass.values().forEach(cap -> cap.ifPresent(data -> data.update((Entity) (Object) this)));
+            for (LazyOptional<EntitySyncCapabilityBase> cap : this.endinglib$autoCapByClass.values())
+                cap.ifPresent(data -> data.update((Entity) (Object) this));
         if (endingLibrary$capEntityDimensions != null) {
             if (this.dimensions != endingLibrary$capEntityDimensions) {
                 this.dimensions = endingLibrary$capEntityDimensions;
