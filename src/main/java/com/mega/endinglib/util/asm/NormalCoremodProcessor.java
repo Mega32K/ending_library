@@ -11,6 +11,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -418,7 +419,7 @@ public class NormalCoremodProcessor implements IClassProcessor {
                 classNode.fields.add(new FieldNode(Opcodes.ACC_PUBLIC, EVENT_FIELD$el_isUnCancelable, EVENT_FIELD$el_isUnCancelable$desc, null, false));
                 AtomicBoolean hasIsCanceled = new AtomicBoolean(false);
                 classNode.methods.forEach(methodNode -> {
-                    if ("isCanceled".equals(methodNode.name) && "()Z".equals(methodNode.desc)) {
+                    if ("isCanceled".equals(methodNode.name) && "()Z".equals(methodNode.desc) && !Modifier.isAbstract(methodNode.access)) {
                         InsnList insnNodes = new InsnList();
                         LabelNode elseLabel = new LabelNode();
                         insnNodes.add(new VarInsnNode(Opcodes.ALOAD, 0));

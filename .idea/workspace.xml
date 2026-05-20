@@ -14,12 +14,8 @@
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spyglass/extra_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/spyglass/extra_commands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/data/ClientDynamicKeyMapping.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/data/ClientDynamicKeyMapping.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/eventhandler/ClientEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/eventhandler/ClientEventHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/network/s2c/camera/S2CCameraModifierSetPacket.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/network/s2c/camera/S2CCameraModifierSetPacket.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/java/KlassPtrProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/java/KlassPtrProxy.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,8 +83,8 @@
         <option value="Enum" />
         <option value="Record" />
         <option value="AnnotationType" />
-        <option value="Interface" />
         <option value="Class" />
+        <option value="Interface" />
       </list>
     </option>
   </component>

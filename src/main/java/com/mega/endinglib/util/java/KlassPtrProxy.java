@@ -1,6 +1,7 @@
 package com.mega.endinglib.util.java;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
+import io.netty.util.internal.shaded.org.jctools.util.UnsafeAccess;
 import sun.misc.Unsafe;
 
 import java.lang.annotation.Annotation;
@@ -267,12 +268,6 @@ public final class KlassPtrProxy {
     }
 
     private static Unsafe unsafe() {
-        try {
-            Field f = Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            return (Unsafe) f.get(null);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
+        return UnsafeAccess.UNSAFE;
     }
 }
