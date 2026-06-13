@@ -270,7 +270,6 @@ public class MegaGuiGraphics extends GuiGraphics {
     public void blit(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, final Supplier<ShaderInstance> shaderGetter) {
         this.blit(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, shaderGetter);
     }
-
     /**
      * 在屏幕(x,y)处渲染纹理,<br>
      * 纹理显示范围为(startWidth, startHeight)到(startWidth+endWidth, startHeight+endHeight),<br>
@@ -283,19 +282,19 @@ public class MegaGuiGraphics extends GuiGraphics {
      * @param startHeight y轴纹理裁剪位置(0 ~ 分辨率height)
      * @param endWidth 纹理裁剪宽度
      * @param endHeight 纹理裁剪高度
-     * @param red 红色通道
-     * @param green 绿色通道
-     * @param blue 蓝色通道
-     * @param alpha 透明通道
+     * @param red 红色
+     * @param green 绿色
+     * @param blue 蓝色
+     * @param alpha 透明度
      */
-    public void blit(@NotNull ResourceLocation texture, int x, int y, int startWidth, int startHeight, int endWidth, int endHeight, float red, float green, float blue, float alpha) {
-        this.blit(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, red, green, blue, alpha);
+    public void blitColored(@NotNull ResourceLocation texture, int x, int y, int startWidth, int startHeight, int endWidth, int endHeight, float red, float green, float blue, float alpha) {
+        this.blitColored(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, red, green, blue, alpha);
     }
-    public void blit(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float red, float green, float blue, float alpha) {
-        this.blit(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, red, green, blue, alpha);
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float red, float green, float blue, float alpha) {
+        this.blitColored(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, red, green, blue, alpha);
     }
-    public void blit(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
-        this.blit(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, red, green, blue, alpha, shaderGetter);
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
+        this.blitColored(texture, x, y, 0, startWidth, startHeight, endWidth, endHeight, 256, 256, red, green, blue, alpha, shaderGetter);
     }
     /**
      * 在屏幕(x,y)处渲染纹理,<br>
@@ -338,18 +337,18 @@ public class MegaGuiGraphics extends GuiGraphics {
      * @param endHeight 纹理裁剪高度
      * @param resolutionX 分辨率x
      * @param resolutionY 分辨率y
-     * @param red 红色通道
-     * @param green 绿色通道
-     * @param blue 蓝色通道
-     * @param alpha 透明通道
+     * @param red 红色
+     * @param green 绿色
+     * @param blue 蓝色
+     * @param alpha 透明度
      */
-    public void blit(@NotNull ResourceLocation texture, int x, int y, int zDepth, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY, float red, float green, float blue, float alpha) {
+    public void blitColored(@NotNull ResourceLocation texture, int x, int y, int zDepth, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY, float red, float green, float blue, float alpha) {
         this.blit(texture, x, x + endWidth, y, y + endHeight, zDepth, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, red, green, blue, alpha);
     }
-    public void blit(@NotNull ResourceLocation texture, float x, float y, float zDepth, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha) {
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float zDepth, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha) {
         this.blit(texture, x, x + endWidth, y, y + endHeight, zDepth, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, red, green, blue, alpha);
     }
-    public void blit(@NotNull ResourceLocation texture, float x, float y, float zDepth, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float zDepth, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
         this.blit(texture, x, x + endWidth, y, y + endHeight, zDepth, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, red, green, blue, alpha, shaderGetter);
     }
     /**
@@ -376,6 +375,52 @@ public class MegaGuiGraphics extends GuiGraphics {
     }
     public void blit(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, final Supplier<ShaderInstance> shaderGetter) {
         this.blit(texture, x, y, endWidth, endHeight, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY, shaderGetter);
+    }
+    /**
+     * 在屏幕(x,y)处渲染纹理,<br>
+     * 纹理显示范围为(startWidth, startHeight)到(startWidth+endWidth, startHeight+endHeight),<br>
+     * 渲染大小为(endWidth, endHeight),<br>
+     * 纹理分辨率为 resolutionX*resolutionY
+     * @param texture 纹理路径
+     * @param x x轴纹理渲染位置
+     * @param y y轴纹理渲染位置
+     * @param startWidth x轴纹理裁剪位置(0 ~ 分辨率width)
+     * @param startHeight y轴纹理裁剪位置(0 ~ 分辨率height)
+     * @param endWidth 纹理裁剪宽度
+     * @param endHeight 纹理裁剪高度
+     * @param resolutionX 分辨率x
+     * @param resolutionY 分辨率y
+     * @param red 红色
+     * @param green 绿色
+     * @param blue 蓝色
+     * @param alpha 透明度
+     */
+    public void blitColored(@NotNull ResourceLocation texture, int x, int y, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY, float red, float green, float blue, float alpha) {
+        this.blitColored(texture, x, y, endWidth, endHeight, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY, red, green, blue, alpha);
+    }
+    public void blitColored(ResourceLocation texture, int x, int y, int width, int height, float startWidth, float startHeight, int endWidth, int endHeight, int resolutionX, int resolutionY, float red, float green, float blue, float alpha) {
+        this.blit(texture, x, x + width, y, y + height, 0, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, red, green, blue, alpha);
+    }
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha) {
+        this.blitColored(texture, x, y, endWidth, endHeight, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY, red, green, blue, alpha);
+    }
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
+        this.blitColored(texture, x, y, endWidth, endHeight, startWidth, startHeight, endWidth, endHeight, resolutionX, resolutionY, red, green, blue, alpha, shaderGetter);
+    }
+
+
+
+    public void blit(@NotNull ResourceLocation texture, float x, float y, float renderWidth, float renderHeight, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY) {
+        this.blit(texture, x, x + renderWidth, y, y + renderHeight, 0, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY);
+    }
+    public void blit(@NotNull ResourceLocation texture, float x, float y, float renderWidth, float renderHeight, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, final Supplier<ShaderInstance> shaderGetter) {
+        this.blit(texture, x, x + renderWidth, y, y + renderHeight, 0, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, shaderGetter);
+    }
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float renderWidth, float renderHeight, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha) {
+        this.blit(texture, x, x + renderWidth, y, y + renderHeight, 0, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, red, green, blue, alpha);
+    }
+    public void blitColored(@NotNull ResourceLocation texture, float x, float y, float renderWidth, float renderHeight, float startWidth, float startHeight, float endWidth, float endHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
+        this.blit(texture, x, x + renderWidth, y, y + renderHeight, 0, endWidth, endHeight, startWidth, startHeight, resolutionX, resolutionY, red, green, blue, alpha, shaderGetter);
     }
     /**
      * 在屏幕(x,y)处渲染纹理,<br>
@@ -415,10 +460,10 @@ public class MegaGuiGraphics extends GuiGraphics {
      * @param endHeight 纹理裁剪高度
      * @param resolutionX 分辨率x
      * @param resolutionY 分辨率y
-     * @param red 红色通道
-     * @param green 绿色通道
-     * @param blue 蓝色通道
-     * @param alpha 透明通道
+     * @param red 红色
+     * @param green 绿色
+     * @param blue 蓝色
+     * @param alpha 透明度
      */
     void blit(ResourceLocation texture, float x, float endX, float y, float endY, float depth, float endWidth, float endHeight, float startWidth, float startHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha) {
         this.innerBlit(texture, x, endX, y, endY, depth, (startWidth + 0.0F) / resolutionX, (startWidth + endWidth) / resolutionX, (startHeight + 0.0F) / resolutionY, (startHeight + endHeight) / resolutionY, red, green, blue, alpha);
@@ -463,10 +508,10 @@ public class MegaGuiGraphics extends GuiGraphics {
      * @param resolutionX 分辨率x
      * @param resolutionY 分辨率y
      * @param shaderGetter 着色器提供
-     * @param red 红色通道
-     * @param green 绿色通道
-     * @param blue 蓝色通道
-     * @param alpha 透明通道
+     * @param red 红色
+     * @param green 绿色
+     * @param blue 蓝色
+     * @param alpha 透明度
      */
     void blit(ResourceLocation texture, float x, float endX, float y, float endY, float depth, float endWidth, float endHeight, float startWidth, float startHeight, float resolutionX, float resolutionY, float red, float green, float blue, float alpha, final Supplier<ShaderInstance> shaderGetter) {
         this.innerBlit(texture, x, endX, y, endY, depth, (startWidth + 0.0F) / resolutionX, (startWidth + endWidth) / resolutionX, (startHeight + 0.0F) / resolutionY, (startHeight + endHeight) / resolutionY, red, green, blue, alpha, shaderGetter);
