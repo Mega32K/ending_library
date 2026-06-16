@@ -28,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.IdentityHashMap;
 
 @Mixin(Entity.class)
@@ -75,6 +76,7 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
 
     @Override
     public Collection<LazyOptional<EntitySyncCapabilityBase>> endinglib$getAutoCaps() {
+        if (endinglib$autoCapByClass == null) return Collections.emptyList();
         return endinglib$autoCapByClass.values();
     }
 
