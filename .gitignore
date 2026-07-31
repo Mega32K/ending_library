@@ -104,6 +104,7 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+MEMORY.md
 .gradle
 build/
 

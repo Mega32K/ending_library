@@ -201,11 +201,15 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     }
 
     public final boolean shouldAttachTo(Entity entity) {
-        if (canAttach().test(entity)) {
+        if (canAttachTo(entity)) {
             this.entity = entity;
             return true;
         }
-        else return this.getEnableClass() != null && this.getEnableClass().isInstance(entity);
+        return false;
+    }
+
+    public final boolean canAttachTo(Entity entity) {
+        return canAttach().test(entity) || this.getEnableClass() != null && this.getEnableClass().isInstance(entity);
     }
 
     @Override

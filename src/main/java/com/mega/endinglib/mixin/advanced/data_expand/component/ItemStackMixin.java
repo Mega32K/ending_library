@@ -70,10 +70,18 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Shadow public abstract String toString();
 
     @Unique
-    private ItemComponentManager componentManager = new ItemComponentManager((ItemStack) (Object)this, new MergedComponentMap(ComponentMap.EMPTY));
+    @Nullable
+    private ItemComponentManager componentManager;
     @Override
     public ItemComponentManager endingLibrary$getComponentManager() {
+        if (this.componentManager == null) {
+            this.componentManager = new ItemComponentManager((ItemStack) (Object)this, new MergedComponentMap(ComponentMap.EMPTY));
+        }
         return componentManager;
+    }
+    @Override
+    public @Nullable ItemComponentManager endingLibrary$getComponentManagerIfPresent() {
+        return this.componentManager;
     }
     @Override
     public void setDecodeFailed(boolean decodeFailed) {
@@ -88,11 +96,25 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     public void endingLibrary$setComponentManager(ItemComponentManager manager) {
         this.componentManager = manager;
     }
+    @Unique
+    private <T> T endingLibrary$getComponent(ItemComponentType<? extends T> type) {
+        return ItemComponentManager.get((ItemStack) (Object) this, type);
+    }
+    @Unique
+    private boolean endingLibrary$canApplyAfterUseEffects() {
+        return this.componentManager != null && this.componentManager.canApplyAfterUseEffects();
+    }
+    @Unique
+    private <T> void endingLibrary$ifPresent(ItemComponentType<? extends T> type, Consumer<T> consumer) {
+        ItemComponentManager.ifPresent((ItemStack) (Object) this, type, consumer);
+    }
     @Inject(method = "<init>(Lnet/minecraft/world/level/ItemLike;ILnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"))
     private void init0(ItemLike p_41604_, int p_41605_, CompoundTag p_41606_, CallbackInfo ci) {
         if (p_41604_ instanceof IDefaultComponentsItem) {
             ComponentChanges.Builder builder = ComponentChanges.builder(this.getItem());
-            DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), builder.build());
+            ComponentChanges changes = builder.build();
+            if (changes.isEmpty()) return;
+            DataResult<Tag> dr = ComponentChanges.CODEC.encodeStart(EndingLibrary.PROXY.registryTagOps(), changes);
             dr.result().ifPresent(tag -> {
                 CompoundTag itemTag = this.getOrCreateTag();
                 itemTag.put(ItemComponentManager.HEAD, tag);
@@ -100,9 +122,9 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             dr.error().ifPresent(err -> {
                 this.decodeFailed = true;
                 EndingLibrary.LOGGER.warn("ItemComponent item default components serialized error : {}", err.message());
-                WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
+                WaitingRegistryAccessTask.schedule((ItemStack) (Object) this);
             });
-            this.componentManager.getComponents().setChanges(builder.build());
+            this.endingLibrary$getComponentManager().getComponents().setChanges(changes);
         }
     }
     @Inject(method = "<init>(Lnet/minecraft/nbt/CompoundTag;)V", at = @At("RETURN"))
@@ -115,9 +137,9 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
         if (!stack.isEmpty()) {
             if (this.decodeFailed) {
                 ExtraItemStackItf.of(stack).setDecodeFailed(true);
-                WaitingRegistryAccessTask.toAddItemStacks.add(stack);
+                WaitingRegistryAccessTask.schedule(stack);
             }
-            if (!this.componentManager.getComponents().isEmpty())
+            if (this.componentManager != null && !this.componentManager.getComponents().isEmpty())
                 ItemComponentManager.setComponentManager(stack, new ItemComponentManager(stack, this.componentManager.getComponents().copy()));
             if (stack.getTag() != null)
                 InjectCompoundTag.of(stack.getTag()).setStoredOwner(ItemStackComponentAPI.of(stack));
@@ -129,20 +151,26 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "setTag", at = @At("RETURN"))
     private void afterSetTag(CompoundTag p_41752_, CallbackInfo ci, @Share("prevTag")LocalRef<CompoundTag> prevTag) {
+        if (p_41752_ == null) {
+            this.componentManager = null;
+            return;
+        }
         if (p_41752_ != null) {
             CompoundTag component = p_41752_.getCompound(ItemComponentManager.HEAD);
             CompoundTag prev = prevTag.get();
             if (prev == null || prev.isEmpty() || prev.getCompound(ItemComponentManager.HEAD).isEmpty() || !prev.getCompound(ItemComponentManager.HEAD).equals(component)) {
-                if (!component.isEmpty()) {
+                if (component.isEmpty()) {
+                    this.componentManager = null;
+                } else {
                     DataResult<Map<ItemComponentType<?>, Object>> mapDataResult = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                     mapDataResult.result().ifPresent(map -> {
                         ComponentChanges.Builder builder = ComponentChanges.builder(null);
                         map.forEach(builder::add);
-                        this.componentManager.getComponents().setChanges(builder.build());
+                        this.endingLibrary$getComponentManager().getComponents().setChanges(builder.build());
                     });
                     mapDataResult.error().ifPresent(err -> {
                         this.decodeFailed = true;
-                        WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
+                        WaitingRegistryAccessTask.schedule((ItemStack) (Object) this);
                     });
                 }
             }
@@ -153,7 +181,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "removeTagKey", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;remove(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void afterKeyRemoved(String p_41750_, CallbackInfo ci) {
         if (p_41750_.equals(ItemComponentManager.HEAD)) {
-            this.componentManager.getComponents().clearChanges();
+            this.componentManager = null;
         }
     }
     @Inject(
@@ -161,7 +189,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
             slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/TooltipFlag;isAdvanced()Z", ordinal = 2)),
             at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 1, shift = At.Shift.AFTER))
     private void appendComponentSizeTooltip(Player player, TooltipFlag tooltipFlag, CallbackInfoReturnable<List<Component>> cir, @Local List<Component> list) {
-        int i = this.componentManager.componentsSize();
+        int i = this.componentManager == null ? 0 : this.componentManager.componentsSize();
         if (i > 0) {
             list.add(Component.translatable("item.components", i).withStyle(ChatFormatting.DARK_GRAY));
         }
@@ -169,8 +197,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "isEdible", at = @At("RETURN"), cancellable = true)
     private void edibleCheck(CallbackInfoReturnable<Boolean> cir) {
         if (!cir.getReturnValue()) {
-            MergedComponentMap components = this.componentManager.getComponents();
-            if (components.get(DataComponents.FOOD) != null || components.get(DataComponents.CONSUMABLE) != null) {
+            if (this.endingLibrary$getComponent(DataComponents.FOOD) != null || this.endingLibrary$getComponent(DataComponents.CONSUMABLE) != null) {
                 cir.setReturnValue(true);
             }
         }
@@ -178,11 +205,11 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "onUseTick", at = @At("HEAD"))
     private void componentUseTick(Level level, LivingEntity user, int remainingTicks, CallbackInfo ci) {
         if (level instanceof ServerLevel serverLevel) {
-            UseTickEventComponent useTickEventComponent = this.componentManager.get(DataComponents.USE_TICK_EVENT);
+            UseTickEventComponent useTickEventComponent = this.endingLibrary$getComponent(DataComponents.USE_TICK_EVENT);
             if (useTickEventComponent != null) {
                 useTickEventComponent.apply(serverLevel, user, user.getUsedItemHand(), remainingTicks, this.getItem());
             }
-            ConsumableComponent consumableComponent = this.componentManager.get(DataComponents.CONSUMABLE);
+            ConsumableComponent consumableComponent = this.endingLibrary$getComponent(DataComponents.CONSUMABLE);
             if (consumableComponent != null && consumableComponent.shouldSpawnParticlesAndPlaySounds(remainingTicks)) {
                 consumableComponent.spawnParticlesAndPlaySound(user, (ItemStack) (Object) this, 5);
             }
@@ -190,7 +217,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "getRarity", at = @At("HEAD"), cancellable = true)
     private void componentRarity(CallbackInfoReturnable<Rarity> cir) {
-        Rarity rarity = this.componentManager.get(DataComponents.RARITY);
+        Rarity rarity = this.endingLibrary$getComponent(DataComponents.RARITY);
         if (rarity != null) {
             cir.setReturnValue(rarity);
         }
@@ -198,25 +225,25 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "hurtEnemy", at = @At("RETURN"))
     private void componentAfterDamageEntity(LivingEntity livingEntity, Player player, CallbackInfo ci) {
         if (player.level() instanceof ServerLevel serverLevel) {
-            AttackEventComponent attackEventComponent = this.componentManager.get(DataComponents.ATTACK_EVENT);
+            AttackEventComponent attackEventComponent = this.endingLibrary$getComponent(DataComponents.ATTACK_EVENT);
             if (attackEventComponent != null)
                 attackEventComponent.apply(serverLevel, player);
         }
-        WeaponComponent weaponComponent = this.componentManager.get(DataComponents.WEAPON);
+        WeaponComponent weaponComponent = this.endingLibrary$getComponent(DataComponents.WEAPON);
         if (weaponComponent != null) {
             this.hurtAndBreak(weaponComponent.itemDamagePerAttack(), player, (p_43296_) -> p_43296_.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         }
     }
     @Inject(method = "isEnchanted", at = @At("HEAD"), cancellable = true)
     private void componentIsEnchanted(CallbackInfoReturnable<Boolean> cir) {
-        Boolean bool_ = this.componentManager.get(DataComponents.ENCHANTMENT_GLINT_OVERRIDE);
+        Boolean bool_ = this.endingLibrary$getComponent(DataComponents.ENCHANTMENT_GLINT_OVERRIDE);
         if (bool_ != null) {
             cir.setReturnValue(bool_);
         }
     }
     @Inject(method = "interactLivingEntity", at = @At("HEAD"), cancellable = true)
     private void componentEquipOnInteract(Player user, LivingEntity entity, InteractionHand p_41650_, CallbackInfoReturnable<InteractionResult> cir) {
-        EquippableComponent equippableComponent = this.componentManager.get(DataComponents.EQUIPPABLE);
+        EquippableComponent equippableComponent = this.endingLibrary$getComponent(DataComponents.EQUIPPABLE);
         if (equippableComponent != null && equippableComponent.equipOnInteract()) {
             InteractionResult actionResult = equippableComponent.equipOnInteract(user, entity, (ItemStack) (Object) this);
             if (actionResult != InteractionResult.PASS) {
@@ -227,7 +254,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     @Inject(method = "use", at = @At("HEAD"))
     private void componentReplaceOriginUseAbility(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir) {
         if (level instanceof ServerLevel serverLevel) {
-            UseEventComponent useEventComponent = this.componentManager.get(DataComponents.USE_EVENT);
+            UseEventComponent useEventComponent = this.endingLibrary$getComponent(DataComponents.USE_EVENT);
             if (useEventComponent != null) {
                 useEventComponent.apply(serverLevel, player, hand);
             }
@@ -235,7 +262,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "use", at = @At("HEAD"))
     private void componentUse0(Level level, Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResultHolder<ItemStack>> cir, @Share("copied")LocalRef<ItemStack> copied) {
-        if (this.componentManager.canApplyAfterUseEffects())
+        if (this.endingLibrary$canApplyAfterUseEffects())
             copied.set(this.copy());
     }
     @Inject(method = "use", at = @At("RETURN"), cancellable = true)
@@ -251,13 +278,13 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "finishUsingItem", at = @At("HEAD"))
     private void componentFinishUsingItem0(Level level, LivingEntity user, CallbackInfoReturnable<ItemStack> cir, @Share("copied")LocalRef<ItemStack> copied) {
-        if (this.componentManager.canApplyAfterUseEffects())
+        if (this.endingLibrary$canApplyAfterUseEffects())
             copied.set(this.copy());
     }
     @Inject(method = "finishUsingItem", at = @At("RETURN"), cancellable = true)
     private void componentFinishUsingItem(Level level, LivingEntity user, CallbackInfoReturnable<ItemStack> cir, @Share("copied") LocalRef<ItemStack> copied) {
         if (level instanceof ServerLevel serverLevel) {
-            ReleaseUsingComponent component = this.componentManager.get(DataComponents.RELEASE_USING);
+            ReleaseUsingComponent component = this.endingLibrary$getComponent(DataComponents.RELEASE_USING);
             if (component != null)
                 component.apply(serverLevel, user, true, cir.getReturnValue());
         }
@@ -270,18 +297,18 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "releaseUsing", at = @At("HEAD"))
     private void componentReleaseUsing0(Level level, LivingEntity user, int timeLeft, CallbackInfo ci, @Share("copied")LocalRef<ItemStack> copied) {
-        if (this.componentManager.canApplyAfterUseEffects())
+        if (this.endingLibrary$canApplyAfterUseEffects())
             copied.set(this.copy());
     }
     @Inject(method = "releaseUsing", at = @At("RETURN"))
     private void componentReleaseUsing(Level level, LivingEntity user, int timeLeft, CallbackInfo ci, @Share("copied")LocalRef<ItemStack> copied) {
         if (level instanceof ServerLevel serverLevel) {
-            ReleaseUsingComponent component = this.componentManager.get(DataComponents.RELEASE_USING);
+            ReleaseUsingComponent component = this.endingLibrary$getComponent(DataComponents.RELEASE_USING);
             if (component != null && timeLeft >= component.timeLeft())
                 component.apply(serverLevel, user, false, (ItemStack) (Object) this);
         }
         if (copied.get() != null) {
-            ItemStack itemstack1 = this.componentManager.applyAfterUseComponentSideEffects(user, copied.get(), ItemComponentManager.ItemUseCondition.RELEASE);
+            ItemStack itemstack1 = this.endingLibrary$getComponentManager().applyAfterUseComponentSideEffects(user, copied.get(), ItemComponentManager.ItemUseCondition.RELEASE);
             if (itemstack1 != (Object) this) {
                 user.setItemInHand(user.getUsedItemHand(), itemstack1);
             }
@@ -289,13 +316,13 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "isCorrectToolForDrops", at = @At("RETURN"), cancellable = true)
     private void isComponentCorrectToolForDrops(BlockState blockState, CallbackInfoReturnable<Boolean> cir) {
-        ToolComponent component = this.componentManager.get(DataComponents.TOOL);
+        ToolComponent component = this.endingLibrary$getComponent(DataComponents.TOOL);
         if (component != null)
             cir.setReturnValue(component.isCorrectForDrops(blockState));
     }
     @Inject(method = "isBarVisible", at = @At("HEAD"), cancellable = true)
     private void isComponentBarVisible(CallbackInfoReturnable<Boolean> cir) {
-        this.componentManager.ifPresent(DataComponents.ITEM_BAR, component -> {
+        this.endingLibrary$ifPresent(DataComponents.ITEM_BAR, component -> {
             if (component.barVisible().isPresent()) {
                 cir.setReturnValue(component.barVisible().get());
             }
@@ -303,7 +330,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "getBarWidth", at = @At("HEAD"), cancellable = true)
     private void getComponentBarWidth(CallbackInfoReturnable<Integer> cir) {
-        this.componentManager.ifPresent(DataComponents.ITEM_BAR, component -> {
+        this.endingLibrary$ifPresent(DataComponents.ITEM_BAR, component -> {
             if (component.barWidth().isPresent()) {
                 cir.setReturnValue(component.barWidth().get());
             }
@@ -311,7 +338,7 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "getBarColor", at = @At("HEAD"), cancellable = true)
     private void getComponentBarColor(CallbackInfoReturnable<Integer> cir) {
-        this.componentManager.ifPresent(DataComponents.ITEM_BAR, component -> {
+        this.endingLibrary$ifPresent(DataComponents.ITEM_BAR, component -> {
             if (component.barColor().isPresent()) {
                 cir.setReturnValue(component.barColor().get().getValue());
             }
@@ -319,11 +346,11 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "getUseAnimation", at = @At("HEAD"), cancellable = true)
     private void componentUseAnimation(CallbackInfoReturnable<UseAnim> cir) {
-        ConsumableComponent consumableComponent = this.componentManager.get(DataComponents.CONSUMABLE);
+        ConsumableComponent consumableComponent = this.endingLibrary$getComponent(DataComponents.CONSUMABLE);
         if (consumableComponent != null) {
             cir.setReturnValue(consumableComponent.useAnimation());
         } else {
-            BlocksAttacksComponent blocksAttacksComponent = this.componentManager.get(DataComponents.BLOCKS_ATTACKS);
+            BlocksAttacksComponent blocksAttacksComponent = this.endingLibrary$getComponent(DataComponents.BLOCKS_ATTACKS);
             if (blocksAttacksComponent != null) {
                 cir.setReturnValue(UseAnim.BLOCK);
             }
@@ -331,13 +358,13 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Inject(method = "is(Lnet/minecraft/tags/TagKey;)Z", at = @At("HEAD"), cancellable = true)
     private void componentTagsIs(TagKey<Item> p_204118_, CallbackInfoReturnable<Boolean> cir) {
-        List<TagKey<Item>> componentTags = this.componentManager.get(DataComponents.TAGS);
+        List<TagKey<Item>> componentTags = this.endingLibrary$getComponent(DataComponents.TAGS);
         if (componentTags != null)
             cir.setReturnValue(componentTags.contains(p_204118_));
     }
     @Inject(method = "getTags", at = @At("HEAD"), cancellable = true)
     private void getComponentTags(CallbackInfoReturnable<Stream<TagKey<Item>>> cir) {
-        List<TagKey<Item>> componentTags = this.componentManager.get(DataComponents.TAGS);
+        List<TagKey<Item>> componentTags = this.endingLibrary$getComponent(DataComponents.TAGS);
         if (componentTags != null)
             cir.setReturnValue(componentTags.stream());
     }
@@ -349,19 +376,25 @@ public abstract class ItemStackMixin implements ExtraItemStackItf, IForgeItemSta
     }
     @Override
     public void endingLibrary$rebuildComponents(CompoundTag tag) {
+        if (tag == null) {
+            this.componentManager = null;
+            return;
+        }
         if (tag != null) {
             CompoundTag component = tag.getCompound(ItemComponentManager.HEAD);
-            if (!component.isEmpty()) {
+            if (component.isEmpty()) {
+                this.componentManager = null;
+            } else {
                 DataResult<Map<ItemComponentType<?>, Object>> dr = MergedComponentMap.TYPE_TO_VALUE_MAP_CODEC.parse(EndingLibrary.PROXY.registryTagOps(), component);
                 dr.result().ifPresent(map -> {
                     ComponentChanges.Builder builder = ComponentChanges.builder(null);
                     map.forEach(builder::add);
-                    this.componentManager.getComponents().setChanges(builder.build());
+                    this.endingLibrary$getComponentManager().getComponents().setChanges(builder.build());
                 });
                 dr.error().ifPresent(err -> {
                     this.decodeFailed = true;
                     EndingLibrary.LOGGER.warn("ItemComponent decode error : {}", err.message());
-                    WaitingRegistryAccessTask.toAddItemStacks.add((ItemStack) (Object) this);
+                    WaitingRegistryAccessTask.schedule((ItemStack) (Object) this);
                 });
             }
             InjectCompoundTag.of(tag).setStoredOwner(this);

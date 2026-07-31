@@ -49,10 +49,13 @@ public class ServerExpandedContext {
             }
             Set<UUID> dirtyOverlayIDs = endingLibrarySavedData.getDirtyOverlayPlayerIDs();
             if (!dirtyOverlayIDs.isEmpty()) {
-                for (UUID uuid : dirtyOverlayIDs) {
+                Iterator<UUID> iterator = dirtyOverlayIDs.iterator();
+                while (iterator.hasNext()) {
+                    UUID uuid = iterator.next();
                     ServerPlayer player = playerList.getPlayer(uuid);
                     if (player != null) {
                         PacketHandler.sendToPlayer(new S2CDisabledOverlaysPacket(endingLibrarySavedData.packDisabledOverlaysPacket(player)), player);
+                        iterator.remove();
                     }
                 }
             }

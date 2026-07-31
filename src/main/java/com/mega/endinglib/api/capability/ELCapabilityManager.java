@@ -23,22 +23,27 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = EndingLibrary.MODID)
 public class ELCapabilityManager {
     public static final EntitySyncCapabilityBase[] EMPTY_UNMODIFIABLE_CAPS = new EntitySyncCapabilityBase[]{};
-    public static final Object2ObjectOpenHashMap<String, Capability<? extends EntitySyncCapabilityBase>> CAPABILITY_MAP = new Object2ObjectOpenHashMap<>();
+    public static final Object2ObjectOpenHashMap<String, CapabilityRegistration> CAPABILITY_MAP = new Object2ObjectOpenHashMap<>();
     public static final Object2ObjectOpenHashMap<String, Supplier<? extends EntitySyncCapabilityBase>> CAPABILITY_SUPPLIER_MAP = new Object2ObjectOpenHashMap<>();
 
     public static <T extends EntitySyncCapabilityBase> Capability<T> getCapability(String registryName) {
-        return (Capability<T>) CAPABILITY_MAP.get(registryName);
+        CapabilityRegistration registration = CAPABILITY_MAP.get(registryName);
+        if (registration == null)
+            throw new NullPointerException("capability " + registryName + " is null");
+        return (Capability<T>) registration.capability;
     }
 
     public static <T extends EntitySyncCapabilityBase> Capability<T> regsterCapability(Supplier<T> capability, CapabilityToken<T> token) {
-        String registryName = capability.get().getRegistryName().toString();
+        T attachmentProbe = capability.get();
+        String registryName = attachmentProbe.getRegistryName().toString();
         Capability<T> capability1 = CapabilityManager.get(token);
-        CAPABILITY_MAP.put(registryName, capability1);
+        CAPABILITY_MAP.put(registryName, new CapabilityRegistration(capability1, attachmentProbe::canAttachTo));
         CAPABILITY_SUPPLIER_MAP.put(registryName, capability);
         return capability1;
     }
@@ -47,12 +52,15 @@ public class ELCapabilityManager {
     public static void attachEntityCapabilities(AttachCapabilitiesEvent<Entity> event) {
         Entity entity = event.getObject();
         ObjectArrayList<EntitySyncCapabilityBase> endinglibCaps = null;
-        for (String registryName : CAPABILITY_SUPPLIER_MAP.keySet()) {
-            if (endinglibCaps == null) endinglibCaps = new ObjectArrayList<>();
+        for (String registryName : CAPABILITY_MAP.keySet()) {
+            CapabilityRegistration registration = CAPABILITY_MAP.get(registryName);
+            if (!registration.attachmentPredicate.test(entity)) continue;
             EntitySyncCapabilityBase defaultValue = CAPABILITY_SUPPLIER_MAP.get(registryName).get();
             if (defaultValue.shouldAttachTo(entity)) {
+                if (endinglibCaps == null) endinglibCaps = new ObjectArrayList<>();
                 endinglibCaps.add(defaultValue);
                 event.addCapability(defaultValue.getRegistryName(), defaultValue);
+                event.addListener(defaultValue.holder::invalidate);
                 IEntityAutoCap.of(entity).endinglib$putAutoCap(defaultValue.getClass(), defaultValue);
             }
         }
@@ -153,5 +161,8 @@ public class ELCapabilityManager {
     }
     public static EntitySyncCapabilityBase[] getCaps(Entity entity) {
         return ExtraEntity.of(entity).endinglib$Caps();
+    }
+
+    public record CapabilityRegistration(Capability<? extends EntitySyncCapabilityBase> capability, Predicate<Entity> attachmentPredicate) {
     }
 }

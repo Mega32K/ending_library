@@ -46,6 +46,7 @@ public class EndingLibrarySavedData extends SavedData {
 
     public static EndingLibrarySavedData load(CompoundTag tag, MinecraftServer server) {
         EndingLibrarySavedData data = new EndingLibrarySavedData();
+        boolean discardedCommandTasks = false;
         if (CompoundTagUtils.containsListTag(tag, "PlayersDisabledOverlays")) {
             ListTag listTag = tag.getList("PlayersDisabledOverlays", Tag.TAG_COMPOUND);
             if (!listTag.isEmpty()) {
@@ -99,9 +100,10 @@ public class EndingLibrarySavedData extends SavedData {
                 for (int i = 0; i < listTag.size(); i++) {
                     CompoundTag compoundTag = listTag.getCompound(i);
                     CommandTask task = CommandTask.load(compoundTag, server);
-                    if (task != null) {
-                        task.addToManager();
+                    if (task != null && task.addToManager()) {
                         data.commandTasks.add(task);
+                    } else {
+                        discardedCommandTasks = true;
                     }
                 }
             }
@@ -165,11 +167,22 @@ public class EndingLibrarySavedData extends SavedData {
                 }
             }
         }
+        if (discardedCommandTasks) {
+            data.setDirty();
+        }
         return data;
+    }
+
+    private void pruneEmptyPlayerData() {
+        this.userDynamicKeySetting.object2ObjectEntrySet().removeIf(entry -> entry.getValue().isEmpty());
+        this.playersDisabledInputPermissions.object2ObjectEntrySet().removeIf(entry -> entry.getValue().isEmpty());
+        this.playerEnabledDynamicShaders.object2ObjectEntrySet().removeIf(entry -> entry.getValue().isEmpty());
+        this.playersDisabledOverlays.object2ObjectEntrySet().removeIf(entry -> entry.getValue().isEmpty());
     }
 
     @Override
     public @NotNull CompoundTag save(@NotNull CompoundTag compoundTag) {
+        this.pruneEmptyPlayerData();
         if (!this.playersDisabledOverlays.isEmpty()) {
             ListTag listTag = new ListTag();
             for (var entry : this.playersDisabledOverlays.object2ObjectEntrySet()) {
@@ -297,8 +310,12 @@ public class EndingLibrarySavedData extends SavedData {
         List<DynamicEffectData> names ;
         if (this.playerEnabledDynamicShaders.containsKey(uuid)) {
             names = this.playerEnabledDynamicShaders.get(uuid);
-            names.remove(data);
-            this.setDirty();
+            if (names.remove(data)) {
+                if (names.isEmpty()) {
+                    this.playerEnabledDynamicShaders.remove(uuid);
+                }
+                this.setDirty();
+            }
         }
     }
     public void enableDynamicEffect(Player player, String name) {
@@ -370,9 +387,13 @@ public class EndingLibrarySavedData extends SavedData {
         }
     }
     public void removeDisabledPermission(Player player, InputOperations permission) {
-        EnumSet<InputOperations> permissions = this.getOrPutPlayerDisabledPermissions(player);
-        if (permissions.remove(permission)) {
-            this.dirtyPlayerIDs.add(player.getUUID());
+        UUID uuid = player.getUUID();
+        EnumSet<InputOperations> permissions = this.playersDisabledInputPermissions.get(uuid);
+        if (permissions != null && permissions.remove(permission)) {
+            if (permissions.isEmpty()) {
+                this.playersDisabledInputPermissions.remove(uuid);
+            }
+            this.dirtyPlayerIDs.add(uuid);
             this.setDirty();
         }
     }
@@ -445,8 +466,13 @@ public class EndingLibrarySavedData extends SavedData {
         return false;
     }
     public boolean removeDisabledOverlay(ServerPlayer player, ResourceLocation id) {
-        if (this.getOrPutPlayerDisabledOverlays(player).remove(id)) {
-            this.dirtyOverlayPlayerIDs.add(player.getUUID());
+        UUID uuid = player.getUUID();
+        Set<ResourceLocation> overlays = this.playersDisabledOverlays.get(uuid);
+        if (overlays != null && overlays.remove(id)) {
+            if (overlays.isEmpty()) {
+                this.playersDisabledOverlays.remove(uuid);
+            }
+            this.dirtyOverlayPlayerIDs.add(uuid);
             this.setDirty();
             return true;
         }
@@ -455,7 +481,6 @@ public class EndingLibrarySavedData extends SavedData {
     public Set<ResourceLocation> packDisabledOverlaysPacket(ServerPlayer player) {
         Set<ResourceLocation> data = this.playersDisabledOverlays.get(player.getUUID());
         if (data == null) data = new ObjectOpenHashSet<>();
-        this.dirtyPlayerIDs.remove(player.getUUID());
         return data;
     }
 }

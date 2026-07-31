@@ -61,7 +61,7 @@ public class ClientTaskManager {
                 }
             }
             if (mc.level != null) {
-                if (!WaitingRegistryAccessTask.toAddItemStacks.isEmpty() || !WaitingRegistryAccessTask.itemStacks.isEmpty())
+                if (WaitingRegistryAccessTask.hasPending())
                     CompletableFuture.runAsync(() -> WaitingRegistryAccessTask.tick(mc.level), ClientUtils.CLIENT_TEST_POOL);
             }
         }

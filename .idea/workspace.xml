@@ -5,14 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7a0e3376-007b-4834-9437-4fa75e172de3" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/MEMORY.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/checksums/sha1-checksums.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spyglass/extra_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/spyglass/extra_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/ELCapabilityManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/ELCapabilityManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/EntitySyncCapabilityBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/EntitySyncCapabilityBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/item/component/ItemComponentManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/item/component/ItemComponentManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/item/component/type/ConsumableComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/item/component/type/ConsumableComponent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/server/ServerTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/server/ServerTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/client/task/ClientTaskManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/client/task/ClientTaskManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/WaitingRegistryAccessTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/WaitingRegistryAccessTask.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/command/entity/player/ScheduleCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/command/entity/player/ScheduleCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/command/test/DumpCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/command/test/DumpCommand.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/data/EndingLibrarySavedData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/data/EndingLibrarySavedData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/ItemRendererMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/ItemRendererMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/ItemStackMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/ItemStackMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/LivingEntityMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/LivingEntityMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/capability/EntityMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/capability/EntityMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/proxy/CommonProxy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/proxy/CommonProxy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/server/ServerTaskManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/server/ServerTaskManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/asm/EventUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/asm/EventUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/mixin/data_expand/ExtraItemStackItf.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/mixin/data_expand/ExtraItemStackItf.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/mixin/level/ServerExpandedContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/mixin/level/ServerExpandedContext.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

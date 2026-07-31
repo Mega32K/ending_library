@@ -61,12 +61,18 @@ public abstract class EntityMixin extends net.minecraftforge.common.capabilities
 
     @Override
     public void endinglib$clearAutoCaps() {
-        if (endinglib$autoCapByClass != null) endinglib$autoCapByClass.clear();
+        if (endinglib$autoCapByClass != null) {
+            endinglib$autoCapByClass.values().forEach(LazyOptional::invalidate);
+            endinglib$autoCapByClass.clear();
+        }
     }
 
     @Override
     public <T extends EntitySyncCapabilityBase> void endinglib$removeAutoCap(Class<T> type) {
-        if (endinglib$autoCapByClass != null) endinglib$autoCapByClass.remove(type);
+        if (endinglib$autoCapByClass != null) {
+            LazyOptional<EntitySyncCapabilityBase> capability = endinglib$autoCapByClass.remove(type);
+            if (capability != null) capability.invalidate();
+        }
     }
     @Override
     public <T extends EntitySyncCapabilityBase> void endinglib$putAutoCap(Class<? extends EntitySyncCapabilityBase> type, T instance) {

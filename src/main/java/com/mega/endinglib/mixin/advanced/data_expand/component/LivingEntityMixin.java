@@ -80,7 +80,7 @@ public abstract class LivingEntityMixin extends Entity {
         boolean flag = this.getSharedFlag(7);
         if (checkGliderComponent.get() && !flag) {
             ItemStack itemstack = this.getItemBySlot(EquipmentSlot.CHEST);
-            if (ItemComponentManager.get(itemstack).getComponents().get(DataComponents.GLIDER) != null)
+            if (ItemComponentManager.has(itemstack, DataComponents.GLIDER))
                 this.setSharedFlag(7, true);
         }
     }
@@ -95,7 +95,7 @@ public abstract class LivingEntityMixin extends Entity {
         ItemStack itemStack = breakStack.get();
         if (itemStack != null && !itemStack.isEmpty()) {
             Holder<SoundEvent> soundEventHolder;
-            if ((soundEventHolder = ItemComponentManager.get(itemStack).getComponents().get(DataComponents.BREAK_SOUND)) != null) {
+            if ((soundEventHolder = ItemComponentManager.get(itemStack, DataComponents.BREAK_SOUND)) != null) {
                 this.level().playLocalSound(this.getX(), this.getY(), this.getZ(), soundEventHolder.value(), this.getSoundSource(), 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F, false);
                 return false;
             }

@@ -15,8 +15,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DumpCommand {
+    private static final AtomicBoolean DUMP_IN_PROGRESS = new AtomicBoolean();
+
     public static ArgumentBuilder<CommandSourceStack, ?> register() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("dump")
                 .requires(stack -> stack.hasPermission(4))
@@ -28,6 +31,7 @@ public class DumpCommand {
                 );
     }
     private static int file(CommandSourceStack stack, String classname , String reason) {
+        if (!DUMP_IN_PROGRESS.compareAndSet(false, true)) return 0;
         CompletableFuture.runAsync(() -> {
             try {
                 Class<?> c = Class.forName(classname, false, ClassBytecodesGetter.transformLoader());
@@ -44,6 +48,8 @@ public class DumpCommand {
                 }
             } catch (ClassNotFoundException exception) {
                 stack.sendFailure(Component.literal("No class def found:"+exception.getLocalizedMessage()));
+            } finally {
+                DUMP_IN_PROGRESS.set(false);
             }
         });
         return 0;

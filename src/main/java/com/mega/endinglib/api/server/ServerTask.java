@@ -17,7 +17,9 @@ public abstract class ServerTask {
 
     public void setRemoved(boolean flag) {
         if (!flag && isRemoved) {
-            this.addToManager();
+            if (!this.addToManager()) {
+                return;
+            }
         }
         this.isRemoved = flag;
     }
@@ -28,8 +30,8 @@ public abstract class ServerTask {
         return this.args;
     }
 
-    public void addToManager() {
-        ServerTaskManager.toAdd.add(this);
+    public boolean addToManager() {
+        return ServerTaskManager.tryAdd(this);
     }
 
     public void onRemove() {

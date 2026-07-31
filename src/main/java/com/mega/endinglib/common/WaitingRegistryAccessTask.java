@@ -21,13 +21,32 @@ import java.util.Queue;
 import java.util.Set;
 
 public class WaitingRegistryAccessTask {
-    public static final Queue<ItemStack> toAddItemStacks = Queues.newArrayDeque();
-    public static final Set<ItemStack> itemStacks = new ReferenceOpenHashSet<>();
+    public static final int MAX_PENDING_ITEM_STACKS = 1024;
+    private static final Queue<ItemStack> toAddItemStacks = Queues.newArrayDeque();
+    private static final Set<ItemStack> queuedItemStacks = new ReferenceOpenHashSet<>();
+    private static final Set<ItemStack> itemStacks = new ReferenceOpenHashSet<>();
+
+    public static boolean schedule(ItemStack stack) {
+        synchronized (itemStacks) {
+            if (itemStacks.contains(stack) || queuedItemStacks.contains(stack)) return true;
+            if (itemStacks.size() + queuedItemStacks.size() >= MAX_PENDING_ITEM_STACKS) return false;
+            queuedItemStacks.add(stack);
+            toAddItemStacks.add(stack);
+            return true;
+        }
+    }
+
+    public static boolean hasPending() {
+        synchronized (itemStacks) {
+            return !toAddItemStacks.isEmpty() || !itemStacks.isEmpty();
+        }
+    }
     public static void tick(Level level) {
         synchronized (itemStacks) {
             if (!toAddItemStacks.isEmpty()) {
                 ItemStack stack;
                 while ((stack = toAddItemStacks.poll()) != null) {
+                    queuedItemStacks.remove(stack);
                     itemStacks.add(stack);
                 }
             }

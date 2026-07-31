@@ -69,7 +69,9 @@ public record ConsumableComponent(
             CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, stack);
         }
 
-        ItemComponentManager.get(stack).getComponents().streamAll(Consumable.class).forEach(consumable -> consumable.onConsume(level, user, stack, this));
+        ItemComponentManager manager = ItemComponentManager.getIfPresent(stack);
+        if (manager != null)
+            manager.getComponents().streamAll(Consumable.class).forEach(consumable -> consumable.onConsume(level, user, stack, this));
         if (!level.isClientSide) {
             this.onConsumeEffects.forEach(effect -> effect.onConsume(level, stack, user));
         }

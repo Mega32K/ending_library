@@ -70,14 +70,11 @@ public class CommonProxy implements ModProxy {
         EntitySelectorManager.register("n", new NearestEntitySelector());
         event.enqueueWork(() -> {
             EndingLibraryGameRules.init();
-            ELCapabilityManager.regsterCapability(EndingLibraryPlayerCapability::new, new CapabilityToken<EndingLibraryPlayerCapability>() {
-            });
-            ELCapabilityManager.regsterCapability(EndingLibraryLivingCapability::new, new CapabilityToken<EndingLibraryLivingCapability>() {
-            });
-            ELCapabilityManager.regsterCapability(EndingLibraryEntityCapability::new, new CapabilityToken<EndingLibraryEntityCapability>() {
-            });
-            ELCapabilityManager.regsterCapability(TextDisplayCapability::new, new CapabilityToken<TextDisplayCapability>() {
-            });
+            ELCapabilityManager.regsterCapability(EndingLibraryPlayerCapability::new, new CapabilityToken<EndingLibraryPlayerCapability>() {});
+            ELCapabilityManager.regsterCapability(EndingLibraryLivingCapability::new, new CapabilityToken<EndingLibraryLivingCapability>() {});
+            ELCapabilityManager.regsterCapability(EndingLibraryEntityCapability::new, new CapabilityToken<EndingLibraryEntityCapability>() {});
+            ELCapabilityManager.regsterCapability(TextDisplayCapability::new, new CapabilityToken<TextDisplayCapability>() {});
+
             ArgumentTypeInfos.registerByClass(CameraModifierArgument.class, ModCommandArgumentTypes.CAMERA_MODIFIER.get());
             ArgumentTypeInfos.registerByClass(CameraOperationArgument.class, ModCommandArgumentTypes.CAMERA_OPERATION.get());
             ArgumentTypeInfos.registerByClass(CameraActionArgument.class, ModCommandArgumentTypes.CAMERA_ACTION.get());

@@ -31,6 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -44,7 +45,7 @@ public class ItemComponentManager {
                             BuiltInRegistries.ITEM.byNameCodec().fieldOf("id").forGetter(ItemStack::getItem),
                             Codec.INT.optionalFieldOf("Count", 1).forGetter(ItemStack::getCount),
                             CompoundTag.CODEC.optionalFieldOf("tag").forGetter((com) -> Optional.ofNullable(com.getTag())),
-                            ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.builder(null).build()).forGetter(com -> ItemComponentManager.get(com).components.getChanges())
+                            ComponentChanges.CODEC.optionalFieldOf("components", ComponentChanges.builder(null).build()).forGetter(ItemComponentManager::getChanges)
                     ).apply(stack, ItemComponentManager::itemStackCodec)
     );
     static final Object2ObjectOpenHashMap<ResourceLocation, ItemComponentType<?>> COMPONENTS = new Object2ObjectOpenHashMap<>();
@@ -62,14 +63,23 @@ public class ItemComponentManager {
     public static ItemComponentManager get(ItemStack stack) {
         return ((ExtraItemStackItf) (Object) stack).endingLibrary$getComponentManager();
     }
+    @Nullable
+    public static ItemComponentManager getIfPresent(ItemStack stack) {
+        return ((ExtraItemStackItf) (Object) stack).endingLibrary$getComponentManagerIfPresent();
+    }
+    public static ComponentChanges getChanges(ItemStack stack) {
+        ItemComponentManager manager = getIfPresent(stack);
+        return manager == null ? ComponentChanges.EMPTY : manager.components.getChanges();
+    }
     public static void setComponentManager(ItemStack stack, ItemComponentManager manager) {
         ((ExtraItemStackItf) (Object) stack).endingLibrary$setComponentManager(manager);
     }
     public static <T> T get(ItemStack stack, ItemComponentType<? extends T> type) {
-        return ItemComponentManager.get(stack).components.get(type);
+        ItemComponentManager manager = getIfPresent(stack);
+        return manager == null ? null : manager.components.get(type);
     }
     public static <T> boolean has(ItemStack stack, ItemComponentType<? extends T> type) {
-        return ItemComponentManager.get(stack).components.get(type) != null;
+        return ItemComponentManager.get(stack, type) != null;
     }
     public <T> void ifPresent(ItemComponentType<? extends T> type, Consumer<T> consumer) {
         T com = this.components.get(type);
@@ -77,7 +87,7 @@ public class ItemComponentManager {
             consumer.accept(com);
     }
     public static <T> void ifPresent(ItemStack stack, ItemComponentType<? extends T> type, Consumer<T> consumer) {
-        T com = ItemComponentManager.get(stack).components.get(type);
+        T com = ItemComponentManager.get(stack, type);
         if (com != null)
             consumer.accept(com);
     }

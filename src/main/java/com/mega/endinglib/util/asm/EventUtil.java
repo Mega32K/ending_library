@@ -63,7 +63,7 @@ public class EventUtil {
     }
     public static boolean canElytraFly(IForgeItemStack stack) {
         if (stack instanceof ItemStack itemStack) {
-            return ItemComponentManager.get(itemStack).getComponents().get(DataComponents.GLIDER) != null;
+            return ItemComponentManager.has(itemStack, DataComponents.GLIDER);
         }
         return false;
     }
@@ -78,7 +78,8 @@ public class EventUtil {
         return properties;
     }
     public static int getMaxStackSize(int original, ItemStack stack) {
-        return ItemComponentManager.get(stack).getComponents().getOrDefault(DataComponents.MAX_STACK_SIZE, original);
+        Integer component = ItemComponentManager.get(stack, DataComponents.MAX_STACK_SIZE);
+        return component == null ? original : component;
     }
     public static boolean componentCanPerformAction(IForgeItemStack fis, ToolAction action) {
         if (fis instanceof ItemStack stack) {
@@ -148,7 +149,8 @@ public class EventUtil {
         else return ItemComponentManager.has(itemStack, DataComponents.PROVIDES_BANNER_PATTERNS);
     }
     public static int getComponentMaxDamage(int origin, ItemStack stack) {
-        return ItemComponentManager.get(stack).getComponents().getOrDefault(DataComponents.MAX_DAMAGE, origin);
+        Integer component = ItemComponentManager.get(stack, DataComponents.MAX_DAMAGE);
+        return component == null ? origin : component;
     }
     public static boolean isComponentItemDamageable(boolean origin, ItemStack stack) {
         return origin || ItemComponentManager.has(stack, DataComponents.MAX_DAMAGE);
@@ -189,7 +191,7 @@ public class EventUtil {
     }
     public static int getComponentBurnTime(int origin, IForgeItemStack fis) {
         if (fis instanceof ItemStack itemStack) {
-            Integer time = ItemComponentManager.get(itemStack).getComponents().get(DataComponents.BURN_TIME);
+            Integer time = ItemComponentManager.get(itemStack, DataComponents.BURN_TIME);
             if (time != null)
                 return time;
         }
@@ -197,7 +199,7 @@ public class EventUtil {
     }
     public static int getComponentEntityLifespan(int origin, IForgeItemStack fis) {
         if (fis instanceof ItemStack itemStack) {
-            Integer time = ItemComponentManager.get(itemStack).getComponents().get(DataComponents.LIFE_SPAN);
+            Integer time = ItemComponentManager.get(itemStack, DataComponents.LIFE_SPAN);
             if (time != null)
                 return time;
         }

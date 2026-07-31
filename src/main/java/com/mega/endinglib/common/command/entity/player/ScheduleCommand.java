@@ -74,7 +74,7 @@ public class ScheduleCommand {
         LinkedList<String> list = new LinkedList<>();
         list.add(command);
         CommandTask task = new CommandTask(new CommandScheduleEntry(new WrappedCSSBuilder(stack), list, name.toString(), wait), stack.getServer());
-        task.addToManager();
+        if (!task.addToManager()) return 0;
         EndingLibrarySavedData.getInstance(stack.getServer()).addCommandTask(task);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.schedule.create"), false);
         return wait;
@@ -83,7 +83,7 @@ public class ScheduleCommand {
     private static int execute(CommandSourceStack stack, ResourceLocation name, int wait, List<String> commandLines) {
         LinkedList<String> list = new LinkedList<>(commandLines);
         CommandTask task = new CommandTask(new CommandScheduleEntry(new WrappedCSSBuilder(stack), list, name.toString(), wait), stack.getServer());
-        task.addToManager();
+        if (!task.addToManager()) return 0;
         EndingLibrarySavedData.getInstance(stack.getServer()).addCommandTask(task);
         stack.sendSuccess(() -> Component.translatable("commands.endinglib.message.schedule.create"), false);
         return wait;
