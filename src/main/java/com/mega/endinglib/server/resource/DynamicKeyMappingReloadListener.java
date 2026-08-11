@@ -48,7 +48,7 @@ public class DynamicKeyMappingReloadListener extends SimpleJsonResourceReloadLis
                         dataResult.result().ifPresent(dynamicKeyMapping -> DYNAMIC_KEYS.put(id, dynamicKeyMapping));
                     }
                 } catch (Throwable throwable) {
-                    CrashReport report = CrashReport.forThrowable(throwable, "Reading Goety Brew Data");
+                    CrashReport report = CrashReport.forThrowable(throwable, "Reading dynamic keymapping data");
                     CrashReportCategory crashReportCategory = report.addCategory("Data");
                     crashReportCategory.setDetail("Location", key);
                     new ReportedException(report).printStackTrace();

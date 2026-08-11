@@ -2,12 +2,11 @@ package com.mega.endinglib.util.asm;
 
 import com.google.common.collect.Streams;
 import com.mega.endinglib.coremod.forge.IClassProcessor;
-import com.mega.endinglib.util.EndingLibraryMixinPlugin;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.loading.RuntimeDistCleaner;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -39,6 +38,7 @@ public class BugfixCoremodProcessor implements IClassProcessor {
             LambdaGatherer lambdaGatherer = new LambdaGatherer();
             //mod
             Hexerei.processClass(name, classNode, methods, shouldWrite);
+            WrongOnlyIn.processClass(name, classNode, methods, shouldWrite);
 
             // remove dynamic synthetic lambda methods that are inside of removed methods
             for (List<Handle> dynamicLambdaHandles = lambdaGatherer.getDynamicLambdaHandles();
@@ -106,6 +106,26 @@ public class BugfixCoremodProcessor implements IClassProcessor {
                         } else {
                             methods.remove();
                         }
+                        shouldWrite.set(true);
+                    }
+                }
+            }
+        }
+    }
+    static class WrongOnlyIn {
+        public static final String INPUT_CONSTANTS = "com/mojang/blaze3d/platform/InputConstants";
+        public static void processClass(String name, ClassNode classNode, Iterator<MethodNode> methods, AtomicBoolean shouldWrite) {
+            if (name.startsWith(INPUT_CONSTANTS)) {
+                if (classNode.visibleAnnotations != null) {
+                    AnnotationNode onlyInNode = null;
+                    for (AnnotationNode node : classNode.visibleAnnotations) {
+                        if (node.desc.equals("Lnet/minecraftforge/api/distmarker/OnlyIn;")) {
+                            onlyInNode = node;
+                            break;
+                        }
+                    }
+                    if (onlyInNode != null) {
+                        classNode.visibleAnnotations.remove(onlyInNode);
                         shouldWrite.set(true);
                     }
                 }

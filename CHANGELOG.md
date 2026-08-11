@@ -1,2 +1,2 @@
 ### Fixes & Changes
-* Fixed a possible crash when saved disabled permission pack data was not available.
+* Improved dedicated-server memory efficiency.
