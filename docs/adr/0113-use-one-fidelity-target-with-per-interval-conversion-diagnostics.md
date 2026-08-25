@@ -1,0 +1,3 @@
+# Use one fidelity target with per-interval conversion diagnostics
+
+One Easing-to-Bézier Simulation uses one selected fidelity target for its complete Easing Conversion Range. Each source interval is still approximated independently, but the preview exposes an expandable diagnostic row for every interval: source Easing name, normalized and actual-unit maximum error, generated intermediate-node count, target status, and shared-boundary `BROKEN` state. These rows diagnose the deterministic candidate without changing selection or project content, and the initial editor does not provide separate tolerance controls per interval. Confirmation, warning acknowledgement, and the complete generated result remain one atomic operation.

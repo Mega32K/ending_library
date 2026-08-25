@@ -1,0 +1,3 @@
+# Organize camera tracks as sibling semantic groups
+
+The Current Edited Animation's Camera Track Tree uses four sibling groups: Position, Rotation, Camera Parameters, and Animation Effects. Position directly contains `X/Y/Z`, `TRANSLATION_X/Y/Z`, and `RELATIVE_X/Y/Z`; Rotation contains `ROTATION_X/Y/Z`; Camera Parameters contains `FOV`, `ZOOM`, and `RAYCAST`; Animation Effects contains command rows only. The editor does not introduce a redundant Base Position group, nest translation or relative tracks inside extra intermediate folders, treat `X/Y/Z` as scale, or place camera parameters under Position, because those structures would misrepresent the verified camera-value semantics. No other effect-event rows are children of Animation Effects in the initial model.

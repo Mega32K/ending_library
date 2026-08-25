@@ -1,0 +1,9 @@
+# Use selection-first explicit scope for redundant-keyframe removal
+
+Remove Redundant Keyframes uses a Redundant-Key Candidate Scope that never silently broadens. When the current selection contains eligible numeric scalar keyframes, `Selected Keyframes` is the default mode: only those selected nodes may be deleted. Unselected neighboring nodes may participate as read-only trajectory-validation context, but they are never removed as a side effect. Work Range does not implicitly intersect the selection, although the user may explicitly switch from selection mode to range mode.
+
+Range mode is `Tracks in Time Range` and exposes independent Track Scope and Time Scope choices. Track Scope defaults to `Selected Tracks` and may explicitly expand to `All Populated Numeric Tracks`; a selected Track Group resolves its eligible populated numeric children. Time Scope defaults to `Work Range` when a valid Work Range exists and may explicitly become `Full Animation` or a `Custom Range` owned only by the current Tool Operation Preview. Every time scope is a closed interval. Without an eligible node selection or an explicitly resolvable track-and-time scope, the tool remains disabled instead of assuming the complete animation.
+
+Only in-range nodes are deletion candidates. Adjacent out-of-range nodes are read-only boundary context, each Additive Lane is processed independently, and Command Events, Markers, empty tracks, and Timeline Channel Visibility are excluded. Changing selection or scope rebuilds only the local preview, which identifies deletion candidates, protected or otherwise excluded nodes, boundary context, tracks, and lanes.
+
+Confirmation submits the declared baseline and stable identities for authoritative resolution. Any relevant node, range, selection, lane, or track-structure change makes the preview stale and requires regeneration; the server never substitutes a newly inferred scope or partially applies the old candidate set.

@@ -1,0 +1,7 @@
+# Do not queue or force command-lock takeover
+
+A valid Command Event Personal Edit Lock cannot be automatically transferred, queued for, or forcibly taken by another participant. This applies equally to Project Editors and the Project Owner. Releasing the lease makes the event available, but it does not grant ownership to the participant who happened to be waiting or viewing it; that participant must explicitly choose `Enter Edit`, and the server validates a fresh acquisition against the current event identity and revision.
+
+The Locked Command Event Read-Only View may provide `Request Release`. This sends the current holder one non-modal collaboration reminder identifying the requester and event, without interrupting typing, closing the properties editor, or exposing any draft. The server rate-limits and coalesces requests per requester and event, retains no unbounded queue, and drops the request when it is handled, expires, either participant leaves, or the lock lease ends. Repeated requests during the cooldown do not create additional retained objects or notifications.
+
+The holder remains responsible for confirming, cancelling, or closing the editor. If the holder becomes unreachable, normal server lease expiry releases the event. This preserves personal drafting safety and deterministic ownership while avoiding lock spam, hidden reservations, and owner-only draft destruction through ordinary event editing.

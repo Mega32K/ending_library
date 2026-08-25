@@ -1,0 +1,17 @@
+# Implement personal Undo and Redo as compensating operations
+
+Undo and Redo are scoped to a player and project rather than to the whole collaborative document. `Ctrl+Z` selects the current player's most recent accepted edit that remains undoable and asks the server to create a compensating Edit Operation. The compensation is validated against the current authoritative state, ordered like every other operation, increments the project revision, and is broadcast to every editing participant. It never replaces the entire project JSON or rewinds unrelated edits.
+
+If an intervening edit makes the compensation unsafe or semantically incompatible, the server rejects it as an Undo Conflict and returns a user-visible explanation; it must not silently overwrite another participant's newer value. The same Operation Footprint rules used for normal edits apply: a compensation may pass through unrelated intervening fields, but a newer edit on the same field, the same curve segment, or a conflicting structural ancestor blocks it. Redo uses another compensating operation for the player's latest eligible undone edit. A newly submitted normal edit clears that player's Redo Branch eligibility, while retained history records may remain inspectable rather than being physically deleted.
+
+Checkpoint restoration is recorded as one special full-document Edit Operation in the initiating player's Personal Edit History. The entry references both the selected target checkpoint and the automatically created pre-restore Protection Checkpoint; it does not embed a second full project copy in the shortcut history. Undo of the restore requests a compensating operation that reapplies the protection checkpoint, and Redo requests a compensating operation that reapplies the target checkpoint. Because both operations use a full-document Restore Footprint, any accepted content edit after the relevant restore or restore-undo creates an Undo Conflict instead of being overwritten. Existing history entries are retained after a restore, but a Restore Barrier may suspend their eligibility until the restore chain is undone and each entry is revalidated against the current project.
+
+Undo and Redo histories are keyed by player and project, survive an explicit editor close and a Transient Connection Interruption inside the same connected lifecycle, remain unavailable for submission while Reconnecting Read-Only State is active, and are cleared on Connection Lifecycle Exit.
+
+The Edit Menu, configured shortcuts, context actions, and Command Palette all invoke the same personal Undo and Redo commands. None of those surfaces may expose a global project-history rewind or operate on another participant's shortcut history.
+
+The durable project revision history remains a separate recovery and inspection facility. It is not the same as the shortcut history and is not implicitly rewound by Undo or Redo.
+
+The Project History and Recovery Panel exposes that durable facility as read-only inspection. It may show accepted operations and available differences, but it never executes personal Undo or Redo, includes local drafts, or changes the active preview and runtime state.
+
+Project Format Migration is a special structural history entry with an additional schema boundary: its Undo and Redo behavior follows the migration-specific rule in ADR-0163 and may close an editable session rather than exposing an unsupported document as editable content.

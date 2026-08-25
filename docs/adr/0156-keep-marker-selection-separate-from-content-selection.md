@@ -1,0 +1,5 @@
+# Keep marker selection separate from content selection
+
+Project Timeline Markers use a dedicated local Marker Selection rather than joining keyframes, curve nodes, tracks, or Command Animation Effect Events in one mixed Selection Set. Activating a marker continues to seek the local preview according to its playback-state rules, while marker inspection and editing operate through the marker-specific selection surface. This prevents one content-oriented Delete or batch gesture from unexpectedly removing project navigation metadata.
+
+Deleting a selected marker is nevertheless an ordinary reversible project edit: it submits directly without a confirmation dialog, creates one authoritative revision and one personal Undo/Redo item, and preserves the current playhead and playback state. Server rejection leaves the marker and Marker Selection unchanged. Marker deletion never changes animation JSON, runtime animation data, authored camera content, or another selection domain.

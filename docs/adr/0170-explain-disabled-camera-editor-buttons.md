@@ -1,0 +1,5 @@
+# Explain disabled camera editor buttons without enabling them
+
+Disabled buttons in the Camera Animation Editor remain eligible for the shared one-second pointer-hover Tooltip contract even though they cannot be clicked or activated. The tooltip first states the button's normal action, then gives the current concise reason it is unavailable, such as missing selection, invalid playhead position, insufficient Owner/Editor permission, another participant's lock, a read-only format state, or an outstanding synchronization request.
+
+The disabled hit surface is visual and explanatory only. Hovering it does not change selection, acquire a lock, submit a request, open a preview, or make the action available; the tooltip must not claim that the operation ran. If the blocking condition changes while the tooltip is pending or visible, the text is refreshed or dismissed rather than showing stale permission, lock, or synchronization information. Hidden controls and decorative elements have no disabled tooltip.

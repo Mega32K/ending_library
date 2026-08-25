@@ -1,0 +1,5 @@
+# Encode timeline node state with consistent diamonds and emphasis
+
+Every timeline item uses the same compact diamond node in both the ordinary timeline and Graph Editor Mode. This includes scalar keyframes and Command Animation Effect Events; command events do not introduce alternate shapes or embedded type glyphs. Unselected nodes use restrained track-compatible tones, while selected nodes use the shared Blockbench-inspired blue fill or emphasis with a readable border. Hovering a node produces no additional visual rendering effect, including no outline, scale change, animation, tooltip-only decoration, or inline controls. The playhead may add a distinct center or crossing indicator without changing node identity.
+
+Conflict state uses an additional warning border, pattern, or status marker; collaborator presence uses a small non-destructive marker or outline; neither may overwrite the local selection-blue signal. These operational states must remain distinguishable without relying on color alone. The semantic type of a node remains part of its track and underlying animation data rather than its silhouette.

@@ -1,0 +1,5 @@
+# Require operationally complete editor surfaces
+
+Every camera editor surface described by the design must be implemented as a usable workflow rather than a visual shell. A surface is complete only when its state model, responsive layout, pointer and keyboard interaction, validation, immediate feedback, collaboration semantics, persistence boundary, undo/redo behavior where applicable, and failure handling are defined and wired together. A static mock, disabled placeholder, decorative control, or half-designed panel does not satisfy the implementation plan.
+
+This rule applies equally to the top menus, project navigation, preview viewport, trajectory overlays, timeline, curve editor, inspector, property dialogs, context menus, collaboration indicators, notifications, and responsive fallback layouts. The final rewrite prompt must require end-to-end usability checks for every advertised interaction and must not accept a design that stops after the outer frame is rendered.

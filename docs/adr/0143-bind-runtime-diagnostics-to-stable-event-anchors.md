@@ -1,0 +1,7 @@
+# Bind runtime diagnostics to stable event anchors
+
+Each Session-Visible Runtime Diagnostic is associated with a Runtime Diagnostic Anchor rather than being resolved from the current project revision alone. The anchor contains the stable Command Animation Effect Event identity, its authored track path and time, the failure category, the project revision observed at the failure, and an opaque semantic fingerprint sufficient to detect relevant event changes. It never retains raw command text, command output, or an extra project-document copy.
+
+When a later project revision changes unrelated content, the diagnostic remains locatable because its event identity and semantic anchor still match. If the anchored event's command meaning, authored time, track placement, or relevant structure changes, the record becomes `EXPIRED`; it remains readable but cannot automatically follow the modified event. If the event is deleted or replaced, the record becomes `UNAVAILABLE`. Selecting either non-locatable state only opens its diagnostic details and never redirects to a different event.
+
+Event identities are not reused for replacement events. This prevents an old runtime failure from silently attaching to a newly created command at the same time or track. Binding-state changes affect only diagnostic navigation and display; they do not alter project content, collaboration revisions, runtime playback, or personal Undo/Redo history.

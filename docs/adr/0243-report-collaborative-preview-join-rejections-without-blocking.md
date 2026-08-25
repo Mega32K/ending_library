@@ -1,0 +1,9 @@
+# Report collaborative-preview join rejections without blocking the editor
+
+A rejected Join Collaborative Preview request produces one server-authored semantic outcome and leaves the player's Local Preview, workspace navigation, selection, playback, project content, history, and runtime state unchanged. The client renders the outcome through the persistent Editor Status Bar and, when useful, one non-blocking Transient Status Notice; it does not open a blocking error dialog or silently replace the local preview.
+
+The outcome identifies the authoritative reason using localized client text and bounded parameters. Permission loss, invalid or inactive Project Tab, terminated or missing preview generation, unsupported format, and other non-retryable conditions show a truthful explanation without a retry action. Temporary transport failure, timeout, or bounded capacity exhaustion may expose an explicit Retry Join action. Retry is a new single-flight request with a new identity and full current validation after the bounded server-controlled cooldown; it never resumes, duplicates, or automatically retries the failed request.
+
+The status bar remains the queryable source of truth after the transient notice expires. A retry action is unavailable while another Join request is pending, after the tab has left the active focus boundary, or when the authoritative result says the condition is not retryable. Late, duplicate, or stale rejection packets are ignored by connection, project, tab, preview-session, and request-generation identity and cannot overwrite a newer local outcome.
+
+This keeps expected collaboration races visible without turning ordinary admission failure into a disruptive modal workflow.

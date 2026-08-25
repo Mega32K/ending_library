@@ -1,0 +1,5 @@
+# Provide task-focused workspace presets and predictable rename inputs
+
+The editor ships with four initial Workspace Presets: Animation, Camera Preview, Curve Editor, and Collaboration Review. A preset changes only local panel arrangement and interaction emphasis. Users may continue resizing, docking, collapsing, and reopening panels; the Project Workspace Layout stores the resulting actual arrangement, not merely the selected preset name. Preset changes do not enter animation Undo/Redo.
+
+Every UI component that renames or sets a project, animation, track, group, marker, preset, or other named object follows one Rename Input Contract. The current name is placed in the focused text field and the entire value is selected when the editor opens the field. Immediate typing replaces the old name, while normal caret movement and partial editing remain available. The contract applies consistently to dialogs, inline labels, inspectors, menus, and collaborative name edits, with server validation still governing the accepted result.

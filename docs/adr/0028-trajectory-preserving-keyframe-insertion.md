@@ -1,0 +1,7 @@
+# Preserve the evaluated trajectory when inserting a keyframe
+
+Inserting a keyframe between two existing keys defaults to Trajectory-Preserving Key Insertion. The editor evaluates the existing Curve Segment at the requested logical time, uses that result as the inserted key value, and splits the original segment into two segments that reproduce the previous path and tangent behavior as closely as the curve representation permits. Linear segments remain exactly linear. If a legacy easing preset cannot represent the split exactly, the affected segments become explicit custom curves instead of silently changing playback.
+
+Timeline double-click insertion, inspector insertion, Auto Key insertion, and batch insertion use the same default. If insertion targets an existing keyframe in the same scalar track and Additive Lane at the same canonical time, the editor shows an Overwrite Confirmation; only confirmation replaces the existing authored value, while cancellation performs no project edit. The editor also exposes deliberate alternative Curve Split Strategies: inherit the original preset for both new segments, or insert with flat/linear tangents for manual shaping. Insertion, track creation, sampled values, duration auto-extension, and curve splitting form one Edit Gesture Transaction and one personal Undo/Redo unit.
+
+These insertion routes are surfaced by the Keyframe Creation and Insertion group, while deliberate curve-split choices remain in the Curve and Tangent group when they apply to the selected operation.

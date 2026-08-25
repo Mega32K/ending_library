@@ -1,0 +1,5 @@
+# Use closed item-time membership for Work Range retiming
+
+Advanced Retiming resolves Work Range content with the closed canonical interval `[start, end]`. Every time-bearing authored item whose own timestamp lies at or between those boundaries participates, including scalar keyframes, Timeline Bézier Nodes, and Command Animation Effect Events; an item outside the interval remains outside even when one of its connected Curve Segments crosses the boundary. Marker participation continues to follow the separate explicit `Include Markers` rule.
+
+Scope resolution never inserts a boundary key, splits a curve, or fits the existing trajectory automatically. The Tool Operation Preview identifies every cross-boundary connection whose evaluated shape may change because an in-range endpoint moves while its neighbor does not, and confirmation is unavailable when the range contains no eligible authored item. This keeps membership deterministic and prevents a temporary Work Range from causing hidden structural edits.

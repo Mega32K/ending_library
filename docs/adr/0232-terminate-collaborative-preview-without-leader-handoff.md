@@ -1,0 +1,7 @@
+# Terminate collaborative preview without leader handoff
+
+Collaborative Preview leadership is deliberately non-transferable. If the Preview Leader voluntarily leaves, disconnects, loses the required project permission, leaves the active Editing Session, switches away from the joined active Project Tab, or reaches a connection, world, server, or project-session lifecycle exit, the server performs `Collaborative Preview Termination` instead of selecting a successor or keeping an ownerless preview alive.
+
+Termination ends the shared preview control and playback state for the joined session, releases its bounded revision, stage, participant, synchronization, and temporary subscription resources, and applies Preview Restoration to every participant who remains connected. It does not stop or alter any gameplay-facing Project Runtime Instance, take over a player's actual game camera, create a project revision, add personal Undo/Redo history, or affect editors who never joined the collaborative preview.
+
+The termination result is authoritative and idempotent. Delayed play, pause, seek, revision-switch, or range-control messages from the former leader are rejected by the preview-session generation and cannot recreate the session or appoint a hidden successor. A former participant may later start or join a new Collaborative Preview explicitly after ordinary permission and active-tab validation; no automatic resume or leader restoration occurs.

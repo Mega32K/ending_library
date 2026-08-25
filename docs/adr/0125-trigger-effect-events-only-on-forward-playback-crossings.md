@@ -1,0 +1,3 @@
+# Trigger effect events only on forward playback crossings
+
+Command Animation Effect Events trigger only when active runtime playback advances forward across their authored timestamp. Timeline scrubbing, marker activation, direct seeking, backward movement, pausing, and editor preview never execute commands or retroactively replay skipped events. Continuing from a sought time executes only later command events that playback newly crosses. Each `LOOP` wrap begins a new playback pass in which command events may execute again; `STOP_BACK_TO_ZERO` resets and stops without beginning another pass, while `STOP` and `FOREVER` hold their terminal result without repeating terminal events. Gameplay-facing command execution remains server-authoritative.

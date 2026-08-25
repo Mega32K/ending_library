@@ -1,0 +1,7 @@
+# Reconcile empty-track cleanup without changing editing context
+
+After a successful Remove Empty Tracks commit, every open Project Tab for that project applies the structural update and removes deleted track identities from its local selection, keyboard focus, and Inspector references. The supported camera channels remain available for later rematerialization; surviving Track Group selections remain selected, no neighboring track is selected automatically, focus moves to the nearest surviving focusable row or the track-tree container, and the Inspector falls back to Current Edited Animation or an empty-selection state.
+
+The reconciliation preserves Current Edited Animation, playhead time, playback or pause state, Work Range, timeline zoom, and horizontal scroll. A stable surviving-row anchor preserves vertical viewport position through virtualized bulk removal, and Whole Project cleanup neither switches the current animation nor opens another animation. These are player-local UI outcomes and do not enter project history.
+
+Undo restores the removed Scalar Animation Track and Additive Lane identities, ordering, and exact stored structure, but does not restore obsolete local selection or focus snapshots. The editor instead keeps the current valid local context and reports the restored-track count through the established status surface, preventing an Undo from unexpectedly redirecting later keyboard or timeline operations.

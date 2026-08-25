@@ -1,0 +1,9 @@
+# Discard runtime instances at connection and dimension boundaries
+
+Every Project Runtime Instance is non-persistent runtime state. The server immediately stops, detaches, and discards a target player's instance when that player disconnects, leaves the world, or changes dimension, because its camera restoration context, scene basis, and client execution state are no longer safe to reuse. World close and normal or abnormal server shutdown clear all remaining instances. Runtime instances are never written to the Project Document, world SavedData, player Capability, Project Snapshot, or Operation Journal.
+
+After reconnecting, entering another dimension, reopening a world, or restarting the server, no runtime instance resumes automatically. An authorized command, event, or integration must issue a new Explicit Runtime Start against the current Active Runtime Revision. Cleanup and client restoration paths must be idempotent so duplicate disconnect, dimension, or shutdown notifications cannot retain or recreate an instance.
+
+Project archive and deletion are additional runtime lifecycle boundaries. Their successful commit performs the Project Runtime Lifecycle Drain before exposing the archived or deleted state, stops every instance for the project, restores each affected player's camera context or safe fallback, and invalidates the Active Runtime Revision. Restoration of an archived project does not recreate an instance or republish the former revision.
+
+The authoritative cleanup never waits indefinitely for a client restoration acknowledgement. Online clients receive an idempotent, bounded Camera Restoration Delivery after the instance is removed; disconnect, timeout, duplicate delivery, or missing acknowledgement releases retry state without recreating runtime or rolling back the lifecycle operation.

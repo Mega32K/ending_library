@@ -1,0 +1,7 @@
+# Keep Bake separate from redundant-keyframe removal
+
+Bake is Non-Simplifying: the retained and generated keyframe set disclosed by its Tool Operation Preview is the exact set submitted and committed. It performs no post-generation decimation, collinearity cleanup, or tolerance-based redundant-key removal. Retained Bake Keyframes, Bake Boundary Anchors, discontinuity keys, promoted Adaptive error probes, and every Fixed Interval grid or mandatory sample therefore remain present unless the Bake itself is cancelled or rejected.
+
+The initial Bake surface exposes no `Optimize Result`, `Remove Redundant Keys`, or equivalent chained checkbox. Commit-time validation may reject an invalid or stale candidate but cannot silently produce a smaller substitute. This preserves stable identities, the Fixed Interval contract, deterministic output, and the promise that preview node counts and identities describe the accepted result rather than an intermediate set.
+
+Reducing the result belongs to the separate Remove Redundant Keyframes Optimization tool already established under Tools. That operation has its own explicit target scope, tolerance, Tool Operation Preview, authoritative validation, project revision, and personal Undo/Redo item. If it runs after Bake, undoing Optimization restores the exact post-Bake node set, and only a subsequent Bake undo restores the pre-Bake content. No failure or cancellation of Optimization rewrites, merges with, or rolls back the accepted Bake.

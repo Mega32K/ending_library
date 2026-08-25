@@ -1,0 +1,5 @@
+# Prefer Work Range for Bake time scope
+
+Bake resolves one always-visible Bake Time Scope independently from Bake Track Scope. A valid Work Range is the default when present; otherwise the tool defaults to `Full Animation`, defined as the closed interval from zero through the current finite Animation Duration. The user may explicitly select Work Range, Full Animation, or a finite `Custom Range`. Custom bounds exist only in the current Tool Operation Preview and are not project content, Project Workspace Layout state, or a remembered preference.
+
+The interval includes both boundaries, requires start to be strictly earlier than end, and must remain within Animation Duration. Bake never infers a time span from selected keyframes, silently falls back from an invalid chosen range, or extends Animation Duration. The preview displays the resolved start, end, duration, and projected sample count. A relevant Work Range, custom-bound, Animation Duration, track-structure, or authoritative baseline change invalidates or regenerates the local preview, and commit-time validation rejects stale scope rather than silently widening, narrowing, or partially applying it.

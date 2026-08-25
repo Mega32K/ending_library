@@ -1,0 +1,11 @@
+# Bound read-only capabilities by format support
+
+Read-only opening is an inspection state, not a reduced editing session. A Read-Only Inspection Tab never joins the project's live Editing Session, receives detailed collaborator presence, submits content operations, creates personal project-edit history, publishes runtime revisions, or invokes Editor Animation Enable. It may remain open alongside an active editable Project Tab without becoming a second collaboration participant.
+
+When the server can safely parse a supported older Project Format document, the tab exposes the complete trusted document for inspection: track tree, keyframes, curve and property values, world-rendered camera preview, local playhead seeking, timeline navigation, and read-only property surfaces. These interactions are client-local and do not create revisions, drafts, locks, preview synchronization, runtime instances, or gameplay camera changes. The user may copy or export the original compatible representation, and may request the explicit Project Migration Prompt at any time.
+
+When the declared Project Format Version is newer than the server supports, the tab exposes only trusted envelope metadata and compatibility diagnostics, such as project identity, owner, declared version, file size, update information, and the required server capability. The editor does not guess unknown tracks, render partial content, evaluate unfamiliar fields, or offer a misleading approximate preview. The original project document may be preserved or copied, but it cannot be edited, published, migrated, or silently downgraded.
+
+Closing a read-only tab discards only its local inspection state. It does not alter the Project Document, Operation Journal, Project Catalog, Migration Protection Checkpoint, Active Runtime Revision, or any participant's collaborative workspace state.
+
+This format-support Read-Only Inspection Tab is distinct from the permission-revoked state in ADR-0208. Format read-only content is opened deliberately from a document the server can classify, while a permission-revoked tab contains only the last content already authorized before access ended, receives no later project updates, and cannot export or treat that content as current.

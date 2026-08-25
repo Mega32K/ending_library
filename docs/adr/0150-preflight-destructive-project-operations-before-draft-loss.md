@@ -1,0 +1,11 @@
+# Preflight destructive project operations before draft loss
+
+Owner confirmation of a destructive project operation does not immediately release command locks or discard drafts. The server first enters a reversible Destructive Project Preflight under a short mutation barrier. Existing Command Event Lock Leases and their client-local drafts remain intact while new affected lease acquisitions and mutations are temporarily rejected. The server settles already accepted in-flight operations and validates every condition that can be known before data loss, including authorization, expected revision, target identities, project lifecycle state, checkpoint references, import parsing and migration, resource budgets, candidate serialization, and persistence staging.
+
+The confirmation and preparation/progress states use one Blocking Transaction Surface under ADR-0203. The workspace behind it is not interactive, and no competing confirmation window is opened.
+
+If any preflight condition fails, the candidate operation is discarded, the barrier is removed, and the original leases, properties editors, focus context, and local drafts remain available. No project revision, Undo/Redo item, journal entry, lease release, or permanent diagnostic is created merely because preflight was attempted. The server does not copy command drafts into long-lived state; the finite existing editing surfaces remain their owners.
+
+After successful preparation, the server crosses one commit gate. It finalizes the affected lease invalidations, tells the corresponding editors to close and discard their drafts, and applies the already prepared global mutation as one atomic server transition. Clients retain their draft state until that success response. If the prepared mutation cannot commit, the server keeps or restores the original lock state and reports failure rather than sacrificing drafts for an unapplied operation. No unrelated mutation may enter between the drain decision and commit.
+
+For archive and deletion, the success response carries the lifecycle-specific tab outcome: Archived Inspection State with the already authorized inspection payload, or Deleted Project Notice without project content. The client does not infer success from lease loss or a closed socket, and it does not apply a partial tab transition before the server's atomic commit result.

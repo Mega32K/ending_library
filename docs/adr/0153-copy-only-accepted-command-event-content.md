@@ -1,0 +1,5 @@
+# Copy only accepted command-event content
+
+Copying a Command Animation Effect Event reads a client-local snapshot of the latest server-accepted event content, even when another participant currently holds the event lock. The snapshot never includes the lock holder's uncommitted draft, lock metadata, diagnostics, or a stable identity that could be reused by the pasted event. Pasting creates a new local Command Event Creation Draft, places it at the current playhead time by default, and leaves the project, revision history, and event locks unchanged until the normal authoritative creation confirmation succeeds.
+
+This keeps copy and paste useful for inspection and authoring without weakening the personal-lock boundary or leaking private drafts. The eventual pasted event is a new event with a new stable identity and follows the same validation, conflict, resource-budget, atomic-commit, and Undo/Redo rules as any other newly created Command Animation Effect Event.

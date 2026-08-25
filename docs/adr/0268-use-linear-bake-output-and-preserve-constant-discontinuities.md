@@ -1,0 +1,7 @@
+# Use linear Bake output and preserve constant discontinuities
+
+Bake assigns `LINEAR` interpolation to every rebuilt continuous Curve Segment inside the Bake Time Scope. It does not emit `EASING_PRESET`, automatically smooth the result, fit Bézier tangents, or retain active or Dormant Curve Data from the replaced in-scope curve. This makes Bake an explicit sampled representation whose later switch to another curve mode cannot unexpectedly restore the pre-Bake trajectory.
+
+A genuine source discontinuity remains an explicit `CONSTANT` segment at its mandatory boundary rather than being approximated with a dense cluster of linear samples. Adaptive fidelity and preview error are measured against the final piecewise LINEAR/CONSTANT reconstruction, including the exact step semantics. The preview reports generated linear-segment counts, preserved constant discontinuities, and the Easing or Bézier data that confirmation will remove.
+
+For partial Bake, only the Bake Boundary Anchor side facing into the scope receives the Bake output interpolation and curve-data replacement; its outside-facing interpolation, handles, and other curve semantics remain unchanged under the accepted outside-trajectory rule. The complete interpolation replacement participates in the same atomic project revision and personal Undo/Redo item as sampling and boundary reconstruction. After commit, users may deliberately author another interpolation mode through the normal curve-editing workflow.

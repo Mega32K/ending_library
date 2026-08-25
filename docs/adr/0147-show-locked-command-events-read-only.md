@@ -1,0 +1,9 @@
+# Show locked command events read-only
+
+When a participant opens a Command Animation Effect Event whose personal lock belongs to another participant, the editor opens the event properties surface in read-only mode instead of failing silently or presenting an editable stale copy. The view shows the latest server-accepted command text, authored time, Same-Time Effect Order, validation state, and the current lock holder's visible identity. It does not show the holder's local uncommitted draft.
+
+All mutation controls are disabled in this state, including text editing, command completion, time changes, order changes, deletion, replacement, and confirmation. The view creates no local draft, sends no completion request, and cannot create a project revision or Undo/Redo item. The participant may continue selecting and previewing the event and editing unrelated content elsewhere in the project.
+
+The read-only view exposes an explicit `Enter Edit` action rather than automatically taking the lock when the current lease ends. A later acquisition request is validated against the current event identity and revision; until it succeeds, the participant remains read-only. This prevents a lock release from unexpectedly changing the interaction mode while a participant is inspecting authoritative values. While the lease remains valid, the view may also expose a rate-limited `Request Release` action, which sends a non-blocking reminder without creating a wait queue or reservation.
+
+Selecting a command event may show its accepted time, order, validation, and lock summary in the Contextual Property Inspector, but command text and lock-bearing mutation controls exist only in this dedicated properties surface. The inspector's open action does not itself acquire the lock; acquisition begins only when the authorized participant explicitly enters the editable properties flow.

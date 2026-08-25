@@ -1,0 +1,5 @@
+# Allow atomic drag overwrite of same-track keys
+
+When selected keyframe nodes are dragged onto the canonical time of an existing unselected node with the same `ModifierType` scalar track and the same Additive Lane, the selected moving node replaces the colliding target instead of causing the drag to fail. The moving node keeps its stable identity; the overwritten target identity is removed. Equal times remain valid across different scalar tracks or different Additive Lanes, while an ambiguous collapse of multiple selected nodes onto one destination in the same track and lane is rejected rather than choosing an arbitrary winner.
+
+The time change and every overwrite caused by one continuous drag are submitted as one atomic Edit Gesture Transaction, one authoritative project revision, one journal entry, and one Personal Edit History item. Server rejection or collaboration conflict rolls back both the movement and all overwrites together; there is no partial commit and no per-frame Undo/Redo entry.

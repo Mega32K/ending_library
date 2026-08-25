@@ -1,0 +1,7 @@
+# Make Auto Key explicit and include it in normal Undo/Redo
+
+Auto Key is a player-local editor mode and is disabled by default. When enabled, changing an animatable property at the current playhead creates the required scalar track and inserts a keyframe. If the same scalar track and Additive Lane already contain a keyframe at that canonical time, Auto Key opens an Overwrite Confirmation instead of silently updating it; confirmation replaces the existing authored value, while cancellation leaves the project unchanged. If the change exceeds the current Animation Duration, the same transaction performs Duration Auto-Extension. Linked channels and multi-selection remain one Edit Gesture Transaction when they originate from one user gesture.
+
+Auto-Key Edits are ordinary server-validated Edit Operations. The server orders and broadcasts them, assigns the authoritative revision, and records the resulting transaction in the initiating player's Personal Edit History. Undo creates a compensating operation for the whole Auto-Key Edit, including track creation, key insertion/update, duration extension, and linked changes; Redo reapplies it through the same protocol. Playback, scrubbing, collaborative-preview synchronization, and passive inspection never create Auto-Key Edits.
+
+When Auto Key creates or updates a keyframe through the Keyframe Menu's creation and insertion semantics, it uses the same grouped overwrite confirmation and atomic transaction boundary rather than a separate history path.

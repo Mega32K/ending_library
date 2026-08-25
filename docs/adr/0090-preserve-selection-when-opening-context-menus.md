@@ -1,0 +1,5 @@
+# Preserve selection when opening context menus
+
+Right-click selection follows a stable, non-toggle rule. When the pointer is over an already selected timeline node, the full local selection remains intact and the context-menu operation targets all selected nodes. When the pointer is over an unselected node, that node becomes the sole selected item before its context menu opens. Right-clicking timeline whitespace leaves the existing node selection unchanged and opens the applicable whitespace menu.
+
+This selection adjustment is an interaction-state change, not a project-content edit, and therefore does not enter Undo/Redo. The selected node or nodes retain the normal selection-blue rendering; right-clicking does not add a hover outline, scale change, animation, or inline controls. Any content operation chosen from the menu still follows the existing atomic-gesture and overwrite-confirmation rules.

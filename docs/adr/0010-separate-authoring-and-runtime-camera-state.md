@@ -1,0 +1,7 @@
+# Separate authoring state from runtime camera playback state
+
+The project document exposes only durable animation meaning: project identity and metadata, playback type, duration, the view compatibility policy represented by the legacy `allowFirstPerson` behavior, scalar tracks, keyframes, easing presets, and custom curve segments. The editor presents the view policy as three named choices: every camera view, first person only, or outside first person only.
+
+Execution details remain runtime state and are never treated as editable project properties. This includes `tickCount`, `tickCountOld`, `stopped`, `dirty`, `isDynamic`, captured camera origins, and vanilla camera freeze or lock flags. Keeping these fields outside the project prevents a saved document from persisting stale playback progress or implementation-specific synchronization state while preserving every existing field that changes the authored animation result.
+
+The editor's Embedded Preview Viewport owns a client-local preview camera and does not mutate the player's gameplay camera, camera entity, runtime capability values, or world position. Immersive Preview is an explicit client-only presentation mode that may temporarily route the local render camera through the preview evaluator; it captures a Camera Restoration Snapshot first and restores the prior camera entity, view transform, lens state, input focus, and mouse state on exit, disconnect, exception, or editor close. Neither preview mode becomes project authoring state or server runtime playback.

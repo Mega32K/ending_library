@@ -1,0 +1,8 @@
+# Promote AUTO tangents on direct handle drag
+
+`AUTO` is a computed tangent state, but its handles remain visible after an explicit Curve Segment selection so the user can understand the evaluated curve. Directly dragging either visible handle is an intentional request for manual control. At the beginning of that gesture, the editor captures the current computed handle positions, promotes the boundary to `ALIGNED`, and applies the pointer delta under the aligned rule.
+
+Promotion and movement form one transient preview and one atomic authored operation. The editor must not first commit a standalone mode change, must not create two Undo/Redo entries, and must not visibly jump before the requested drag delta is applied. The complete affected segment set is revalidated and committed together, including the neighboring segment when the boundary coupling requires it. A rejected or cancelled gesture restores the original `AUTO` state and computed handles.
+
+An explicit switch from `ALIGNED` back to `AUTO` is a separate authored operation. It deterministically recomputes the boundary from the current neighboring keyframes and is recorded in normal collaboration and Undo/Redo history. The old manual handles remain recoverable through Undo, but are not silently retained as hidden state after the switch.
+`Alt` modifies this rule deliberately: `Alt` plus a direct drag freezes the same computed `AUTO` handle positions but promotes the boundary directly to `BROKEN`, moving only the grabbed side. A normal drag continues to promote `AUTO` to `ALIGNED`.

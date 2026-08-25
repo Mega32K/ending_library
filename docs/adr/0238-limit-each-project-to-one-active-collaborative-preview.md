@@ -1,0 +1,9 @@
+# Limit each project to one active collaborative preview
+
+Each Project may have at most one active Collaborative Preview session at a time. This cardinality is enforced per Project, not per player, Project Tab, or Editing Session. Local Preview remains independent and is not subject to this shared-session limit.
+
+Starting a Collaborative Preview is an explicit server-authorized operation. The server checks the project lifecycle, the active tab and permission, the participant budget, and the absence of an active preview in one serialized admission decision. Concurrent start requests therefore produce exactly one active session: one request creates the session and establishes its Preview Leader, while the others receive a bounded already-active result. That result never auto-joins or captures a Local Preview Snapshot; the player must invoke the separate explicit Join action, which then follows the normal join rules. A start request never creates a hidden second session, waits in an unbounded queue, merges previews, or transfers leadership.
+
+The active session owns one preview-session generation, participant set, Preview Revision Snapshot, and Collaborative Preview Stage Snapshot. All joins, playback operations, revision switches, stage switches, and termination checks are bound to that generation. When the session terminates, its bounded resources are released and a later explicit start may create a new generation; stale requests and delayed results cannot recreate or replace the terminated session.
+
+This preserves one authoritative shared playback state per project while retaining independent local inspection and preview. It also gives the server a clear upper bound for shared preview state without limiting ordinary project editing or local viewport work.

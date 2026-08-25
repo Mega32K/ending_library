@@ -1,0 +1,5 @@
+# Preview Easing-to-Bézier simulation before commit
+
+The preview is opened from the Keyframe Menu's Easing-to-Bézier Simulation group and remains local until explicit confirmation.
+
+Invoking `Convert to Bézier` opens a Blockbench-styled Easing Conversion Preview instead of mutating the project immediately. The graph overlays the source Easing trajectory as a restrained translucent dashed curve and the candidate Bézier result in the owning track's active RGB semantic color, while the dialog reports maximum and average error, inserted nodes per source interval, total generated nodes, and the complete proposed scope. Fidelity presets and custom error settings recompute only local preview data. If the configured resource limit is reached before the requested fidelity is satisfied, confirmation remains unavailable and no partial result may be submitted. Confirming performs all node insertion, existing-node conversion, handle generation, and chain reconfiguration as one server-validated collaboration revision and one Undo/Redo item; cancellation, closing, or `Esc` leaves project content unchanged.

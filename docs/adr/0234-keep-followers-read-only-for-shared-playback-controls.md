@@ -1,0 +1,7 @@
+# Keep followers read-only for shared playback controls
+
+Every non-leader participant in a Collaborative Preview enters `Collaborative Preview Follower State`. The follower sees the shared play, pause, seek, work-range, and preview-revision controls as read-only, with a localized indication of the current Preview Leader. Follower input cannot pause or seek the shared preview, switch its Preview Revision Snapshot, request a temporary takeover, or create an implicit leader handoff. `Leave Collaborative Preview` remains an active local action.
+
+Follower read-only scope applies only to shared preview control. The participant may orbit, pan, zoom, or follow the world viewport locally; select tracks and nodes; inspect properties; and perform any otherwise authorized project edit. Such edits are accepted against the live Project Document under ordinary collaboration and Undo/Redo rules, but the active collaborative preview continues evaluating its immutable snapshot until the leader performs an explicit validated Preview Revision Switch. Local editing never changes another participant's gameplay camera or runtime instance.
+
+The follower state is visible through control styling, text, iconography, and accessible narration rather than color alone. A stale or delayed follower control packet is rejected by the preview-session generation and cannot mutate shared playback. Leaving or terminating the preview applies Preview Restoration and releases the follower's temporary shared-preview subscription without creating project history.

@@ -47,44 +47,48 @@ public class StaticCameraAnimationReloadListener implements ResourceManagerReloa
     }
     @Override
     public void onResourceManagerReload(@NotNull ResourceManager resourceManager) {
-        Player player = ClientWrapped.clientPlayer();
-        Object2ObjectOpenHashMap<ResourceLocation, Pair<ModifierType, CameraKeyframeAnimation>> loadedStaticAnimations = new Object2ObjectOpenHashMap<>();
-        for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
-            Reference2ReferenceOpenHashMap<ResourceLocation, JsonElement> map = new Reference2ReferenceOpenHashMap<>();
-            SimpleJsonResourceReloadListener.scanDirectory(resourceManager, "endinglib/camera_animation/" + modifierType.name().toLowerCase(Locale.ROOT), GSON, map);
-            CameraValueInstance cvi = modifierType.getFieldGetter().apply(CameraUtils.getInstance());
-            map.forEach((rl, json) -> {
-                if (json != null && rl != null) {
-                    if (json instanceof JsonObject single) {
-                        DataResult<CameraKeyframeAnimation> result = CameraKeyframeAnimation.JSON_CODEC.parse(JsonOps.INSTANCE, single);
-                        Optional<DataResult.PartialResult<CameraKeyframeAnimation>> error = result.error();
-                        if (player != null)
-                            error.ifPresent(pr -> player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.build.step.1")
-                                    .withStyle(ChatFormatting.RED)
-                                    .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(pr.message()))))
-                            ));
-                        result.result().ifPresent(cka0 -> {
-                            CameraKeyframeAnimation cka = cvi.getKeyframeAnimation(cka0.getName());
-                            if (cka != null) {
-                                cka.reset();
-                                cka.setStopped(true);
-                                cka.reset();
-                                cvi.removeKeyframeAnimation(cka);
-                            }
-                            cka0.setDynamic(false);
-                            cka0.reset();
-                            cka0.setStopped(true);
-                            cka0.reset();
-                            loadedStaticAnimations.put(new ResourceLocation(rl.getNamespace(), modifierType.name().toLowerCase(Locale.ROOT)+"/"+rl.getPath()), Pair.of(modifierType, cka0));
-                            cvi.addKeyframeAnimation(cka0);
-                        });
-                    }
-                }
-            });
-        }
-        //扫描合集动画
         LOCK.writeLock().lock();
         try {
+            Player player = ClientWrapped.clientPlayer();
+            GROUP_ANIMATIONS.clear();
+            for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
+                modifierType.getFieldGetter().apply(CameraUtils.getInstance()).removeStaticKeyframeAnimations();
+            }
+            Object2ObjectOpenHashMap<ResourceLocation, Pair<ModifierType, CameraKeyframeAnimation>> loadedStaticAnimations = new Object2ObjectOpenHashMap<>();
+            for (ModifierType modifierType : EndingLibraryPlayerCapability.MODIFIER_TYPES) {
+                Reference2ReferenceOpenHashMap<ResourceLocation, JsonElement> map = new Reference2ReferenceOpenHashMap<>();
+                SimpleJsonResourceReloadListener.scanDirectory(resourceManager, "endinglib/camera_animation/" + modifierType.name().toLowerCase(Locale.ROOT), GSON, map);
+                CameraValueInstance cvi = modifierType.getFieldGetter().apply(CameraUtils.getInstance());
+                map.forEach((rl, json) -> {
+                    if (json != null && rl != null) {
+                        if (json instanceof JsonObject single) {
+                            DataResult<CameraKeyframeAnimation> result = CameraKeyframeAnimation.JSON_CODEC.parse(JsonOps.INSTANCE, single);
+                            Optional<DataResult.PartialResult<CameraKeyframeAnimation>> error = result.error();
+                            if (player != null)
+                                error.ifPresent(pr -> player.sendSystemMessage(Component.translatable("commands.endinglib.message.camera.camera_anim.build.step.1")
+                                        .withStyle(ChatFormatting.RED)
+                                        .withStyle(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(pr.message()))))
+                                ));
+                            result.result().ifPresent(cka0 -> {
+                                CameraKeyframeAnimation cka = cvi.getKeyframeAnimation(cka0.getName());
+                                if (cka != null) {
+                                    cka.reset();
+                                    cka.setStopped(true);
+                                    cka.reset();
+                                    cvi.removeKeyframeAnimation(cka);
+                                }
+                                cka0.setDynamic(false);
+                                cka0.reset();
+                                cka0.setStopped(true);
+                                cka0.reset();
+                                loadedStaticAnimations.put(new ResourceLocation(rl.getNamespace(), modifierType.name().toLowerCase(Locale.ROOT)+"/"+rl.getPath()), Pair.of(modifierType, cka0));
+                                cvi.addKeyframeAnimation(cka0);
+                            });
+                        }
+                    }
+                });
+            }
+            //扫描合集动画
             Map<ResourceLocation, Map<ModifierType, List<CameraKeyframeAnimation>>> REPLACE_GROUP_ANIMATIONS = new Object2ObjectOpenHashMap<>();
             Reference2ReferenceOpenHashMap<ResourceLocation, JsonElement> map = new Reference2ReferenceOpenHashMap<>();
             SimpleJsonResourceReloadListener.scanDirectory(resourceManager, "endinglib/camera_animation/group", GSON, map);

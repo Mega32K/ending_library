@@ -1,0 +1,7 @@
+# Keep an explicit user-controlled legacy easing fallback
+
+Every Custom Curve Segment retains a Legacy Easing Fallback in the existing `easing` field. Converting an Easing Preset into an editable Bézier segment preserves that preset as the fallback. A custom segment created without a source preset uses `LINEAR`. Dragging curve handles, changing Tangent Mode, moving keyframes, or otherwise editing the custom curve never automatically searches for, approximates, or replaces the fallback.
+
+The selected segment's property inspector exposes the fallback as an explicit editable compatibility property and renders a comparison between the authored Bézier curve and the old-reader easing result. Changing the fallback is an authored project edit and one normal atomic Undo/Redo operation. It does not alter the custom curve.
+
+Legacy Animation Format export presents the downgrade consequence and allows the user to proceed with the stored fallback or cancel. It does not silently fit the curve to another Easing value. Extended Camera Animation JSON stores both the authoritative custom curve and its fallback so new readers reproduce the authored curve while older readers retain a deterministic, visible result.

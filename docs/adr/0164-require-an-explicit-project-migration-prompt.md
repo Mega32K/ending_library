@@ -1,0 +1,11 @@
+# Require an explicit project migration prompt
+
+The migration prompt and its progress/result states are a Blocking Transaction Surface under ADR-0203; another modal cannot bypass or compete with it.
+
+Opening a supported older Project Format document does not silently rewrite it. Before an editable Editing Session exists, the client displays a responsive Blockbench-inspired Project Migration Prompt backed by the server's inspected format metadata. The compact dark modal shows the project name, declared current Project Format Version, target version, relevant migration warnings, and an explicit statement that an exact Migration Protection Checkpoint will be created before replacement.
+
+The prompt provides a blue primary action labeled Migrate and Open, plus Open Read-Only and Cancel. Confirming starts the server-authoritative migration defined by ADR-0163; choosing read-only leaves the project file unchanged and enters Older-Format Read-Only State; cancellation returns to the Project Browser or previously active Project Tab without creating a session, revision, checkpoint, or history entry. A newer unsupported document uses the same visual family but never shows a migration action: only Open Read-Only and Cancel are available with a clear required-version explanation.
+
+While migration runs, the modal becomes a Migration Progress Surface. It reports truthful bounded phases such as inspection, protection-checkpoint creation, conversion, validation, persistence, and activation, but does not fabricate a precise percentage when the server cannot provide one. The editor workspace cannot become interactive behind the modal and no partially migrated Project Tab is exposed. Successful completion opens the current-format editable project and emits one concise result in the normal editor status surface.
+
+Failure preserves the original project and protection material according to ADR-0163, leaves no partial editable session, and changes the modal into a diagnostic result with an initially concise message and expandable details. The user may Retry, Open Read-Only, or Cancel. A project restored through migration Undo presents this same prompt the next time migration is requested, so redo and reopening do not use a hidden or inconsistent upgrade path.

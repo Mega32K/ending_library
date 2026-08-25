@@ -1,0 +1,11 @@
+# Separate project workspace layout from global editor preferences
+
+An explicit editor close saves a Project Workspace Layout keyed by player and project. It includes the active editing region, auxiliary Panel Visibility State, Dock Zone and Panel Tab Group placement, bounded Floating Editor Panel positions, the Left Animation Navigation Stack splitter, Project View State, animation-keyed Animation Timeline View States, Work Range, panel widths, panel collapse state, inspector tab, active tool, and the 3D observation camera and follow target. Reopening the same project during the same connected lifecycle restores that layout. It never stores collaborator Presence, unsubmitted local animation drafts, collaborative-preview-only state, or runtime camera execution state.
+
+Global Editor Preferences remain player-local and project-independent. They include theme, shortcut scheme, default panel arrangement, display quality, and default snapping or timeline presentation. They are edited through the grouped Settings Menu and responsive Settings Panel, with category-level and full-reset actions, and are persisted in the client-local Device Preference Store across game restarts, project changes, and server changes. They are not part of the Project Document or authoritative revision. Connection-lifecycle exit clears project workspace layouts and shortcut Undo/Redo history, while accepted animation edits remain durable.
+
+The Default View Layer Profile is one Global Editor Preference. It initializes projects that have no current-lifecycle Project View State, but current-project toggles do not update it unless the user invokes Promote Current View Defaults explicitly.
+
+Preference changes apply immediately to the local client. There is no separate apply/cancel buffer. A setting that requires reopening the editor or reloading a client resource may be stored as a validated pending preference and reports its activation boundary; it never changes project content or the session-scoped workspace-state rules.
+
+The editor may expose named Workspace Presets for different authoring tasks. Applying a preset changes the local layout and interaction emphasis only; it is not an animation edit and can be restored through the workspace snapshot.

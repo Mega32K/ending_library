@@ -1,0 +1,7 @@
+# Lock the complete authored command event
+
+The Command Event Personal Edit Lock protects the complete authored Command Animation Effect Event rather than only its command-text field. While one participant holds the lock, every other participant is prevented from changing that event's command payload, authored time, Same-Time Effect Order, existence, stable identity, or structural placement. Deletion, replacement, retiming, reordering, overwrite, and any batch operation whose footprint mutates the locked event are therefore unavailable to non-holders.
+
+The lock remains event-scoped. It does not block viewing or selecting the event, playing previews, inspecting Session-Visible Runtime Diagnostics, editing other command events, editing numeric camera tracks, changing unrelated animation properties, or performing project operations whose footprints do not touch the locked event. A rejected non-holder action reports the current lock state rather than entering a silent queue, applying partially, or becoming a normal collaboration conflict.
+
+This wider footprint prevents the lock holder's local command draft from being detached from its original time, order, or identity while it is being authored. The holder's final validated submission remains one atomic event transaction and one personal Undo/Redo item. Locking does not expose the holder's uncommitted draft to collaborators and does not convert the event into permanently owned content.

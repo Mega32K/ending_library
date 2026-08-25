@@ -1,0 +1,9 @@
+# Show a tab dot only for local unsubmitted content
+
+The Project Tab Draft Dot is a player-local content-intent indicator, not a traditional file-save flag. A tab displays the small dot whenever the current player has at least one authored change that differs from its baseline but has not yet been accepted by the server. This includes an active content-changing Gesture Preview, an unconfirmed property or Command Event Creation Draft, a pending Auto Key proposal, and a submitted Edit Operation awaiting authoritative acknowledgement.
+
+Non-authoring workspace activity never produces the dot: playhead movement, playback, timeline zoom or pan, viewport movement, selection, panel layout, Project Workspace Snapshot changes, presence, and Collaborative Preview navigation remain visually separate. Read-Only Inspection Tabs never display the dot because they cannot own content-changing work.
+
+After server acceptance, the local proposal no longer contributes to the dot even if its accepted revision is still being journaled, flushed, or written into a Project Snapshot. Those durable states appear through Project Persistence Status in the interactive Collaboration Status Area. A server rejection removes the corresponding dot contribution only when the proposal is rolled back or discarded. When an established workflow retains a rejected draft for correction, such as Command Event Creation Draft validation, the dot remains until that draft is accepted or explicitly discarded.
+
+The indicator is derived from bounded current local state rather than stored as project content. It is not synchronized to collaborators, persisted in the Project Document, or restored after a Connection Lifecycle Exit. Closing or switching away from a dotted tab follows the existing acknowledgement and draft-loss protections instead of silently clearing the indicator and losing work.

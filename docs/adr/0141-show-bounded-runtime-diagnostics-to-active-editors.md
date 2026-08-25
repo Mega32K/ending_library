@@ -1,0 +1,7 @@
+# Show bounded runtime diagnostics to active editors
+
+When a Command Animation Effect Event fails or is cancelled during actual runtime playback, the server may send a short diagnostic to every Project Owner and Project Editor who currently has that same Animation Project open in the active Editing Session. The diagnostic is session-visible collaboration feedback, not command output: it does not appear in the target player's chat or ActionBar, does not expose raw command success text or feedback, and does not change the project document, revision, or Undo/Redo history.
+
+The diagnostic state is deliberately non-persistent and bounded. The active session may retain only a limited recent diagnostic window or aggregate failure counts, with repeated equivalent failures coalesced or throttled. It must be released when the editing session has no remaining participants or otherwise reaches its normal lifecycle cleanup; it is never serialized into the Animation Project, legacy animation JSON, runtime animation file, or checkpoints. A newly opened session starts without historical runtime diagnostics.
+
+This refines the silent-source rule from ADR-0128 without changing command dispatch: the runtime source remains suppressed and receives no command feedback, while authorized editors receive a separate, privacy-limited failure summary for diagnosing the authored event. Diagnostics remain non-blocking and never interrupt playback or trigger automatic retries.

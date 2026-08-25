@@ -1,0 +1,5 @@
+# Default Scale Retiming to the Scope Start anchor
+
+Each newly opened Scale Retiming tool starts with `Scope Start` as its Scale Retiming Anchor. In Work Range scope this is the Work Range start; in Selection scope it is the earliest resolved target time. The anchor remains fixed while every target follows `result = anchor + (source - anchor) * scale`, and the editor does not remember a previous tool invocation's anchor mode.
+
+The tool also exposes explicit `Scope Center`, `Scope End`, `Playhead`, and `Custom Time` choices. Scope Center is the midpoint between the resolved earliest and latest target times rather than an average of item times; Scope End is the latest target time; Playhead captures one canonical time when the preview is generated and does not follow later playhead movement; Custom Time requires an explicit finite canonical value. Changing the anchor only regenerates the local Tool Operation Preview, while confirmation repeats authoritative scope, anchor, finite-value, time-boundary, lock, and conflict validation and still commits at most one atomic project operation and personal Undo/Redo item.

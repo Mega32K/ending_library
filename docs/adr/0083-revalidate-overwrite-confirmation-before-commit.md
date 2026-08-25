@@ -1,0 +1,5 @@
+# Revalidate overwrite confirmation before commit
+
+The stale state remains inside the same Blocking Transaction Surface rather than opening a second competing dialog.
+
+An overwrite confirmation is a proposal based on a target keyframe identity, its value, and the project state observed when the popup opened. The server revalidates that target at confirmation time. If the target was changed, deleted, or retimed by another participant, the confirmation becomes stale and the proposed overwrite is rejected as a collaboration conflict; no partial edit or Undo/Redo entry is created. The editor shows the previous observed value beside the current authoritative value and offers `Cancel` or `Refresh and confirm again`. Refresh reads the current target and keeps the proposed incoming edit as an uncommitted proposal; it does not commit automatically. If the target was deleted, only `Cancel` is available and the user must start a new insertion or Auto Key action. It never silently force-applies an overwrite based on stale popup data.

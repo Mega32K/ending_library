@@ -1,0 +1,11 @@
+# Provide dark theme profiles and semantic color tokens
+
+The Camera Animation Editor uses the supplied Blockbench visual language as its default visual baseline: dark charcoal and near-black workspace surfaces, restrained layered panel contrast, compact light text, subtle separators, and clear blue active-state feedback. The initial Editor Theme Profiles are Standard Dark and High-Contrast Dark. Both preserve the same responsive layout, controls, node shapes, interaction semantics, and world-viewport presentation; they differ only in semantic palette values and contrast treatment.
+
+All UI colors are supplied through semantic color tokens rather than scattered literal values. The token roles cover workspace and panel surfaces, separators, primary and muted text, selection, focus, active navigation, warning, error, synchronization, Auto Key, disabled controls, and collaborator presence. Blue selection and active navigation remain distinct from warning, error, synchronization, Auto Key, and collaborator states through token roles plus borders, icons, labels, row treatment, or other non-color cues. Hover, focus, and selection remain distinguishable even when they share a blue family.
+
+The High-Contrast Dark profile raises the contrast of text, separators, focus indicators, selection boundaries, and semantic states without enlarging controls, adding distracting glow, or changing layout. The editor does not expose an arbitrary per-widget color picker in the initial implementation; adding a future palette profile must extend the token set rather than bypass it.
+
+Active collaborators receive colors from a finite, contrast-checked Collaborator Color Pool. Names, participant icons, borders, and presence markers accompany the color so meaning is never conveyed by color alone. Color assignments are session presentation state, are reused deterministically as participants leave, and are not stored in the Project Document, checkpoint history, or permission model.
+
+Theme changes apply immediately, persist through the Device Preference Store, and create no project revision, personal Undo/Redo entry, collaboration operation, or runtime camera change. A missing or invalid theme value falls back to Standard Dark without preventing the editor from opening.

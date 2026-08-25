@@ -1,0 +1,3 @@
+# Define node-selection modifier semantics
+
+Keyframe and effect-node selection is a local workspace operation, not an authored animation edit. A plain left click selects the clicked node and replaces the existing Selection Set; `Ctrl` plus left click adds or toggles the clicked node for multi-node operations; `Shift` plus left click removes the clicked node from the Selection Set. `Shift` is intentionally not a contiguous-range shortcut. Selection feedback synchronizes the selected track, curve, world-space node, and inspector without creating project revisions or Undo/Redo entries.

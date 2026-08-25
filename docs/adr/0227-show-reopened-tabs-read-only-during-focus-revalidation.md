@@ -1,0 +1,7 @@
+# Show reopened tabs read-only during focus revalidation
+
+Focusing a tab with an `Inactive Reopen Success Indicator` immediately displays that tab and enters `Focus-Time Reopen Revalidation State`. The editor renders the authoritative Project Document already obtained by the successful background reopen instead of showing a blank loading page or leaving the previous project visible. A lightweight inline and status-bar message identifies that current project state is being verified; no blocking modal owns input.
+
+Until revalidation succeeds, the complete tab is read-only. It cannot submit edits, execute Undo/Redo, commit Auto Key, acquire locks, publish, enable runtime animation, restore old playback, start preview playback automatically, or take over the player's camera. Current permission, lifecycle, project identity, format, document baseline, resource-budget, and Active Project Tab conditions are checked again. Success clears the temporary marker and enters the ordinary active Editing Session without replacing the workspace shell. Failure changes the same tab in place to its authoritative archive, deletion, permission-revoked, transient-retry, or format state.
+
+The player may switch away while validation is still cancellable, which releases the preparatory request and leaves the tab inactive. Once its atomic activation boundary begins, the request reaches one terminal result under the existing request-identity rules and never steals focus back. The validation state creates no content revision or personal Undo/Redo entry.

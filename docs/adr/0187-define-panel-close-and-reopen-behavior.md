@@ -1,0 +1,11 @@
+# Define panel close and reopen behavior
+
+The central Live World Viewport and bottom timeline/curve editor are Core Editor Regions. Ordinary panel-visibility commands cannot permanently close them. They may resize, switch between their supported presentation modes, or move through a responsive tab/drawer substitution only when the complete world-preview or timeline editing path remains reachable.
+
+Auxiliary panels such as the Animation Resource Browser, Timeline Track Tree Surface, Contextual Property Inspector, Settings Panel, Project History and Recovery Panel, Checkpoint Management Panel, and Collaboration Status detail may be hidden or closed. The two panels in the Left Animation Navigation Stack have independent visibility: hiding either one never hides the other or closes the bottom Timeline Panel lane canvas. Closing an auxiliary panel hides its render surface but preserves its local search, scroll, selected tab, filter, and navigation state according to that panel's contract. It does not leave the editing session, clear project drafts, alter the playhead, or change project content.
+
+The View menu lists every auxiliary panel and reflects its Panel Visibility State with accessible labels and checkmarks. It is the local display surface for these visibility commands; it does not become a project-lifecycle or content-editing menu. Reopening a panel first uses its last valid Panel Reopen Placement. If the old Dock Zone, tab group, or floating bounds no longer fit the current GUI Scale, density, or responsive layout, the shell chooses the nearest compatible placement or a real drawer and reports the substitution. It never silently discards the panel's local state.
+
+Double-clicking a Floating Editor Panel title bar docks it back to its remembered compatible zone. `Esc` does not close ordinary panels; it first follows the focused control's existing dismissal or text-editing contract. Panel close, reopen, dock-back, and visibility changes remain local Project Workspace Layout operations and never create project revisions, Undo/Redo entries, collaboration edits, or runtime camera changes.
+
+When a narrow layout substitutes a drawer, tab group, or overflow entry, it follows ADR-0205 and retains the panel's restoration metadata rather than treating the substitution as a user-requested close.

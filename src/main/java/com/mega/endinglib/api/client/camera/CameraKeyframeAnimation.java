@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ public class CameraKeyframeAnimation {
         anim.stopped = byteBuf.readBoolean();
         anim.setDynamic(true);
         anim.keyframes.putAll(byteBuf.readMap(FriendlyByteBuf::readUtf, bb -> bb.readList(CameraKeyframe.READER_F)));
+        anim.normalizeKeyframes();
         return anim;
     };
     public static final FriendlyByteBuf.Writer<CameraKeyframeAnimation> WRITER_F = (byteBuf, keyframe) -> {
@@ -58,6 +60,7 @@ public class CameraKeyframeAnimation {
             ).apply(instance, CameraKeyframeAnimation::jsonConstruct)
     );
     private static final Logger LOGGER = LogUtils.getLogger();
+    private static final Comparator<CameraKeyframe> KEYFRAME_ORDER = Comparator.comparingDouble(CameraKeyframe::timestamp);
     public static final Function<CompoundTag, CameraKeyframeAnimation> READER = CameraKeyframeAnimation::load;
     private final String name;
     private final Object2ObjectOpenHashMap<String, List<CameraKeyframe>> keyframes = Util.make(() -> {
@@ -93,6 +96,7 @@ public class CameraKeyframeAnimation {
     private static CameraKeyframeAnimation jsonConstruct(String name, AnimType animType, float duration, Map<String, List<CameraKeyframe>> keyframes) {
         CameraKeyframeAnimation cka = new CameraKeyframeAnimation(name, animType, duration);
         cka.keyframes.putAll(keyframes);
+        cka.normalizeKeyframes();
         cka.isDynamic = false;
         return cka;
     }
@@ -112,6 +116,7 @@ public class CameraKeyframeAnimation {
                     anim.keyframes.put(entry.getString("Group"), CompoundTagUtils.getList(entry, "Keyframes", CameraKeyframe.READER));
                 }
             }
+            anim.normalizeKeyframes();
             anim.setDirty();
             return anim;
         } catch (Exception exception) {
@@ -211,6 +216,23 @@ public class CameraKeyframeAnimation {
         return keyframes;
     }
 
+    private void normalizeKeyframes() {
+        for (var entry : keyframes.object2ObjectEntrySet()) {
+            ObjectArrayList<CameraKeyframe> group = new ObjectArrayList<>(entry.getValue());
+            group.sort(KEYFRAME_ORDER);
+            entry.setValue(group);
+        }
+    }
+
+    private void normalizeKeyframes(String group) {
+        List<CameraKeyframe> keyframes = this.keyframes.get(group);
+        if (keyframes != null) {
+            ObjectArrayList<CameraKeyframe> normalized = new ObjectArrayList<>(keyframes);
+            normalized.sort(KEYFRAME_ORDER);
+            this.keyframes.put(group, normalized);
+        }
+    }
+
     public boolean removeIndex(String group, int index) {
         if (this.keyframes.containsKey(group)) {
             this.keyframes.get(group).remove(index);
@@ -223,6 +245,7 @@ public class CameraKeyframeAnimation {
     public boolean replaceIndex(String group, int index, CameraKeyframe keyframe) {
         if (this.keyframes.containsKey(group)) {
             this.keyframes.get(group).set(index, keyframe);
+            this.normalizeKeyframes(group);
             this.setDirty();
             return true;
         }
@@ -232,6 +255,7 @@ public class CameraKeyframeAnimation {
     public boolean insertBefore(String group, int index, CameraKeyframe keyframe) {
         if (this.keyframes.containsKey(group)) {
             this.getKeyframes().get(group).add(index, keyframe);
+            this.normalizeKeyframes(group);
             this.setDirty();
             return true;
         }
@@ -242,12 +266,14 @@ public class CameraKeyframeAnimation {
         if (!this.keyframes.containsKey(group))
             this.keyframes.put(group, ObjectArrayList.of(keyframe));
         this.keyframes.get(group).add(keyframe);
+        this.normalizeKeyframes(group);
         this.setDirty();
     }
     public void addKeyframes(String group, List<CameraKeyframe> keyframe) {
         if (!this.keyframes.containsKey(group))
             this.keyframes.put(group, new ObjectArrayList<>(keyframe));
         this.keyframes.get(group).addAll(keyframe);
+        this.normalizeKeyframes(group);
         this.setDirty();
     }
 

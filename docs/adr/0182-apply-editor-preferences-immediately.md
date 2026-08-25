@@ -1,0 +1,7 @@
+# Apply editor preferences immediately
+
+Valid changes to Global Editor Preferences take effect immediately on the local client. Theme and color changes repaint the editor, timeline presentation changes update visible labels and curves, viewport-quality changes update the preview path, collaboration-display changes update local indicators, and panel or density changes reflow the responsive workspace without closing the Settings Panel. The settings UI does not use a global Apply or Cancel transaction.
+
+Input and shortcut changes validate as soon as they are entered. Resource- or screen-bound preferences that cannot safely update the active view report that they will take effect when the editor is reopened or the relevant client resource is reloaded; the editor remains usable and the preference is stored locally as a validated pending value. No setting change creates a Project Document revision, enters personal Undo/Redo, acquires a collaboration lock, changes the playhead, changes runtime publication, or changes the gameplay camera.
+
+Category reset and full reset are explicit local actions. They restore defaults immediately after confirmation, update the Device Preference Store, and use the same feedback path as ordinary preference changes. A failed local persistence write leaves the current in-memory value visible with a bounded warning and does not pretend that the value survived a restart.

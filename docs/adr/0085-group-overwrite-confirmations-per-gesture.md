@@ -1,0 +1,5 @@
+# Group overwrite confirmations per gesture
+
+The grouped confirmation is one responsive Blocking Transaction Surface with a scrollable body, not a sequence of independent prompts.
+
+A timeline insertion, inspector insertion, Auto Key action, or equivalent batch operation that would overwrite multiple same-track, same-lane keyframes presents one grouped Overwrite Confirmation for the complete user gesture. The dialog lists every target's track, Additive Lane, time, stable identity summary, current value, and incoming value, with overflow handled by a scrollable responsive body rather than multiple sequential prompts. Confirming submits all replacements and related edits as one atomic transaction and one Undo/Redo item; cancelling submits nothing. The server revalidates the complete target set before commit, so any stale target invalidates the grouped proposal and requires one refresh-and-confirm cycle for the current state. Drag overwrite retains its separately adopted single-gesture transaction semantics and is not converted into a prompt storm.

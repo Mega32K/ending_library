@@ -3,6 +3,7 @@ package com.mega.endinglib.server.resource;
 import com.google.gson.*;
 import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.common.data.DynamicKeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;

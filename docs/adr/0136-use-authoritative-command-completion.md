@@ -1,0 +1,3 @@
+# Use authoritative command completion
+
+The command editor requests completion suggestions from the server rather than maintaining a client-only command registry. Completion uses the command tree, runtime context, and fixed command permission policy relevant to the event, and returns only ephemeral suggestions for the local draft; selecting a suggestion changes that draft but never executes a command, creates project content, or replaces authoritative validation. If the server is unavailable or a suggestion becomes stale, editing continues as ordinary text editing and the user must still pass final validation before committing.

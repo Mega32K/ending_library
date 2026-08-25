@@ -1,0 +1,15 @@
+# Dock, float, and collapse editor panels inside the workspace shell
+
+The Camera Animation Editor has explicit Dock Zones for the default Left Animation Navigation Stack, central Embedded Preview Viewport, bottom Timeline Panel and curve editor, right Contextual Property Inspector, and bottom status surface. The Animation Resource Browser and Timeline Track Tree Surface begin as independently visible upper and lower panels in that left stack with a bounded vertical splitter. A panel may be resized through bounded draggable splitters, moved between compatible zones, or placed into a Panel Tab Group. During a move, Panel Docking Preview shows the valid resulting placement; releasing outside a valid zone leaves the original placement unchanged.
+
+Panels may temporarily become Floating Editor Panels, but remain inside the Minecraft editor surface. A floating panel has a bounded relative position and size, a focusable title region, explicit close and dock-back actions, and normal Panel Focus routing. It is not an operating-system window, does not create another editing session, and cannot escape the Workspace Shell's minimum viewport and timeline constraints. Floating panels may be dragged back to a Dock Zone or tab group using the same preview and release contract.
+
+The central Live World Viewport and bottom timeline/curve editor are not ordinary closable panels. Auxiliary panels may be hidden, while the View menu restores them using their last valid placement or a responsive drawer fallback. Double-clicking a floating title bar docks it back; `Esc` does not close an ordinary panel.
+
+Dock zones enforce minimum and maximum proportions and preserve the Minimum Usable Region. If the current window or density cannot fit all visible panels, lower-priority panels collapse into real drawers or tab entries; their controls remain accessible and their local navigation state is retained. The editor never hides a panel without a replacement entry, shrinks it below usable hit targets, or lets a floating panel permanently cover the central viewport or timeline.
+
+Panel docking, floating, tab grouping, resizing, collapse, and restoration are local Project Workspace Layout changes. They are saved when the editor closes or the active Project Tab changes and restored only within the same connected lifecycle. They do not change project content, create revisions, enter Undo/Redo, broadcast collaborator edits, or affect the runtime camera. A layout restore that cannot fit the current bounds applies the nearest valid responsive arrangement and reports the substitution without discarding panel state.
+
+Every panel advertised by the editor has a usable docked, tabbed, floating, or drawer path. A visual placeholder, a panel that can be dragged but not restored, or a collapsed panel with no reachable replacement control fails the Operational UI Completeness contract.
+
+Panel collapse and drawer substitution follow the deterministic Responsive Degradation Order in ADR-0205 rather than competing independently for space.

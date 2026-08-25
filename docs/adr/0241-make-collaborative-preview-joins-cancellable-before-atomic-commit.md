@@ -1,0 +1,9 @@
+# Make collaborative-preview joins cancellable before atomic commit
+
+A submitted Join Collaborative Preview request is single-flight for the current connection, player, Project, active-tab identity, and request generation. While it is pending, the UI shows a non-blocking `Joining` state, repeated activation is ignored rather than queued, and no shared preview state has been applied. The request owns only bounded correlation and preparation state.
+
+Before the server enters the atomic application boundary, the player may cancel the request, close the originating tab, switch away from it, or reach a definitive connection/world/project lifecycle exit. Cancellation releases the request and bounded preparation state, creates no participant admission, captures or applies no Local Preview Snapshot, and leaves local preview, workspace navigation, selection, and playback unchanged. A cancelled request cannot retry automatically.
+
+Once the server enters atomic application of the accepted shared state, cancellation is no longer authoritative. The request reaches exactly one terminal result and applies the accepted revision, stage, logical time, playback state, preview range, and local restoration snapshot as one client transition, or reports one semantic rejection/failure without partial application; rejection feedback follows the non-blocking Join outcome rules. Focus is never forcibly returned to the originating tab. Connection, tab, project, and request-generation identities reject delayed, duplicate, superseded, or post-cancellation results after cleanup.
+
+This gives Join the same predictable lifecycle as other authorizing transitions while preserving the direct one-click interaction and protecting local preview state during network delay.

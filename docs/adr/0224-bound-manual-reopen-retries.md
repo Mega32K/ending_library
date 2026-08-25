@@ -1,0 +1,7 @@
+# Bound manual reopen retries
+
+Manual `Reopen Project` attempts pass through one server-authoritative `Bounded Reopen Retry Gate` keyed by the current connection lifecycle, player, project, tab identity, and request generation. At most one request may be active for that key. While it is running, the action shows a loading state and repeated clicks are ignored rather than queued, merged into an extra attempt, or allowed to allocate additional preparation work.
+
+After a transient transport, timeout, or bounded server-capacity failure, the gate applies a short server-controlled cooldown. The client displays that waiting state, but no retry starts automatically when the cooldown expires; the player must invoke the action again. Every later attempt receives a new request identity and repeats current permission, project lifecycle, format, resource-budget, and `Atomic Rejoin Baseline` validation instead of resuming cached preparation from the failed request.
+
+Closing the tab, replacing its authoritative lifecycle state, cancelling the request before atomic commit, or reaching Connection Lifecycle Exit releases the active request, cooldown, immutable preparation data, and associated correlation state. Diagnostics retain only a bounded set of recent summarized outcomes and never retain Project Documents, player or world objects, exception chains, or an unlimited retry history. The retry gate creates no personal Undo/Redo entry and cannot restore an old Editing Session.

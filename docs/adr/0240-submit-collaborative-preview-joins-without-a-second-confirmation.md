@@ -1,0 +1,7 @@
+# Submit collaborative-preview joins without a second confirmation
+
+The explicit Join Collaborative Preview action is itself the user's confirmation. Activating it submits the join request directly and does not open a second blocking confirmation dialog. The UI may explain that the local preview workspace will be temporarily replaced and later restored, but that explanation is informational and cannot delay or alter admission.
+
+Before applying an accepted join, the client captures the valid Local Preview Snapshot and then applies the authoritative shared revision, stage, logical time, playback state, and preview range as one local transition. A rejected, stale, cancelled, or lifecycle-invalid request leaves the local preview, workspace navigation, selection, and playback state unchanged. Joining never creates a project revision, personal Undo/Redo entry, runtime instance, or gameplay-camera change.
+
+This direct action applies only to the explicit Join operation exposed from a current Collaborative Preview Start Conflict or equivalent join surface. It does not authorize automatic admission, implicit joining from Start, or bypasses of the server's normal permission, lifecycle, capacity, active-tab, format, and generation checks.

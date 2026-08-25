@@ -1,0 +1,7 @@
+# Mark inactive archived tabs with reopen availability
+
+When an `Archived Reopen Availability Update` makes an archived project eligible for reopening, an inactive `Archived Inspection State` tab shows a small independent blue `Archived Reopen Indicator`. The indicator is not the `Project Tab Draft Dot`: it never represents unsubmitted content, pending edits, server persistence, collaborator presence, or an active editing session. It only tells the player that the archived project has been restored sufficiently for the explicit `Reopen Project` action to be available.
+
+The indicator does not reorder or activate the tab, steal focus, open a system notification, interrupt another project, or load any project content. Selecting the marked tab reveals the lifecycle explanation in the tab and status area and creates a `Reopen Indicator Acknowledgement`; the marker then clears while the same deliberate `Reopen Project` action remains available. Until that action is invoked, the client retains the archived inspection document and performs no rejoin, lock, Presence, playback, draft, or runtime transition.
+
+If a later authoritative lifecycle update makes reopening unavailable, the indicator is removed or replaced by the appropriate archived/deleted state. Its presentation is bounded and player-local, so it does not create a persistent server-side presence record or an unbounded notification queue.

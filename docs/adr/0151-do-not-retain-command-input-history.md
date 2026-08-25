@@ -1,0 +1,5 @@
+# Do not retain command input history
+
+The command field in the initial camera editor does not provide command-history recall. Editing a Command Animation Effect Event never executes a command or sends chat, so an uncommitted draft is not a history entry. When the properties editor is cancelled, closed, switched away from, or terminated by a connected-lifecycle exit, the draft is cleared according to the existing lock and draft rules; reopening the event shows only the latest server-accepted content.
+
+While the transient Command Completion Menu is open, `Up` and `Down` move through its current suggestions. They never recall command text from another event, participant, project, or prior editor session. When the menu is closed, the command field remains an ordinary single-line text editor and does not repurpose those keys as a hidden history mechanism. This keeps command input privacy bounded and prevents a non-executing editor surface from becoming an unbounded or cross-context command cache.

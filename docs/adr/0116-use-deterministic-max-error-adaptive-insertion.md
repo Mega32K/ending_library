@@ -1,0 +1,3 @@
+# Use deterministic maximum-error adaptive insertion
+
+Easing-to-Bézier Simulation inserts approximation nodes by repeatedly locating the interval sample with the greatest candidate error, inserting a node at that location, and recursively refining the resulting sub-interval with the greatest remaining error. Original endpoint times and values remain exact, generated times are strictly increasing and are never silently snapped to the timeline grid, and equal inputs, fidelity settings, and resource budgets must produce the same node sequence. The preview exposes the actual generated node positions. The algorithm stops when the selected fidelity target is met or a server-authoritative resource limit is reached; it never submits a partial conversion.

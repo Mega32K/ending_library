@@ -1,0 +1,5 @@
+# Auto-extend duration for retimed animation content
+
+When Advanced Retiming places a scalar keyframe, Timeline Bézier Node, or Command Animation Effect Event after the current Animation Duration, the candidate duration automatically extends to the latest resulting animation-content time. The Tool Operation Preview shows the old and proposed duration and identifies the content that caused the extension; confirmation commits the Retiming result and duration change as one server-validated atomic project revision and one personal Undo/Redo item, including for an animation whose playback type is `FOREVER`.
+
+Retiming content earlier or compressing it never shortens Animation Duration. A Project Timeline Marker cannot trigger Duration Auto-Extension: the server first derives any extension from resulting animation content, then validates included markers against that candidate duration, rejecting the complete operation when a marker remains beyond it or any finite duration or resource limit is exceeded. Undo restores both the previous content times and previous duration without changing the independent Work Range.

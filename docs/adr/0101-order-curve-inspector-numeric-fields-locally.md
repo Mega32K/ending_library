@@ -1,0 +1,7 @@
+# Order Curve Segment Inspector numeric fields locally
+
+For an explicitly selected `BEZIER` Curve Segment, the numeric-keypad navigation sequence follows the visible inspector order: Start Boundary Time, Start Boundary Value, End Boundary Time, and End Boundary Value. The sequence is computed from the current inspector state rather than from absolute screen coordinates.
+
+Only currently visible and editable numeric fields participate. `AUTO` coordinates are read-only and skipped; `LINEAR` and `CONSTANT` hide the Bézier coordinate fields and therefore provide no handle-navigation entries. Curve Interpolation Mode, Easing Preset, Legacy Easing Fallback, and Tangent Mode controls are not numeric sequence entries. A coupling notice for a preceding or following segment does not add that neighboring segment's fields to the current sequence; the user must select the neighboring segment explicitly to edit its fields.
+
+Each successful keypad transition confirms only the current logical field edit and moves within the current sequence. The order changes when the selected segment or its visible interpolation state changes, and focus remains bounded at the sequence ends under the existing non-cyclic navigation rule.

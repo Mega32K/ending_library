@@ -1,0 +1,5 @@
+# Keep reopen availability notices non-interrupting
+
+An `Archived Reopen Availability Update` must not interrupt the player's current inspection activity. The client updates the project tab state, status bar, and `Reopen Project` action in place. It does not steal keyboard or mouse focus, open a blocking modal, move or replace the active panel, alter selection, pause local inspection playback, or replace the last authorized inspection document. When the affected archived tab is active, a single bounded transient status notice may explain that the project has been restored and can be reopened; the persistent tab and status-bar state remain the source of truth.
+
+The player must deliberately invoke `Reopen Project` to begin `Explicit Permission Rejoin`. Until then, the client retains the archived inspection state and performs no session, lock, Presence, document, draft, or runtime transition. This keeps a lifecycle notification from unexpectedly changing what the player is examining while still making the new action discoverable.

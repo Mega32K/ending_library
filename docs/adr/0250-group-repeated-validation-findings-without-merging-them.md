@@ -1,0 +1,5 @@
+# Group repeated validation findings without merging them
+
+A Validation Report presents findings first by Validation Severity and then by stable diagnostic code rather than localized text. In Whole Project scope, each diagnostic group is further divided by affected animation; every group shows its complete occurrence count and affected-animation count, and expansion reveals every retained Validation Finding with its own target path and Validation Focus Result. A Details-Limited Validation Report additionally shows retained-versus-total instance counts for each affected group without treating omitted details as deduplicated or absent.
+
+Header totals count individual findings rather than collapsed groups. Text search matches localized diagnostic text, stable raw field identifiers, animation names, and target paths across group summaries and retained individual instances, with a clear notice when omitted details are outside the searchable set. Grouping is client-local presentation only: it never deduplicates, deletes, or changes retained finding identity, and distinct diagnostic codes remain separate even when their localized descriptions appear similar.

@@ -1,0 +1,5 @@
+# Replace active runtime revisions atomically
+
+When an authorized user publishes a new valid revision for a project that already has a running camera animation, the server prepares and validates the complete replacement before switching. The old Active Runtime Revision remains in use until the next safe server tick can perform one atomic handoff; a failed preparation leaves the old revision running and reports the publication failure. A successful handoff retains the current runtime target, playback time, loop state, and equivalent execution context by default, so publication does not unexpectedly restart or teleport the running camera. If no instance is running, the published revision becomes the Active Runtime Revision but does not create or start an instance; a separate Explicit Runtime Start command, event, or integration call is required.
+
+This handoff is separate from editor preview and does not move the player, mutate editor workspace state, or expose a partially loaded document to runtime consumers.

@@ -1,0 +1,5 @@
+# Show Bézier handles only for an explicitly selected Curve Segment
+
+Bézier control handles are rendered only in Graph Editor Mode after a user explicitly selects one Curve Segment by clicking its curve. The selected segment receives the handle points and thin connecting lines needed for authoring; the rest of the graph remains uncluttered. Selecting a keyframe node, hovering any node or curve, opening the property inspector, or viewing Compact Timeline Mode never reveals handles.
+
+Clicking graph whitespace clears the Curve Segment selection and hides its handles. This is local workspace state and does not create a project revision or Undo/Redo entry. Handle hit targets may be larger than the compact handle artwork for usability, but they remain invisible and do not produce hover feedback. The selected segment identity, handle positions, Curve Interpolation Mode, Tangent Mode, and linked inspector fields remain synchronized while the segment is selected. If a boundary mode couples an adjacent segment, the affected neighboring handles and curve preview are shown for the duration of the gesture without making unrelated segments permanently visible.

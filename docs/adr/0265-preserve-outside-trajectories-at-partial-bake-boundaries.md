@@ -1,0 +1,7 @@
+# Preserve outside trajectories at partial Bake boundaries
+
+Bake always evaluates the exact start and end of its closed Bake Time Scope, even when the ordinary sampling grid does not land on either endpoint. An existing scalar keyframe at a boundary is reused with its stable identity as a Bake Boundary Anchor; when no keyframe exists there, Trajectory-Preserving Key Insertion evaluates the original animation exactly at that time and splits the crossing Curve Segment. The anchor preserves the curve semantics facing outside the scope, while only its in-scope-facing curve data and the scope interior enter Bake.
+
+Partial Bake replaces only in-scope nodes and curve portions. It never deletes or rewrites out-of-scope nodes, handles, interpolation data, Work Range, or Animation Duration. Full Animation Bake likewise includes exact anchors at zero and Animation Duration. The Tool Operation Preview distinguishes reused anchors, newly inserted anchors, internal nodes to be replaced, and unchanged outside curves; confirmation is disabled if the implementation cannot preserve the outside trajectory within the accepted error tolerance.
+
+Boundary splitting, exact endpoint sampling, internal Bake, curve reconstruction, and replacement commit as one atomic project revision and one personal Undo/Redo item. This prevents a local Bake from unexpectedly changing animation before or after its requested time interval while retaining a coherent edit that can be reversed in one step.

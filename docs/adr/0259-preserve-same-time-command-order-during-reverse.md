@@ -1,0 +1,5 @@
+# Preserve same-time command order during Reverse
+
+Reverse Retiming transforms Command Animation Effect Event timestamps but does not reverse the Same-Time Effect Order of events that already shared one source timestamp. Events from different timestamps naturally exchange chronological position through the time reflection, while an originally simultaneous sequence such as `A, B, C` remains `A, B, C` at its reflected timestamp because equal timestamps contain no additional temporal direction to infer.
+
+When a reflected event group enters a timestamp that already contains unaffected command events, the unaffected residents retain their existing order and the moved group is appended as one deterministic contiguous block with its internal Same-Time Effect Order preserved. The Tool Operation Preview shows the resulting order for occupied destinations; the editor provides no hidden Reverse-order toggle, and a later explicit reorder remains a separate validated Undo/Redo operation. Reverse itself still commits all timestamp and required ordering placement changes as one atomic project revision and one personal Undo/Redo item.

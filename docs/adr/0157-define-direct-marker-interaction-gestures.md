@@ -1,0 +1,5 @@
+# Define direct marker interaction gestures
+
+Project Timeline Markers have a dedicated interaction surface. Plain left click selects a marker and seeks the local preview under the established playback rules; `Ctrl` plus left click adds or toggles a marker without seeking; `Shift` plus left click removes a marker without seeking; double left click opens marker properties; dragging a marker creates a local time preview and submits one movement transaction on release; right click opens a compact menu; and empty marker space clears only Marker Selection. Marker dragging never drags the playhead, and marker hover never adds auxiliary controls or visual noise.
+
+These gestures remain separate from authored-content selection and batch operations. Marker selection and activation are local interaction state, while successful marker creation, movement, rename, and deletion are server-authoritative project edits with normal collaboration and personal Undo/Redo semantics. A cancelled or rejected gesture leaves the marker and the appropriate selection state unchanged.

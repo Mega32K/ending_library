@@ -1,0 +1,5 @@
+# Validate marker names and times against duration
+
+Project Timeline Marker names are normalized by trimming surrounding whitespace, then rejected when empty, multiline, control-character-containing, or beyond the finite UI-safe length. Duplicate display names are valid because stable marker identities distinguish them. Marker times must be finite, strictly greater than animation start, and no later than the current finite Animation Duration; multiple markers may share a time. The client presents immediate inline feedback, but the server repeats every rule before accepting a creation or property change.
+
+Marker edits never implicitly extend or shorten Animation Duration. An explicit duration reduction that would leave any existing marker outside the valid boundary is rejected unless the same deliberate transaction moves or removes all affected markers. No invalid marker is silently clamped, truncated, or persisted, and a rejected property edit preserves its local draft for correction.

@@ -1,0 +1,7 @@
+# Use a unit-aware numeric property inspector for camera channels
+
+The editor exposes each camera channel through a Numeric Property Inspector rather than a slider-only control. World coordinates and translation/relative offsets are labeled in blocks, rotations and FOV in degrees, and Zoom and Raycast as explicit distance offsets using the actual channel semantics. The inspector supports bounded drag adjustment, direct precise text input, copy and paste, reset, keyframe creation/update, Auto Key indication, and a curve-entry action.
+
+The inspector displays Authored Value and Evaluated Value separately. Authored Value is the selected track/key value; Evaluated Value is the sampled result at the current timeline time after interpolation and applicable preview context. Scrubbing or passive inspection never edits content. Any accepted numeric change, including a direct input commit, is one Edit Gesture Transaction and enters the normal personal Undo/Redo history; validation failures remain visible and do not create operations.
+
+The Numeric Property Inspector is rendered as the numeric-keyframe section of the Contextual Property Inspector. A compatible same-channel multi-selection may expose shared fields with Mixed Inspector Value and commit one field across all targets as one atomic Inspector Batch Edit. Different channel meanings or units are never coerced into a shared value editor merely because their timeline nodes share the same visual shape.

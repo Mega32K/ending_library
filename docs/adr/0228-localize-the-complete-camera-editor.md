@@ -1,0 +1,9 @@
+# Localize the complete camera editor
+
+The rewritten Camera Animation Editor follows one `Editor Localization Contract`. Every button, menu entry, panel title, field label, status, validation message, error, confirmation, tooltip, accessible label, empty state, and recovery action uses a translation key rather than hard-coded display text. The initial release provides complete equivalent Simplified Chinese and English coverage through the existing `zh_cn` and `en_us` language resources. Missing keys are surfaced through explicit development diagnostics and must not be accepted as a finished interface.
+
+Server-authoritative operations transmit semantic result codes, stable identifiers, and bounded formatting arguments instead of pre-rendered prose. Each client renders those results in its currently selected language, so collaborators may use different languages without changing project state or network meaning. Project names, animation names, marker names, checkpoint labels, command payloads, selectors, file names, and other user-authored content remain verbatim and are never translated automatically.
+
+Camera fields present localized labels while preserving stable identifiers such as `TRANSLATION_X` in the property details, tooltip, help target, or another discoverable technical location. Search and command discovery match the localized label, raw identifier, and defined common English aliases without changing the stored field identity. Implementation work fixes translation entries directly involved in the rewritten editor, including any English entries that still contain Chinese display text, but does not use the task as a reason to rewrite unrelated legacy localization.
+
+Localization is a presentation concern only. It does not enter the Project Document, animation JSON, Operation Journal, checkpoints, personal Undo/Redo, collaboration conflict identity, or server permission logic.

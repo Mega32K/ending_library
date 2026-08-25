@@ -1,0 +1,3 @@
+# Route track operations through external entries
+
+The camera editor keeps the timeline body free of persistent inline controls. Selecting a track or node exposes its real operations through the global toolbar, Tools Menu, context menus, keyboard and focus-aware commands, and the property inspector; the exact route depends on operation frequency and scope. Single-click selection remains a selection action rather than an accidental mutation, and double-click property editing remains available where the selected item has editable properties. Responsive overflow must preserve access to the same operations without expanding timeline rows or turning them into a button panel.

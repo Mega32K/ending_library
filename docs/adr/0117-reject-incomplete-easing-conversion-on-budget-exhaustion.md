@@ -1,0 +1,3 @@
+# Reject incomplete Easing conversion on budget exhaustion
+
+If Easing-to-Bézier Simulation reaches a server-authoritative node, sampling, payload, or computation budget before the selected fidelity target is satisfied, the candidate is marked as resource-budget-exhausted and cannot be committed. The preview reports the triggered limit and the current generated-node and sampling counts, then permits only an explicit lower-fidelity recomputation or cancellation; an authorized server policy may expose a larger bounded budget where supported. Client requests cannot bypass these limits. Cancellation, rejection, and budget exhaustion leave the source project, revision history, collaboration journal, and personal Undo/Redo unchanged, and no partial conversion is retained.

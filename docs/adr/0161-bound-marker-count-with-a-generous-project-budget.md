@@ -1,0 +1,5 @@
+# Bound marker count with a generous project budget
+
+Each animation has one server-authoritative finite Marker Resource Budget, initially `4096` Project Timeline Markers. The budget is intentionally generous for professional authoring but applies before allocation to direct creation, duplication, batch paste, project import, checkpoint restoration, and any other operation that increases marker count. The client may display remaining capacity, but cannot raise or bypass the server policy.
+
+If an operation would exceed the budget, the server rejects the complete operation with a bounded explanation. It never truncates an import or paste, silently drops selected markers, automatically deletes older markers, creates a provisional record, or records a partial revision. Deleting markers releases capacity immediately after the authoritative deletion commits; duplicate names and duplicate times do not consume extra special categories and count normally as one marker each.

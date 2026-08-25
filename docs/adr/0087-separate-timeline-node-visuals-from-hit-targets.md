@@ -1,0 +1,5 @@
+# Separate timeline node visuals from hit targets
+
+Timeline nodes retain their compact Blockbench-inspired visual size, while pointer interaction uses a larger transparent Timeline Node Hit Target around each node. The hit target scales with the editor's responsive UI scale and remains large enough for reliable selection without drawing an outline, background, enlargement, animation, tooltip trigger, or any other hover-only feedback. Visual density therefore remains unchanged even when interaction tolerance increases.
+
+Hit testing is constrained to eligible nodes in the relevant visible track and lane. When multiple transparent targets overlap, the editor selects the eligible node whose rendered center is nearest to the pointer; exact ties use a stable deterministic order so repeated clicks at the same position do not alternate unpredictably. The expanded target affects only pointer hit testing and does not change marquee-selection geometry, keyframe time, authored value, node bounds used for layout, or the contents of Undo/Redo history.

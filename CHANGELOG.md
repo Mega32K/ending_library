@@ -1,2 +1,2 @@
 ### Fixes & Changes
-* Improved dedicated-server memory efficiency.
+* Fixed an issue that could prevent dynamic key mappings from registering on dedicated servers.

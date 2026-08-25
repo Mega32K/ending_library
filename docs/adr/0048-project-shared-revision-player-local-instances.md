@@ -1,0 +1,5 @@
+# Share published revisions across independent player instances
+
+The Active Runtime Revision belongs to the animation project, not to one player. An Explicit Runtime Start may create a separate Project Runtime Instance for each requested target player; every instance reads the same active revision but owns its own playback time, loop state, target, and stop lifecycle. Stopping or replacing one player's instance does not affect another player's instance. Publishing a new revision performs Revision Fan-Out: every currently running instance for that project receives the same verified revision through the existing Atomic Runtime Handoff, while each instance preserves its own playback state. Starting the same project again for a player replaces that player's existing instance according to the runtime start policy rather than creating an uncontrolled duplicate.
+
+Project Runtime Instances are runtime state only. They are not stored in the Project Document, do not become player Capability data, and do not change the editor playhead or collaborative preview state.

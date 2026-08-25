@@ -1,0 +1,9 @@
+# Bound manual collaborative-preview join retries
+
+Retryable Collaborative Preview Join failures pass through one server-authoritative `Collaborative Preview Join Retry Gate` keyed by the current connection lifecycle, player, Project, active-tab identity, and relevant preview-session generation. The gate permits at most one active Join request and applies a short, finite, server-controlled cooldown after a retryable transport, timeout, or bounded-capacity failure. Exact duration is an implementation and load-testing decision, not a client-controlled value.
+
+During the cooldown, the Editor Status Bar remains the source of truth and the Retry Join action is disabled with a truthful waiting explanation. The cooldown never starts an automatic retry, queues clicks, captures a new local snapshot, or changes shared preview state. A lifecycle replacement, tab closure, active-focus exit, or authoritative preview-session generation change releases or invalidates the old gate state so stale throttling cannot follow a new session.
+
+After the cooldown, the player must explicitly activate Retry Join. The attempt receives a new request identity and generation, repeats current permission, project lifecycle, active-tab, format, participant-capacity, and preview-session validation, and either enters the normal cancellable Join lifecycle or reports one new semantic rejection. Gate state, correlation data, and summarized diagnostics are bounded and release at connection/world/server/project lifecycle exit; no Project Document, world object, or player object is retained.
+
+This prevents repeated admission traffic from becoming a server or UI retry storm while preserving explicit player control and local-preview isolation.

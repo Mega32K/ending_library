@@ -1,0 +1,11 @@
+# Support multiple project tabs with one active editing session
+
+The Camera Animation Editor may keep multiple Project Tabs open in one client workspace, following the supplied Blockbench-style tab affordance. Each tab identifies one server-owned Animation Project and retains its own player-and-project workspace layout, playhead, view, selection, and navigation state. Tabs do not duplicate or locally author independent copies of the authoritative Project Document.
+
+Only the Active Project Tab joins the live Editing Session, receives detailed Collaborator Presence, and may join Collaborative Preview. A Tab Switch first checkpoints the current tab's workspace state and removes its ephemeral presence, then restores the destination tab's workspace state and joins its current authoritative revision. Activating the Project Browser Tool Tab follows the same departure half of this lifecycle without joining another project session, so no Project Tab remains active until the user returns to or opens a project. Inactive tabs therefore do not keep unnecessary collaboration subscriptions or server-side participant state alive.
+
+If the active tab has a Project Tab Draft Dot because it owns an unacknowledged operation or a retained local content draft, switching or closing it must wait for acknowledgement or present an explicit recovery choice appropriate to that draft; it may not silently discard accepted-or-pending content. Project content remains server-owned when a tab closes. Connection-lifecycle exit still clears temporary workspace snapshots and personal shortcut history for the connected lifecycle.
+
+A Transient Connection Interruption keeps the open tab set and Draft Dot visible but places every tab in Reconnecting Read-Only State. Tab navigation may continue locally; changing the active tab does not join another Editing Session or submit retained drafts until Reconnect Revalidation succeeds.
+
+Reconnect Revalidation may change the role without revoking access: Owner-to-Editor or Editor-to-Owner transitions keep the tab connected and update its enabled command set. If neither role remains, the tab follows ADR-0208, leaves the Editing Session, and becomes a frozen Permission-Revoked Inspection State rather than a live read-only participant.

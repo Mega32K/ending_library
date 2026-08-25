@@ -1,0 +1,11 @@
+# Bound editor density and GUI-scale behavior
+
+The Camera Animation Editor treats Minecraft's active GUI Scale as the outer logical-content boundary. Inside that boundary, the responsive workspace derives panel geometry, spacing, typography, hit targets, timeline rows, node sizes, and toolbar density from relative layout constraints and the selected Editor Density Profile. It never applies a second unrestricted global scale and never returns to Minecraft's original absolute screen-coordinate layout.
+
+The initial density profiles are `Compact`, `Standard`, and `Comfortable`. `Standard` is the default. `Compact` reduces spacing where safe and favors dense track and timeline work; `Comfortable` increases spacing and interaction targets within bounded maxima. Density never causes exaggerated text, oversized nodes, overlapping controls, or distorted world-viewport overlays. Text, buttons, nodes, splitters, and panel dimensions each use independent minimum and maximum bounds.
+
+The layout enforces a Minimum Usable Region for the central Live World Viewport and the bottom timeline/curve editor. If the current logical bounds cannot fit every panel at its minimum, the shell collapses lower-priority inspector, browser, status, or navigation content into a real drawer, tab, or secondary surface. It does not shrink all components until they overlap, hide essential controls without an alternate path, or silently discard timeline content.
+
+Changing GUI Scale or Editor Density recomputes the layout immediately and preserves semantic selection, focus, playhead, scroll, and workspace state where the new bounds permit. A layout transition may move a panel into a drawer or restore it from one, but it does not change project content, acquire a collaboration lock, create a revision, or enter personal Undo/Redo. The chosen density is a Global Editor Preference stored in the Device Preference Store; project-specific panel geometry remains Project Workspace Layout state under the existing connected-lifecycle rules.
+
+When density and bounds are insufficient for all visible regions, the exact substitution order is defined by ADR-0205; density changes never override the Core Editor Region minimum or silently discard auxiliary panel state.

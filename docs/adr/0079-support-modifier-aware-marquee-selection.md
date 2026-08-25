@@ -1,0 +1,3 @@
+# Support modifier-aware marquee selection
+
+The timeline supports a clean marquee-selection gesture without adding controls to track rows. Dragging an empty timeline region creates a new Selection Set from nodes intersecting the rectangle; `Ctrl` plus the drag adds or toggles the intersected nodes, and `Shift` plus the drag removes them. A plain click on empty space clears the selection. The gesture changes only local selection state, synchronizes the selected tracks, curves, world-space nodes, and inspector, and never creates project content, a revision, or an Undo/Redo entry.

@@ -1,0 +1,3 @@
+# Reconfigure Bézier chains after ordinary timeline edits
+
+Ordinary timeline insertion, deletion, and time movement are structural edits for Bézier participation. After each accepted edit, the server orders nodes on the affected track and recomputes adjacent Bézier Node Chains: two nodes use the deliberate linear presentation, three or more use the continuous authored Bézier presentation, and any intervening non-Bézier node splits the chain. Reconfiguration never silently samples, fits, or discards the previous trajectory and never deletes node-level curve data merely because a chain becomes shorter. The initiating edit and its complete chain reconfiguration are one atomic collaboration revision and one Undo/Redo item.

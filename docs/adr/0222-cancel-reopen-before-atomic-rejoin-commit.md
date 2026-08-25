@@ -1,0 +1,7 @@
+# Cancel reopen before atomic rejoin commit
+
+Invoking `Reopen Project` places the archived tab in a read-only `Cancellable Reopen Request` while the server prepares `Explicit Permission Rejoin`. During this preparatory phase, the player may cancel the request, close the tab, or switch focus to another Project Tab. Cancellation releases client request state and any corresponding bounded server preparation state, creates no Editing Session, loads no new Project Document, acquires no Presence or locks, changes no playback or runtime state, and adds no personal Undo/Redo entry. An open tab returns to `Archived Inspection State` with its held inspection document unchanged.
+
+Cancellation is no longer authoritative after the server enters the atomic commit boundary that binds permission, lifecycle and format validation, the Project Document, and the new Editing Session to one `Atomic Rejoin Baseline`. At that point the client waits for the terminal result instead of attempting a partial rollback. Closing the tab still makes its client identity inactive, so a later success or failure response cannot recreate the tab, restore the old Editing Session, or attach the result to another tab.
+
+Every request carries a bounded identity tied to the connection lifecycle, player, project, tab instance, and request generation. Duplicate, delayed, cancelled, superseded, or post-disconnect responses are ignored after terminal cleanup. No cancellation path automatically retries the request.

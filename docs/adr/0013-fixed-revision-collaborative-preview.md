@@ -1,0 +1,5 @@
+# Freeze the collaborative preview revision until an explicit switch
+
+Starting a collaborative preview captures one authoritative project revision as an immutable Preview Revision Snapshot. Participants may continue editing the live project, and the server continues accepting and broadcasting those operations, but the active collaborative preview evaluates only its captured revision. The editor shows that newer revisions exist without silently changing the running preview.
+
+The Preview Leader may explicitly switch the joined preview to a selected newer revision. The server validates and broadcasts the switch, including a deterministic resume policy: pause at the current logical time, restart from the current work-range start, or restart from zero. Follower controls cannot request this switch or alter the shared playhead and range. All joined participants then evaluate the same revision; authorized project edits may continue against the live project but do not change the active snapshot until such a switch; leaving the preview restores each participant's pre-preview workspace state.

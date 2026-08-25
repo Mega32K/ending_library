@@ -1,0 +1,7 @@
+# Preserve Additive Lanes during Bake
+
+Bake uses Scalar Animation Tracks as its selection scope but rebuilds each existing populated, evaluable Additive Lane inside every target track independently and in place. Each lane retains its stable identity, name, order, and additive contribution; a single-lane track follows the same rule without gaining another lane. Empty lanes remain untouched, no empty lane is created, and the evaluated sum of several lanes is never silently flattened into one generated `Baked` lane.
+
+Every participating lane uses the same resolved Bake Time Scope and operation settings while preserving its own authored trajectory. Partial Bake applies the accepted Bake Boundary Anchor and outside-trajectory rules separately to each lane. The Tool Operation Preview groups results by target track and lane and reports each lane's source node count, proposed node count, and trajectory error, while also showing the accumulated track result needed to verify that Lane Accumulation remains equivalent.
+
+All participating lane reconstructions commit as one server-validated project revision and one personal Undo/Redo item; failure or stale structure in any lane rejects the complete operation instead of partially baking the track. Flattening multiple Additive Lanes into one lane would discard meaningful structure and legacy round-trip boundaries, so any future flattening feature must be a separate, explicitly destructive tool with its own preview and confirmation.
