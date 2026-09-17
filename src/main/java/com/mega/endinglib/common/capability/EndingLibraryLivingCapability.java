@@ -33,7 +33,8 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
     public @Nullable UUID forcedTargetID;
     public @Nullable LivingEntity forcedTarget;
     public int navigationMaxTimeout = -1;
-    private int timeStopCount = 0;
+    public final CapabilityEntityData<Integer> TIME_STOP_COUNT = this.dataManager.define(1, "TimeStopCount", 0, CapabilityDataSerializers.INT);
+
     public static final ResourceLocation NAME = SafeClass.loc("endinglib_living_cap");
     @Override
     public ResourceLocation getRegistryName() {
@@ -69,8 +70,6 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
             nbt.putUUID("ForcedTarget", this.forcedTargetID);
         if (this.navigationMaxTimeout > 0)
             nbt.putInt("NavigationMaxTimeout", this.navigationMaxTimeout);
-        if (this.timeStopCount != 0)
-            nbt.putInt("TimeStopCount", this.timeStopCount);
     }
 
     @Override
@@ -79,9 +78,6 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
             this.forcedTargetID = nbt.getUUID("ForcedTarget");
         if (CompoundTagUtils.containsInt(nbt, "NavigationMaxTimeout"))
             this.navigationMaxTimeout = nbt.getInt("NavigationMaxTimeout");
-        if (CompoundTagUtils.containsInt(nbt, "TimeStopCount"))
-            this.timeStopCount = nbt.getInt("TimeStopCount");
-        this.setTimeStopCanMove(this.timeStopCount > 0);
     }
 
     @Override
@@ -141,18 +137,17 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
         }
     }
     public boolean canMoveWhenTimeStop() {
-        return dataManager.getValue(TIME_STOP_CAN_MOVE);
+        return dataManager.getValue(TIME_STOP_CAN_MOVE) || this.getTimeStopCount() > 0;
     }
     public void setTimeStopCanMove(boolean value) {
         this.dataManager.setValue(TIME_STOP_CAN_MOVE, value);
     }
 
     public int getTimeStopCount() {
-        return timeStopCount;
+        return this.dataManager.getValue(TIME_STOP_COUNT);
     }
 
     public void setTimeStopCount(int timeStopCount) {
-        this.timeStopCount = timeStopCount;
-        this.setTimeStopCanMove(timeStopCount > 0);
+        this.dataManager.setValue(TIME_STOP_COUNT, timeStopCount);
     }
 }

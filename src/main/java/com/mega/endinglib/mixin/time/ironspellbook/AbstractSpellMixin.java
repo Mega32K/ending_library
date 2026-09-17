@@ -1,5 +1,8 @@
 package com.mega.endinglib.mixin.time.ironspellbook;
 
+import com.mega.endinglib.api.compat.irons_spellbook.ITimeStopSpell;
+import com.mega.endinglib.client.ClientContext;
+import com.mega.endinglib.client.ClientWrapped;
 import com.mega.endinglib.util.annotation.ModDependsMixin;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import io.redspace.ironsspellbooks.api.magic.MagicData;
@@ -31,8 +34,21 @@ public abstract class AbstractSpellMixin {
 
     @Inject(method = "canBeCastedBy", at = @At("HEAD"), cancellable = true)
     private void canBeCastedBy(int spellLevel, CastSource castSource, MagicData playerMagicData, Player player, CallbackInfoReturnable<CastResult> cir) {
-        if (TimeStopUtils.isTimeStop)
-            if (TimeStopUtils.andSameDimension(player.level()) && !TimeStopUtils.canMove(player))
-                cir.setReturnValue(new CastResult(CastResult.Type.FAILURE));
+        if (TimeStopUtils.isTimeStop) {
+            if (player.level().isClientSide) {
+                if (ClientWrapped.clientPlayer() != null && player.getUUID().equals(ClientWrapped.clientPlayer().getUUID())) {
+                    if (ClientContext.isTimeStop_andSameDimension && !canSpell(player))
+                        cir.setReturnValue(new CastResult(CastResult.Type.FAILURE));
+                }
+            } else {
+                if (TimeStopUtils.andSameDimension(player.level()) && !canSpell(player))
+                    cir.setReturnValue(new CastResult(CastResult.Type.FAILURE));
+            }
+        }
+
+    }
+    @Unique
+    private boolean canSpell(Player player) {
+        return (this instanceof ITimeStopSpell stopSpell && stopSpell.canSpellWhenTimeStopped(player)) || TimeStopUtils.canMove(player);
     }
 }

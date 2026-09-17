@@ -14,17 +14,14 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spyglass/extra_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/spyglass/extra_commands.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/ItemStackMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/advanced/data_expand/component/ItemStackMixin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/server/resource/DynamicKeyMappingReloadListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/server/resource/DynamicKeyMappingReloadListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/asm/BugfixCoremodProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/asm/BugfixCoremodProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/capability/EndingLibraryLivingCapability.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/capability/EndingLibraryLivingCapability.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/ironspellbook/ZapParticleTypeMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/compat/ironspellbook/ZapParticleTypeMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/time/ironspellbook/AbstractSpellMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/time/ironspellbook/AbstractSpellMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/ending_library.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/ending_library.mixins.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,6 +66,12 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="EndingLibrary" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
+                <item name="build" type="c8890929:TasksNode$1" />
+              </path>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="EndingLibrary" type="f1a62948:ProjectNode" />
+                <item name="Tasks" type="e4a08cd1:TasksNode" />
                 <item name="forgegradle runs" type="c8890929:TasksNode$1" />
               </path>
               <path>
@@ -92,8 +95,8 @@
         <option value="Enum" />
         <option value="Record" />
         <option value="AnnotationType" />
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -145,9 +148,11 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.EndingLibrary [:createMcpToSrg :createMcpToSrg :createMcpToSrg].executor": "Run",
+    "Gradle.EndingLibrary [build].executor": "Run",
     "Gradle.EndingLibrary [createMcpToSrg].executor": "Run",
+    "Gradle.EndingLibrary [genIntellijRuns].executor": "Run",
     "Gradle.EndingLibrary [runClient0].executor": "Run",
-    "Gradle.EndingLibrary [runClient].executor": "Run",
+    "Gradle.EndingLibrary [runClient].executor": "Debug",
     "Gradle.EndingLibrary [runServer].executor": "Run",
     "Gradle.下载源代码.executor": "Run",
     "RunOnceActivity.MCP Project settings loaded": "true",
@@ -162,7 +167,7 @@
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_directory_selection": "E:/CollapsingWorld/System-e/EndingLibrary/src/main/java/com/mega/endinglib/common/command/argument",
-    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/run/world",
+    "last_opened_file_path": "E:/CollapsingWorld/System-e/EndingLibrary/libs",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -177,11 +182,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\libs" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\run\world" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\META-INF" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\gradle\wrapper" />
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\run\resourcepacks" />
-      <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\assets\ending_library\textures\ui\loading" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\CollapsingWorld\System-e\EndingLibrary\src\main\resources\templates\META-INF" />
@@ -303,7 +308,7 @@
       <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
-    <configuration name="EndingLibrary [runClient0]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="EndingLibrary [genIntellijRuns]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -314,7 +319,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="runClient0" />
+            <option value="genIntellijRuns" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -328,7 +333,7 @@
       <GradleCoverageDisabled>false</GradleCoverageDisabled>
       <method v="2" />
     </configuration>
-    <configuration name="EndingLibrary [runClient1]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="EndingLibrary [runClient0]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -339,7 +344,7 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="runClient1" />
+            <option value="runClient0" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -406,10 +411,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.EndingLibrary [build]" />
-        <item itemvalue="Gradle.EndingLibrary [runServer]" />
+        <item itemvalue="Gradle.EndingLibrary [genIntellijRuns]" />
         <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [runClient0]" />
-        <item itemvalue="Gradle.EndingLibrary [runClient1]" />
+        <item itemvalue="Gradle.EndingLibrary [runServer]" />
       </list>
     </recent_temporary>
   </component>
