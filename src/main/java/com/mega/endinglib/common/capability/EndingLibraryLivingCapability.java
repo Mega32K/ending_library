@@ -4,15 +4,19 @@ import com.mega.endinglib.EndingLibrary;
 import com.mega.endinglib.api.capability.CapabilityEntityData;
 import com.mega.endinglib.api.capability.CapabilitySyncType;
 import com.mega.endinglib.api.capability.EntitySyncCapabilityBase;
+import com.mega.endinglib.api.capability.IForceTickEntityCap;
 import com.mega.endinglib.api.capability.syncher.CapabilityDataSerializers;
 import com.mega.endinglib.api.data.CompoundTagUtils;
 import com.mega.endinglib.common.command.entity.DataCommand;
 import com.mega.endinglib.mixin.accessor.HoglinAiAccessor;
 import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.mixin.data_expand.ExtraLivingEntity;
+import com.mega.endinglib.util.time.TimeStopEntityData;
+import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -28,7 +32,7 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
+public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase implements IForceTickEntityCap {
     public final CapabilityEntityData<Boolean> TIME_STOP_CAN_MOVE = this.dataManager.defineWithoutSerialization(0, false, CapabilityDataSerializers.BOOLEAN);
     public @Nullable UUID forcedTargetID;
     public @Nullable LivingEntity forcedTarget;
@@ -111,7 +115,24 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase {
             }
         }
     }
-
+    @Override
+    public void forceTick(Entity entity) {
+        if (entity instanceof LivingEntity living) {
+            ProfilerFiller filler = living.level().getProfiler();
+            filler.push(EndingLibrary.MODID + ":entity_force_tick");
+            try {
+                if (!living.level().isClientSide) {
+                    if (TimeStopEntityData.getTimeStopCount(living) > 0) {
+                        TimeStopEntityData.setTimeStopCount(living, TimeStopEntityData.getTimeStopCount(living) - 1);
+                        if (TimeStopEntityData.getTimeStopCount(living) <= 0)
+                            TimeStopUtils.use(false, living);
+                    }
+                }
+            } finally {
+                filler.pop();
+            }
+        }
+    }
     @Nullable
     public LivingEntity checkAndGetForcedTarget(ServerLevel level) {
         if (forcedTarget == null) {

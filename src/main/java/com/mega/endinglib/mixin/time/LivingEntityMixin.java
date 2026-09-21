@@ -1,6 +1,7 @@
 package com.mega.endinglib.mixin.time;
 
 import com.mega.endinglib.EndingLibrary;
+import com.mega.endinglib.util.annotation.DeprecatedMixin;
 import com.mega.endinglib.util.time.TimeStopEntityData;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -17,6 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LivingEntity.class)
+@DeprecatedMixin
 public abstract class LivingEntityMixin extends Entity {
     public LivingEntityMixin(EntityType<?> p_19870_, Level p_19871_) {
         super(p_19870_, p_19871_);
@@ -37,8 +39,13 @@ public abstract class LivingEntityMixin extends Entity {
          */
     }
 
+    /**
+     * 迁移至{@link com.mega.endinglib.common.capability.EndingLibraryLivingCapability#forceTick(Entity)}
+     */
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo ci) {
+        /*
+
         ProfilerFiller filler = level().getProfiler();
         filler.push(EndingLibrary.MODID + "_entity_tickTimeStop");
         try {
@@ -54,6 +61,7 @@ public abstract class LivingEntityMixin extends Entity {
             throwable.printStackTrace();
         }
         filler.pop();
+         */
     }
 
 }
