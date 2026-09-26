@@ -27,7 +27,6 @@ public abstract class LevelMixin implements LevelEC {
         if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension((Level) (Object) this)) {
             if (entity == null) {
                 ci.cancel();
-                return;
             } else {
                 if (!TimeStopUtils.canMove(entity))
                     ci.cancel();
@@ -35,7 +34,6 @@ public abstract class LevelMixin implements LevelEC {
                     if (entity instanceof TimeStopEntity stopEntity)
                         stopEntity.updateSkill(living, (Level) (Object) this);
                 }
-                return;
             }
         }
         IEntityAutoCap entityAutoCap = IEntityAutoCap.of(entity);

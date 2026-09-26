@@ -60,7 +60,7 @@ public class ELCapabilityManager {
                 if (endinglibCaps == null) endinglibCaps = new ObjectArrayList<>();
                 endinglibCaps.add(defaultValue);
                 event.addCapability(defaultValue.getRegistryName(), defaultValue);
-                event.addListener(defaultValue.holder::invalidate);
+                event.addListener(() -> defaultValue.holder.invalidate());
                 IEntityAutoCap.of(entity).endinglib$putAutoCap(defaultValue.getClass(), defaultValue);
             }
         }

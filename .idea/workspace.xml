@@ -5,8 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7a0e3376-007b-4834-9437-4fa75e172de3" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/executionHistory/executionHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/fileHashes.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.1.1/fileHashes/resourceHashesCache.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/spyglass/extra_commands.json" beforeDir="false" afterPath="$PROJECT_DIR$/spyglass/extra_commands.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/CapabilitySyncType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/CapabilitySyncType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/ELCapabilityManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/ELCapabilityManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/EntitySyncCapabilityBase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/api/capability/EntitySyncCapabilityBase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/capability/EndingLibraryLivingCapability.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/common/capability/EndingLibraryLivingCapability.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/capability/CapabilityProviderMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/mixin/capability/CapabilityProviderMixin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/time/TimeStopEntityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/time/TimeStopEntityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/time/TimeStopUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/mega/endinglib/util/time/TimeStopUtils.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -203,7 +222,7 @@
       <recent name="com.mega.endinglib.api.capability.annotation" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.EndingLibrary [build]">
+  <component name="RunManager" selected="Gradle.EndingLibrary [runClient]">
     <configuration name="Client" type="Application" factoryName="Application">
       <envs>
         <env name="MOD_CLASSES" value="ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\classes\java\main;ending_library%%E:\CollapsingWorld\System-e\EndingLibrary\build\resources\main" />
@@ -395,9 +414,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [build]" />
         <item itemvalue="Gradle.EndingLibrary [genIntellijRuns]" />
-        <item itemvalue="Gradle.EndingLibrary [runClient]" />
         <item itemvalue="Gradle.EndingLibrary [runClient0]" />
         <item itemvalue="Gradle.EndingLibrary [runServer]" />
       </list>

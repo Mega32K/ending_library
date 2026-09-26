@@ -12,7 +12,8 @@ public enum CapabilitySyncType implements IExtensibleEnum {
     DEATH,
     PLAYER_LOGGED_IN,
     PLAYER_LOGGED_OUT,
-    DIMENSION_CHANGE;
+    DIMENSION_CHANGE,
+    DEFAULT;
 
     public static CapabilitySyncType create(String name) {
         throw new IllegalStateException("Enum not extended");

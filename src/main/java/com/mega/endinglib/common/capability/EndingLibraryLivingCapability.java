@@ -122,9 +122,9 @@ public class EndingLibraryLivingCapability extends EntitySyncCapabilityBase impl
             filler.push(EndingLibrary.MODID + ":entity_force_tick");
             try {
                 if (!living.level().isClientSide) {
-                    if (TimeStopEntityData.getTimeStopCount(living) > 0) {
-                        TimeStopEntityData.setTimeStopCount(living, TimeStopEntityData.getTimeStopCount(living) - 1);
-                        if (TimeStopEntityData.getTimeStopCount(living) <= 0)
+                    if (this.getTimeStopCount() > 0) {
+                        this.setTimeStopCount(this.getTimeStopCount() - 1);
+                        if (this.getTimeStopCount() <= 0)
                             TimeStopUtils.use(false, living);
                     }
                 }

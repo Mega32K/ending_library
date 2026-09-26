@@ -95,7 +95,7 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
     /**
      * 默认的Holder
      */
-    public final LazyOptional<EntitySyncCapabilityBase> holder = LazyOptional.of(() -> this);
+    public LazyOptional<EntitySyncCapabilityBase> holder = LazyOptional.of(() -> this);
     private Capability<EntitySyncCapabilityBase> capability = null;
     /**
      * 能力数据管理器
@@ -210,6 +210,12 @@ public abstract class EntitySyncCapabilityBase implements ICapabilitySerializabl
 
     public final boolean canAttachTo(Entity entity) {
         return canAttach().test(entity) || this.getEnableClass() != null && this.getEnableClass().isInstance(entity);
+    }
+
+    public void reviveHolder() {
+        if (!holder.isPresent()) {
+            holder = LazyOptional.of(() -> this);
+        }
     }
 
     @Override

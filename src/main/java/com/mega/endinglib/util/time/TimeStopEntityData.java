@@ -17,11 +17,15 @@ public class TimeStopEntityData {
     }
     public static boolean canMove(LivingEntity livingEntity) {
         boolean[] value = new boolean[] {false};
-        CommonProxy.getLivingCapOptional(livingEntity).ifPresent(cap -> value[0] = cap.canMoveWhenTimeStop());
+        CommonProxy.getLivingCapOptional(livingEntity).ifPresent(cap -> {
+            value[0] = cap.canMoveWhenTimeStop();
+        });
         return value[0];
     }
 
     public static void setTimeStopCount(LivingEntity livingEntity, int i) {
-        CommonProxy.getLivingCapOptional(livingEntity).ifPresent(cap -> cap.setTimeStopCount(i));
+        CommonProxy.getLivingCapOptional(livingEntity).ifPresent(cap -> {
+            cap.setTimeStopCount(i);
+        });
     }
 }
