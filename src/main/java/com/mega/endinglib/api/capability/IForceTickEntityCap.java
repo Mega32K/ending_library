@@ -8,4 +8,7 @@ public interface IForceTickEntityCap {
      * @param entity 能力持有实体
      */
     void forceTick(Entity entity);
+    default void forceTick(Entity entity, boolean timeFrozen) {
+        if (!timeFrozen) forceTick(entity);
+    }
 }

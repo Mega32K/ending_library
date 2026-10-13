@@ -23,10 +23,24 @@ import java.util.function.Consumer;
 
 @Mixin(Level.class)
 public abstract class LevelMixin implements LevelEC {
-
     @Shadow
     public abstract <T extends Entity> void guardEntityTick(Consumer<T> p_46654_, T p_46655_);
 
+    @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
+    private <T extends Entity> void guardEntityTick(Consumer<T> consumer, T entity, CallbackInfo ci) {
+        IEntityAutoCap entityAutoCap = IEntityAutoCap.of(entity);
+        if (entityAutoCap.endinglib$getAutoCaps() != null)
+            for (LazyOptional<EntitySyncCapabilityBase> cap : entityAutoCap.endinglib$getAutoCaps())
+                cap.ifPresent(data -> {
+                    if (data instanceof IForceTickEntityCap forceTickEntityCap)
+                        forceTickEntityCap.forceTick(entity, false);
+                });
+        ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
+        if (eed.isFrozen) {
+            ci.cancel();
+        }
+        eed.forceTick();
+    }
     @Override
     public <T extends Entity> void guardEntityTickWhenTS(Consumer<T> consumer, T entity) {
         boolean vanilla = true;
@@ -45,7 +59,7 @@ public abstract class LevelMixin implements LevelEC {
             for (LazyOptional<EntitySyncCapabilityBase> cap : entityAutoCap.endinglib$getAutoCaps())
                 cap.ifPresent(data -> {
                     if (data instanceof IForceTickEntityCap forceTickEntityCap)
-                        forceTickEntityCap.forceTick(entity);
+                        forceTickEntityCap.forceTick(entity, true);
                 });
         ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
         if (eed.isFrozen) {
@@ -54,7 +68,6 @@ public abstract class LevelMixin implements LevelEC {
         eed.forceTick();
         if (vanilla) guardEntityTick(consumer, entity);
     }
-
     @Override
     public LevelExpandedContext endinglib$levelECData() {
         return null;
