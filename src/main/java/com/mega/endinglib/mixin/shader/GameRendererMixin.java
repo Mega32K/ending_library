@@ -16,6 +16,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GameRendererMixin {
     @Shadow @Final private Minecraft minecraft;
 
+    @Inject(method = "render", at = @At("HEAD"))
+    private void beginPostEffectFrame(float partialTicks, long nanoTime, boolean renderLevel, CallbackInfo ci) {
+        PostProcessingShaders.INSTANCE.beginFrame();
+    }
+
+    @Inject(method = "close", at = @At("HEAD"))
+    private void closeSceneDepth(CallbackInfo ci) {
+        PostProcessingShaders.INSTANCE.releaseDepthResources();
+    }
+
     @Inject(method = "renderLevel", at = @At("TAIL"))
     public void renderLevelTail(float partialTicks, long l, PoseStack stack, CallbackInfo ci) {
         PostProcessingShaders.INSTANCE.levelEffect(partialTicks);
@@ -23,6 +33,7 @@ public abstract class GameRendererMixin {
 
     @Inject(method = {"resize"}, at = {@At("HEAD")})
     public void resize(int p_109098_, int p_109099_, CallbackInfo callbackInfo) {
+        PostProcessingShaders.INSTANCE.resizeDepthResources();
         PostProcessingShaders.postChains.keySet().forEach(effect -> effect.current().resize(p_109098_, p_109099_));
     }
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;<init>(Lnet/minecraft/client/Minecraft;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;)V" ))

@@ -11,4 +11,5 @@ public interface TimeStopEntity {
      * @param level  Level instance(server)
      */
     void updateSkill(LivingEntity living, Level level);
+    default boolean smoothPartialTicks() {return false;}
 }

@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.shader;
 
+import com.mega.endinglib.api.client.shader.post.PostProcessingShaders;
 import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,6 +17,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public abstract class LevelRendererMixin {
+    // 两个画质分支均在此处进入透明阶段，早于 Fabulous 合成和原版手部清屏。
+    @Inject(method = "renderLevel", at = @At(value = "CONSTANT", args = "stringValue=translucent"))
+    private void captureSceneDepth(PoseStack poseStack, float partialTicks, long nanoTime, boolean renderOutline,
+                                   Camera camera, GameRenderer gameRenderer, LightTexture lightTexture,
+                                   Matrix4f projection, CallbackInfo ci) {
+        PostProcessingShaders.INSTANCE.captureVanillaSceneDepth(projection);
+    }
+
     @Inject(method = "renderLevel", at = @At("HEAD"))
     private void storeModelView(PoseStack p_109600_, float p_109601_, long p_109602_, boolean p_109603_, Camera p_109604_, GameRenderer p_109605_, LightTexture p_109606_, Matrix4f p_254120_, CallbackInfo ci) {
         Vec3 cameraPos = p_109604_.getPosition();

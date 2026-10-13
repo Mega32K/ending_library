@@ -71,8 +71,8 @@ public class ServerLevelExpandedContext extends LevelExpandedContext {
                                     p_184065_.stopRiding();
                                 }
                                 profilerfiller.push("tick");
-                                if (!p_184065_.isRemoved() && TimeStopUtils.canMove(p_184065_)) {
-                                    serverLevel.guardEntityTick(serverLevel::tickNonPassenger, p_184065_);
+                                if (!p_184065_.isRemoved()) {
+                                    ((LevelEC) serverLevel).guardEntityTickWhenTS(serverLevel::tickNonPassenger, p_184065_);
                                 }
                                 profilerfiller.pop();
                             }

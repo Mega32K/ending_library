@@ -14,6 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,18 +23,21 @@ import java.util.function.Consumer;
 
 @Mixin(Level.class)
 public abstract class LevelMixin implements LevelEC {
-    @Inject(method = "guardEntityTick", at = @At("HEAD"), cancellable = true)
-    private <T extends Entity> void guardEntityTick(Consumer<T> consumer, T entity, CallbackInfo ci) {
-        if (TimeStopUtils.isTimeStop && TimeStopUtils.andSameDimension((Level) (Object) this)) {
-            if (entity == null) {
-                ci.cancel();
-            } else {
-                if (!TimeStopUtils.canMove(entity))
-                    ci.cancel();
-                if (entity instanceof LivingEntity living) {
-                    if (entity instanceof TimeStopEntity stopEntity)
-                        stopEntity.updateSkill(living, (Level) (Object) this);
-                }
+
+    @Shadow
+    public abstract <T extends Entity> void guardEntityTick(Consumer<T> p_46654_, T p_46655_);
+
+    @Override
+    public <T extends Entity> void guardEntityTickWhenTS(Consumer<T> consumer, T entity) {
+        boolean vanilla = true;
+        if (entity == null) {
+            return;
+        } else {
+            if (!TimeStopUtils.canMove(entity))
+                vanilla = false;
+            if (entity instanceof LivingEntity living) {
+                if (entity instanceof TimeStopEntity stopEntity)
+                    stopEntity.updateSkill(living, (Level) (Object) this);
             }
         }
         IEntityAutoCap entityAutoCap = IEntityAutoCap.of(entity);
@@ -45,9 +49,10 @@ public abstract class LevelMixin implements LevelEC {
                 });
         ExtraEntityData eed = ExtraEntity.of(entity).endinglib$getExtraEntityData();
         if (eed.isFrozen) {
-            ci.cancel();
+            vanilla = false;
         }
         eed.forceTick();
+        if (vanilla) guardEntityTick(consumer, entity);
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.mega.endinglib.api.client.shader.post;
 
 import com.google.gson.JsonSyntaxException;
 import com.mega.endinglib.common.data.DynamicEffectData;
+import com.mega.endinglib.mixin.accessor.AccessorPostChain;
+import com.mega.endinglib.util.SafeClass;
 import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
@@ -16,6 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Matrix4f;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,11 +31,56 @@ public class PostProcessingShaders {
     public static final Object2ObjectOpenHashMap<CustomScreenEffect, PostChain> postChains = new Object2ObjectOpenHashMap<>();
     public static volatile boolean isReloading = false;
     private final Minecraft minecraft;
+    private final SceneDepthCapture sceneDepth = new SceneDepthCapture();
+    private final ReferenceSet<CustomScreenEffect> depthConsumers = new ReferenceOpenHashSet<>();
+    private boolean depthCaptureAttempted;
     private final Logger LOGGER = LogManager.getLogger();
     private final Object2ObjectOpenHashMap<DynamicEffectData, CustomScreenEffect> commandScreenEffects = new Object2ObjectOpenHashMap<>();
     public PostProcessingShaders(Minecraft minecraft) {
         this.minecraft = minecraft;
     }
+    public void beginFrame() {
+        depthCaptureAttempted = false;
+        depthConsumers.clear();
+        sceneDepth.invalidate();
+    }
+
+    private boolean prepareDepthCapture() {
+        if (depthCaptureAttempted || isReloading || minecraft.level == null || minecraft.player == null)
+            return false;
+        depthCaptureAttempted = true;
+        for (var entry : postChains.entrySet()) {
+            CustomScreenEffect effect = entry.getKey();
+            if (entry.getValue() != null && effect.requiresDepthTexture() && SHOULD_PROCESS.test(effect))
+                depthConsumers.add(effect);
+        }
+        return !depthConsumers.isEmpty();
+    }
+
+    public void captureVanillaSceneDepth(Matrix4f projection) {
+        if (!SafeClass.usingShaderPack() && prepareDepthCapture())
+            sceneDepth.capture(minecraft.getMainRenderTarget().getDepthTextureId(), projection);
+    }
+
+    public void captureOculusSceneDepth() {
+        if (SafeClass.usingShaderPack() && prepareDepthCapture())
+            OculusSceneDepth.capture(sceneDepth);
+    }
+
+    public void resizeDepthResources() {
+        depthConsumers.clear();
+        sceneDepth.resize();
+    }
+
+    public void releaseDepthResources() {
+        depthConsumers.clear();
+        sceneDepth.close();
+    }
+
+    private boolean hasSceneDepth(CustomScreenEffect effect) {
+        return sceneDepth.isValid() && depthConsumers.contains(effect);
+    }
+
     public void levelEffect(float partialTicks) {
         effect(partialTicks, DynamicEffectData.TransformLayer.LEVEL_RENDERER);
     }
@@ -49,7 +97,15 @@ public class PostProcessingShaders {
                 if (SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer) {
                     PostChain postChain = entry.getValue();
                     if (postChain != null) {
+                        if (element.requiresDepthTexture() && !hasSceneDepth(element)) continue;
                         element.onRenderTick(partialTicks);
+                        if (element.requiresDepthTexture()) {
+                            if (!hasSceneDepth(element)) continue;
+                            ((AccessorPostChain) postChain).getPasses().forEach(pass -> {
+                                pass.getEffect().setSampler("SceneDepthSampler", sceneDepth::getTextureId);
+                                pass.getEffect().safeGetUniform("InvSceneProjMat").set(sceneDepth.getInverseProjection());
+                            });
+                        }
                         postChain.process(partialTicks);
                         this.minecraft.getMainRenderTarget().bindWrite(false);
                     }
@@ -100,6 +156,7 @@ public class PostProcessingShaders {
         isReloading = false;
     }
     public void initShader(ResourceManager manager, List<DynamicEffectData> allStaticData) {
+        releaseDepthResources();
         isReloading = true;
         try {
             PostEffectHandler.getData().clear();

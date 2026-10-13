@@ -5,6 +5,7 @@ import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.mixin.accessor.AccessorClientLevel;
 import com.mega.endinglib.mixin.accessor.AccessorMcTimer;
 import com.mega.endinglib.util.mixin.bettercombat.BetterCombatTicker;
+import com.mega.endinglib.util.mixin.level.LevelEC;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
 import net.minecraft.CrashReport;
@@ -201,11 +202,10 @@ public abstract class MinecraftMixin {
                             }
                         }
                         if (level != null) {
+                            LevelEC levelEC = (LevelEC) level;
                             ((AccessorClientLevel) level).getTickingEntities().forEach((entity) -> {
                                 if (!entity.isRemoved() && !entity.isPassenger()) {
-                                    if (TimeStopUtils.canMove(entity)) {
-                                        level.guardEntityTick(level::tickNonPassenger, entity);
-                                    }
+                                    levelEC.guardEntityTickWhenTS(level::tickNonPassenger, entity);
                                 }
                             });
 

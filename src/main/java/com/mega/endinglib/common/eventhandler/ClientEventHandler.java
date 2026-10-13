@@ -192,6 +192,8 @@ public class ClientEventHandler {
     }
     @SubscribeEvent
     public static void renderLevelStageEvent(RenderLevelStageEvent event) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_LEVEL)
+            PostProcessingShaders.INSTANCE.captureOculusSceneDepth();
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
             Player player = ClientWrapped.clientPlayer();
             Minecraft mc = Minecraft.getInstance();
@@ -218,6 +220,7 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onDisconnected(ClientPlayerNetworkEvent.LoggingOut event) {
+        Minecraft.getInstance().execute(PostProcessingShaders.INSTANCE::releaseDepthResources);
         //说明只是退出游戏
         if (event.getMultiPlayerGameMode() != null) {
             new LambdaClientTaskInstance.Stop(5, ClientUtils::onPlayerDisconnect).onAddedToWorld();

@@ -1,0 +1,17 @@
+{
+  "targets": [
+    "swap"
+  ],
+  "passes": [
+    {
+      "name": "ending_library:test/depth",
+      "intarget": "minecraft:main",
+      "outtarget": "swap"
+    },
+    {
+      "name": "ending_library:test/depth",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

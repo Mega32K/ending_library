@@ -6,8 +6,11 @@ import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.client.reloadable.DynamicEffectDataResourceReloadListener;
 import com.mega.endinglib.client.reloadable.StaticCameraAnimationReloadListener;
 import com.mega.endinglib.client.renderer.shader.post.ModernGaussianBlurPostEffect;
+import com.mega.endinglib.client.renderer.shader.post.test.DepthTestPostEffect;
 import com.mega.endinglib.client.screen.OtherPlayerInventoryScreen;
 import com.mega.endinglib.common.init.ModMenus;
+import com.mega.endinglib.util.EarlyConfig;
+import com.mega.endinglib.util.MCMapping;
 import com.mega.endinglib.util.SafeClass;
 import com.mega.endinglib.util.time.TimeContext;
 import com.mega.endinglib.util.time.TimeStopUtils;
@@ -75,6 +78,9 @@ public class ClientProxy implements ModProxy {
                 return animation;
             });
             PostEffectHandler.registerEffect(ModernGaussianBlurPostEffect::new);
+            if (MCMapping.isWorkingspaceMode()) {
+                PostEffectHandler.registerEffect(DepthTestPostEffect::new);
+            }
         });
     }
 }

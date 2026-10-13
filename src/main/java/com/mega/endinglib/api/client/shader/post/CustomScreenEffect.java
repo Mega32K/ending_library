@@ -47,6 +47,20 @@ public interface CustomScreenEffect {
     }
 
     /**
+     * 是否需要当帧的场景深度，默认不捕获。
+     * <p>覆写为 true 后，在 shader program JSON 的 samplers 中声明 SceneDepthSampler，
+     * 即可读取透明绘制阶段前、排除手部的原始深度（标准深度范围为 0 到 1）。
+     * 无需在 post chain 的 auxtargets 中声明它；可选的 InvSceneProjMat uniform
+     * 为捕获时场景投影矩阵的逆矩阵。水面等透明图层不在此接口的合并范围内。
+     * <p>仅自动处理且启用的效果会触发捕获。此方法应只返回需求标志，不执行渲染操作；
+     * 管理器会在捕获点提前检查 canUse()。错过当帧捕获点的效果从下一帧开始处理，
+     * 深度不可用时跳过该效果，不使用上一帧数据。
+     */
+    default boolean requiresDepthTexture() {
+        return false;
+    }
+
+    /**
      * @return 当前特殊屏幕效果的post chain
      */
     default PostChain current() {

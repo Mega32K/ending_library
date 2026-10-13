@@ -1,5 +1,6 @@
 package com.mega.endinglib.mixin.time.time;
 
+import com.mega.endinglib.api.entity.TimeStopEntity;
 import com.mega.endinglib.client.ClientContext;
 import com.mega.endinglib.util.mixin.data_expand.ExtraEntity;
 import com.mega.endinglib.util.time.TimeContext;
@@ -27,7 +28,7 @@ public class LevelRendererMixin {
     private float modifyEntityPartialTicks(float partialTicks, Entity p_109518_, double p_109519_, double p_109520_, double p_109521_, float p_109522_, PoseStack p_109523_, MultiBufferSource p_109524_) {
         if (TimeStopUtils.isTimeStop) {
             if (ClientContext.isTimeStop_andSameDimension)
-                if (TimeStopUtils.canMove(p_109518_)) {
+                if (TimeStopUtils.canMove(p_109518_) || (p_109518_ instanceof TimeStopEntity tse && tse.smoothPartialTicks())) {
                     partialTicks = TimeContext.Client.timer.partialTick;
                 }
         }
