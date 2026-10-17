@@ -79,7 +79,7 @@ public class ClientProxy implements ModProxy {
             });
             PostEffectHandler.registerEffect(ModernGaussianBlurPostEffect::new);
             if (MCMapping.isWorkingspaceMode()) {
-                PostEffectHandler.registerEffect(DepthTestPostEffect::new);
+                //PostEffectHandler.registerEffect(DepthTestPostEffect::new);
             }
         });
     }

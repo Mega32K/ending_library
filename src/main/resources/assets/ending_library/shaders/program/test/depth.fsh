@@ -7,6 +7,7 @@ in vec2 texCoord;
 in vec2 oneTexel;
 
 uniform mat4 InvSceneProjMat;
+uniform mat4 LevelModelViewMat;
 uniform vec2 InSize;
 uniform float Progress;
 
@@ -164,11 +165,26 @@ vec3 reconstructViewPosition(vec2 uv, float depth) {
     vec4 view = InvSceneProjMat * clip;
     return view.xyz / view.w;
 }
+// 天空没有有限表面位置，不能把清屏深度反投影成远平面后计算球形距离。
+// 用世界空间仰角安排天空波前：半径到达远裁剪距离时从地平线开始，
+// 再经过同样的半径增量到达天顶；下半球的背景与地平线一同进入效果。
+float skyWaveDistance(vec2 uv) {
+    vec3 viewRay = reconstructViewPosition(uv, 0.5);
+    vec3 worldRay = normalize(inverse(mat3(LevelModelViewMat)) * viewRay);
+    float elevation = asin(clamp(worldRay.y, 0.0, 1.0)) / acos(0.0);
+    float horizonDistance = abs(reconstructViewPosition(vec2(0.5), 1.0).z) / 16.0;
+    return horizonDistance * (1.0 + elevation);
+}
 void main() {
     float depth = texture(SceneDepthSampler, texCoord).r;
     vec4 tex = texture(DiffuseSampler, texCoord);
-    vec3 viewPosition = reconstructViewPosition(texCoord, depth) / 16.0;
-    float distanceToCamera = length(viewPosition);
+    // 只对清屏值走天空分支，避免把接近远平面的真实几何误判为天空。
+    float distanceToCamera;
+    if (depth >= 1.0) {
+        distanceToCamera = skyWaveDistance(texCoord);
+    } else {
+        distanceToCamera = length(reconstructViewPosition(texCoord, depth)) / 16.0;
+    }
     float progress = Progress * Progress;
     float distance2 = distanceToCamera - progress;
     if (distanceToCamera >= progress) {

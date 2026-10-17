@@ -193,6 +193,7 @@
     "personal_rule.EntityRendererDispatcherMixin",
     "personal_rule.GameRendererMixin",
     "shader.GameRendererMixin",
+    "shader.ParticleEngineMixin",
     "shader.LevelRendererMixin",
     "time.GameRendererMixin",
     "time.GuiMixin",

@@ -4,6 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mega.endinglib.common.data.DynamicEffectData;
 import com.mega.endinglib.mixin.accessor.AccessorPostChain;
 import com.mega.endinglib.util.SafeClass;
+import com.mega.endinglib.util.mc.client.ClientUtils;
 import com.mojang.blaze3d.platform.Window;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
@@ -11,7 +12,6 @@ import it.unimi.dsi.fastutil.objects.ReferenceSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,9 +19,12 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.EnumMap;
 import java.util.function.Predicate;
 
 @OnlyIn(Dist.CLIENT)
@@ -31,54 +34,90 @@ public class PostProcessingShaders {
     public static final Object2ObjectOpenHashMap<CustomScreenEffect, PostChain> postChains = new Object2ObjectOpenHashMap<>();
     public static volatile boolean isReloading = false;
     private final Minecraft minecraft;
-    private final SceneDepthCapture sceneDepth = new SceneDepthCapture();
-    private final ReferenceSet<CustomScreenEffect> depthConsumers = new ReferenceOpenHashSet<>();
-    private boolean depthCaptureAttempted;
+    private final EnumMap<SceneDepthStage, DepthFrame> depthFrames = new EnumMap<>(SceneDepthStage.class);
+
+    private static final class DepthFrame {
+        final SceneDepthCapture capture = new SceneDepthCapture();
+        final ReferenceSet<CustomScreenEffect> consumers = new ReferenceOpenHashSet<>();
+        boolean attempted;
+
+        void invalidate() {
+            attempted = false;
+            consumers.clear();
+            capture.invalidate();
+        }
+    }
     private final Logger LOGGER = LogManager.getLogger();
     private final Object2ObjectOpenHashMap<DynamicEffectData, CustomScreenEffect> commandScreenEffects = new Object2ObjectOpenHashMap<>();
     public PostProcessingShaders(Minecraft minecraft) {
         this.minecraft = minecraft;
     }
     public void beginFrame() {
-        depthCaptureAttempted = false;
-        depthConsumers.clear();
-        sceneDepth.invalidate();
+        depthFrames.values().forEach(DepthFrame::invalidate);
     }
 
-    private boolean prepareDepthCapture() {
-        if (depthCaptureAttempted || isReloading || minecraft.level == null || minecraft.player == null)
-            return false;
-        depthCaptureAttempted = true;
+    private DepthFrame prepareDepthCapture(SceneDepthStage stage) {
+        if (isReloading || minecraft.level == null || minecraft.player == null) return null;
+        DepthFrame frame = depthFrames.computeIfAbsent(stage, key -> new DepthFrame());
+        if (frame.attempted) return null;
+        frame.attempted = true;
         for (var entry : postChains.entrySet()) {
             CustomScreenEffect effect = entry.getKey();
-            if (entry.getValue() != null && effect.requiresDepthTexture() && SHOULD_PROCESS.test(effect))
-                depthConsumers.add(effect);
+            if (entry.getValue() != null && effect.requiresDepthTexture()
+                    && effect.depthCaptureStage() == stage && SHOULD_PROCESS.test(effect))
+                frame.consumers.add(effect);
         }
-        return !depthConsumers.isEmpty();
+        return frame.consumers.isEmpty() ? null : frame;
     }
 
     public void captureVanillaSceneDepth(Matrix4f projection) {
-        if (!SafeClass.usingShaderPack() && prepareDepthCapture())
-            sceneDepth.capture(minecraft.getMainRenderTarget().getDepthTextureId(), projection);
+        if (SafeClass.usingShaderPack()) return;
+        DepthFrame frame = prepareDepthCapture(SceneDepthStage.BEFORE_TRANSLUCENT);
+        if (frame != null)
+            frame.capture.capture(minecraft.getMainRenderTarget().getDepthTextureId(), projection);
     }
 
     public void captureOculusSceneDepth() {
-        if (SafeClass.usingShaderPack() && prepareDepthCapture())
-            OculusSceneDepth.capture(sceneDepth);
+        if (!SafeClass.usingShaderPack() || OculusSceneDepth.isShadowPass()) return;
+        DepthFrame frame = prepareDepthCapture(SceneDepthStage.BEFORE_TRANSLUCENT);
+        if (frame != null) OculusSceneDepth.capture(frame.capture);
+    }
+
+    public void captureAfterOpaqueParticles() {
+        boolean shaders = SafeClass.usingShaderPack();
+        if (shaders && OculusSceneDepth.isShadowPass()) return;
+        DepthFrame frame = prepareDepthCapture(SceneDepthStage.AFTER_OPAQUE_PARTICLES);
+        if (frame == null) return;
+        if (shaders) {
+            OculusSceneDepth.captureParticleScene(frame.capture);
+        } else {
+            // Fabulous 在独立粒子目标上绘制，必须读取当前附件而不是主目标。
+            if (GL11.glGetInteger(GL30.GL_DRAW_FRAMEBUFFER_BINDING) == 0) return;
+            int type = GL30.glGetFramebufferAttachmentParameteri(GL30.GL_DRAW_FRAMEBUFFER,
+                    GL30.GL_DEPTH_ATTACHMENT, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE);
+            if (type != GL11.GL_TEXTURE) return;
+            int texture = GL30.glGetFramebufferAttachmentParameteri(GL30.GL_DRAW_FRAMEBUFFER,
+                    GL30.GL_DEPTH_ATTACHMENT, GL30.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
+            frame.capture.capture(texture, ClientUtils.LEVEL_PROJ_MAT);
+        }
     }
 
     public void resizeDepthResources() {
-        depthConsumers.clear();
-        sceneDepth.resize();
+        depthFrames.values().forEach(frame -> {
+            frame.invalidate();
+            frame.capture.resize();
+        });
     }
 
     public void releaseDepthResources() {
-        depthConsumers.clear();
-        sceneDepth.close();
+        depthFrames.values().forEach(frame -> frame.capture.close());
+        depthFrames.clear();
     }
 
-    private boolean hasSceneDepth(CustomScreenEffect effect) {
-        return sceneDepth.isValid() && depthConsumers.contains(effect);
+    private SceneDepthCapture sceneDepthFor(CustomScreenEffect effect) {
+        DepthFrame frame = depthFrames.get(effect.depthCaptureStage());
+        return frame != null && frame.capture.isValid() && frame.consumers.contains(effect)
+                ? frame.capture : null;
     }
 
     public void levelEffect(float partialTicks) {
@@ -97,10 +136,11 @@ public class PostProcessingShaders {
                 if (SHOULD_PROCESS.test(element) && element.getTransformLayer() == layer) {
                     PostChain postChain = entry.getValue();
                     if (postChain != null) {
-                        if (element.requiresDepthTexture() && !hasSceneDepth(element)) continue;
+                        if (element.requiresDepthTexture() && sceneDepthFor(element) == null) continue;
                         element.onRenderTick(partialTicks);
                         if (element.requiresDepthTexture()) {
-                            if (!hasSceneDepth(element)) continue;
+                            SceneDepthCapture sceneDepth = sceneDepthFor(element);
+                            if (sceneDepth == null) continue;
                             ((AccessorPostChain) postChain).getPasses().forEach(pass -> {
                                 pass.getEffect().setSampler("SceneDepthSampler", sceneDepth::getTextureId);
                                 pass.getEffect().safeGetUniform("InvSceneProjMat").set(sceneDepth.getInverseProjection());
